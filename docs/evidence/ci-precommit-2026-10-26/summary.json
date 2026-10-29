@@ -1,0 +1,28 @@
+{
+  "date": "2026-10-26",
+  "baseline_commit": "0ac0bda3035d17e90cd01670a3045a4271ce871c",
+  "worktree_uncommitted": true,
+  "pre_commit": "4.7.0",
+  "pre_commit_hooks": "6.0.0",
+  "configured_hook_count": 12,
+  "hook_and_gate_cases": 13,
+  "python313": {
+    "platform": "macOS",
+    "passed": 440,
+    "integration_deselected": 4,
+    "coverage_percent": 86.47
+  },
+  "python311": {
+    "platform": "Linux Docker, new venv",
+    "passed": 440,
+    "integration_deselected": 4,
+    "coverage_percent": 86.6
+  },
+  "coverage_metric": "combined lines and branches",
+  "coverage_threshold_percent": 85,
+  "audit_entries_including_duplicates": 120,
+  "known_vulnerabilities": 0,
+  "new_docker_broker_run": false,
+  "remote_ci_run": false,
+  "branch_protection_configured": false
+}

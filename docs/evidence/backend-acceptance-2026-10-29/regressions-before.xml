@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="5" skipped="0" tests="10" time="1.811" timestamp="2026-10-29T09:54:53.280251+08:00" hostname="pwang"><testcase classname="tests.ml.test_acceptance_failures" name="test_concurrent_serving_prepare_creates_only_one_process" time="0.123"><failure message="AssertionError: assert 2 == 1&#10; +  where 2 = len([(['/usr/bin/python', '-m', 'bootstrap.ml_serving', '--port', '18001'],), (['/usr/bin/python', '-m', 'bootstrap.ml_serving', '--port', '18001'],)])">tmp_path = PosixPath('/tmp/pytest-of-pwang/pytest-15/test_concurrent_serving_prepar0')
+deployment = Deployment(deployment_id='7b9d0586-e9a2-4c2a-bfbd-1b18a959ce92', tenant_id='tenant-one', endpoint_id='quality', genera...enant-one"}', spec_digest='a2241f9d2577f756b8ab3f69f392a92c340f96604bbbb260c2717c2004c93cc8', resources_released=False)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7a9f71644430&gt;
+
+    def test_concurrent_serving_prepare_creates_only_one_process(tmp_path, deployment, monkeypatch):
+        entered, release = threading.Event(), threading.Event()
+        launches = []
+    
+        class Reservation:
+            def __enter__(self):
+                return self
+    
+            def __exit__(self, *args):
+                pass
+    
+            def bind(self, address):
+                entered.set()
+                assert release.wait(5)
+    
+            def getsockname(self):
+                return ("127.0.0.1", 18001)
+    
+        def launch(*args, **kwargs):
+            launches.append(args)
+            return SimpleNamespace(pid=123)
+    
+        monkeypatch.setattr("src.infrastructure.deployment.local_serving.socket.socket", Reservation)
+        monkeypatch.setattr("src.infrastructure.deployment.local_serving.subprocess.Popen", launch)
+        first, second = LocalServingExecutor(tmp_path), LocalServingExecutor(tmp_path)
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            one = pool.submit(first.prepare, deployment)
+            assert entered.wait(5)
+            two = pool.submit(second.prepare, deployment)
+            # First controller is paused before spawning; a second controller must not launch.
+            time.sleep(0.05)
+            release.set()
+            one.result(5)
+            two.result(5)
+&gt;       assert len(launches) == 1
+E       AssertionError: assert 2 == 1
+E        +  where 2 = len([(['/usr/bin/python', '-m', 'bootstrap.ml_serving', '--port', '18001'],), (['/usr/bin/python', '-m', 'bootstrap.ml_serving', '--port', '18001'],)])
+
+tests/ml/test_acceptance_failures.py:67: AssertionError</failure></testcase><testcase classname="tests.ml.test_acceptance_failures" name="test_serving_requires_positive_readiness" time="0.058"><failure message="assert not True&#10; +  where True = ready(Deployment(deployment_id='0bd61b5c-7ea4-4b2e-9046-757f419d3c86', tenant_id='tenant-one', endpoint_id='quality', genera...enant-one&quot;}', spec_digest='1922e5338d55b39f01e0e567a92ab6cdda7a984c9aa6a732da4595180c1a4ecb', resources_released=False))&#10; +    where ready = &lt;src.infrastructure.deployment.local_serving.LocalServingExecutor object at 0x7a9f71502d70&gt;.ready&#10; +      where &lt;src.infrastructure.deployment.local_serving.LocalServingExecutor object at 0x7a9f71502d70&gt; = LocalServingExecutor(PosixPath('/tmp/pytest-of-pwang/pytest-15/test_serving_requires_positive0'))">tmp_path = PosixPath('/tmp/pytest-of-pwang/pytest-15/test_serving_requires_positive0')
+deployment = Deployment(deployment_id='0bd61b5c-7ea4-4b2e-9046-757f419d3c86', tenant_id='tenant-one', endpoint_id='quality', genera...enant-one"}', spec_digest='1922e5338d55b39f01e0e567a92ab6cdda7a984c9aa6a732da4595180c1a4ecb', resources_released=False)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7a9f71501e70&gt;
+
+    def test_serving_requires_positive_readiness(tmp_path, deployment, monkeypatch):
+        directory = tmp_path/deployment.deployment_id
+        directory.mkdir()
+        (directory/"instance.json").write_text(json.dumps({"address": "http://controlled", "created_at": time.time()}))
+        monkeypatch.setattr("src.infrastructure.deployment.local_serving.httpx.get", lambda *args, **kwargs:
+            httpx.Response(200, json={"ready": False, "deployment_id": deployment.deployment_id,
+                "generation": deployment.generation, "manifest_digest": json.loads(deployment.spec_json)["manifest_digest"]}))
+&gt;       assert not LocalServingExecutor(tmp_path).ready(deployment)
+E       assert not True
+E        +  where True = ready(Deployment(deployment_id='0bd61b5c-7ea4-4b2e-9046-757f419d3c86', tenant_id='tenant-one', endpoint_id='quality', genera...enant-one"}', spec_digest='1922e5338d55b39f01e0e567a92ab6cdda7a984c9aa6a732da4595180c1a4ecb', resources_released=False))
+E        +    where ready = &lt;src.infrastructure.deployment.local_serving.LocalServingExecutor object at 0x7a9f71502d70&gt;.ready
+E        +      where &lt;src.infrastructure.deployment.local_serving.LocalServingExecutor object at 0x7a9f71502d70&gt; = LocalServingExecutor(PosixPath('/tmp/pytest-of-pwang/pytest-15/test_serving_requires_positive0'))
+
+tests/ml/test_acceptance_failures.py:77: AssertionError</failure></testcase><testcase classname="tests.ml.test_acceptance_failures" name="test_failed_port_allocation_is_a_safe_closed_launch" time="0.055"><failure message="PermissionError: injected port allocation failure">tmp_path = PosixPath('/tmp/pytest-of-pwang/pytest-15/test_failed_port_allocation_is0')
+deployment = Deployment(deployment_id='86bca9c7-1c2c-4eb6-add4-ce66ee4faf3a', tenant_id='tenant-one', endpoint_id='quality', genera...enant-one"}', spec_digest='683fd5c4ac7b296c7fa3c28b2d939385a1f7742627da4db454aeae615ec1f265', resources_released=False)
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x7a9f7039ad40&gt;
+
+    def test_failed_port_allocation_is_a_safe_closed_launch(tmp_path, deployment, monkeypatch):
+        class DeniedSocket:
+            def __enter__(self):
+                raise PermissionError("injected port allocation failure")
+    
+            def __exit__(self, *args):
+                pass
+    
+        monkeypatch.setattr("src.infrastructure.deployment.local_serving.socket.socket", DeniedSocket)
+        executor = LocalServingExecutor(tmp_path)
+        with pytest.raises(Conflict):
+&gt;           executor.prepare(deployment)
+
+tests/ml/test_acceptance_failures.py:91: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+src/infrastructure/deployment/local_serving.py:32: in prepare
+    with socket.socket() as reservation:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;tests.ml.test_acceptance_failures.test_failed_port_allocation_is_a_safe_closed_launch.&lt;locals&gt;.DeniedSocket object at 0x7a9f703db4c0&gt;
+
+    def __enter__(self):
+&gt;       raise PermissionError("injected port allocation failure")
+E       PermissionError: injected port allocation failure
+
+tests/ml/test_acceptance_failures.py:83: PermissionError</failure></testcase><testcase classname="tests.ml.test_acceptance_failures" name="test_incomplete_serving_launch_times_out_without_claiming_stop" time="0.061"><failure message="Failed: DID NOT RAISE &lt;class 'src.domain.ml.Conflict'&gt;">tmp_path = PosixPath('/tmp/pytest-of-pwang/pytest-15/test_incomplete_serving_launch0')
+deployment = Deployment(deployment_id='e97e7d33-d44f-48f7-99ce-a089529ba15d', tenant_id='tenant-one', endpoint_id='quality', genera...enant-one"}', spec_digest='201df3a5e38e61f40a9d6f7662b6d8f0d61d42fd3fc5874c93ec94389b9f6eba', resources_released=False)
+
+    def test_incomplete_serving_launch_times_out_without_claiming_stop(tmp_path, deployment):
+        directory = tmp_path/deployment.deployment_id
+        directory.mkdir()
+        (directory/"launch.json").write_text('{}')
+        executor = LocalServingExecutor(tmp_path, startup_timeout=0)
+&gt;       with pytest.raises(Conflict):
+E       Failed: DID NOT RAISE &lt;class 'src.domain.ml.Conflict'&gt;
+
+tests/ml/test_acceptance_failures.py:100: Failed</failure></testcase><testcase classname="tests.ml.test_acceptance_failures" name="test_dataset_failure_closes_the_evaluation_runtime" time="0.002"><failure message="assert [] == [True]&#10;  &#10;  Right contains one more item: True&#10;  Use -v to get more diff">tmp_path = PosixPath('/tmp/pytest-of-pwang/pytest-15/test_dataset_failure_closes_th0')
+
+    def test_dataset_failure_closes_the_evaluation_runtime(tmp_path):
+        runtime = SimpleNamespace(close=lambda: closed.append(True))
+        closed = []
+    
+        class BrokenDataset:
+            def load(self, reference):
+                raise MLError("Dataset digest mismatch")
+    
+        evaluator = BundleEvaluator(SimpleNamespace(materialize=lambda *args: tmp_path),
+            lambda *args: runtime, BrokenDataset())
+        with pytest.raises(MLError):
+            evaluator.evaluate(SimpleNamespace(artifact_ref="controlled", manifest_digest="a"*64),
+                '{"dataset":{"snapshot_ref":"controlled","content_digest":"invalid"}}')
+&gt;       assert closed == [True]
+E       assert [] == [True]
+E         
+E         Right contains one more item: True
+E         Use -v to get more diff
+
+tests/ml/test_acceptance_failures.py:118: AssertionError</failure></testcase><testcase classname="tests.ml.test_acceptance_failures" name="test_failed_acceptance_commit_rolls_back_and_same_key_can_recover" time="0.277" /><testcase classname="tests.ml.test_acceptance_failures" name="test_one_hundred_late_results_cannot_reopen_a_terminal_job[FAILED]" time="0.178" /><testcase classname="tests.ml.test_acceptance_failures" name="test_one_hundred_late_results_cannot_reopen_a_terminal_job[CANCELLED]" time="0.176" /><testcase classname="tests.ml.test_acceptance_failures" name="test_one_hundred_late_results_cannot_reopen_a_terminal_job[SUCCEEDED]" time="0.165" /><testcase classname="tests.ml.test_acceptance_failures" name="test_repeated_prediction_failures_release_physical_slots" time="0.020" /></testsuite></testsuites>

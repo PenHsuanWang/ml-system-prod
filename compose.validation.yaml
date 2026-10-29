@@ -1,0 +1,160 @@
+# Standalone validation stack. Run with a unique Compose --project-name.
+# Fixtures are mounted read-only; the production image never contains tests.
+x-validation-environment: &validation-environment
+  APP_ENVIRONMENT: test
+  APP_TASK_BACKEND: distributed
+  APP_RABBITMQ_URL: "amqp://${DOCKER_VALIDATION_RABBIT_USER:?Set DOCKER_VALIDATION_RABBIT_USER}:${DOCKER_VALIDATION_RABBIT_PASSWORD:?Set DOCKER_VALIDATION_RABBIT_PASSWORD}@rabbitmq:5672/"
+  APP_REDIS_URL: redis://redis:6379/0
+  APP_QUEUE_NAME: "${DOCKER_VALIDATION_QUEUE:?Set DOCKER_VALIDATION_QUEUE}"
+  APP_WORKERS: "2"
+  APP_RELOAD: "false"
+  APP_WORKER_PROCESSES: "2"
+  APP_TASK_CONCURRENCY: "2"
+  APP_JOB_TIMEOUT_SECONDS: "10"
+  APP_JOB_RETENTION_SECONDS: "300"
+  APP_SHUTDOWN_TIMEOUT_SECONDS: "5"
+  APP_LOG_LEVEL: info
+  APP_EXPOSE_JOB_API: "false"
+  APP_MONGO_ENABLED: "true"
+  APP_MONGO_URI: "mongodb://backend_root:${DOCKER_VALIDATION_MONGO_PASSWORD:?Set DOCKER_VALIDATION_MONGO_PASSWORD}@mongodb:27017/backend?authSource=admin"
+  APP_MONGO_DATABASE: backend
+  APP_IDENTITY_ENABLED: "true"
+  APP_JWT_SECRET: "${DOCKER_VALIDATION_JWT_SECRET:?Set DOCKER_VALIDATION_JWT_SECRET}"
+  APP_JWT_ISSUER: backend
+  APP_JWT_AUDIENCE: backend-api
+  APP_KERNEL_API_ENABLED: "true"
+  APP_EXPORTS_API_ENABLED: "false"
+  APP_KERNEL_TIMEOUT_SECONDS: "10"
+  APP_RESOURCE_BACKEND: redis
+  APP_RESOURCE_LIMITS: '{"compute":2}'
+
+x-validation-dependencies: &validation-dependencies
+  rabbitmq:
+    condition: service_healthy
+  redis:
+    condition: service_healthy
+  mongodb:
+    condition: service_healthy
+
+x-validation-fixtures: &validation-fixtures
+  - type: bind
+    source: ./tests
+    target: /app/tests
+    read_only: true
+
+services:
+  api:
+    image: "${DOCKER_VALIDATION_IMAGE:?Set DOCKER_VALIDATION_IMAGE}"
+    environment: *validation-environment
+    command:
+      - python
+      - -m
+      - uvicorn
+      - tests.fixtures.docker_runtime:create_app
+      - --factory
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --workers
+      - "2"
+    ports:
+      - "127.0.0.1::8000"
+    volumes: *validation-fixtures
+    depends_on: *validation-dependencies
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=3).read()"
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    init: true
+    stop_grace_period: 20s
+
+  worker:
+    image: "${DOCKER_VALIDATION_IMAGE:?Set DOCKER_VALIDATION_IMAGE}"
+    environment: *validation-environment
+    command:
+      - python
+      - -m
+      - taskiq
+      - worker
+      - tests.fixtures.docker_runtime:broker
+      - --workers
+      - "2"
+      - --max-async-tasks
+      - "2"
+      - --ack-type
+      - when_saved
+      - --wait-tasks-timeout
+      - "5"
+      - --shutdown-timeout
+      - "5"
+    volumes: *validation-fixtures
+    depends_on: *validation-dependencies
+    init: true
+    stop_grace_period: 20s
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    environment:
+      RABBITMQ_DEFAULT_USER: "${DOCKER_VALIDATION_RABBIT_USER:?Set DOCKER_VALIDATION_RABBIT_USER}"
+      RABBITMQ_DEFAULT_PASS: "${DOCKER_VALIDATION_RABBIT_PASSWORD:?Set DOCKER_VALIDATION_RABBIT_PASSWORD}"
+    ports:
+      - "127.0.0.1::5672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 20s
+    init: true
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "127.0.0.1::6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    init: true
+
+  mongodb:
+    image: mongo:8
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: backend_root
+      MONGO_INITDB_ROOT_PASSWORD: "${DOCKER_VALIDATION_MONGO_PASSWORD:?Set DOCKER_VALIDATION_MONGO_PASSWORD}"
+      MONGO_INITDB_DATABASE: backend
+    ports:
+      - "127.0.0.1::27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          mongosh --quiet --host 127.0.0.1
+          --username "$${MONGO_INITDB_ROOT_USERNAME}"
+          --password "$${MONGO_INITDB_ROOT_PASSWORD}"
+          --authenticationDatabase admin
+          --eval 'quit(db.adminCommand({ping: 1}).ok ? 0 : 2)'
+      interval: 5s
+      timeout: 5s
+      retries: 24
+      start_period: 20s
+    init: true
+
+volumes:
+  rabbitmq-data:
+  redis-data:
+  mongodb-data:

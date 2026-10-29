@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=75,<85", "wheel>=0.45,<1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ml-system-ebm"
+version = "0.1.0"
+description = "Durable, governed PyTorch training and fixed-version serving"
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi>=0.115,<1", "uvicorn>=0.30,<1", "pydantic>=2.8,<3",
+  "pydantic-settings>=2.6,<3", "httpx>=0.27,<1", "SQLAlchemy>=2.0.44,<2.1",
+  "alembic>=1.17,<2", "psycopg[binary]>=3.2,<4", "PyJWT[crypto]>=2.10,<3",
+  "pymongo>=4.13,<5", "pwdlib[argon2]>=0.2,<1", "redis>=5,<9",
+  "taskiq>=0.12.6,<0.13", "taskiq-aio-pika>=0.6.1,<0.7",
+  "aio-pika>=9.5,<10",
+  "opentelemetry-api>=1.28,<2",
+]
+
+[project.optional-dependencies]
+training = ["torch>=2.6,<3", "numpy>=1.26,<3", "mlflow>=3.6,<4"]
+serving = ["torch>=2.6,<3", "numpy>=1.26,<3", "mlflow>=3.6,<4"]
+dev = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.12,<1", "mypy>=1.15,<3", "pyflakes>=3.2,<4"]
+observability = ["opentelemetry-sdk>=1.28,<2", "opentelemetry-exporter-otlp-proto-http>=1.28,<2"]
+
+[project.scripts]
+ml-system = "bootstrap.ml_cli:main"
+
+[tool.setuptools]
+py-modules = ["server", "worker", "manage"]
+
+[tool.setuptools.packages.find]
+include = ["src*", "bootstrap*"]
+
+[tool.setuptools.package-data]
+"src.infrastructure.datasets" = ["*.json"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+markers = ["integration: requires PostgreSQL/RabbitMQ/MLflow", "torch: requires PyTorch"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+
+[[tool.mypy.overrides]]
+module = ["taskiq.*", "taskiq_aio_pika.*", "aio_pika.*", "mlflow.*"]
+ignore_missing_imports = true

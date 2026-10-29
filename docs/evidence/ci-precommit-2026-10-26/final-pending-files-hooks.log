@@ -1,0 +1,12 @@
+Reject local environment files.......................(no files to check)Skipped
+Check merge conflict markers.............................................Passed
+Detect private keys......................................................Passed
+Check YAML syntax........................................................Passed
+Check TOML syntax........................................................Passed
+Check JSON syntax........................................................Passed
+Trim trailing whitespace.................................................Passed
+Fix end of files.........................................................Passed
+Ruff lint................................................................Passed
+Ruff format..............................................................Passed
+Mypy strict..............................................................Passed
+Check architecture boundaries............................................Passed

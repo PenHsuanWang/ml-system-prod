@@ -1,0 +1,21 @@
+{
+  "containers_started": false,
+  "api": {
+    "ITEMS_ENABLED": "true",
+    "APP_EXPOSE_JOB_API": "true",
+    "APP_IDENTITY_ENABLED": "true",
+    "APP_MONGO_ENABLED": "true",
+    "APP_TASK_BACKEND": "distributed"
+  },
+  "worker": {
+    "ITEMS_ENABLED": "true",
+    "APP_EXPOSE_JOB_API": "true",
+    "APP_IDENTITY_ENABLED": "true",
+    "APP_MONGO_ENABLED": "true",
+    "APP_TASK_BACKEND": "distributed"
+  },
+  "config_quiet_exit_code": 0,
+  "config_json_exit_code": 0,
+  "passed": true,
+  "temporary_dummy_env_removed": true
+}

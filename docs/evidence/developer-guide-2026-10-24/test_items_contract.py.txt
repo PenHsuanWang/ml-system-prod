@@ -1,0 +1,188 @@
+"""Independent review checks for the materialized documentation examples."""
+
+from datetime import UTC, datetime
+from typing import Any
+
+import pytest
+from httpx import ASGITransport, AsyncClient
+from pymongo.errors import ConnectionFailure
+
+from bootstrap.components import ModuleDefinition
+from server import create_app
+from src.api.auth import current_principal
+from src.api.items.dependencies import get_item_service
+from src.api.items.routers import router
+from src.application.items.service import ItemService
+from src.config.settings import Settings
+from src.domain.identity.errors import AuthorizationDenied
+from src.domain.identity.models import Principal
+from src.domain.items.errors import InvalidItem, ItemNotFound, ItemStorageUnavailable
+from src.domain.items.models import Item
+from src.infrastructure.persistence.items import MongoItemRepository
+
+OWNER = Principal("a" * 32, "tenant-a", "owner", frozenset({"items.read", "items.write"}))
+PEER = Principal("b" * 32, "tenant-a", "peer", frozenset({"items.read"}))
+OTHER = Principal("c" * 32, "tenant-b", "other", frozenset({"items.read"}))
+UNPRIVILEGED = Principal("d" * 32, "tenant-a", "none", frozenset())
+
+
+class FakeItemRepository:
+    def __init__(self):
+        self.items = {}
+
+    async def add(self, item):
+        self.items[(item.tenant_id, item.item_id)] = item
+
+    async def get(self, tenant_id, item_id, *, owner_id=None):
+        item = self.items.get((tenant_id, item_id))
+        return item if item is None or owner_id is None or item.owner_id == owner_id else None
+
+
+async def test_documented_scope_forbids_peer_owner_access():
+    service = ItemService(FakeItemRepository())
+    item = await service.create(OWNER, "one")
+    with pytest.raises(ItemNotFound):
+        await service.get(PEER, item.item_id)
+
+
+async def test_cross_tenant_scope():
+    service = ItemService(FakeItemRepository())
+    item = await service.create(OWNER, "one")
+    with pytest.raises(ItemNotFound):
+        await service.get(OTHER, item.item_id)
+
+
+async def test_permission_checked_before_create_or_read():
+    service = ItemService(FakeItemRepository())
+    with pytest.raises(AuthorizationDenied):
+        await service.create(UNPRIVILEGED, "one")
+    with pytest.raises(AuthorizationDenied):
+        await service.get(UNPRIVILEGED, "missing")
+
+
+@pytest.mark.parametrize("name", ["", "   ", "x" * 201])
+async def test_domain_validation_without_http(name):
+    with pytest.raises(InvalidItem):
+        await ItemService(FakeItemRepository()).create(OWNER, name)
+
+
+@pytest.mark.parametrize(
+    "principal,body,expected",
+    [
+        (UNPRIVILEGED, {"name": "one"}, 403),
+        (OWNER, {"name": "   "}, 422),
+        (OWNER, {"name": "one", "tenant_id": "tenant-b"}, 422),
+    ],
+)
+async def test_api_http_contract(principal, body, expected):
+    settings = Settings(_env_file=None, environment="test")
+    app = create_app(settings, modules=(ModuleDefinition("items", routers=(router,)),))
+    app.dependency_overrides[get_item_service] = lambda: ItemService(FakeItemRepository())
+    app.dependency_overrides[current_principal] = lambda: principal
+    async with AsyncClient(transport=ASGITransport(app), base_url="http://test") as client:
+        response = await client.post("/api/v1/items", json=body)
+    assert response.status_code == expected
+    assert response.headers["x-request-id"]
+
+
+async def test_api_storage_failure_is_sanitized_503():
+    class Unavailable(FakeItemRepository):
+        async def add(self, item):
+            raise ItemStorageUnavailable("backend private credentials")
+
+    app = create_app(
+        Settings(_env_file=None, environment="test"),
+        modules=(ModuleDefinition("items", routers=(router,)),),
+    )
+    app.dependency_overrides[get_item_service] = lambda: ItemService(Unavailable())
+    app.dependency_overrides[current_principal] = lambda: OWNER
+    async with AsyncClient(transport=ASGITransport(app), base_url="http://test") as client:
+        response = await client.post("/api/v1/items", json={"name": "one"})
+    assert response.status_code == 503
+    assert "private" not in response.text
+
+
+class Collection:
+    def __init__(self):
+        self.documents: dict[str, Any] = {}
+        self.queries = []
+        self.indexes = []
+
+    async def create_index(self, keys, **kwargs):
+        self.indexes.append((keys, kwargs))
+
+    async def insert_one(self, document):
+        self.documents[document["_id"]] = document
+
+    async def find_one(self, query):
+        self.queries.append(query)
+        return next(
+            (
+                doc
+                for doc in self.documents.values()
+                if all(doc.get(key) == value for key, value in query.items())
+            ),
+            None,
+        )
+
+
+class Database:
+    def __init__(self, collection):
+        self.collection = collection
+
+    def __getitem__(self, name):
+        assert name == "items"
+        return self.collection
+
+
+async def test_mongo_query_enforces_tenant():
+    collection = Collection()
+    repository = MongoItemRepository(Database(collection))
+    item = Item("id", OWNER.tenant_id, OWNER.user_id, "one", datetime.now(UTC))
+    await repository.add(item)
+    assert await repository.get("tenant-b", "id", owner_id=OWNER.user_id) is None
+    assert collection.queries[-1]["tenant_id"] == "tenant-b"
+    assert collection.queries[-1]["_id"] == "id"
+
+
+async def test_mongo_sdk_exception_translation():
+    class FailedCollection(Collection):
+        async def find_one(self, query):
+            raise ConnectionFailure("mongodb://private")
+
+    repository = MongoItemRepository(Database(FailedCollection()))
+    with pytest.raises(ItemStorageUnavailable, match="Item storage is unavailable") as error:
+        await repository.get("tenant-a", "id", owner_id=OWNER.user_id)
+    assert error.value.__suppress_context__
+
+
+async def test_read_all_still_requires_base_read_permission():
+    service = ItemService(FakeItemRepository())
+    item = await service.create(OWNER, "one")
+    privileged = Principal(
+        PEER.user_id,
+        PEER.tenant_id,
+        PEER.username,
+        frozenset({"items.read", "items.read_all"}),
+    )
+    assert (await service.get(privileged, item.item_id)).owner_id == OWNER.user_id
+    cross_tenant = Principal(OTHER.user_id, OTHER.tenant_id, OTHER.username, privileged.permissions)
+    with pytest.raises(ItemNotFound):
+        await service.get(cross_tenant, item.item_id)
+    insufficient = Principal(
+        PEER.user_id, PEER.tenant_id, PEER.username, frozenset({"items.read_all"})
+    )
+    with pytest.raises(AuthorizationDenied):
+        await service.get(insufficient, item.item_id)
+
+
+async def test_mongo_query_owner_condition_and_read_all():
+    collection = Collection()
+    repository = MongoItemRepository(Database(collection))
+    item = Item("id", OWNER.tenant_id, OWNER.user_id, "one", datetime.now(UTC))
+    await repository.add(item)
+    assert await repository.get(OWNER.tenant_id, "id", owner_id=PEER.user_id) is None
+    assert collection.queries[-1]["owner_id"] == PEER.user_id
+    assert await repository.get(OWNER.tenant_id, "id", owner_id=None) == item
+    assert "owner_id" not in collection.queries[-1]
+    assert collection.queries[-1]["tenant_id"] == OWNER.tenant_id

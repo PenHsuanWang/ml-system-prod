@@ -1,0 +1,67 @@
+[
+  {
+    "case": "invalid_yaml_rejected",
+    "expected_exit": 1,
+    "actual_exit": 1
+  },
+  {
+    "case": "merge_markers_rejected",
+    "expected_exit": 1,
+    "actual_exit": 1
+  },
+  {
+    "case": "synthetic_private_key_marker_rejected",
+    "expected_exit": 1,
+    "actual_exit": 1
+  },
+  {
+    "case": "local_env_rejected",
+    "expected_exit": 1,
+    "actual_exit": 1
+  },
+  {
+    "case": "local_env_variant_rejected",
+    "expected_exit": 1,
+    "actual_exit": 1
+  },
+  {
+    "case": "env_example_allowed",
+    "expected_exit": 0,
+    "actual_exit": 0
+  },
+  {
+    "case": "trailing_space_corrected",
+    "expected_exit": 1,
+    "actual_exit": 1
+  },
+  {
+    "case": "corrected_text_accepted",
+    "expected_exit": 0,
+    "actual_exit": 0
+  },
+  {
+    "case": "ci_required_quality_success",
+    "expected_exit": 0,
+    "actual_exit": 0
+  },
+  {
+    "case": "ci_required_quality_failure",
+    "expected_exit": 1,
+    "actual_exit": 1
+  },
+  {
+    "case": "ci_required_quality_cancelled",
+    "expected_exit": 1,
+    "actual_exit": 1
+  },
+  {
+    "case": "ci_required_quality_skipped",
+    "expected_exit": 1,
+    "actual_exit": 1
+  },
+  {
+    "case": "installed_git_hook_with_staged_delivery_snapshot_in_isolated_repository",
+    "expected_exit": 0,
+    "actual_exit": 0
+  }
+]

@@ -1,0 +1,168 @@
+{
+  "guide": "/Users/pwang/Documents/Codex/2026-10-23/ji3u/work/developer-guide-review/docs/developer-guide.md",
+  "guide_sha256": "4969543504ec363d2fa934726d51c694ea0dfc6f0aecd280ff237ef47889e6e3",
+  "checks": [
+    {
+      "variant": "sync",
+      "name": "boundaries",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "scripts/check_boundaries.py"
+      ],
+      "exit_code": 0,
+      "log": "sync-boundaries.log"
+    },
+    {
+      "variant": "sync",
+      "name": "ruff",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "log": "sync-ruff.log"
+    },
+    {
+      "variant": "sync",
+      "name": "format",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "exit_code": 0,
+      "log": "sync-format.log"
+    },
+    {
+      "variant": "sync",
+      "name": "mypy",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "mypy",
+        "src",
+        "bootstrap",
+        "scripts",
+        "server.py",
+        "worker.py",
+        "manage.py"
+      ],
+      "exit_code": 0,
+      "log": "sync-mypy.log"
+    },
+    {
+      "variant": "sync",
+      "name": "documented-tests",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_items_documented.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "log": "sync-documented-tests.log"
+    },
+    {
+      "variant": "sync",
+      "name": "review-tests",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_items_contract.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "log": "sync-review-tests.log"
+    },
+    {
+      "variant": "background",
+      "name": "boundaries",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "scripts/check_boundaries.py"
+      ],
+      "exit_code": 0,
+      "log": "background-boundaries.log"
+    },
+    {
+      "variant": "background",
+      "name": "ruff",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0,
+      "log": "background-ruff.log"
+    },
+    {
+      "variant": "background",
+      "name": "format",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "exit_code": 0,
+      "log": "background-format.log"
+    },
+    {
+      "variant": "background",
+      "name": "mypy",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "mypy",
+        "src",
+        "bootstrap",
+        "scripts",
+        "server.py",
+        "worker.py",
+        "manage.py"
+      ],
+      "exit_code": 0,
+      "log": "background-mypy.log"
+    },
+    {
+      "variant": "background",
+      "name": "documented-tests",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_items_documented.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "log": "background-documented-tests.log"
+    },
+    {
+      "variant": "background",
+      "name": "review-tests",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/test_items_contract.py",
+        "tests/test_items_background_contract.py",
+        "-q"
+      ],
+      "exit_code": 0,
+      "log": "background-review-tests.log"
+    }
+  ],
+  "passed": true
+}

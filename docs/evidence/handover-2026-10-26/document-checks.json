@@ -1,0 +1,13 @@
+{
+  "formal_markdown_files": 18,
+  "local_links_checked": 152,
+  "missing_links": [],
+  "svg_xml": "passed",
+  "json_and_jsonl_parse": "passed",
+  "wheel_entries": 106,
+  "wheel_excludes_tests_secrets_legacy_namespace": true,
+  "adoption_changed_existing_runtime_files": [
+    "bootstrap/wiring.py"
+  ],
+  "passed": true
+}

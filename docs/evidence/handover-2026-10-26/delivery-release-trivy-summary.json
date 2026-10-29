@@ -1,0 +1,77 @@
+{
+  "image": "local/backend-validation:4993264301f9",
+  "image_id": "sha256:40dbbc13c30674dc418e7443f147dce7ab42fed24f7ec6ed3344cae10c86b2d0",
+  "scanner": "aquasec/trivy:0.76.1",
+  "policy": "Block fixable HIGH/CRITICAL; retain all findings",
+  "checks": [
+    {
+      "name": "report",
+      "exit_code": 0,
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--volume",
+        "/Users/pwang/Developer/python-backend-server-template/work:/work",
+        "aquasec/trivy:0.76.1",
+        "image",
+        "--input",
+        "/work/delivery-release-image.tar",
+        "--cache-dir",
+        "/work/trivy-cache",
+        "--scanners",
+        "vuln",
+        "--format",
+        "json",
+        "--output",
+        "/work/delivery-release-container-vulnerabilities.json"
+      ]
+    },
+    {
+      "name": "sbom",
+      "exit_code": 0,
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--volume",
+        "/Users/pwang/Developer/python-backend-server-template/work:/work",
+        "aquasec/trivy:0.76.1",
+        "image",
+        "--input",
+        "/work/delivery-release-image.tar",
+        "--cache-dir",
+        "/work/trivy-cache",
+        "--format",
+        "cyclonedx",
+        "--output",
+        "/work/delivery-release-container-sbom.cdx.json"
+      ]
+    },
+    {
+      "name": "gate",
+      "exit_code": 0,
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--volume",
+        "/Users/pwang/Developer/python-backend-server-template/work:/work",
+        "aquasec/trivy:0.76.1",
+        "image",
+        "--input",
+        "/work/delivery-release-image.tar",
+        "--cache-dir",
+        "/work/trivy-cache",
+        "--scanners",
+        "vuln",
+        "--severity",
+        "HIGH,CRITICAL",
+        "--ignore-unfixed",
+        "--exit-code",
+        "1"
+      ]
+    }
+  ],
+  "passed": true
+}

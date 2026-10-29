@@ -1,0 +1,27 @@
+# Keep Gitleaks defaults; exceptions match only reviewed non-secret source lines.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "SHA-256 source-file evidence is not an API credential"
+condition = "AND"
+paths = ['''(?:^|/)docs/evidence/[^\r\n]+/(?:image-)?source-manifest\.json$''']
+regexTarget = "line"
+regexes = ['''^\s*"[^"\r\n]+\.py": "[a-f0-9]{64}",?\s*$''']
+
+[[allowlists]]
+description = "Named password argument forwarding; no literal credential"
+condition = "AND"
+paths = ['''(?:^|/)manage\.py$''']
+regexTarget = "line"
+regexes = ['''^\s*tenant_id, username, password, additional_permissions=additional_permissions\s*$''']
+
+[[allowlists]]
+description = "Official Python release public GPG fingerprint in recorded base-image metadata"
+condition = "AND"
+paths = ['''(?:^|/)docs/evidence/handover-2026-10-26/delivery-release-container-vulnerabilities\.json$''']
+regexTarget = "line"
+regexes = [
+  '''^\s*"created_by":\ "ENV\ GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305",\s*$''',
+  '''^\s*"GPG_KEY=7169605F62C751356D054A26A821E680E5FA6305",\s*$''',
+]

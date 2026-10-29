@@ -1,0 +1,325 @@
+Collecting aio-pika==10.1.1 (from -r requirements-dev.lock (line 7))
+  Downloading aio_pika-10.1.1-py3-none-any.whl (59 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 59.8/59.8 kB 731.2 kB/s eta 0:00:00
+Collecting aiohappyeyeballs==2.7.1 (from -r requirements-dev.lock (line 13))
+  Downloading aiohappyeyeballs-2.7.1-py3-none-any.whl (15 kB)
+Collecting aiohttp==3.14.5 (from -r requirements-dev.lock (line 19))
+  Downloading aiohttp-3.14.5-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (1.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 7.1 MB/s eta 0:00:00
+Collecting aiormq==7.2.2 (from -r requirements-dev.lock (line 184))
+  Downloading aiormq-7.2.2-py3-none-any.whl (39 kB)
+Collecting aiosignal==1.4.0 (from -r requirements-dev.lock (line 190))
+  Downloading aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
+Collecting annotated-doc==0.0.5 (from -r requirements-dev.lock (line 196))
+  Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+Collecting annotated-types==0.8.0 (from -r requirements-dev.lock (line 202))
+  Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+Collecting anyio==4.15.1 (from -r requirements-dev.lock (line 208))
+  Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 132.1/132.1 kB 38.4 MB/s eta 0:00:00
+Collecting argon2-cffi==25.1.0 (from -r requirements-dev.lock (line 217))
+  Downloading argon2_cffi-25.1.0-py3-none-any.whl (14 kB)
+Collecting argon2-cffi-bindings==26.1.0 (from -r requirements-dev.lock (line 223))
+  Downloading argon2_cffi_bindings-26.1.0-cp310-abi3-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl (27 kB)
+Collecting ast-serialize==0.13.1 (from -r requirements-dev.lock (line 268))
+  Downloading ast_serialize-0.13.1-cp39-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (1.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 55.0 MB/s eta 0:00:00
+Collecting attrs==26.1.0 (from -r requirements-dev.lock (line 329))
+  Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 67.5/67.5 kB 16.6 MB/s eta 0:00:00
+Collecting backports-tarfile==1.2.0 (from -r requirements-dev.lock (line 335))
+  Downloading backports.tarfile-1.2.0-py3-none-any.whl (30 kB)
+Collecting bandit==1.9.4 (from -r requirements-dev.lock (line 341))
+  Downloading bandit-1.9.4-py3-none-any.whl (134 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 134.7/134.7 kB 21.1 MB/s eta 0:00:00
+Collecting boolean-py==5.0 (from -r requirements-dev.lock (line 347))
+  Downloading boolean_py-5.0-py3-none-any.whl (26 kB)
+Collecting build==1.6.1 (from -r requirements-dev.lock (line 353))
+  Downloading build-1.6.1-py3-none-any.whl (31 kB)
+Collecting cachecontrol==0.14.4 (from -r requirements-dev.lock (line 361))
+  Downloading cachecontrol-0.14.4-py3-none-any.whl (22 kB)
+Collecting certifi==2026.10.19 (from -r requirements-dev.lock (line 368))
+  Downloading certifi-2026.10.19-py3-none-any.whl (136 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 136.5/136.5 kB 15.7 MB/s eta 0:00:00
+Collecting cffi==2.1.1 (from -r requirements-dev.lock (line 376))
+  Downloading cffi-2.1.1-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (218 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 218.7/218.7 kB 48.4 MB/s eta 0:00:00
+Collecting charset-normalizer==3.5.2 (from -r requirements-dev.lock (line 481))
+  Downloading charset_normalizer-3.5.2-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (259 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 259.3/259.3 kB 40.8 MB/s eta 0:00:00
+Collecting click==8.5.0 (from -r requirements-dev.lock (line 657))
+  Downloading click-8.5.0-py3-none-any.whl (125 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 125.3/125.3 kB 21.4 MB/s eta 0:00:00
+Collecting coverage==7.17.0 (from -r requirements-dev.lock (line 664))
+  Downloading coverage-7.17.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (262 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 262.6/262.6 kB 19.6 MB/s eta 0:00:00
+Collecting cryptography==50.0.2 (from -r requirements-dev.lock (line 787))
+  Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_aarch64.whl (4.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.7/4.7 MB 35.9 MB/s eta 0:00:00
+Collecting cyclonedx-python-lib==11.12.0 (from -r requirements-dev.lock (line 850))
+  Downloading cyclonedx_python_lib-11.12.0-py3-none-any.whl (529 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 529.5/529.5 kB 43.5 MB/s eta 0:00:00
+Collecting defusedxml==0.7.1 (from -r requirements-dev.lock (line 856))
+  Downloading defusedxml-0.7.1-py2.py3-none-any.whl (25 kB)
+Collecting dnspython==2.9.0 (from -r requirements-dev.lock (line 862))
+  Downloading dnspython-2.9.0-py3-none-any.whl (354 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 354.8/354.8 kB 31.9 MB/s eta 0:00:00
+Collecting docutils==0.23 (from -r requirements-dev.lock (line 868))
+  Downloading docutils-0.23-py3-none-any.whl (634 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 634.7/634.7 kB 7.7 MB/s eta 0:00:00
+Collecting fastapi==0.161.1 (from -r requirements-dev.lock (line 874))
+  Downloading fastapi-0.161.1-py3-none-any.whl (149 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 149.0/149.0 kB 32.4 MB/s eta 0:00:00
+Collecting filelock==4.2.4 (from -r requirements-dev.lock (line 880))
+  Downloading filelock-4.2.4-py3-none-any.whl (162 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 162.5/162.5 kB 36.2 MB/s eta 0:00:00
+Collecting frozenlist==1.8.0 (from -r requirements-dev.lock (line 886))
+  Downloading frozenlist-1.8.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (233 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 233.2/233.2 kB 34.2 MB/s eta 0:00:00
+Collecting h11==0.16.0 (from -r requirements-dev.lock (line 1021))
+  Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+Collecting httpcore==1.0.9 (from -r requirements-dev.lock (line 1028))
+  Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 78.8/78.8 kB 12.8 MB/s eta 0:00:00
+Collecting httptools==0.9.0 (from -r requirements-dev.lock (line 1034))
+  Downloading httptools-0.9.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (498 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 498.1/498.1 kB 43.2 MB/s eta 0:00:00
+Collecting httpx==0.28.1 (from -r requirements-dev.lock (line 1156))
+  Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 73.5/73.5 kB 15.4 MB/s eta 0:00:00
+Collecting id==1.6.1 (from -r requirements-dev.lock (line 1162))
+  Downloading id-1.6.1-py3-none-any.whl (14 kB)
+Collecting idna==3.20 (from -r requirements-dev.lock (line 1168))
+  Downloading idna-3.20-py3-none-any.whl (69 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 69.6/69.6 kB 8.0 MB/s eta 0:00:00
+Collecting importlib-metadata==10.1.0 (from -r requirements-dev.lock (line 1177))
+  Downloading importlib_metadata-10.1.0-py3-none-any.whl (32 kB)
+Collecting iniconfig==2.3.1 (from -r requirements-dev.lock (line 1183))
+  Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+Collecting jaraco-classes==3.4.0 (from -r requirements-dev.lock (line 1189))
+  Downloading jaraco.classes-3.4.0-py3-none-any.whl (6.8 kB)
+Collecting jaraco-context==6.1.2 (from -r requirements-dev.lock (line 1195))
+  Downloading jaraco_context-6.1.2-py3-none-any.whl (7.9 kB)
+Collecting jaraco-functools==4.6.0 (from -r requirements-dev.lock (line 1201))
+  Downloading jaraco_functools-4.6.0-py3-none-any.whl (11 kB)
+Collecting jeepney==0.9.0 (from -r requirements-dev.lock (line 1207))
+  Downloading jeepney-0.9.0-py3-none-any.whl (49 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 49.0/49.0 kB 6.1 MB/s eta 0:00:00
+Collecting keyring==25.7.0 (from -r requirements-dev.lock (line 1214))
+  Downloading keyring-25.7.0-py3-none-any.whl (39 kB)
+Collecting librt==0.16.0 (from -r requirements-dev.lock (line 1220))
+  Downloading librt-0.16.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (493 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 493.1/493.1 kB 40.8 MB/s eta 0:00:00
+Collecting license-expression==30.4.4 (from -r requirements-dev.lock (line 1361))
+  Downloading license_expression-30.4.4-py3-none-any.whl (120 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 120.6/120.6 kB 26.1 MB/s eta 0:00:00
+Collecting markdown-it-py==4.2.0 (from -r requirements-dev.lock (line 1367))
+  Downloading markdown_it_py-4.2.0-py3-none-any.whl (91 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 91.7/91.7 kB 16.7 MB/s eta 0:00:00
+Collecting mdurl==0.1.2 (from -r requirements-dev.lock (line 1373))
+  Downloading mdurl-0.1.2-py3-none-any.whl (10.0 kB)
+Collecting more-itertools==11.2.1 (from -r requirements-dev.lock (line 1379))
+  Downloading more_itertools-11.2.1-py3-none-any.whl (74 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 74.4/74.4 kB 15.2 MB/s eta 0:00:00
+Collecting msgpack==1.2.3 (from -r requirements-dev.lock (line 1386))
+  Downloading msgpack-1.2.3-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (465 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 465.3/465.3 kB 44.0 MB/s eta 0:00:00
+Collecting multidict==7.1.0 (from -r requirements-dev.lock (line 1481))
+  Downloading multidict-7.1.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (475 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 475.4/475.4 kB 49.8 MB/s eta 0:00:00
+Collecting mypy==2.4.0 (from -r requirements-dev.lock (line 1657))
+  Downloading mypy-2.4.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (14.5 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.5/14.5 MB 42.1 MB/s eta 0:00:00
+Collecting mypy-extensions==1.1.0 (from -r requirements-dev.lock (line 1713))
+  Downloading mypy_extensions-1.1.0-py3-none-any.whl (5.0 kB)
+Collecting nh3==0.3.7 (from -r requirements-dev.lock (line 1719))
+  Downloading nh3-0.3.7-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (859 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 859.6/859.6 kB 53.2 MB/s eta 0:00:00
+Collecting opentelemetry-api==1.45.1 (from -r requirements-dev.lock (line 1750))
+  Downloading opentelemetry_api-1.45.1-py3-none-any.whl (60 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 60.3/60.3 kB 11.6 MB/s eta 0:00:00
+Collecting packageurl-python==0.17.6 (from -r requirements-dev.lock (line 1756))
+  Downloading packageurl_python-0.17.6-py3-none-any.whl (36 kB)
+Collecting packaging==26.3 (from -r requirements-dev.lock (line 1762))
+  Downloading packaging-26.3-py3-none-any.whl (129 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 130.0/130.0 kB 46.9 MB/s eta 0:00:00
+Collecting pamqp==4.0.1 (from -r requirements-dev.lock (line 1775))
+  Downloading pamqp-4.0.1-py3-none-any.whl (32 kB)
+Collecting pathspec==1.1.1 (from -r requirements-dev.lock (line 1781))
+  Downloading pathspec-1.1.1-py3-none-any.whl (57 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 57.3/57.3 kB 16.4 MB/s eta 0:00:00
+Collecting pip-api==0.0.35 (from -r requirements-dev.lock (line 1787))
+  Downloading pip_api-0.0.35-py3-none-any.whl (123 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 123.9/123.9 kB 44.9 MB/s eta 0:00:00
+Collecting pip-audit==2.10.1 (from -r requirements-dev.lock (line 1793))
+  Downloading pip_audit-2.10.1-py3-none-any.whl (62 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.0/62.0 kB 18.0 MB/s eta 0:00:00
+Collecting pip-requirements-parser==32.0.1 (from -r requirements-dev.lock (line 1799))
+  Downloading pip_requirements_parser-32.0.1-py3-none-any.whl (35 kB)
+Collecting pip-tools==7.6.2 (from -r requirements-dev.lock (line 1805))
+  Downloading pip_tools-7.6.2-py3-none-any.whl (76 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 76.3/76.3 kB 30.3 MB/s eta 0:00:00
+Collecting platformdirs==4.13.5 (from -r requirements-dev.lock (line 1811))
+  Downloading platformdirs-4.13.5-py3-none-any.whl (32 kB)
+Collecting pluggy==1.7.0 (from -r requirements-dev.lock (line 1817))
+  Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+Collecting propcache==0.5.4 (from -r requirements-dev.lock (line 1824))
+  Downloading propcache-0.5.4-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (238 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 238.7/238.7 kB 34.0 MB/s eta 0:00:00
+Collecting pwdlib==0.3.1 (from -r requirements-dev.lock (line 1967))
+  Downloading pwdlib-0.3.1-py3-none-any.whl (9.3 kB)
+Collecting py-serializable==2.1.0 (from -r requirements-dev.lock (line 1973))
+  Downloading py_serializable-2.1.0-py3-none-any.whl (23 kB)
+Collecting pycparser==3.12 (from -r requirements-dev.lock (line 1979))
+  Downloading pycparser-3.12-py3-none-any.whl (62 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.6/62.6 kB 9.0 MB/s eta 0:00:00
+Collecting pycron==3.3.0 (from -r requirements-dev.lock (line 1985))
+  Downloading pycron-3.3.0-py3-none-any.whl (5.0 kB)
+Collecting pydantic==2.14.1 (from -r requirements-dev.lock (line 1991))
+  Downloading pydantic-2.14.1-py3-none-any.whl (488 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 488.1/488.1 kB 54.3 MB/s eta 0:00:00
+Collecting pydantic-core==2.50.1 (from -r requirements-dev.lock (line 1999))
+  Downloading pydantic_core-2.50.1-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (2.0 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 58.2 MB/s eta 0:00:00
+Collecting pydantic-settings==2.16.1 (from -r requirements-dev.lock (line 2140))
+  Downloading pydantic_settings-2.16.1-py3-none-any.whl (80 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.8/80.8 kB 17.6 MB/s eta 0:00:00
+Collecting pygments==2.21.0 (from -r requirements-dev.lock (line 2146))
+  Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 49.7 MB/s eta 0:00:00
+Collecting pyjwt==2.15.1 (from -r requirements-dev.lock (line 2154))
+  Downloading pyjwt-2.15.1-py3-none-any.whl (33 kB)
+Collecting pymongo==4.19.0 (from -r requirements-dev.lock (line 2160))
+  Downloading pymongo-4.19.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (1.0 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.0/1.0 MB 47.8 MB/s eta 0:00:00
+Collecting pyparsing==3.3.3 (from -r requirements-dev.lock (line 2235))
+  Downloading pyparsing-3.3.3-py3-none-any.whl (126 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 126.4/126.4 kB 24.9 MB/s eta 0:00:00
+Collecting pyproject-hooks==1.3.3 (from -r requirements-dev.lock (line 2241))
+  Downloading pyproject_hooks-1.3.3-py3-none-any.whl (10 kB)
+Collecting pytest==9.1.1 (from -r requirements-dev.lock (line 2249))
+  Downloading pytest-9.1.1-py3-none-any.whl (386 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 386.5/386.5 kB 41.0 MB/s eta 0:00:00
+Collecting pytest-asyncio==1.4.0 (from -r requirements-dev.lock (line 2257))
+  Downloading pytest_asyncio-1.4.0-py3-none-any.whl (16 kB)
+Collecting pytest-cov==7.1.0 (from -r requirements-dev.lock (line 2263))
+  Downloading pytest_cov-7.1.0-py3-none-any.whl (22 kB)
+Collecting python-dotenv==1.2.4 (from -r requirements-dev.lock (line 2269))
+  Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+Collecting pyyaml==6.0.3 (from -r requirements-dev.lock (line 2276))
+  Downloading pyyaml-6.0.3-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (775 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 775.6/775.6 kB 48.5 MB/s eta 0:00:00
+Collecting readme-renderer==46.0 (from -r requirements-dev.lock (line 2354))
+  Downloading readme_renderer-46.0-py3-none-any.whl (14 kB)
+Collecting redis==8.1.0 (from -r requirements-dev.lock (line 2360))
+  Downloading redis-8.1.0-py3-none-any.whl (560 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 560.6/560.6 kB 36.9 MB/s eta 0:00:00
+Collecting requests==2.34.2 (from -r requirements-dev.lock (line 2366))
+  Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 73.1/73.1 kB 16.2 MB/s eta 0:00:00
+Collecting requests-toolbelt==1.0.0 (from -r requirements-dev.lock (line 2375))
+  Downloading requests_toolbelt-1.0.0-py2.py3-none-any.whl (54 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 54.5/54.5 kB 11.1 MB/s eta 0:00:00
+Collecting rfc3986==2.0.0 (from -r requirements-dev.lock (line 2381))
+  Downloading rfc3986-2.0.0-py2.py3-none-any.whl (31 kB)
+Collecting rich==15.0.0 (from -r requirements-dev.lock (line 2387))
+  Downloading rich-15.0.0-py3-none-any.whl (310 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 310.7/310.7 kB 41.2 MB/s eta 0:00:00
+Collecting ruff==0.17.2 (from -r requirements-dev.lock (line 2395))
+  Downloading ruff-0.17.2-py3-none-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (10.0 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.0/10.0 MB 48.4 MB/s eta 0:00:00
+Collecting secretstorage==3.5.0 (from -r requirements-dev.lock (line 2417))
+  Downloading secretstorage-3.5.0-py3-none-any.whl (15 kB)
+Collecting sortedcontainers==2.4.0 (from -r requirements-dev.lock (line 2423))
+  Downloading sortedcontainers-2.4.0-py2.py3-none-any.whl (29 kB)
+Collecting starlette==1.9.0 (from -r requirements-dev.lock (line 2429))
+  Downloading starlette-1.9.0-py3-none-any.whl (80 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 80.3/80.3 kB 18.0 MB/s eta 0:00:00
+Collecting stevedore==5.9.1 (from -r requirements-dev.lock (line 2435))
+  Downloading stevedore-5.9.1-py3-none-any.whl (54 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 54.9/54.9 kB 9.0 MB/s eta 0:00:00
+Collecting taskiq==0.12.6 (from -r requirements-dev.lock (line 2441))
+  Downloading taskiq-0.12.6-py3-none-any.whl (94 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 94.9/94.9 kB 18.5 MB/s eta 0:00:00
+Collecting taskiq-aio-pika==0.6.1 (from -r requirements-dev.lock (line 2448))
+  Downloading taskiq_aio_pika-0.6.1-py3-none-any.whl (11 kB)
+Collecting taskiq-dependencies==1.5.7 (from -r requirements-dev.lock (line 2454))
+  Downloading taskiq_dependencies-1.5.7-py3-none-any.whl (13 kB)
+Collecting tomli==2.5.0 (from -r requirements-dev.lock (line 2460))
+  Downloading tomli-2.5.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (268 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 268.0/268.0 kB 45.4 MB/s eta 0:00:00
+Collecting tomli-w==1.2.0 (from -r requirements-dev.lock (line 2529))
+  Downloading tomli_w-1.2.0-py3-none-any.whl (6.7 kB)
+Collecting twine==6.2.0 (from -r requirements-dev.lock (line 2535))
+  Downloading twine-6.2.0-py3-none-any.whl (42 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 42.7/42.7 kB 6.6 MB/s eta 0:00:00
+Collecting typing-extensions==4.16.0 (from -r requirements-dev.lock (line 2541))
+  Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.6/45.6 kB 7.6 MB/s eta 0:00:00
+Collecting typing-inspection==0.4.4 (from -r requirements-dev.lock (line 2560))
+  Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+Collecting urllib3==2.8.0 (from -r requirements-dev.lock (line 2568))
+  Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 135.7/135.7 kB 22.3 MB/s eta 0:00:00
+Collecting uvicorn==0.54.0 (from -r requirements-dev.lock (line 2576))
+  Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 87.4/87.4 kB 18.5 MB/s eta 0:00:00
+Collecting uvloop==0.23.0 (from -r requirements-dev.lock (line 2582))
+  Downloading uvloop-0.23.0-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (3.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.9/3.9 MB 55.9 MB/s eta 0:00:00
+Collecting watchfiles==1.3.0 (from -r requirements-dev.lock (line 2647))
+  Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (454 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 455.0/455.0 kB 53.1 MB/s eta 0:00:00
+Collecting websockets==17.3 (from -r requirements-dev.lock (line 2684))
+  Downloading websockets-17.3-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (226 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 226.8/226.8 kB 46.2 MB/s eta 0:00:00
+Collecting wheel==0.48.0 (from -r requirements-dev.lock (line 2842))
+  Downloading wheel-0.48.0-py3-none-any.whl (33 kB)
+Collecting yarl==1.25.1 (from -r requirements-dev.lock (line 2849))
+  Downloading yarl-1.25.1-cp311-cp311-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (116 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 116.4/116.4 kB 32.1 MB/s eta 0:00:00
+Collecting zipp==4.1.2 (from -r requirements-dev.lock (line 2993))
+  Downloading zipp-4.1.2-py3-none-any.whl (10 kB)
+Collecting pip==26.2.2 (from -r requirements-dev.lock (line 3001))
+  Downloading pip-26.2.2-py3-none-any.whl (1.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.8/1.8 MB 27.9 MB/s eta 0:00:00
+Collecting setuptools==84.2.1 (from -r requirements-dev.lock (line 3009))
+  Downloading setuptools-84.2.1-py3-none-any.whl (876 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 876.3/876.3 kB 47.5 MB/s eta 0:00:00
+Installing collected packages: sortedcontainers, boolean-py, zipp, websockets, uvloop, urllib3, typing-extensions, tomli-w, tomli, taskiq-dependencies, stevedore, setuptools, ruff, rfc3986, redis, pyyaml, python-dotenv, pyproject-hooks, pyparsing, pyjwt, pygments, pycron, pycparser, pwdlib, propcache, pluggy, platformdirs, pip, pathspec, pamqp, packaging, packageurl-python, nh3, mypy-extensions, multidict, msgpack, more-itertools, mdurl, license-expression, librt, jeepney, iniconfig, idna, httptools, h11, frozenlist, filelock, docutils, dnspython, defusedxml, coverage, click, charset-normalizer, certifi, backports-tarfile, attrs, ast-serialize, annotated-types, annotated-doc, aiohappyeyeballs, yarl, wheel, uvicorn, typing-inspection, requests, readme-renderer, pytest, pymongo, pydantic-core, py-serializable, pip-requirements-parser, pip-api, opentelemetry-api, mypy, markdown-it-py, jaraco-functools, jaraco-context, jaraco-classes, importlib-metadata, id, httpcore, cffi, build, anyio, aiosignal, watchfiles, starlette, rich, requests-toolbelt, pytest-cov, pytest-asyncio, pydantic, pip-tools, httpx, cyclonedx-python-lib, cryptography, cachecontrol, argon2-cffi-bindings, aiormq, aiohttp, taskiq, secretstorage, pydantic-settings, fastapi, bandit, argon2-cffi, aio-pika, taskiq-aio-pika, pip-audit, keyring, twine
+  Attempting uninstall: setuptools
+    Found existing installation: setuptools 79.0.1
+    Uninstalling setuptools-79.0.1:
+      Successfully uninstalled setuptools-79.0.1
+  Attempting uninstall: pip
+    Found existing installation: pip 24.0
+    Uninstalling pip-24.0:
+      Successfully uninstalled pip-24.0
+Successfully installed aio-pika-10.1.1 aiohappyeyeballs-2.7.1 aiohttp-3.14.5 aiormq-7.2.2 aiosignal-1.4.0 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 argon2-cffi-25.1.0 argon2-cffi-bindings-26.1.0 ast-serialize-0.13.1 attrs-26.1.0 backports-tarfile-1.2.0 bandit-1.9.4 boolean-py-5.0 build-1.6.1 cachecontrol-0.14.4 certifi-2026.10.19 cffi-2.1.1 charset-normalizer-3.5.2 click-8.5.0 coverage-7.17.0 cryptography-50.0.2 cyclonedx-python-lib-11.12.0 defusedxml-0.7.1 dnspython-2.9.0 docutils-0.23 fastapi-0.161.1 filelock-4.2.4 frozenlist-1.8.0 h11-0.16.0 httpcore-1.0.9 httptools-0.9.0 httpx-0.28.1 id-1.6.1 idna-3.20 importlib-metadata-10.1.0 iniconfig-2.3.1 jaraco-classes-3.4.0 jaraco-context-6.1.2 jaraco-functools-4.6.0 jeepney-0.9.0 keyring-25.7.0 librt-0.16.0 license-expression-30.4.4 markdown-it-py-4.2.0 mdurl-0.1.2 more-itertools-11.2.1 msgpack-1.2.3 multidict-7.1.0 mypy-2.4.0 mypy-extensions-1.1.0 nh3-0.3.7 opentelemetry-api-1.45.1 packageurl-python-0.17.6 packaging-26.3 pamqp-4.0.1 pathspec-1.1.1 pip-26.2.2 pip-api-0.0.35 pip-audit-2.10.1 pip-requirements-parser-32.0.1 pip-tools-7.6.2 platformdirs-4.13.5 pluggy-1.7.0 propcache-0.5.4 pwdlib-0.3.1 py-serializable-2.1.0 pycparser-3.12 pycron-3.3.0 pydantic-2.14.1 pydantic-core-2.50.1 pydantic-settings-2.16.1 pygments-2.21.0 pyjwt-2.15.1 pymongo-4.19.0 pyparsing-3.3.3 pyproject-hooks-1.3.3 pytest-9.1.1 pytest-asyncio-1.4.0 pytest-cov-7.1.0 python-dotenv-1.2.4 pyyaml-6.0.3 readme-renderer-46.0 redis-8.1.0 requests-2.34.2 requests-toolbelt-1.0.0 rfc3986-2.0.0 rich-15.0.0 ruff-0.17.2 secretstorage-3.5.0 setuptools-84.2.1 sortedcontainers-2.4.0 starlette-1.9.0 stevedore-5.9.1 taskiq-0.12.6 taskiq-aio-pika-0.6.1 taskiq-dependencies-1.5.7 tomli-2.5.0 tomli-w-1.2.0 twine-6.2.0 typing-extensions-4.16.0 typing-inspection-0.4.4 urllib3-2.8.0 uvicorn-0.54.0 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.3 wheel-0.48.0 yarl-1.25.1 zipp-4.1.2
+Obtaining file:///project
+  Checking if build backend supports build_editable: started
+  Checking if build backend supports build_editable: finished with status 'done'
+  Preparing editable metadata (pyproject.toml): started
+  Preparing editable metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: modular-fastapi-backend
+  Building editable for modular-fastapi-backend (pyproject.toml): started
+  Building editable for modular-fastapi-backend (pyproject.toml): finished with status 'done'
+  Created wheel for modular-fastapi-backend: filename=modular_fastapi_backend-0.1.0-0.editable-py3-none-any.whl size=9199 sha256=583b7295fed136b390a4ba8648c3bcc42bde5ac17480b61bfe119a44619fae0e
+  Stored in directory: /tmp/pip-ephem-wheel-cache-rjavforv/wheels/aa/0c/49/7c4d39428e78274ff9f1db5b9c539aa0d6bd6becda70207fa7
+Successfully built modular-fastapi-backend
+Installing collected packages: modular-fastapi-backend
+Successfully installed modular-fastapi-backend-0.1.0
+........................................................................ [ 16%]
+........................................................................ [ 32%]
+........................................................................ [ 49%]
+........................................................................ [ 65%]
+........................................................................ [ 81%]
+........................................................................ [ 98%]
+........                                                                 [100%]
+================================ tests coverage ================================
+_______________ coverage: platform linux, python 3.11.17-final-0 _______________
+
+Coverage JSON written to file work/delivery-python311-coverage.json
+Required test coverage of 85.0% reached. Total coverage: 86.60%
+440 passed, 4 deselected in 5.34s
+Package validation evidence: /project/work/delivery-package-python311

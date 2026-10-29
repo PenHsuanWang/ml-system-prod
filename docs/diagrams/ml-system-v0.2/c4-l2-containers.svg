@@ -1,0 +1,142 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1720" viewBox="0 0 2200 1720" role="img" aria-labelledby="title desc">
+<title id="title">ML-C4-L2 v0.2 - Container View</title>
+<desc id="desc">Scope: ML application runtime roles and platform dependencies; logical deployment units. ML-SAD-001 sections 4, 9, 11-13, 16. Dashed: startup-only retrieval. External execution is an adapter evolution.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/></marker></defs>
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<g font-family="Arial, Helvetica, sans-serif"><text x="60" y="68" font-size="34" fill="#0f172a" text-anchor="start" font-weight="700">Container View</text>
+<text x="60" y="108" font-size="19" fill="#475569" text-anchor="start" font-weight="400">Scope: ML application runtime roles and platform dependencies; logical deployment units.</text>
+<text x="2140" y="66" font-size="19" fill="#475569" text-anchor="end" font-weight="400">v0.2  |  2026-10-27</text>
+<g id="ml-boundary"><rect x="60" y="180" width="2080" height="1100" rx="16" fill="#ffffff" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 7"/></g>
+<text x="82" y="214" font-size="21" fill="#334155" text-anchor="start" font-weight="600">ML application boundary - shared application ownership</text>
+<g id="management"><rect x="110" y="300" width="380" height="150" rx="12" fill="#e8f0ff" stroke="#2563eb" stroke-width="2"/></g>
+<text x="300.0" y="331" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">Management API</text>
+<text x="300.0" y="358" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="400">[FastAPI process]</text>
+<text x="300.0" y="386" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Job / approval API</text>
+<text x="300.0" y="408" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">DB + Outbox; no fit</text>
+<g id="controller"><rect x="850" y="300" width="440" height="150" rx="12" fill="#fff3d5" stroke="#b45309" stroke-width="2"/></g>
+<text x="1070.0" y="331" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">Control Loops</text>
+<text x="1070.0" y="358" font-size="16" fill="#b45309" text-anchor="middle" font-weight="400">[Python process]</text>
+<text x="1070.0" y="386" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Reconcile; publish spec; rollout</text>
+<text x="1070.0" y="408" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Verify runtime + routing</text>
+<g id="serving"><rect x="1660" y="300" width="380" height="150" rx="12" fill="#e8f0ff" stroke="#2563eb" stroke-width="2"/></g>
+<text x="1850.0" y="331" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">Prediction Serving</text>
+<text x="1850.0" y="358" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="400">[FastAPI container]</text>
+<text x="1850.0" y="386" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">ModelLoader + loaded handle</text>
+<text x="1850.0" y="408" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Fixed spec; no alias polling</text>
+<g id="routing"><rect x="850" y="500" width="440" height="130" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/></g>
+<text x="1070.0" y="531" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">Routing Gateway</text>
+<text x="1070.0" y="558" font-size="16" fill="#64748b" text-anchor="middle" font-weight="400">[Ingress container]</text>
+<text x="1070.0" y="586" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Actual generation / backends</text>
+<g id="app-db"><rect x="110" y="680" width="380" height="150" rx="12" fill="#e8f0ff" stroke="#2563eb" stroke-width="2"/></g>
+<text x="300.0" y="711" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">ML Application DB</text>
+<text x="300.0" y="738" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="400">[PostgreSQL]</text>
+<text x="300.0" y="766" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Jobs / attempts / reports</text>
+<text x="300.0" y="788" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Approvals / desired deployments</text>
+<g id="relay"><rect x="650" y="680" width="330" height="150" rx="12" fill="#e8f0ff" stroke="#2563eb" stroke-width="2"/></g>
+<text x="815.0" y="711" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">Outbox Relay</text>
+<text x="815.0" y="738" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="400">[Python publisher]</text>
+<text x="815.0" y="766" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Stable command IDs</text>
+<text x="815.0" y="788" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Publisher confirm</text>
+<g id="broker"><rect x="1140" y="680" width="330" height="150" rx="12" fill="#e8f0ff" stroke="#2563eb" stroke-width="2"/></g>
+<text x="1305.0" y="711" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">Training Broker</text>
+<text x="1305.0" y="738" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="400">[RabbitMQ]</text>
+<text x="1305.0" y="766" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Durable work queue</text>
+<text x="1305.0" y="788" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Delivery + acknowledgement</text>
+<g id="supervisor"><rect x="1630" y="680" width="410" height="170" rx="12" fill="#e8f0ff" stroke="#2563eb" stroke-width="2"/></g>
+<text x="1835.0" y="711" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">Training Supervisor</text>
+<text x="1835.0" y="738" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="400">[Taskiq worker]</text>
+<text x="1835.0" y="766" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Claim / execution / ACK gate</text>
+<text x="1835.0" y="788" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Model registration + DB result</text>
+<g id="runner"><rect x="1030" y="1050" width="440" height="170" rx="12" fill="#def7ef" stroke="#0f766e" stroke-width="2"/></g>
+<text x="1250.0" y="1081" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">Training Runner</text>
+<text x="1250.0" y="1108" font-size="16" fill="#0f766e" text-anchor="middle" font-weight="400">[Isolated process/container]</text>
+<text x="1250.0" y="1136" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Trainer + Evaluator + QualityPolicy</text>
+<text x="1250.0" y="1158" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Tracking + output manifest</text>
+<g id="redis"><rect x="1650" y="1060" width="390" height="150" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/></g>
+<text x="1845.0" y="1091" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">Technical State</text>
+<text x="1845.0" y="1118" font-size="16" fill="#64748b" text-anchor="middle" font-weight="400">[Redis]</text>
+<text x="1845.0" y="1146" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Transport snapshots</text>
+<text x="1845.0" y="1168" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Optional capacity leases</text>
+<g id="identity-store"><rect x="110" y="1050" width="380" height="150" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/></g>
+<text x="300.0" y="1081" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">Existing Identity Store</text>
+<text x="300.0" y="1108" font-size="16" fill="#64748b" text-anchor="middle" font-weight="400">[MongoDB]</text>
+<text x="300.0" y="1136" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">JWT sessions / permissions</text>
+<text x="300.0" y="1158" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">ML resource scope is additional</text>
+<g id="mlflow-boundary"><rect x="60" y="1340" width="2080" height="250" rx="16" fill="#ffffff" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 7"/></g>
+<text x="82" y="1374" font-size="21" fill="#334155" text-anchor="start" font-weight="600">Platform-managed MLflow dependencies</text>
+<g id="metadata"><rect x="110" y="1425" width="380" height="130" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/></g>
+<text x="300.0" y="1456" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">MLflow Metadata</text>
+<text x="300.0" y="1483" font-size="16" fill="#64748b" text-anchor="middle" font-weight="400">[PostgreSQL database]</text>
+<text x="300.0" y="1511" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Separate DB / account</text>
+<g id="mlflow"><rect x="850" y="1425" width="440" height="130" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/></g>
+<text x="1070.0" y="1456" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">MLflow Server</text>
+<text x="1070.0" y="1483" font-size="16" fill="#64748b" text-anchor="middle" font-weight="400">[Tracking / Registry service]</text>
+<text x="1070.0" y="1511" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Authenticated artifact proxy</text>
+<g id="artifacts"><rect x="1660" y="1425" width="380" height="130" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/></g>
+<text x="1850.0" y="1456" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">Model / Report Artifacts</text>
+<text x="1850.0" y="1483" font-size="16" fill="#64748b" text-anchor="middle" font-weight="400">[S3-compatible object store]</text>
+<text x="1850.0" y="1511" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Versioned immutable outputs</text>
+<path d="M 300,450 L 300,680" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="211.2" y="554" width="177.6" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="300" y="570" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Commit job + outbox</text>
+<path d="M 650,755 L 490,755" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="510.6" y="716" width="118.80000000000001" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="570" y="732" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Claim Outbox</text>
+<path d="M 980,755 L 1140,755" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="1021.6" y="716" width="76.80000000000001" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1060" y="732" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Publish</text>
+<path d="M 1470,755 L 1630,755" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="1511.6" y="716" width="76.80000000000001" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1550" y="732" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Deliver</text>
+<path d="M 1835,850 L 1835,950 L 1250,950 L 1250,1050" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="1420.2" y="914" width="219.60000000000002" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1530" y="930" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Start / inspect / cancel</text>
+<path d="M 2040,790 L 2090,790 L 2090,1135 L 2040,1135" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="1838.0" y="999" width="144.0" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1910" y="1015" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Transport store</text>
+<path d="M 1630,800 L 1560,800 L 1560,910 L 300,910 L 300,830" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="653.4" y="874" width="253.20000000000002" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="780" y="890" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Claim / commit domain result</text>
+<path d="M 110,375 L 85,375 L 85,1125 L 110,1125" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="117.4" y="974" width="85.2" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="160" y="990" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Identity</text>
+<path d="M 1835,300 L 1835,260 L 85,260 L 85,1125 L 110,1125" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="514.0" y="229" width="312.0" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="670" y="245" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Identity repository (API / Serving)</text>
+<path d="M 1630,835 L 1520,835 L 1520,1010 L 300,1010 L 300,1050" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="607.0" y="974" width="186.0" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="700" y="990" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Worker authorization</text>
+<path d="M 850,375 L 560,375 L 560,610 L 380,610 L 380,680" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="590.2" y="574" width="219.60000000000002" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="700" y="590" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Desired / observed state</text>
+<path d="M 1290,375 L 1660,375" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="1335.8" y="334" width="278.40000000000003" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1475" y="350" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Readonly spec + expected digest</text>
+<path d="M 1660,420 L 1420,420 L 1420,470 L 1180,470 L 1180,450" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="1306.0" y="438" width="228.0" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1420" y="454" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Authenticated observation</text>
+<path d="M 1070,450 L 1070,500" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="985.4" y="464" width="169.20000000000002" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1070" y="480" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Activate / inspect</text>
+<path d="M 1290,565 L 1550,565 L 1550,440 L 1660,440" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="1380.4" y="574" width="169.20000000000002" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1465" y="590" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Prediction traffic</text>
+<path d="M 1250,1220 L 1250,1300 L 1070,1300 L 1070,1425" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="976.0" y="1308" width="228.0" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1090" y="1324" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Log fixed run / artifacts</text>
+<path d="M 850,1490 L 490,1490" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="632.4" y="1452" width="85.2" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="675" y="1468" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Metadata</text>
+<path d="M 1290,1490 L 1660,1490" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="1407.2" y="1452" width="135.60000000000002" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1475" y="1468" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Artifact proxy</text>
+<path d="M 2040,375 L 2110,375 L 2110,1305 L 1320,1305 L 1320,1390 L 1200,1390 L 1200,1425" fill="none" stroke="#64748b" stroke-width="2.3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<rect x="1663.4" y="1272" width="253.20000000000002" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1790" y="1288" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Startup model retrieval only</text>
+<text x="600" y="1100" font-size="18" fill="#475569" text-anchor="start" font-weight="400">ACK is gated by App DB evidence,</text>
+<text x="600" y="1125" font-size="18" fill="#475569" text-anchor="start" font-weight="400">then transport persistence.</text>
+<text x="600" y="1150" font-size="18" fill="#475569" text-anchor="start" font-weight="400">Serving readiness != routing ACTIVE.</text>
+<line x1="60" y1="1620" x2="2140" y2="1620" stroke="#cbd5e1"/>
+<text x="60" y="1655" font-size="17" fill="#334155" text-anchor="start" font-weight="600">ML-C4-L2  |  PROPOSED DESIGN - NOT IMPLEMENTED</text>
+<text x="60" y="1685" font-size="16" fill="#475569" text-anchor="start" font-weight="400">ML-SAD-001 sections 4, 9, 11-13, 16. Dashed: startup-only retrieval. External execution is an adapter evolution.</text></g>
+</svg>

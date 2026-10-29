@@ -1,0 +1,4 @@
+Processing /Users/pwang/Developer/python-backend-server-template/work/delivery-release-package/modular_fastapi_backend-0.1.0-py3-none-any.whl
+Installing collected packages: modular-fastapi-backend
+Successfully installed modular-fastapi-backend-0.1.0
+WARNING: The directory '/Users/pwang/Library/Caches/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.

@@ -1,0 +1,62 @@
+[
+  {
+    "block": 0,
+    "path": "src/domain/items/models.py"
+  },
+  {
+    "block": 1,
+    "path": "src/domain/items/errors.py"
+  },
+  {
+    "block": 2,
+    "path": "src/domain/items/policy.py"
+  },
+  {
+    "block": 3,
+    "path": "src/domain/items/ports.py"
+  },
+  {
+    "block": 4,
+    "path": "src/application/items/service.py"
+  },
+  {
+    "block": 5,
+    "path": "src/infrastructure/persistence/items.py"
+  },
+  {
+    "block": 6,
+    "path": "src/plugins/heuristics/items_scoring.py"
+  },
+  {
+    "block": 7,
+    "path": "src/api/items/schemas.py"
+  },
+  {
+    "block": 8,
+    "path": "src/api/items/dependencies.py"
+  },
+  {
+    "block": 9,
+    "path": "src/api/items/errors.py"
+  },
+  {
+    "block": 10,
+    "path": "src/api/items/routers.py"
+  },
+  {
+    "block": 11,
+    "path": "src/config/items.py"
+  },
+  {
+    "block": 12,
+    "path": "bootstrap/items.py"
+  },
+  {
+    "block": 13,
+    "path": "bootstrap/wiring.py (insertion)"
+  },
+  {
+    "block": 21,
+    "path": "tests/test_items_documented.py"
+  }
+]

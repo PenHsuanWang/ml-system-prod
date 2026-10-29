@@ -1,0 +1,191 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.25kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.13-slim@sha256:57b29a7c050c4e679e4bea572e14b3965cf4b5839de2da49d55e49ffc4024f39
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 192B done
+#3 DONE 0.0s
+
+#4 [1/8] FROM docker.io/library/python:3.13-slim@sha256:57b29a7c050c4e679e4bea572e14b3965cf4b5839de2da49d55e49ffc4024f39
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 32.34kB 0.0s done
+#5 DONE 0.0s
+
+#6 [2/8] WORKDIR /app
+#6 CACHED
+
+#7 [3/8] RUN groupadd --system app && useradd --system --gid app --home-dir /app app
+#7 CACHED
+
+#8 [4/8] COPY pyproject.toml README.md requirements-runtime.lock requirements-build.lock ./
+#8 DONE 0.0s
+
+#9 [5/8] COPY src ./src
+#9 DONE 0.0s
+
+#10 [6/8] COPY bootstrap ./bootstrap
+#10 DONE 0.0s
+
+#11 [7/8] COPY server.py worker.py manage.py ./
+#11 DONE 0.0s
+
+#12 [8/8] RUN python -m pip install --require-hashes -r requirements-build.lock     && python -m pip install --require-hashes -r requirements-runtime.lock     && python -m pip install --no-deps --no-build-isolation .     && python -m pip check     && python -m pip uninstall --yes pip     && python -c "import importlib.util, pathlib, shutil, sysconfig; shutil.rmtree(pathlib.Path(sysconfig.get_path('stdlib')) / 'ensurepip'); assert importlib.util.find_spec('pip') is None; assert importlib.util.find_spec('ensurepip') is None"
+#12 1.394 Collecting build==1.6.1 (from -r requirements-build.lock (line 7))
+#12 1.610   Downloading build-1.6.1-py3-none-any.whl (31 kB)
+#12 1.717 Collecting packaging==26.3 (from -r requirements-build.lock (line 11))
+#12 1.779   Downloading packaging-26.3-py3-none-any.whl (129 kB)
+#12 1.921 Collecting pyproject-hooks==1.3.3 (from -r requirements-build.lock (line 17))
+#12 1.985   Downloading pyproject_hooks-1.3.3-py3-none-any.whl (10 kB)
+#12 2.072 Collecting wheel==0.48.0 (from -r requirements-build.lock (line 21))
+#12 2.135   Downloading wheel-0.48.0-py3-none-any.whl (33 kB)
+#12 2.139 Requirement already satisfied: pip==26.2.2 in /usr/local/lib/python3.13/site-packages (from -r requirements-build.lock (line 27)) (26.2.2)
+#12 2.362 Collecting setuptools==84.2.1 (from -r requirements-build.lock (line 31))
+#12 2.424   Downloading setuptools-84.2.1-py3-none-any.whl (876 kB)
+#12 2.568      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 876.3/876.3 kB 8.4 MB/s  0:00:00
+#12 2.621 Installing collected packages: setuptools, pyproject-hooks, packaging, wheel, build
+#12 2.985 
+#12 2.986 Successfully installed build-1.6.1 packaging-26.3 pyproject-hooks-1.3.3 setuptools-84.2.1 wheel-0.48.0
+#12 2.986 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#12 4.253 Collecting aio-pika==10.1.1 (from -r requirements-runtime.lock (line 7))
+#12 4.464   Downloading aio_pika-10.1.1-py3-none-any.whl (59 kB)
+#12 4.609 Collecting aiohappyeyeballs==2.7.1 (from -r requirements-runtime.lock (line 13))
+#12 4.673   Downloading aiohappyeyeballs-2.7.1-py3-none-any.whl (15 kB)
+#12 5.161 Collecting aiohttp==3.14.5 (from -r requirements-runtime.lock (line 19))
+#12 5.222   Downloading aiohttp-3.14.5-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (1.9 MB)
+#12 5.526      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 9.8 MB/s  0:00:00
+#12 5.612 Collecting aiormq==7.2.2 (from -r requirements-runtime.lock (line 184))
+#12 5.677   Downloading aiormq-7.2.2-py3-none-any.whl (39 kB)
+#12 5.748 Collecting aiosignal==1.4.0 (from -r requirements-runtime.lock (line 190))
+#12 5.812   Downloading aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
+#12 5.879 Collecting annotated-doc==0.0.5 (from -r requirements-runtime.lock (line 196))
+#12 5.944   Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+#12 6.018 Collecting annotated-types==0.8.0 (from -r requirements-runtime.lock (line 202))
+#12 6.081   Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#12 6.158 Collecting anyio==4.15.1 (from -r requirements-runtime.lock (line 208))
+#12 6.221   Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+#12 6.301 Collecting argon2-cffi==25.1.0 (from -r requirements-runtime.lock (line 217))
+#12 6.362   Downloading argon2_cffi-25.1.0-py3-none-any.whl (14 kB)
+#12 6.436 Collecting argon2-cffi-bindings==26.1.0 (from -r requirements-runtime.lock (line 223))
+#12 6.500   Downloading argon2_cffi_bindings-26.1.0-cp310-abi3-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl (27 kB)
+#12 6.571 Collecting attrs==26.1.0 (from -r requirements-runtime.lock (line 268))
+#12 6.635   Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+#12 6.701 Collecting certifi==2026.10.19 (from -r requirements-runtime.lock (line 274))
+#12 6.762   Downloading certifi-2026.10.19-py3-none-any.whl (136 kB)
+#12 6.867 Collecting cffi==2.1.1 (from -r requirements-runtime.lock (line 281))
+#12 6.931   Downloading cffi-2.1.1-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.whl (222 kB)
+#12 6.998 Collecting click==8.5.0 (from -r requirements-runtime.lock (line 385))
+#12 7.060   Downloading click-8.5.0-py3-none-any.whl (125 kB)
+#12 7.132 Collecting dnspython==2.9.0 (from -r requirements-runtime.lock (line 391))
+#12 7.200   Downloading dnspython-2.9.0-py3-none-any.whl (354 kB)
+#12 7.292 Collecting fastapi==0.161.1 (from -r requirements-runtime.lock (line 397))
+#12 7.362   Downloading fastapi-0.161.1-py3-none-any.whl (149 kB)
+#12 7.459 Collecting frozenlist==1.8.0 (from -r requirements-runtime.lock (line 403))
+#12 7.519   Downloading frozenlist-1.8.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (233 kB)
+#12 7.609 Collecting h11==0.16.0 (from -r requirements-runtime.lock (line 538))
+#12 7.675   Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+#12 7.748 Collecting httpcore==1.0.9 (from -r requirements-runtime.lock (line 545))
+#12 7.810   Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+#12 7.899 Collecting httptools==0.9.0 (from -r requirements-runtime.lock (line 551))
+#12 7.961   Downloading httptools-0.9.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (516 kB)
+#12 8.050 Collecting httpx==0.28.1 (from -r requirements-runtime.lock (line 673))
+#12 8.114   Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+#12 8.193 Collecting idna==3.20 (from -r requirements-runtime.lock (line 679))
+#12 8.257   Downloading idna-3.20-py3-none-any.whl (69 kB)
+#12 8.472 Collecting multidict==7.1.0 (from -r requirements-runtime.lock (line 687))
+#12 8.533   Downloading multidict-7.1.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (477 kB)
+#12 8.609 Collecting opentelemetry-api==1.45.1 (from -r requirements-runtime.lock (line 863))
+#12 8.672   Downloading opentelemetry_api-1.45.1-py3-none-any.whl (60 kB)
+#12 8.674 Requirement already satisfied: packaging==26.3 in /usr/local/lib/python3.13/site-packages (from -r requirements-runtime.lock (line 869)) (26.3)
+#12 8.738 Collecting pamqp==4.0.1 (from -r requirements-runtime.lock (line 875))
+#12 8.801   Downloading pamqp-4.0.1-py3-none-any.whl (32 kB)
+#12 8.898 Collecting propcache==0.5.4 (from -r requirements-runtime.lock (line 881))
+#12 8.960   Downloading propcache-0.5.4-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (233 kB)
+#12 9.029 Collecting pwdlib==0.3.1 (from -r requirements-runtime.lock (line 1024))
+#12 9.094   Downloading pwdlib-0.3.1-py3-none-any.whl (9.3 kB)
+#12 9.168 Collecting pycparser==3.12 (from -r requirements-runtime.lock (line 1030))
+#12 9.244   Downloading pycparser-3.12-py3-none-any.whl (62 kB)
+#12 9.320 Collecting pycron==3.3.0 (from -r requirements-runtime.lock (line 1036))
+#12 9.385   Downloading pycron-3.3.0-py3-none-any.whl (5.0 kB)
+#12 9.519 Collecting pydantic==2.14.1 (from -r requirements-runtime.lock (line 1042))
+#12 9.580   Downloading pydantic-2.14.1-py3-none-any.whl (488 kB)
+#12 9.993 Collecting pydantic-core==2.50.1 (from -r requirements-runtime.lock (line 1050))
+#12 10.06   Downloading pydantic_core-2.50.1-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (2.0 MB)
+#12 10.13      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 25.8 MB/s  0:00:00
+#12 10.20 Collecting pydantic-settings==2.16.1 (from -r requirements-runtime.lock (line 1191))
+#12 10.26   Downloading pydantic_settings-2.16.1-py3-none-any.whl (80 kB)
+#12 10.34 Collecting pyjwt==2.15.1 (from -r requirements-runtime.lock (line 1197))
+#12 10.41   Downloading pyjwt-2.15.1-py3-none-any.whl (33 kB)
+#12 10.63 Collecting pymongo==4.19.0 (from -r requirements-runtime.lock (line 1203))
+#12 10.69   Downloading pymongo-4.19.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (1.1 MB)
+#12 10.71      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 44.3 MB/s  0:00:00
+#12 10.79 Collecting python-dotenv==1.2.4 (from -r requirements-runtime.lock (line 1278))
+#12 10.85   Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+#12 10.95 Collecting pyyaml==6.0.3 (from -r requirements-runtime.lock (line 1285))
+#12 11.01   Downloading pyyaml-6.0.3-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (767 kB)
+#12 11.03      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 767.1/767.1 kB 48.4 MB/s  0:00:00
+#12 11.12 Collecting redis==8.1.0 (from -r requirements-runtime.lock (line 1362))
+#12 11.18   Downloading redis-8.1.0-py3-none-any.whl (560 kB)
+#12 11.19      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 560.6/560.6 kB 52.2 MB/s  0:00:00
+#12 11.28 Collecting starlette==1.9.0 (from -r requirements-runtime.lock (line 1368))
+#12 11.34   Downloading starlette-1.9.0-py3-none-any.whl (80 kB)
+#12 11.42 Collecting taskiq==0.12.6 (from -r requirements-runtime.lock (line 1374))
+#12 11.49   Downloading taskiq-0.12.6-py3-none-any.whl (94 kB)
+#12 11.57 Collecting taskiq-aio-pika==0.6.1 (from -r requirements-runtime.lock (line 1381))
+#12 11.63   Downloading taskiq_aio_pika-0.6.1-py3-none-any.whl (11 kB)
+#12 11.71 Collecting taskiq-dependencies==1.5.7 (from -r requirements-runtime.lock (line 1387))
+#12 11.77   Downloading taskiq_dependencies-1.5.7-py3-none-any.whl (13 kB)
+#12 11.86 Collecting typing-extensions==4.16.0 (from -r requirements-runtime.lock (line 1393))
+#12 11.93   Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#12 12.00 Collecting typing-inspection==0.4.4 (from -r requirements-runtime.lock (line 1409))
+#12 12.06   Downloading typing_inspection-0.4.4-py3-none-any.whl (14 kB)
+#12 12.15 Collecting uvicorn==0.54.0 (from -r requirements-runtime.lock (line 1417))
+#12 12.21   Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+#12 12.31 Collecting uvloop==0.23.0 (from -r requirements-runtime.lock (line 1423))
+#12 12.37   Downloading uvloop-0.23.0-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (4.4 MB)
+#12 12.48      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.4/4.4 MB 39.8 MB/s  0:00:00
+#12 12.60 Collecting watchfiles==1.3.0 (from -r requirements-runtime.lock (line 1488))
+#12 12.66   Downloading watchfiles-1.3.0-cp310-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl (454 kB)
+#12 12.81 Collecting websockets==17.3 (from -r requirements-runtime.lock (line 1525))
+#12 12.89   Downloading websockets-17.3-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (227 kB)
+#12 13.08 Collecting yarl==1.25.1 (from -r requirements-runtime.lock (line 1683))
+#12 13.15   Downloading yarl-1.25.1-cp313-cp313-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl (115 kB)
+#12 13.15 Requirement already satisfied: pip==26.2.2 in /usr/local/lib/python3.13/site-packages (from -r requirements-runtime.lock (line 1829)) (26.2.2)
+#12 13.25 Installing collected packages: websockets, uvloop, typing-extensions, taskiq-dependencies, redis, pyyaml, python-dotenv, pyjwt, pycron, pycparser, pwdlib, propcache, pamqp, multidict, idna, httptools, h11, frozenlist, dnspython, click, certifi, attrs, annotated-types, annotated-doc, aiohappyeyeballs, yarl, uvicorn, typing-inspection, pymongo, pydantic-core, opentelemetry-api, httpcore, cffi, anyio, aiosignal, watchfiles, starlette, pydantic, httpx, argon2-cffi-bindings, aiormq, aiohttp, taskiq, pydantic-settings, fastapi, argon2-cffi, aio-pika, taskiq-aio-pika
+#12 14.97 
+#12 14.98 Successfully installed aio-pika-10.1.1 aiohappyeyeballs-2.7.1 aiohttp-3.14.5 aiormq-7.2.2 aiosignal-1.4.0 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.15.1 argon2-cffi-25.1.0 argon2-cffi-bindings-26.1.0 attrs-26.1.0 certifi-2026.10.19 cffi-2.1.1 click-8.5.0 dnspython-2.9.0 fastapi-0.161.1 frozenlist-1.8.0 h11-0.16.0 httpcore-1.0.9 httptools-0.9.0 httpx-0.28.1 idna-3.20 multidict-7.1.0 opentelemetry-api-1.45.1 pamqp-4.0.1 propcache-0.5.4 pwdlib-0.3.1 pycparser-3.12 pycron-3.3.0 pydantic-2.14.1 pydantic-core-2.50.1 pydantic-settings-2.16.1 pyjwt-2.15.1 pymongo-4.19.0 python-dotenv-1.2.4 pyyaml-6.0.3 redis-8.1.0 starlette-1.9.0 taskiq-0.12.6 taskiq-aio-pika-0.6.1 taskiq-dependencies-1.5.7 typing-extensions-4.16.0 typing-inspection-0.4.4 uvicorn-0.54.0 uvloop-0.23.0 watchfiles-1.3.0 websockets-17.3 yarl-1.25.1
+#12 14.98 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#12 15.95 Processing ./.
+#12 15.95   Preparing metadata (pyproject.toml): started
+#12 16.29   Preparing metadata (pyproject.toml): finished with status 'done'
+#12 16.29 Building wheels for collected packages: modular-fastapi-backend
+#12 16.29   Building wheel for modular-fastapi-backend (pyproject.toml): started
+#12 16.66   Building wheel for modular-fastapi-backend (pyproject.toml): finished with status 'done'
+#12 16.66   Created wheel for modular-fastapi-backend: filename=modular_fastapi_backend-0.1.0-py3-none-any.whl size=78001 sha256=50455878f240fb8ffce854994eca30e8f706355457e35a136010d6228ee1974d
+#12 16.66   Stored in directory: /tmp/pip-ephem-wheel-cache-e7yawe9u/wheels/19/62/e5/caf0138816cbbc0c92b8fb19626cf9ac282f22194a65231821
+#12 16.67 Successfully built modular-fastapi-backend
+#12 16.70 Installing collected packages: modular-fastapi-backend
+#12 16.74 Successfully installed modular-fastapi-backend-0.1.0
+#12 16.74 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#12 17.29 No broken requirements found.
+#12 17.92 Found existing installation: pip 26.2.2
+#12 17.93 Uninstalling pip-26.2.2:
+#12 18.02   Successfully uninstalled pip-26.2.2
+#12 18.02 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+#12 DONE 18.3s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 0.2s done
+#13 writing image sha256:40dbbc13c30674dc418e7443f147dce7ab42fed24f7ec6ed3344cae10c86b2d0
+#13 writing image sha256:40dbbc13c30674dc418e7443f147dce7ab42fed24f7ec6ed3344cae10c86b2d0 done
+#13 naming to docker.io/local/backend-validation:4993264301f9 done
+#13 DONE 0.3s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/ozlxe3ij5lvbuwinm9opj8q4q

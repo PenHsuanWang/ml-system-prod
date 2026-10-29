@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="1690" viewBox="0 0 2200 1690" role="img" aria-labelledby="title desc">
+<title id="title">Python Backend Platform — Implementation Architecture</title>
+<desc id="desc">Industry-independent backend blueprint. Three separate views show runtime invocation, initialization wiring, and static inward imports. Empty application modules are extension locations, not installed business capabilities.</desc>
+<defs>
+<marker id="call" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#2874bd"/></marker>
+<marker id="wire" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#7589a6"/></marker>
+<marker id="import" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#21874d"/></marker>
+<marker id="plugin" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#b8731c"/></marker>
+<marker id="adapter" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#8554b1"/></marker>
+</defs>
+<rect width="2200" height="1690" fill="#fff"/>
+<style>text{font-family:Arial,Helvetica,sans-serif;fill:#1d2e43}.title{font-size:40px;font-weight:700}.subtitle{font-size:22px;fill:#526985}.head{font-size:25px;font-weight:700}.body{font-size:21px}.note{font-size:19px;fill:#526985}.label{font-size:18px;fill:#526985}</style>
+<text x="55" y="65" class="title">Python Backend Platform</text>
+<text x="55" y="105" class="subtitle">Implementation architecture • PBP-SAD-001 v1.3 • 2026-10-26</text>
+<rect x="45" y="140" width="2110" height="445" rx="14" fill="#f8fafc" stroke="#ccd7e3" stroke-width="2"/>
+<text x="70" y="183" class="head">1  RUNTIME INVOCATION — independently constructed process instances</text>
+<rect x="80" y="225" width="300" height="110" rx="14" fill="#eef5ff" stroke="#88b5de" stroke-width="2"/>
+<text x="100" y="262" class="head">server.py</text>
+<text x="100" y="297" class="note">create_app() / Uvicorn</text>
+<rect x="450" y="225" width="330" height="110" rx="14" fill="#eef5ff" stroke="#88b5de" stroke-width="2"/>
+<text x="470" y="262" class="head">src/api/</text>
+<text x="470" y="297" class="note">HTTP → typed use case</text>
+<rect x="850" y="225" width="420" height="110" rx="14" fill="#eef5ff" stroke="#88b5de" stroke-width="2"/>
+<text x="870" y="262" class="head">src/application/</text>
+<text x="870" y="297" class="note">Injected use-case service</text>
+<rect x="1390" y="225" width="650" height="110" rx="14" fill="#eef5ff" stroke="#88b5de" stroke-width="2"/>
+<text x="1410" y="262" class="head">Injected implementations</text>
+<text x="1410" y="297" class="note">src/plugins strategies · src/infrastructure adapters</text>
+<polyline points="380,280 450,280" fill="none" stroke="#2874bd" stroke-width="3" marker-end="url(#call)"/>
+<polyline points="780,280 850,280" fill="none" stroke="#2874bd" stroke-width="3" marker-end="url(#call)"/>
+<polyline points="1270,280 1390,280" fill="none" stroke="#2874bd" stroke-width="3" marker-end="url(#call)"/>
+<rect x="80" y="405" width="300" height="110" rx="14" fill="#eef5ff" stroke="#88b5de" stroke-width="2"/>
+<text x="100" y="442" class="head">worker.py</text>
+<text x="100" y="477" class="note">Taskiq / broker receiver</text>
+<rect x="450" y="405" width="330" height="110" rx="14" fill="#eef5ff" stroke="#88b5de" stroke-width="2"/>
+<text x="470" y="442" class="head">Task adapter</text>
+<text x="470" y="477" class="note">Decode envelope / dispatch</text>
+<rect x="850" y="405" width="420" height="110" rx="14" fill="#eef5ff" stroke="#88b5de" stroke-width="2"/>
+<text x="870" y="442" class="head">src/application/</text>
+<text x="870" y="477" class="note">Same code / contract; local object</text>
+<rect x="1390" y="405" width="650" height="110" rx="14" fill="#edf9f9" stroke="#80c8d2" stroke-width="2"/>
+<text x="1410" y="442" class="head">Bound implementations</text>
+<text x="1410" y="477" class="note">Same contracts · optional platform capabilities</text>
+<polyline points="380,460 450,460" fill="none" stroke="#2874bd" stroke-width="3" marker-end="url(#call)"/>
+<polyline points="780,460 850,460" fill="none" stroke="#2874bd" stroke-width="3" marker-end="url(#call)"/>
+<polyline points="1270,460 1390,460" fill="none" stroke="#2874bd" stroke-width="3" marker-end="url(#call)"/>
+<rect x="1390" y="345" width="650" height="42" rx="14" fill="#edf9f9" stroke="#80c8d2" stroke-width="2"/>
+<text x="1410" y="374" class="note">src/services/ — optional lifecycle / resource / health support</text>
+<polyline points="1270,305 1325,305 1325,366 1390,366" fill="none" stroke="#7589a6" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#wire)"/>
+<text x="80" y="558" class="note">Background runtime is optional: disabled / memory / distributed. Business registries are empty by default.</text>
+<rect x="45" y="620" width="2110" height="350" rx="14" fill="#f8fafc" stroke="#ccd7e3" stroke-width="2"/>
+<text x="70" y="663" class="head">2  INITIALIZATION WIRING — outer composition, outside the request call chain</text>
+<rect x="80" y="710" width="340" height="155" rx="14" fill="#f2f3fa" stroke="#aab7cc" stroke-width="2"/>
+<text x="100" y="747" class="head">Process startup</text>
+<text x="100" y="782" class="note">API lifespan or</text>
+<text x="100" y="811" class="note">Taskiq startup hook</text>
+<rect x="510" y="710" width="480" height="155" rx="14" fill="#f2f3fa" stroke="#aab7cc" stroke-width="2"/>
+<text x="530" y="747" class="head">bootstrap/</text>
+<text x="530" y="782" class="note">config · container · wiring</text>
+<text x="530" y="811" class="note">plugin_loader · components</text>
+<rect x="1080" y="710" width="480" height="155" rx="14" fill="#f2f3fa" stroke="#aab7cc" stroke-width="2"/>
+<text x="1100" y="747" class="head">Explicit initializers</text>
+<text x="1100" y="782" class="note">Trusted bindings + lifespan</text>
+<text x="1100" y="811" class="note">Construct / inject / export collaborators</text>
+<rect x="1650" y="710" width="420" height="155" rx="14" fill="#f2f3fa" stroke="#aab7cc" stroke-width="2"/>
+<text x="1670" y="747" class="head">Runtime ready</text>
+<text x="1670" y="782" class="note">facades · tasks · kernels · datasets</text>
+<text x="1670" y="811" class="note">Process-owned clients / executors</text>
+<polyline points="420,790 510,790" fill="none" stroke="#7589a6" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#wire)"/>
+<polyline points="990,790 1080,790" fill="none" stroke="#7589a6" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#wire)"/>
+<polyline points="1560,790 1650,790" fill="none" stroke="#7589a6" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#wire)"/>
+<text x="80" y="913" class="note">Dependencies start in topological order; failure rolls back. Shutdown drains work before closing its resources.</text>
+<text x="80" y="945" class="note">Explicit trusted registration with contract / async checks; no dynamic discovery, artifact verification or sandbox.</text>
+<rect x="45" y="1005" width="2110" height="510" rx="14" fill="#f8fafc" stroke="#ccd7e3" stroke-width="2"/>
+<text x="70" y="1048" class="head">3  STATIC SOURCE DEPENDENCIES — inward contracts between src/ sibling packages</text>
+<rect x="80" y="1130" width="320" height="110" rx="14" fill="#eef5ff" stroke="#88b5de" stroke-width="2"/>
+<text x="100" y="1167" class="head">src/api/</text>
+<text x="100" y="1202" class="note">HTTP / transport / DI</text>
+<rect x="490" y="1130" width="370" height="110" rx="14" fill="#eef9f1" stroke="#83c69b" stroke-width="2"/>
+<text x="510" y="1167" class="head">src/application/</text>
+<text x="510" y="1202" class="note">Use cases / orchestration</text>
+<rect x="1010" y="1130" width="400" height="110" rx="14" fill="#eef9f1" stroke="#83c69b" stroke-width="2"/>
+<text x="1030" y="1167" class="head">src/domain/</text>
+<text x="1030" y="1202" class="note">Models · strategy · outbound ports</text>
+<rect x="1640" y="1130" width="420" height="110" rx="14" fill="#fff8ed" stroke="#d9af6c" stroke-width="2"/>
+<text x="1660" y="1167" class="head">src/plugins/  (optional)</text>
+<text x="1660" y="1202" class="note">inference · heuristics · interceptors</text>
+<polyline points="400,1185 490,1185" fill="none" stroke="#21874d" stroke-width="3" marker-end="url(#import)"/>
+<polyline points="860,1185 1010,1185" fill="none" stroke="#21874d" stroke-width="3" marker-end="url(#import)"/>
+<polyline points="1640,1185 1410,1185" fill="none" stroke="#b8731c" stroke-width="3" marker-end="url(#plugin)"/>
+<rect x="80" y="1330" width="780" height="110" rx="14" fill="#f2f3fa" stroke="#aab7cc" stroke-width="2"/>
+<text x="100" y="1367" class="head">bootstrap/ — composition root</text>
+<text x="100" y="1402" class="note">Build concrete adapters; API and worker reuse application contracts.</text>
+<rect x="1010" y="1330" width="400" height="125" rx="14" fill="#edf9f9" stroke="#80c8d2" stroke-width="2"/>
+<text x="1030" y="1367" class="head">shared_models / utils</text>
+<text x="1030" y="1402" class="note">Neutral DTO / JSON types / helpers</text>
+<text x="1030" y="1431" class="note">Domain uses shared_models only</text>
+<rect x="1640" y="1330" width="420" height="110" rx="14" fill="#f8f2ff" stroke="#b899d7" stroke-width="2"/>
+<text x="1660" y="1367" class="head">src/infrastructure/</text>
+<text x="1660" y="1402" class="note">DB / messaging / external SDK</text>
+<polyline points="1640,1350 1530,1350 1530,1210 1410,1210" fill="none" stroke="#8554b1" stroke-width="3" marker-end="url(#adapter)"/>
+<polyline points="1210,1240 1210,1330" fill="none" stroke="#21874d" stroke-width="3" marker-end="url(#import)"/>
+<polyline points="675,1240 675,1295 1010,1295 1010,1360" fill="none" stroke="#21874d" stroke-width="3" marker-end="url(#import)"/>
+<text x="80" y="1487" class="note">Domain never imports outer layers. Plugins and adapters implement ports; application receives them through injection.</text>
+<polyline points="70,1570 135,1570" fill="none" stroke="#2874bd" stroke-width="3" marker-end="url(#call)"/>
+<text x="150" y="1577" class="label">Runtime call</text>
+<polyline points="400,1570 465,1570" fill="none" stroke="#7589a6" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#wire)"/>
+<text x="480" y="1577" class="label">Startup wiring / optional support</text>
+<polyline points="920,1570 985,1570" fill="none" stroke="#21874d" stroke-width="3" marker-end="url(#import)"/>
+<text x="1000" y="1577" class="label">Static inward import</text>
+<text x="55" y="1635" class="note">Optional external systems: RabbitMQ (distributed delivery) · Redis (TTL snapshots / capacity leases) · MongoDB (identity / application data)</text>
+<text x="55" y="1668" class="note">Not implied: application workflows, configuration inheritance, exactly-once effects, worker heartbeat or production HA.</text>
+</svg>

@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-24",
+  "commit": "31248de22da57fc604d1481465a7cc71dd1f6801",
+  "python": "3.13.11",
+  "scope": "Settings validation only. No application lifespan, external connections, pytest or Docker execution.",
+  "isolation": "APP_* environment variables removed from this process; .env loading disabled; optional API, Mongo and identity capabilities disabled.",
+  "cases": [
+    {
+      "environment": "development",
+      "task_backend": "memory",
+      "workers": 1,
+      "settings_accepted": true
+    },
+    {
+      "environment": "production",
+      "task_backend": "memory",
+      "workers": 1,
+      "settings_accepted": false,
+      "errors": [
+        {
+          "type": "value_error",
+          "loc": [],
+          "msg": "Value error, production requires the distributed task backend"
+        }
+      ]
+    },
+    {
+      "environment": "development",
+      "task_backend": "memory",
+      "workers": 2,
+      "settings_accepted": false,
+      "errors": [
+        {
+          "type": "value_error",
+          "loc": [],
+          "msg": "Value error, memory task backend requires one worker; use distributed for multiple"
+        }
+      ]
+    },
+    {
+      "environment": "production",
+      "task_backend": "distributed",
+      "workers": 1,
+      "settings_accepted": true
+    }
+  ]
+}

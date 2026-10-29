@@ -1,0 +1,24 @@
+import os
+import shutil
+import subprocess
+from pathlib import Path
+
+source = Path('/source')
+root = Path('/tmp/project')
+shutil.copytree(source, root, ignore=shutil.ignore_patterns('.git', '.venv', 'work', 'build', 'dist', '*.egg-info', '__pycache__', '.mypy_cache', '.ruff_cache', '.pytest_cache', '.coverage'))
+os.chdir(root)
+subprocess.run(['python', '-m', 'venv', '.venv'], check=True)
+python = '.venv/bin/python'
+for args in [
+    ['-m', 'pip', 'install', '--require-hashes', '-r', 'requirements-dev.lock'],
+    ['-m', 'pip', 'install', '--no-deps', '--no-build-isolation', '-e', '.'],
+    ['-m', 'pip', 'check'],
+    ['-m', 'pre_commit', 'validate-config'],
+    ['-m', 'pre_commit', '--version'],
+    ['-m', 'ruff', 'check', '.'],
+    ['-m', 'ruff', 'format', '--check', '.'],
+    ['-m', 'mypy', 'src', 'bootstrap', 'scripts', 'server.py', 'worker.py', 'manage.py'],
+    ['scripts/check_boundaries.py'],
+    ['-m', 'pytest', '-m', 'not integration', '--cov', '--cov-report=term', '-q'],
+]:
+    subprocess.run([python, *args], check=True)

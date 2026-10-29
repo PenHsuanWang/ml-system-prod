@@ -1,0 +1,14 @@
+{"timestamp": "2026-10-26T03:12:57.729461+00:00", "level": "INFO", "logger": "src.server", "message": "Runtime started pid=1 backend=memory", "service": "Python Backend Platform", "environment": "development", "role": "api", "request_id": "-", "job_id": "-", "process_id": 1}
+INFO:     127.0.0.1:35838 - "GET /openapi.json HTTP/1.1" 200 OK
+{"timestamp": "2026-10-26T03:12:58.062326+00:00", "level": "INFO", "logger": "src.api.http", "message": "GET /openapi.json status=200 elapsed_ms=1.71", "service": "Python Backend Platform", "environment": "development", "role": "api", "request_id": "3e502b48661c470cb84fb43f44f6ecbc", "job_id": "-", "process_id": 1}
+INFO:     127.0.0.1:35846 - "GET /health/ready HTTP/1.1" 200 OK
+{"timestamp": "2026-10-26T03:12:58.068503+00:00", "level": "INFO", "logger": "src.api.http", "message": "GET /health/ready status=200 elapsed_ms=5.79", "service": "Python Backend Platform", "environment": "development", "role": "api", "request_id": "97a0d39eef744366a99c87e5540b1f9d", "job_id": "-", "process_id": 1}
+{"timestamp": "2026-10-26T03:12:58.237053+00:00", "level": "INFO", "logger": "src.server", "message": "Runtime stopping pid=1", "service": "Python Backend Platform", "environment": "development", "role": "api", "request_id": "-", "job_id": "-", "process_id": 1}
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1]

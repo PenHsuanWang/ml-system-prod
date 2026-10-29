@@ -1,0 +1,74 @@
+{
+  "working_directory": "/Users/pwang/Developer/python-backend-server-template",
+  "baseline_commit": "0ac0bda3035d17e90cd01670a3045a4271ce871c",
+  "commands": [
+    {
+      "command": ".venv/bin/python -m pip install --require-hashes -r requirements-dev.lock",
+      "exit": 0
+    },
+    {
+      "command": ".venv/bin/python -m pip install --no-deps --no-build-isolation -e .",
+      "exit": 0
+    },
+    {
+      "command": ".venv/bin/python -m pip check",
+      "exit": 0
+    },
+    {
+      "command": ".venv/bin/python -m pre_commit validate-config",
+      "exit": 0
+    },
+    {
+      "command": ".venv/bin/python -m pre_commit install",
+      "exit": 0,
+      "scope": "local clone Git hook"
+    },
+    {
+      "command": ".venv/bin/python -m pre_commit run --all-files --show-diff-on-failure",
+      "exit": 0
+    },
+    {
+      "command": ".venv/bin/python -m pre_commit run --files .pre-commit-config.yaml .gitleaks.toml docs/ci-precommit.md --show-diff-on-failure",
+      "exit": 0
+    },
+    {
+      "command": ".venv/bin/python -m pytest -m \"not integration\" --cov --cov-report=term --cov-report=xml:work/ci-precommit-coverage.xml -q",
+      "exit": 0
+    },
+    {
+      "command": "docker run --rm --volume \"$PWD:/source:ro\" python:3.11-slim@sha256:b7a9e5f6a93d6d4a31f129bbd4bdee69efccb6ded0fb230d78aafaf37af98377 python /source/work/ci-precommit-linux.py",
+      "exit": 0,
+      "runner": "linux-python311-runner.txt"
+    },
+    {
+      "command": ".venv/bin/python scripts/verify_package.py",
+      "exit": 0
+    },
+    {
+      "command": ".venv/bin/python -m twine check --strict work/package-validation/*.whl work/package-validation/*.tar.gz",
+      "exit": 0
+    },
+    {
+      "command": ".venv/bin/python scripts/verify_guide.py",
+      "exit": 0
+    },
+    {
+      "command": ".venv/bin/python -m pip_audit --require-hashes --disable-pip --strict --cache-dir work/pip-audit-cache -r requirements-dev.lock -r requirements-build.lock --format=json --output=work/ci-precommit-audit.json",
+      "exit": 0
+    },
+    {
+      "command": "docker run --rm --volume \"$PWD:/repo:ro\" --workdir /repo rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667 -color",
+      "exit": 0
+    },
+    {
+      "command": "docker run --rm --volume \"$PWD/work/precommit-hook-check:/repo:ro\" --volume \"$PWD/work:/report\" ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f dir /repo --config /repo/.gitleaks.toml --redact --no-banner --report-format json --report-path /report/ci-precommit-gitleaks.json",
+      "exit": 0,
+      "scope": "isolated source snapshot, including pending configuration and guide"
+    },
+    {
+      "command": ".venv/bin/python -m pre_commit run --files <git ls-files --cached --others --exclude-standard> --show-diff-on-failure",
+      "exit": 0,
+      "scope": "all existing tracked and untracked delivery files; argv expanded without shell interpretation"
+    }
+  ]
+}

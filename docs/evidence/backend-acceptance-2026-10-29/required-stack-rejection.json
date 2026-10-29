@@ -1,0 +1,14 @@
+{
+  "status": "FULL_BACKEND_NOT_ACCEPTED",
+  "local_checks_passed": null,
+  "functional_backend_accepted": false,
+  "production_accepted": false,
+  "checks": [],
+  "acceptance_blockers": [
+    "Missing isolated stack endpoint: ML_TEST_DATABASE_URL",
+    "Missing isolated stack endpoint: ML_TEST_AMQP_URL",
+    "Missing isolated stack endpoint: ML_TEST_REDIS_URL",
+    "Missing isolated stack endpoint: ML_TEST_MANAGEMENT_URL",
+    "Missing isolated stack endpoint: ML_TEST_PREDICTION_URL"
+  ]
+}

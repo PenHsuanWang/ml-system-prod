@@ -1,0 +1,48 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 513B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.13-slim
+#2 DONE 1.3s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 192B done
+#3 DONE 0.0s
+
+#4 [1/8] FROM docker.io/library/python:3.13-slim@sha256:57b29a7c050c4e679e4bea572e14b3965cf4b5839de2da49d55e49ffc4024f39
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 13.54kB 0.0s done
+#5 DONE 0.0s
+
+#6 [4/8] COPY pyproject.toml README.md requirements.lock ./
+#6 CACHED
+
+#7 [7/8] COPY server.py worker.py manage.py ./
+#7 CACHED
+
+#8 [3/8] RUN groupadd --system app && useradd --system --gid app --home-dir /app app
+#8 CACHED
+
+#9 [5/8] COPY src ./src
+#9 CACHED
+
+#10 [6/8] COPY bootstrap ./bootstrap
+#10 CACHED
+
+#11 [2/8] WORKDIR /app
+#11 CACHED
+
+#12 [8/8] RUN python -m pip install --constraint requirements.lock .
+#12 CACHED
+
+#13 exporting to image
+#13 exporting layers done
+#13 writing image sha256:7e2d2d15be864e087569b2f3af80e9922999f328c52f2e0e7be7d16670b3aed9 done
+#13 naming to docker.io/local/backend-validation:605e70e128ef done
+#13 DONE 0.0s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/xffp9hwn4y1kdennmfop2z0px

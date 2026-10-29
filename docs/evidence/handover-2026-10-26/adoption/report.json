@@ -1,0 +1,86 @@
+{
+  "started_at": "2026-10-26T03:12:38.255403+00:00",
+  "project": "backend-verify-40dcfdebb3d4",
+  "image": "local/backend-validation:40dcfdebb3d4",
+  "checks": [
+    {
+      "name": "production image builds and declares a non-root user",
+      "evidence": true
+    },
+    {
+      "name": "unmodified image CMD, readiness, clean OpenAPI and graceful shutdown",
+      "evidence": true
+    },
+    {
+      "name": "RabbitMQ quorum queue has two live image-based Taskiq consumers",
+      "evidence": {
+        "name": "validation.40dcfdebb3d4",
+        "type": "quorum",
+        "messages_unacknowledged": 0,
+        "consumers": 2,
+        "messages_ready": 0
+      }
+    },
+    {
+      "name": "MongoDB-backed admin/login/registration/JWT and kernel authorization",
+      "evidence": true
+    },
+    {
+      "name": "32 authenticated kernel jobs complete across two API and two task workers",
+      "evidence": {
+        "jobs": 32,
+        "api_pids": [
+          10,
+          11
+        ],
+        "task_pids": [
+          8,
+          9
+        ]
+      }
+    },
+    {
+      "name": "RabbitMQ queue drains with no ready or unacknowledged messages",
+      "evidence": {
+        "name": "validation.40dcfdebb3d4",
+        "type": "quorum",
+        "messages_unacknowledged": 0,
+        "consumers": 2,
+        "messages_ready": 0
+      }
+    },
+    {
+      "name": "API container restart preserves Mongo session and Redis job snapshots",
+      "evidence": true
+    },
+    {
+      "name": "logout revokes the persisted MongoDB session",
+      "evidence": true
+    },
+    {
+      "name": "documented Mongo capability creates/reads data and rejects peer-owner/cross-tenant access",
+      "evidence": true
+    },
+    {
+      "name": "documented items.read job completes through real RabbitMQ worker with owned result isolation",
+      "evidence": true
+    }
+  ],
+  "passed": true,
+  "purpose": "Fresh guide background capability, real image/API/worker/Mongo/RabbitMQ/Redis",
+  "guide_sha256": "d55fa5d1d63021a21244d5fc1304de1c2dc4335a340eea9f1f43b5a7206ce696",
+  "source_project": "/Users/pwang/Developer/python-backend-server-template/work/guide-validation/14a0a95638f6/background",
+  "docker": {
+    "client": "29.4.0",
+    "server": "29.4.0"
+  },
+  "image_id": "sha256:edc3611b62ea5241a6f82e9f94f5e5a416e27afb9e4d02ece72749f43ff599c7",
+  "platform": "linux/arm64",
+  "versions": {
+    "rabbitmq": "4.4.0",
+    "redis": "Redis server v=7.4.8 sha=00000000:0 malloc=jemalloc-5.3.0 bits=64 build=9bb04eb328b7100a",
+    "mongodb": "db version v8.3.13"
+  },
+  "cleanup_complete": true,
+  "finished_at": "2026-10-26T03:13:22.066415+00:00"
+}

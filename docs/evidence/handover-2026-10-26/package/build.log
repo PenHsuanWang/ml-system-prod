@@ -1,0 +1,583 @@
+running egg_info
+writing modular_fastapi_backend.egg-info/PKG-INFO
+writing dependency_links to modular_fastapi_backend.egg-info/dependency_links.txt
+writing requirements to modular_fastapi_backend.egg-info/requires.txt
+writing top-level names to modular_fastapi_backend.egg-info/top_level.txt
+reading manifest file 'modular_fastapi_backend.egg-info/SOURCES.txt'
+writing manifest file 'modular_fastapi_backend.egg-info/SOURCES.txt'
+running sdist
+running egg_info
+writing modular_fastapi_backend.egg-info/PKG-INFO
+writing dependency_links to modular_fastapi_backend.egg-info/dependency_links.txt
+writing requirements to modular_fastapi_backend.egg-info/requires.txt
+writing top-level names to modular_fastapi_backend.egg-info/top_level.txt
+reading manifest file 'modular_fastapi_backend.egg-info/SOURCES.txt'
+writing manifest file 'modular_fastapi_backend.egg-info/SOURCES.txt'
+running check
+creating modular_fastapi_backend-0.1.0
+creating modular_fastapi_backend-0.1.0/bootstrap
+creating modular_fastapi_backend-0.1.0/modular_fastapi_backend.egg-info
+creating modular_fastapi_backend-0.1.0/src
+creating modular_fastapi_backend-0.1.0/src/api
+creating modular_fastapi_backend-0.1.0/src/api/exports
+creating modular_fastapi_backend-0.1.0/src/api/identity
+creating modular_fastapi_backend-0.1.0/src/api/jobs
+creating modular_fastapi_backend-0.1.0/src/api/kernels
+creating modular_fastapi_backend-0.1.0/src/application
+creating modular_fastapi_backend-0.1.0/src/application/exports
+creating modular_fastapi_backend-0.1.0/src/application/identity
+creating modular_fastapi_backend-0.1.0/src/application/jobs
+creating modular_fastapi_backend-0.1.0/src/application/kernels
+creating modular_fastapi_backend-0.1.0/src/config
+creating modular_fastapi_backend-0.1.0/src/domain
+creating modular_fastapi_backend-0.1.0/src/domain/exports
+creating modular_fastapi_backend-0.1.0/src/domain/identity
+creating modular_fastapi_backend-0.1.0/src/domain/jobs
+creating modular_fastapi_backend-0.1.0/src/domain/kernels
+creating modular_fastapi_backend-0.1.0/src/infrastructure
+creating modular_fastapi_backend-0.1.0/src/infrastructure/downstream
+creating modular_fastapi_backend-0.1.0/src/infrastructure/locking
+creating modular_fastapi_backend-0.1.0/src/infrastructure/messaging
+creating modular_fastapi_backend-0.1.0/src/infrastructure/persistence
+creating modular_fastapi_backend-0.1.0/src/plugins
+creating modular_fastapi_backend-0.1.0/src/plugins/heuristics
+creating modular_fastapi_backend-0.1.0/src/plugins/inference
+creating modular_fastapi_backend-0.1.0/src/plugins/interceptors
+creating modular_fastapi_backend-0.1.0/src/services
+creating modular_fastapi_backend-0.1.0/src/shared_models
+creating modular_fastapi_backend-0.1.0/src/utils
+creating modular_fastapi_backend-0.1.0/tests
+copying files to modular_fastapi_backend-0.1.0...
+copying README.md -> modular_fastapi_backend-0.1.0
+copying manage.py -> modular_fastapi_backend-0.1.0
+copying pyproject.toml -> modular_fastapi_backend-0.1.0
+copying server.py -> modular_fastapi_backend-0.1.0
+copying worker.py -> modular_fastapi_backend-0.1.0
+copying bootstrap/__init__.py -> modular_fastapi_backend-0.1.0/bootstrap
+copying bootstrap/components.py -> modular_fastapi_backend-0.1.0/bootstrap
+copying bootstrap/config.py -> modular_fastapi_backend-0.1.0/bootstrap
+copying bootstrap/container.py -> modular_fastapi_backend-0.1.0/bootstrap
+copying bootstrap/identity.py -> modular_fastapi_backend-0.1.0/bootstrap
+copying bootstrap/plugin_loader.py -> modular_fastapi_backend-0.1.0/bootstrap
+copying bootstrap/wiring.py -> modular_fastapi_backend-0.1.0/bootstrap
+copying bootstrap/worker.py -> modular_fastapi_backend-0.1.0/bootstrap
+copying modular_fastapi_backend.egg-info/PKG-INFO -> modular_fastapi_backend-0.1.0/modular_fastapi_backend.egg-info
+copying modular_fastapi_backend.egg-info/SOURCES.txt -> modular_fastapi_backend-0.1.0/modular_fastapi_backend.egg-info
+copying modular_fastapi_backend.egg-info/dependency_links.txt -> modular_fastapi_backend-0.1.0/modular_fastapi_backend.egg-info
+copying modular_fastapi_backend.egg-info/requires.txt -> modular_fastapi_backend-0.1.0/modular_fastapi_backend.egg-info
+copying modular_fastapi_backend.egg-info/top_level.txt -> modular_fastapi_backend-0.1.0/modular_fastapi_backend.egg-info
+copying src/__init__.py -> modular_fastapi_backend-0.1.0/src
+copying src/api/__init__.py -> modular_fastapi_backend-0.1.0/src/api
+copying src/api/auth.py -> modular_fastapi_backend-0.1.0/src/api
+copying src/api/dependencies.py -> modular_fastapi_backend-0.1.0/src/api
+copying src/api/exceptions.py -> modular_fastapi_backend-0.1.0/src/api
+copying src/api/health.py -> modular_fastapi_backend-0.1.0/src/api
+copying src/api/routers.py -> modular_fastapi_backend-0.1.0/src/api
+copying src/api/schemas.py -> modular_fastapi_backend-0.1.0/src/api
+copying src/api/exports/__init__.py -> modular_fastapi_backend-0.1.0/src/api/exports
+copying src/api/exports/routers.py -> modular_fastapi_backend-0.1.0/src/api/exports
+copying src/api/identity/__init__.py -> modular_fastapi_backend-0.1.0/src/api/identity
+copying src/api/identity/routers.py -> modular_fastapi_backend-0.1.0/src/api/identity
+copying src/api/identity/schemas.py -> modular_fastapi_backend-0.1.0/src/api/identity
+copying src/api/jobs/__init__.py -> modular_fastapi_backend-0.1.0/src/api/jobs
+copying src/api/jobs/routers.py -> modular_fastapi_backend-0.1.0/src/api/jobs
+copying src/api/jobs/schemas.py -> modular_fastapi_backend-0.1.0/src/api/jobs
+copying src/api/kernels/__init__.py -> modular_fastapi_backend-0.1.0/src/api/kernels
+copying src/api/kernels/routers.py -> modular_fastapi_backend-0.1.0/src/api/kernels
+copying src/application/__init__.py -> modular_fastapi_backend-0.1.0/src/application
+copying src/application/hierarchy.py -> modular_fastapi_backend-0.1.0/src/application
+copying src/application/orchestration.py -> modular_fastapi_backend-0.1.0/src/application
+copying src/application/registry.py -> modular_fastapi_backend-0.1.0/src/application
+copying src/application/use_cases.py -> modular_fastapi_backend-0.1.0/src/application
+copying src/application/exports/__init__.py -> modular_fastapi_backend-0.1.0/src/application/exports
+copying src/application/exports/service.py -> modular_fastapi_backend-0.1.0/src/application/exports
+copying src/application/identity/__init__.py -> modular_fastapi_backend-0.1.0/src/application/identity
+copying src/application/identity/facade.py -> modular_fastapi_backend-0.1.0/src/application/identity
+copying src/application/identity/policy.py -> modular_fastapi_backend-0.1.0/src/application/identity
+copying src/application/identity/service.py -> modular_fastapi_backend-0.1.0/src/application/identity
+copying src/application/jobs/__init__.py -> modular_fastapi_backend-0.1.0/src/application/jobs
+copying src/application/jobs/service.py -> modular_fastapi_backend-0.1.0/src/application/jobs
+copying src/application/kernels/__init__.py -> modular_fastapi_backend-0.1.0/src/application/kernels
+copying src/application/kernels/service.py -> modular_fastapi_backend-0.1.0/src/application/kernels
+copying src/config/__init__.py -> modular_fastapi_backend-0.1.0/src/config
+copying src/config/constants.py -> modular_fastapi_backend-0.1.0/src/config
+copying src/config/environment.py -> modular_fastapi_backend-0.1.0/src/config
+copying src/config/settings.py -> modular_fastapi_backend-0.1.0/src/config
+copying src/domain/__init__.py -> modular_fastapi_backend-0.1.0/src/domain
+copying src/domain/execution.py -> modular_fastapi_backend-0.1.0/src/domain
+copying src/domain/models.py -> modular_fastapi_backend-0.1.0/src/domain
+copying src/domain/ports.py -> modular_fastapi_backend-0.1.0/src/domain
+copying src/domain/strategy.py -> modular_fastapi_backend-0.1.0/src/domain
+copying src/domain/exports/__init__.py -> modular_fastapi_backend-0.1.0/src/domain/exports
+copying src/domain/exports/errors.py -> modular_fastapi_backend-0.1.0/src/domain/exports
+copying src/domain/exports/models.py -> modular_fastapi_backend-0.1.0/src/domain/exports
+copying src/domain/exports/policy.py -> modular_fastapi_backend-0.1.0/src/domain/exports
+copying src/domain/exports/ports.py -> modular_fastapi_backend-0.1.0/src/domain/exports
+copying src/domain/identity/__init__.py -> modular_fastapi_backend-0.1.0/src/domain/identity
+copying src/domain/identity/errors.py -> modular_fastapi_backend-0.1.0/src/domain/identity
+copying src/domain/identity/models.py -> modular_fastapi_backend-0.1.0/src/domain/identity
+copying src/domain/identity/ports.py -> modular_fastapi_backend-0.1.0/src/domain/identity
+copying src/domain/jobs/__init__.py -> modular_fastapi_backend-0.1.0/src/domain/jobs
+copying src/domain/jobs/errors.py -> modular_fastapi_backend-0.1.0/src/domain/jobs
+copying src/domain/jobs/models.py -> modular_fastapi_backend-0.1.0/src/domain/jobs
+copying src/domain/jobs/ports.py -> modular_fastapi_backend-0.1.0/src/domain/jobs
+copying src/domain/kernels/__init__.py -> modular_fastapi_backend-0.1.0/src/domain/kernels
+copying src/domain/kernels/models.py -> modular_fastapi_backend-0.1.0/src/domain/kernels
+copying src/infrastructure/__init__.py -> modular_fastapi_backend-0.1.0/src/infrastructure
+copying src/infrastructure/security.py -> modular_fastapi_backend-0.1.0/src/infrastructure
+copying src/infrastructure/downstream/__init__.py -> modular_fastapi_backend-0.1.0/src/infrastructure/downstream
+copying src/infrastructure/locking/__init__.py -> modular_fastapi_backend-0.1.0/src/infrastructure/locking
+copying src/infrastructure/locking/resources.py -> modular_fastapi_backend-0.1.0/src/infrastructure/locking
+copying src/infrastructure/messaging/__init__.py -> modular_fastapi_backend-0.1.0/src/infrastructure/messaging
+copying src/infrastructure/messaging/disabled.py -> modular_fastapi_backend-0.1.0/src/infrastructure/messaging
+copying src/infrastructure/messaging/distributed.py -> modular_fastapi_backend-0.1.0/src/infrastructure/messaging
+copying src/infrastructure/messaging/envelope.py -> modular_fastapi_backend-0.1.0/src/infrastructure/messaging
+copying src/infrastructure/messaging/memory.py -> modular_fastapi_backend-0.1.0/src/infrastructure/messaging
+copying src/infrastructure/messaging/redis_store.py -> modular_fastapi_backend-0.1.0/src/infrastructure/messaging
+copying src/infrastructure/persistence/__init__.py -> modular_fastapi_backend-0.1.0/src/infrastructure/persistence
+copying src/infrastructure/persistence/exports.py -> modular_fastapi_backend-0.1.0/src/infrastructure/persistence
+copying src/infrastructure/persistence/identity.py -> modular_fastapi_backend-0.1.0/src/infrastructure/persistence
+copying src/infrastructure/persistence/mongo.py -> modular_fastapi_backend-0.1.0/src/infrastructure/persistence
+copying src/plugins/__init__.py -> modular_fastapi_backend-0.1.0/src/plugins
+copying src/plugins/heuristics/__init__.py -> modular_fastapi_backend-0.1.0/src/plugins/heuristics
+copying src/plugins/inference/__init__.py -> modular_fastapi_backend-0.1.0/src/plugins/inference
+copying src/plugins/interceptors/__init__.py -> modular_fastapi_backend-0.1.0/src/plugins/interceptors
+copying src/services/__init__.py -> modular_fastapi_backend-0.1.0/src/services
+copying src/services/concurrency.py -> modular_fastapi_backend-0.1.0/src/services
+copying src/services/health.py -> modular_fastapi_backend-0.1.0/src/services
+copying src/services/lifecycle.py -> modular_fastapi_backend-0.1.0/src/services
+copying src/services/observability.py -> modular_fastapi_backend-0.1.0/src/services
+copying src/services/resource_manager.py -> modular_fastapi_backend-0.1.0/src/services
+copying src/shared_models/__init__.py -> modular_fastapi_backend-0.1.0/src/shared_models
+copying src/shared_models/context.py -> modular_fastapi_backend-0.1.0/src/shared_models
+copying src/shared_models/dto.py -> modular_fastapi_backend-0.1.0/src/shared_models
+copying src/shared_models/schemas.py -> modular_fastapi_backend-0.1.0/src/shared_models
+copying src/shared_models/types.py -> modular_fastapi_backend-0.1.0/src/shared_models
+copying src/utils/__init__.py -> modular_fastapi_backend-0.1.0/src/utils
+copying src/utils/formatting.py -> modular_fastapi_backend-0.1.0/src/utils
+copying src/utils/time_helpers.py -> modular_fastapi_backend-0.1.0/src/utils
+copying src/utils/validation.py -> modular_fastapi_backend-0.1.0/src/utils
+copying tests/test_api.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_boundaries.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_disabled_backend.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_distributed.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_docker_validation.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_execution.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_exports.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_health_boundary.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_identity.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_identity_integration.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_kernels.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_memory_dispatcher.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_modules.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_observability.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_plugin_loader.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_storage.py -> modular_fastapi_backend-0.1.0/tests
+copying tests/test_system_integration.py -> modular_fastapi_backend-0.1.0/tests
+Writing modular_fastapi_backend-0.1.0/setup.cfg
+Creating tar archive
+removing 'modular_fastapi_backend-0.1.0' (and everything under it)
+running egg_info
+writing modular_fastapi_backend.egg-info/PKG-INFO
+writing dependency_links to modular_fastapi_backend.egg-info/dependency_links.txt
+writing requirements to modular_fastapi_backend.egg-info/requires.txt
+writing top-level names to modular_fastapi_backend.egg-info/top_level.txt
+reading manifest file 'modular_fastapi_backend.egg-info/SOURCES.txt'
+writing manifest file 'modular_fastapi_backend.egg-info/SOURCES.txt'
+running bdist_wheel
+running build
+running build_py
+creating build/lib
+copying server.py -> build/lib
+copying worker.py -> build/lib
+copying manage.py -> build/lib
+creating build/lib/bootstrap
+copying bootstrap/worker.py -> build/lib/bootstrap
+copying bootstrap/plugin_loader.py -> build/lib/bootstrap
+copying bootstrap/config.py -> build/lib/bootstrap
+copying bootstrap/__init__.py -> build/lib/bootstrap
+copying bootstrap/container.py -> build/lib/bootstrap
+copying bootstrap/components.py -> build/lib/bootstrap
+copying bootstrap/identity.py -> build/lib/bootstrap
+copying bootstrap/wiring.py -> build/lib/bootstrap
+creating build/lib/src
+copying src/__init__.py -> build/lib/src
+creating build/lib/src/config
+copying src/config/constants.py -> build/lib/src/config
+copying src/config/__init__.py -> build/lib/src/config
+copying src/config/settings.py -> build/lib/src/config
+copying src/config/environment.py -> build/lib/src/config
+creating build/lib/src/plugins
+copying src/plugins/__init__.py -> build/lib/src/plugins
+creating build/lib/src/utils
+copying src/utils/__init__.py -> build/lib/src/utils
+copying src/utils/formatting.py -> build/lib/src/utils
+copying src/utils/time_helpers.py -> build/lib/src/utils
+copying src/utils/validation.py -> build/lib/src/utils
+creating build/lib/src/shared_models
+copying src/shared_models/__init__.py -> build/lib/src/shared_models
+copying src/shared_models/types.py -> build/lib/src/shared_models
+copying src/shared_models/context.py -> build/lib/src/shared_models
+copying src/shared_models/schemas.py -> build/lib/src/shared_models
+copying src/shared_models/dto.py -> build/lib/src/shared_models
+creating build/lib/src/api
+copying src/api/auth.py -> build/lib/src/api
+copying src/api/health.py -> build/lib/src/api
+copying src/api/__init__.py -> build/lib/src/api
+copying src/api/schemas.py -> build/lib/src/api
+copying src/api/exceptions.py -> build/lib/src/api
+copying src/api/routers.py -> build/lib/src/api
+copying src/api/dependencies.py -> build/lib/src/api
+creating build/lib/src/application
+copying src/application/registry.py -> build/lib/src/application
+copying src/application/__init__.py -> build/lib/src/application
+copying src/application/hierarchy.py -> build/lib/src/application
+copying src/application/orchestration.py -> build/lib/src/application
+copying src/application/use_cases.py -> build/lib/src/application
+creating build/lib/src/infrastructure
+copying src/infrastructure/security.py -> build/lib/src/infrastructure
+copying src/infrastructure/__init__.py -> build/lib/src/infrastructure
+creating build/lib/src/domain
+copying src/domain/execution.py -> build/lib/src/domain
+copying src/domain/models.py -> build/lib/src/domain
+copying src/domain/ports.py -> build/lib/src/domain
+copying src/domain/__init__.py -> build/lib/src/domain
+copying src/domain/strategy.py -> build/lib/src/domain
+creating build/lib/src/services
+copying src/services/health.py -> build/lib/src/services
+copying src/services/concurrency.py -> build/lib/src/services
+copying src/services/resource_manager.py -> build/lib/src/services
+copying src/services/__init__.py -> build/lib/src/services
+copying src/services/observability.py -> build/lib/src/services
+copying src/services/lifecycle.py -> build/lib/src/services
+creating build/lib/src/plugins/heuristics
+copying src/plugins/heuristics/__init__.py -> build/lib/src/plugins/heuristics
+creating build/lib/src/plugins/interceptors
+copying src/plugins/interceptors/__init__.py -> build/lib/src/plugins/interceptors
+creating build/lib/src/plugins/inference
+copying src/plugins/inference/__init__.py -> build/lib/src/plugins/inference
+creating build/lib/src/api/kernels
+copying src/api/kernels/__init__.py -> build/lib/src/api/kernels
+copying src/api/kernels/routers.py -> build/lib/src/api/kernels
+creating build/lib/src/api/identity
+copying src/api/identity/__init__.py -> build/lib/src/api/identity
+copying src/api/identity/schemas.py -> build/lib/src/api/identity
+copying src/api/identity/routers.py -> build/lib/src/api/identity
+creating build/lib/src/api/exports
+copying src/api/exports/__init__.py -> build/lib/src/api/exports
+copying src/api/exports/routers.py -> build/lib/src/api/exports
+creating build/lib/src/api/jobs
+copying src/api/jobs/__init__.py -> build/lib/src/api/jobs
+copying src/api/jobs/schemas.py -> build/lib/src/api/jobs
+copying src/api/jobs/routers.py -> build/lib/src/api/jobs
+creating build/lib/src/application/kernels
+copying src/application/kernels/service.py -> build/lib/src/application/kernels
+copying src/application/kernels/__init__.py -> build/lib/src/application/kernels
+creating build/lib/src/application/identity
+copying src/application/identity/facade.py -> build/lib/src/application/identity
+copying src/application/identity/service.py -> build/lib/src/application/identity
+copying src/application/identity/policy.py -> build/lib/src/application/identity
+copying src/application/identity/__init__.py -> build/lib/src/application/identity
+creating build/lib/src/application/exports
+copying src/application/exports/service.py -> build/lib/src/application/exports
+copying src/application/exports/__init__.py -> build/lib/src/application/exports
+creating build/lib/src/application/jobs
+copying src/application/jobs/service.py -> build/lib/src/application/jobs
+copying src/application/jobs/__init__.py -> build/lib/src/application/jobs
+creating build/lib/src/infrastructure/locking
+copying src/infrastructure/locking/__init__.py -> build/lib/src/infrastructure/locking
+copying src/infrastructure/locking/resources.py -> build/lib/src/infrastructure/locking
+creating build/lib/src/infrastructure/downstream
+copying src/infrastructure/downstream/__init__.py -> build/lib/src/infrastructure/downstream
+creating build/lib/src/infrastructure/persistence
+copying src/infrastructure/persistence/exports.py -> build/lib/src/infrastructure/persistence
+copying src/infrastructure/persistence/mongo.py -> build/lib/src/infrastructure/persistence
+copying src/infrastructure/persistence/__init__.py -> build/lib/src/infrastructure/persistence
+copying src/infrastructure/persistence/identity.py -> build/lib/src/infrastructure/persistence
+creating build/lib/src/infrastructure/messaging
+copying src/infrastructure/messaging/memory.py -> build/lib/src/infrastructure/messaging
+copying src/infrastructure/messaging/__init__.py -> build/lib/src/infrastructure/messaging
+copying src/infrastructure/messaging/disabled.py -> build/lib/src/infrastructure/messaging
+copying src/infrastructure/messaging/redis_store.py -> build/lib/src/infrastructure/messaging
+copying src/infrastructure/messaging/distributed.py -> build/lib/src/infrastructure/messaging
+copying src/infrastructure/messaging/envelope.py -> build/lib/src/infrastructure/messaging
+creating build/lib/src/domain/kernels
+copying src/domain/kernels/models.py -> build/lib/src/domain/kernels
+copying src/domain/kernels/__init__.py -> build/lib/src/domain/kernels
+creating build/lib/src/domain/identity
+copying src/domain/identity/models.py -> build/lib/src/domain/identity
+copying src/domain/identity/ports.py -> build/lib/src/domain/identity
+copying src/domain/identity/__init__.py -> build/lib/src/domain/identity
+copying src/domain/identity/errors.py -> build/lib/src/domain/identity
+creating build/lib/src/domain/exports
+copying src/domain/exports/models.py -> build/lib/src/domain/exports
+copying src/domain/exports/ports.py -> build/lib/src/domain/exports
+copying src/domain/exports/policy.py -> build/lib/src/domain/exports
+copying src/domain/exports/__init__.py -> build/lib/src/domain/exports
+copying src/domain/exports/errors.py -> build/lib/src/domain/exports
+creating build/lib/src/domain/jobs
+copying src/domain/jobs/models.py -> build/lib/src/domain/jobs
+copying src/domain/jobs/ports.py -> build/lib/src/domain/jobs
+copying src/domain/jobs/__init__.py -> build/lib/src/domain/jobs
+copying src/domain/jobs/errors.py -> build/lib/src/domain/jobs
+running egg_info
+writing modular_fastapi_backend.egg-info/PKG-INFO
+writing dependency_links to modular_fastapi_backend.egg-info/dependency_links.txt
+writing requirements to modular_fastapi_backend.egg-info/requires.txt
+writing top-level names to modular_fastapi_backend.egg-info/top_level.txt
+reading manifest file 'modular_fastapi_backend.egg-info/SOURCES.txt'
+writing manifest file 'modular_fastapi_backend.egg-info/SOURCES.txt'
+installing to build/bdist.macosx-15.0-arm64/wheel
+running install
+running install_lib
+creating build/bdist.macosx-15.0-arm64/wheel
+copying build/lib/worker.py -> build/bdist.macosx-15.0-arm64/wheel/.
+copying build/lib/server.py -> build/bdist.macosx-15.0-arm64/wheel/.
+creating build/bdist.macosx-15.0-arm64/wheel/bootstrap
+copying build/lib/bootstrap/worker.py -> build/bdist.macosx-15.0-arm64/wheel/./bootstrap
+copying build/lib/bootstrap/plugin_loader.py -> build/bdist.macosx-15.0-arm64/wheel/./bootstrap
+copying build/lib/bootstrap/config.py -> build/bdist.macosx-15.0-arm64/wheel/./bootstrap
+copying build/lib/bootstrap/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./bootstrap
+copying build/lib/bootstrap/container.py -> build/bdist.macosx-15.0-arm64/wheel/./bootstrap
+copying build/lib/bootstrap/components.py -> build/bdist.macosx-15.0-arm64/wheel/./bootstrap
+copying build/lib/bootstrap/identity.py -> build/bdist.macosx-15.0-arm64/wheel/./bootstrap
+copying build/lib/bootstrap/wiring.py -> build/bdist.macosx-15.0-arm64/wheel/./bootstrap
+copying build/lib/manage.py -> build/bdist.macosx-15.0-arm64/wheel/.
+creating build/bdist.macosx-15.0-arm64/wheel/src
+creating build/bdist.macosx-15.0-arm64/wheel/src/config
+copying build/lib/src/config/constants.py -> build/bdist.macosx-15.0-arm64/wheel/./src/config
+copying build/lib/src/config/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/config
+copying build/lib/src/config/settings.py -> build/bdist.macosx-15.0-arm64/wheel/./src/config
+copying build/lib/src/config/environment.py -> build/bdist.macosx-15.0-arm64/wheel/./src/config
+creating build/bdist.macosx-15.0-arm64/wheel/src/plugins
+creating build/bdist.macosx-15.0-arm64/wheel/src/plugins/heuristics
+copying build/lib/src/plugins/heuristics/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/plugins/heuristics
+creating build/bdist.macosx-15.0-arm64/wheel/src/plugins/interceptors
+copying build/lib/src/plugins/interceptors/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/plugins/interceptors
+copying build/lib/src/plugins/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/plugins
+creating build/bdist.macosx-15.0-arm64/wheel/src/plugins/inference
+copying build/lib/src/plugins/inference/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/plugins/inference
+copying build/lib/src/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src
+creating build/bdist.macosx-15.0-arm64/wheel/src/utils
+copying build/lib/src/utils/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/utils
+copying build/lib/src/utils/formatting.py -> build/bdist.macosx-15.0-arm64/wheel/./src/utils
+copying build/lib/src/utils/time_helpers.py -> build/bdist.macosx-15.0-arm64/wheel/./src/utils
+copying build/lib/src/utils/validation.py -> build/bdist.macosx-15.0-arm64/wheel/./src/utils
+creating build/bdist.macosx-15.0-arm64/wheel/src/shared_models
+copying build/lib/src/shared_models/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/shared_models
+copying build/lib/src/shared_models/types.py -> build/bdist.macosx-15.0-arm64/wheel/./src/shared_models
+copying build/lib/src/shared_models/context.py -> build/bdist.macosx-15.0-arm64/wheel/./src/shared_models
+copying build/lib/src/shared_models/schemas.py -> build/bdist.macosx-15.0-arm64/wheel/./src/shared_models
+copying build/lib/src/shared_models/dto.py -> build/bdist.macosx-15.0-arm64/wheel/./src/shared_models
+creating build/bdist.macosx-15.0-arm64/wheel/src/api
+copying build/lib/src/api/auth.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api
+creating build/bdist.macosx-15.0-arm64/wheel/src/api/kernels
+copying build/lib/src/api/kernels/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api/kernels
+copying build/lib/src/api/kernels/routers.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api/kernels
+creating build/bdist.macosx-15.0-arm64/wheel/src/api/identity
+copying build/lib/src/api/identity/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api/identity
+copying build/lib/src/api/identity/schemas.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api/identity
+copying build/lib/src/api/identity/routers.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api/identity
+copying build/lib/src/api/health.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api
+copying build/lib/src/api/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api
+creating build/bdist.macosx-15.0-arm64/wheel/src/api/exports
+copying build/lib/src/api/exports/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api/exports
+copying build/lib/src/api/exports/routers.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api/exports
+copying build/lib/src/api/schemas.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api
+copying build/lib/src/api/exceptions.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api
+creating build/bdist.macosx-15.0-arm64/wheel/src/api/jobs
+copying build/lib/src/api/jobs/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api/jobs
+copying build/lib/src/api/jobs/schemas.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api/jobs
+copying build/lib/src/api/jobs/routers.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api/jobs
+copying build/lib/src/api/routers.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api
+copying build/lib/src/api/dependencies.py -> build/bdist.macosx-15.0-arm64/wheel/./src/api
+creating build/bdist.macosx-15.0-arm64/wheel/src/application
+creating build/bdist.macosx-15.0-arm64/wheel/src/application/kernels
+copying build/lib/src/application/kernels/service.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application/kernels
+copying build/lib/src/application/kernels/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application/kernels
+creating build/bdist.macosx-15.0-arm64/wheel/src/application/identity
+copying build/lib/src/application/identity/facade.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application/identity
+copying build/lib/src/application/identity/service.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application/identity
+copying build/lib/src/application/identity/policy.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application/identity
+copying build/lib/src/application/identity/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application/identity
+copying build/lib/src/application/registry.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application
+copying build/lib/src/application/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application
+copying build/lib/src/application/hierarchy.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application
+creating build/bdist.macosx-15.0-arm64/wheel/src/application/exports
+copying build/lib/src/application/exports/service.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application/exports
+copying build/lib/src/application/exports/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application/exports
+copying build/lib/src/application/orchestration.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application
+copying build/lib/src/application/use_cases.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application
+creating build/bdist.macosx-15.0-arm64/wheel/src/application/jobs
+copying build/lib/src/application/jobs/service.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application/jobs
+copying build/lib/src/application/jobs/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/application/jobs
+creating build/bdist.macosx-15.0-arm64/wheel/src/infrastructure
+creating build/bdist.macosx-15.0-arm64/wheel/src/infrastructure/locking
+copying build/lib/src/infrastructure/locking/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/locking
+copying build/lib/src/infrastructure/locking/resources.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/locking
+copying build/lib/src/infrastructure/security.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure
+copying build/lib/src/infrastructure/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure
+creating build/bdist.macosx-15.0-arm64/wheel/src/infrastructure/downstream
+copying build/lib/src/infrastructure/downstream/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/downstream
+creating build/bdist.macosx-15.0-arm64/wheel/src/infrastructure/persistence
+copying build/lib/src/infrastructure/persistence/exports.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/persistence
+copying build/lib/src/infrastructure/persistence/mongo.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/persistence
+copying build/lib/src/infrastructure/persistence/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/persistence
+copying build/lib/src/infrastructure/persistence/identity.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/persistence
+creating build/bdist.macosx-15.0-arm64/wheel/src/infrastructure/messaging
+copying build/lib/src/infrastructure/messaging/memory.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/messaging
+copying build/lib/src/infrastructure/messaging/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/messaging
+copying build/lib/src/infrastructure/messaging/disabled.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/messaging
+copying build/lib/src/infrastructure/messaging/redis_store.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/messaging
+copying build/lib/src/infrastructure/messaging/distributed.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/messaging
+copying build/lib/src/infrastructure/messaging/envelope.py -> build/bdist.macosx-15.0-arm64/wheel/./src/infrastructure/messaging
+creating build/bdist.macosx-15.0-arm64/wheel/src/domain
+creating build/bdist.macosx-15.0-arm64/wheel/src/domain/kernels
+copying build/lib/src/domain/kernels/models.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/kernels
+copying build/lib/src/domain/kernels/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/kernels
+copying build/lib/src/domain/execution.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain
+creating build/bdist.macosx-15.0-arm64/wheel/src/domain/identity
+copying build/lib/src/domain/identity/models.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/identity
+copying build/lib/src/domain/identity/ports.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/identity
+copying build/lib/src/domain/identity/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/identity
+copying build/lib/src/domain/identity/errors.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/identity
+copying build/lib/src/domain/models.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain
+copying build/lib/src/domain/ports.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain
+copying build/lib/src/domain/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain
+copying build/lib/src/domain/strategy.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain
+creating build/bdist.macosx-15.0-arm64/wheel/src/domain/exports
+copying build/lib/src/domain/exports/models.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/exports
+copying build/lib/src/domain/exports/ports.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/exports
+copying build/lib/src/domain/exports/policy.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/exports
+copying build/lib/src/domain/exports/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/exports
+copying build/lib/src/domain/exports/errors.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/exports
+creating build/bdist.macosx-15.0-arm64/wheel/src/domain/jobs
+copying build/lib/src/domain/jobs/models.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/jobs
+copying build/lib/src/domain/jobs/ports.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/jobs
+copying build/lib/src/domain/jobs/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/jobs
+copying build/lib/src/domain/jobs/errors.py -> build/bdist.macosx-15.0-arm64/wheel/./src/domain/jobs
+creating build/bdist.macosx-15.0-arm64/wheel/src/services
+copying build/lib/src/services/health.py -> build/bdist.macosx-15.0-arm64/wheel/./src/services
+copying build/lib/src/services/concurrency.py -> build/bdist.macosx-15.0-arm64/wheel/./src/services
+copying build/lib/src/services/resource_manager.py -> build/bdist.macosx-15.0-arm64/wheel/./src/services
+copying build/lib/src/services/__init__.py -> build/bdist.macosx-15.0-arm64/wheel/./src/services
+copying build/lib/src/services/observability.py -> build/bdist.macosx-15.0-arm64/wheel/./src/services
+copying build/lib/src/services/lifecycle.py -> build/bdist.macosx-15.0-arm64/wheel/./src/services
+running install_egg_info
+Copying modular_fastapi_backend.egg-info to build/bdist.macosx-15.0-arm64/wheel/./modular_fastapi_backend-0.1.0-py3.13.egg-info
+running install_scripts
+creating build/bdist.macosx-15.0-arm64/wheel/modular_fastapi_backend-0.1.0.dist-info/WHEEL
+creating '/Users/pwang/Developer/python-backend-server-template/work/delivery-release-package/.tmp-zi7wgiju/modular_fastapi_backend-0.1.0-py3-none-any.whl' and adding 'build/bdist.macosx-15.0-arm64/wheel' to it
+adding 'manage.py'
+adding 'server.py'
+adding 'worker.py'
+adding 'bootstrap/__init__.py'
+adding 'bootstrap/components.py'
+adding 'bootstrap/config.py'
+adding 'bootstrap/container.py'
+adding 'bootstrap/identity.py'
+adding 'bootstrap/plugin_loader.py'
+adding 'bootstrap/wiring.py'
+adding 'bootstrap/worker.py'
+adding 'src/__init__.py'
+adding 'src/api/__init__.py'
+adding 'src/api/auth.py'
+adding 'src/api/dependencies.py'
+adding 'src/api/exceptions.py'
+adding 'src/api/health.py'
+adding 'src/api/routers.py'
+adding 'src/api/schemas.py'
+adding 'src/api/exports/__init__.py'
+adding 'src/api/exports/routers.py'
+adding 'src/api/identity/__init__.py'
+adding 'src/api/identity/routers.py'
+adding 'src/api/identity/schemas.py'
+adding 'src/api/jobs/__init__.py'
+adding 'src/api/jobs/routers.py'
+adding 'src/api/jobs/schemas.py'
+adding 'src/api/kernels/__init__.py'
+adding 'src/api/kernels/routers.py'
+adding 'src/application/__init__.py'
+adding 'src/application/hierarchy.py'
+adding 'src/application/orchestration.py'
+adding 'src/application/registry.py'
+adding 'src/application/use_cases.py'
+adding 'src/application/exports/__init__.py'
+adding 'src/application/exports/service.py'
+adding 'src/application/identity/__init__.py'
+adding 'src/application/identity/facade.py'
+adding 'src/application/identity/policy.py'
+adding 'src/application/identity/service.py'
+adding 'src/application/jobs/__init__.py'
+adding 'src/application/jobs/service.py'
+adding 'src/application/kernels/__init__.py'
+adding 'src/application/kernels/service.py'
+adding 'src/config/__init__.py'
+adding 'src/config/constants.py'
+adding 'src/config/environment.py'
+adding 'src/config/settings.py'
+adding 'src/domain/__init__.py'
+adding 'src/domain/execution.py'
+adding 'src/domain/models.py'
+adding 'src/domain/ports.py'
+adding 'src/domain/strategy.py'
+adding 'src/domain/exports/__init__.py'
+adding 'src/domain/exports/errors.py'
+adding 'src/domain/exports/models.py'
+adding 'src/domain/exports/policy.py'
+adding 'src/domain/exports/ports.py'
+adding 'src/domain/identity/__init__.py'
+adding 'src/domain/identity/errors.py'
+adding 'src/domain/identity/models.py'
+adding 'src/domain/identity/ports.py'
+adding 'src/domain/jobs/__init__.py'
+adding 'src/domain/jobs/errors.py'
+adding 'src/domain/jobs/models.py'
+adding 'src/domain/jobs/ports.py'
+adding 'src/domain/kernels/__init__.py'
+adding 'src/domain/kernels/models.py'
+adding 'src/infrastructure/__init__.py'
+adding 'src/infrastructure/security.py'
+adding 'src/infrastructure/downstream/__init__.py'
+adding 'src/infrastructure/locking/__init__.py'
+adding 'src/infrastructure/locking/resources.py'
+adding 'src/infrastructure/messaging/__init__.py'
+adding 'src/infrastructure/messaging/disabled.py'
+adding 'src/infrastructure/messaging/distributed.py'
+adding 'src/infrastructure/messaging/envelope.py'
+adding 'src/infrastructure/messaging/memory.py'
+adding 'src/infrastructure/messaging/redis_store.py'
+adding 'src/infrastructure/persistence/__init__.py'
+adding 'src/infrastructure/persistence/exports.py'
+adding 'src/infrastructure/persistence/identity.py'
+adding 'src/infrastructure/persistence/mongo.py'
+adding 'src/plugins/__init__.py'
+adding 'src/plugins/heuristics/__init__.py'
+adding 'src/plugins/inference/__init__.py'
+adding 'src/plugins/interceptors/__init__.py'
+adding 'src/services/__init__.py'
+adding 'src/services/concurrency.py'
+adding 'src/services/health.py'
+adding 'src/services/lifecycle.py'
+adding 'src/services/observability.py'
+adding 'src/services/resource_manager.py'
+adding 'src/shared_models/__init__.py'
+adding 'src/shared_models/context.py'
+adding 'src/shared_models/dto.py'
+adding 'src/shared_models/schemas.py'
+adding 'src/shared_models/types.py'
+adding 'src/utils/__init__.py'
+adding 'src/utils/formatting.py'
+adding 'src/utils/time_helpers.py'
+adding 'src/utils/validation.py'
+adding 'modular_fastapi_backend-0.1.0.dist-info/METADATA'
+adding 'modular_fastapi_backend-0.1.0.dist-info/WHEEL'
+adding 'modular_fastapi_backend-0.1.0.dist-info/top_level.txt'
+adding 'modular_fastapi_backend-0.1.0.dist-info/RECORD'
+removing build/bdist.macosx-15.0-arm64/wheel
+Successfully built modular_fastapi_backend-0.1.0.tar.gz and modular_fastapi_backend-0.1.0-py3-none-any.whl
+* Getting build dependencies for sdist...
+* Building sdist...
+* Building wheel from sdist
+* Getting build dependencies for wheel...
+* Building wheel...

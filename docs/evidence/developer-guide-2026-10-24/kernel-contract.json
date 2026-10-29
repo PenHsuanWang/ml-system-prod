@@ -1,0 +1,7 @@
+{
+  "plugin_binding_validation": "passed",
+  "valid_direct_execution": "passed",
+  "invalid_direct_schema_rejected": "passed",
+  "generic_kernel_service_wraps_plugin_input_error_as_execution_failure": "passed",
+  "scope": "isolated example, memory capacity coordinator; no external systems"
+}

@@ -1,0 +1,7 @@
+{
+  "current_sha256": "564728f616a2be7410f3f9ddde36617db58d696485a7178cee1701326a2b2b59",
+  "python_blocks": 22,
+  "same_python_blocks_as_original_validated_guide": true,
+  "adoption_source_guide_sha256": "d55fa5d1d63021a21244d5fc1304de1c2dc4335a340eea9f1f43b5a7206ce696",
+  "note": "Adoption used the earlier text revision with identical Python blocks. The current guide was separately rematerialized and verified; date/prose revisions do not change the example code."
+}

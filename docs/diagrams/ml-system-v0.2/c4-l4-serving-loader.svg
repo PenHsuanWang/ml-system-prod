@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2100" height="1450" viewBox="0 0 2100 1450" role="img" aria-labelledby="title desc">
+<title id="title">ML-C4-L4 v0.2 - Code View: Verified Model Loading</title>
+<desc id="desc">Scope: the Serving model-loading component. Proposed classes and Protocols; no runtime implementation claim. ML-SAD-001 sections 5.5-5.6, 7.3, 11.5, 12.6. The C4 code view is a target design, not generated from current source.</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/></marker></defs>
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<g font-family="Arial, Helvetica, sans-serif"><text x="60" y="68" font-size="34" fill="#0f172a" text-anchor="start" font-weight="700">Code View: Verified Model Loading</text>
+<text x="60" y="108" font-size="19" fill="#475569" text-anchor="start" font-weight="400">Scope: the Serving model-loading component. Proposed classes and Protocols; no runtime implementation claim.</text>
+<text x="2040" y="66" font-size="19" fill="#475569" text-anchor="end" font-weight="400">v0.2  |  2026-10-27</text>
+<g id="application-boundary"><rect x="60" y="190" width="1980" height="540" rx="16" fill="#ffffff" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 7"/></g>
+<text x="82" y="224" font-size="21" fill="#334155" text-anchor="start" font-weight="600">Application-owned use cases and Protocols - src/application/prediction</text>
+<g id="prediction-service"><rect x="100" y="290" width="380" height="150" rx="12" fill="#e8f0ff" stroke="#2563eb" stroke-width="2"/></g>
+<text x="290.0" y="321" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">PredictionService</text>
+<text x="290.0" y="348" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="400">[Class]</text>
+<text x="290.0" y="376" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Uses fixed loaded runtime</text>
+<text x="290.0" y="398" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Input / output contract</text>
+<g id="verified-loader"><rect x="650" y="290" width="420" height="150" rx="12" fill="#e8f0ff" stroke="#2563eb" stroke-width="2"/></g>
+<text x="860.0" y="321" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">VerifiedModelLoader</text>
+<text x="860.0" y="348" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="400">[Class implements ModelLoader]</text>
+<text x="860.0" y="376" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">retrieve -&gt; verify -&gt; load</text>
+<text x="860.0" y="398" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">warm-up before publishing handle</text>
+<g id="spec-reader"><rect x="1430" y="270" width="490" height="130" rx="12" fill="#e8f0ff" stroke="#2563eb" stroke-width="2"/></g>
+<text x="1675.0" y="301" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">DeploymentSpecReader</text>
+<text x="1675.0" y="328" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="400">[Protocol]</text>
+<text x="1675.0" y="356" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Read once; verify trusted launch</text>
+<g id="artifact-retriever"><rect x="100" y="535" width="380" height="135" rx="12" fill="#e8f0ff" stroke="#2563eb" stroke-width="2"/></g>
+<text x="290.0" y="566" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">ModelArtifactRetriever</text>
+<text x="290.0" y="593" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="400">[Protocol]</text>
+<text x="290.0" y="621" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Fixed artifact -&gt; staging</text>
+<g id="artifact-verifier"><rect x="650" y="535" width="420" height="135" rx="12" fill="#e8f0ff" stroke="#2563eb" stroke-width="2"/></g>
+<text x="860.0" y="566" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">ArtifactVerifier</text>
+<text x="860.0" y="593" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="400">[Protocol]</text>
+<text x="860.0" y="621" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Manifest / provenance -&gt; VerifiedArtifacts</text>
+<g id="runtime-factory"><rect x="1430" y="500" width="490" height="135" rx="12" fill="#e8f0ff" stroke="#2563eb" stroke-width="2"/></g>
+<text x="1675.0" y="531" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">PredictionRuntimeFactory</text>
+<text x="1675.0" y="558" font-size="16" fill="#2563eb" text-anchor="middle" font-weight="400">[Protocol]</text>
+<text x="1675.0" y="586" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">VerifiedArtifacts -&gt; PredictionRuntime</text>
+<g id="infrastructure-boundary"><rect x="60" y="810" width="1980" height="360" rx="16" fill="#ffffff" stroke="#94a3b8" stroke-width="2" stroke-dasharray="10 7"/></g>
+<text x="82" y="844" font-size="21" fill="#334155" text-anchor="start" font-weight="600">Infrastructure implementations - no import of Application ports</text>
+<g id="retriever-impl"><rect x="100" y="915" width="380" height="150" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/></g>
+<text x="290.0" y="946" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">ControlledArtifactRetriever</text>
+<text x="290.0" y="973" font-size="16" fill="#64748b" text-anchor="middle" font-weight="400">[Class]</text>
+<text x="290.0" y="1001" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Allowlisted storage client</text>
+<text x="290.0" y="1023" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Bounded download / cleanup</text>
+<g id="verifier-impl"><rect x="650" y="915" width="420" height="150" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/></g>
+<text x="860.0" y="946" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">ManifestVerifier</text>
+<text x="860.0" y="973" font-size="16" fill="#64748b" text-anchor="middle" font-weight="400">[Class]</text>
+<text x="860.0" y="1001" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Content / schema / trust</text>
+<text x="860.0" y="1023" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Compatibility allowlist</text>
+<g id="runtime-impl"><rect x="1430" y="915" width="490" height="170" rx="12" fill="#f1f5f9" stroke="#64748b" stroke-width="2"/></g>
+<text x="1675.0" y="946" font-size="22" fill="#0f172a" text-anchor="middle" font-weight="700">PyfuncRuntimeFactory / Runtime</text>
+<text x="1675.0" y="973" font-size="16" fill="#64748b" text-anchor="middle" font-weight="400">[Classes]</text>
+<text x="1675.0" y="1001" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Native load / warm-up / predict / close</text>
+<text x="1675.0" y="1023" font-size="17" fill="#334155" text-anchor="middle" font-weight="400">Fixed descriptor + opaque handle</text>
+<path d="M 480,365 L 650,365" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="505.6" y="325" width="118.80000000000001" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="565" y="341" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Startup load</text>
+<path d="M 1070,340 L 1240,340 L 1240,335 L 1430,335" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="1176.4" y="296" width="127.2" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1240" y="312" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">Validate spec</text>
+<path d="M 720,440 L 720,480 L 290,480 L 290,535" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="414.0" y="442" width="102.0" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="465" y="458" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">1 retrieve</text>
+<path d="M 860,440 L 860,535" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="817.4" y="477" width="85.2" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="860" y="493" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">2 verify</text>
+<path d="M 1070,400 L 1270,400 L 1270,565 L 1430,565" fill="none" stroke="#64748b" stroke-width="2.3" marker-end="url(#arrow)"/>
+<rect x="1173.8" y="462" width="152.4" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1250" y="478" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">3 load / warm-up</text>
+<path d="M 290,915 L 290,670" fill="none" stroke="#64748b" stroke-width="2.3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<rect x="188.6" y="774" width="202.8" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="290" y="790" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">structural conformance</text>
+<path d="M 860,915 L 860,670" fill="none" stroke="#64748b" stroke-width="2.3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<rect x="758.6" y="774" width="202.8" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="860" y="790" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">structural conformance</text>
+<path d="M 1675,915 L 1675,635" fill="none" stroke="#64748b" stroke-width="2.3" stroke-dasharray="8 6" marker-end="url(#arrow)"/>
+<rect x="1573.6" y="774" width="202.8" height="21" rx="4" fill="#ffffff" opacity="0.97"/>
+<text x="1675" y="790" font-size="16" fill="#475569" text-anchor="middle" font-weight="400">structural conformance</text>
+<text x="100" y="1230" font-size="18" fill="#475569" text-anchor="start" font-weight="400">Bootstrap imports the Protocols and concrete classes, and performs typed assembly.</text>
+<text x="100" y="1255" font-size="18" fill="#475569" text-anchor="start" font-weight="400">Dashed lines show checked conformance, not inheritance or Infrastructure -&gt; Application imports.</text>
+<text x="100" y="1280" font-size="18" fill="#475569" text-anchor="start" font-weight="400">Domain supplies pure DeploymentSpec / VerifiedArtifacts / loaded descriptor DTOs and policies.</text>
+<line x1="60" y1="1350" x2="2040" y2="1350" stroke="#cbd5e1"/>
+<text x="60" y="1385" font-size="17" fill="#334155" text-anchor="start" font-weight="600">ML-C4-L4  |  PROPOSED DESIGN - NOT IMPLEMENTED</text>
+<text x="60" y="1415" font-size="16" fill="#475569" text-anchor="start" font-weight="400">ML-SAD-001 sections 5.5-5.6, 7.3, 11.5, 12.6. The C4 code view is a target design, not generated from current source.</text></g>
+</svg>

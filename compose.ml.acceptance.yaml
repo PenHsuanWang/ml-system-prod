@@ -1,0 +1,43 @@
+# Always use a disposable project and a separate execution directory.
+# Start runtime roles first, then run the one-shot acceptance service.
+services:
+  migrate:
+    volumes: ["${ML_ACCEPTANCE_VAR_DIR:?set isolated ML_ACCEPTANCE_VAR_DIR}:/app/var"]
+  management:
+    volumes: ["${ML_ACCEPTANCE_VAR_DIR:?}:/app/var"]
+  relay:
+    volumes: ["${ML_ACCEPTANCE_VAR_DIR:?}:/app/var"]
+  supervisor:
+    volumes: ["${ML_ACCEPTANCE_VAR_DIR:?}:/app/var"]
+  control:
+    volumes: ["${ML_ACCEPTANCE_VAR_DIR:?}:/app/var"]
+  gateway:
+    volumes: ["${ML_ACCEPTANCE_VAR_DIR:?}:/app/var"]
+  acceptance:
+    profiles: [acceptance]
+    build: {context: ., dockerfile: Dockerfile.ml, target: acceptance}
+    user: ${ML_UID:-1000}:${ML_GID:-1000}
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    volumes: ["${ML_ACCEPTANCE_VAR_DIR:?}:/app/var"]
+    environment:
+      ML_TEST_DATABASE_URL: postgresql+psycopg://ml:${ML_DB_PASSWORD:?}@postgres:5432/ml
+      ML_TEST_AMQP_URL: amqp://ml:${ML_MQ_PASSWORD:?}@rabbitmq:5672/
+      ML_TEST_REDIS_URL: redis://redis:6379/1
+      ML_TEST_MANAGEMENT_URL: http://management:8000
+      ML_TEST_PREDICTION_URL: http://control:8001
+      APP_TASK_BACKEND: disabled
+      APP_MONGO_ENABLED: "true"
+      APP_IDENTITY_ENABLED: "true"
+      APP_MONGO_URI: mongodb://root:${ML_MONGO_PASSWORD:?}@mongo:27017/?authSource=admin
+      APP_MONGO_DATABASE: backend
+      APP_JWT_SECRET: ${APP_JWT_SECRET:?}
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    depends_on:
+      management: {condition: service_started}
+      gateway: {condition: service_started}
+      supervisor: {condition: service_started}
+      relay: {condition: service_started}

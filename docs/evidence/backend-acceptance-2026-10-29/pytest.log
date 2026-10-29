@@ -1,0 +1,12 @@
+sss..................................................................... [ 32%]
+........................................................................ [ 65%]
+........................................................................ [ 98%]
+....                                                                     [100%]
+=============================== warnings summary ===============================
+tests/ml/test_backend_acceptance.py::test_http_submit_train_approve_route_predict_restart_and_rollback
+  /tmp/ml-ebm-deps/torch/_utils.py:776: UserWarning: TypedStorage is deprecated. It will be removed in the future and UntypedStorage will be the only storage class. This should only matter to you if you are using storages directly.  To access UntypedStorage directly, use tensor.untyped_storage() instead of tensor.storage()
+    return self.fget.__get__(instance, owner)()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+-------- generated xml file: /tmp/ml-backend-acceptance-final/junit.xml --------
+217 passed, 3 skipped, 1 warning in 14.79s

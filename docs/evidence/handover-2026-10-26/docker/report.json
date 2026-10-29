@@ -1,0 +1,79 @@
+{
+  "started_at": "2026-10-26T03:16:20.992438+00:00",
+  "project": "backend-verify-4993264301f9",
+  "image": "local/backend-validation:4993264301f9",
+  "checks": [
+    {
+      "name": "production image builds and declares a non-root user",
+      "evidence": true
+    },
+    {
+      "name": "unmodified image CMD, readiness, clean OpenAPI and graceful shutdown",
+      "evidence": true
+    },
+    {
+      "name": "RabbitMQ quorum queue has two live image-based Taskiq consumers",
+      "evidence": {
+        "name": "validation.4993264301f9",
+        "type": "quorum",
+        "messages_unacknowledged": 0,
+        "consumers": 2,
+        "messages_ready": 0
+      }
+    },
+    {
+      "name": "MongoDB-backed admin/login/registration/JWT and kernel authorization",
+      "evidence": true
+    },
+    {
+      "name": "32 authenticated kernel jobs complete across two API and two task workers",
+      "evidence": {
+        "jobs": 32,
+        "api_pids": [
+          9,
+          10
+        ],
+        "task_pids": [
+          8,
+          9
+        ]
+      }
+    },
+    {
+      "name": "RabbitMQ queue drains with no ready or unacknowledged messages",
+      "evidence": {
+        "name": "validation.4993264301f9",
+        "type": "quorum",
+        "messages_unacknowledged": 0,
+        "consumers": 2,
+        "messages_ready": 0
+      }
+    },
+    {
+      "name": "API container restart preserves Mongo session and Redis job snapshots",
+      "evidence": true
+    },
+    {
+      "name": "full pytest suite including real two-process broker and MongoDB integration",
+      "evidence": true
+    },
+    {
+      "name": "logout revokes the persisted MongoDB session",
+      "evidence": true
+    }
+  ],
+  "passed": true,
+  "docker": {
+    "client": "29.4.0",
+    "server": "29.4.0"
+  },
+  "image_id": "sha256:40dbbc13c30674dc418e7443f147dce7ab42fed24f7ec6ed3344cae10c86b2d0",
+  "platform": "linux/arm64",
+  "versions": {
+    "rabbitmq": "4.4.0",
+    "redis": "Redis server v=7.4.8 sha=00000000:0 malloc=jemalloc-5.3.0 bits=64 build=9bb04eb328b7100a",
+    "mongodb": "db version v8.3.13"
+  },
+  "cleanup_complete": true,
+  "finished_at": "2026-10-26T03:17:13.339519+00:00"
+}

@@ -1,0 +1,63 @@
+{
+  "date": "2026-10-29",
+  "qualification": "local CPU smoke only; not target runtime or production qualification",
+  "environment": {
+    "python": "3.10.12",
+    "dependencies": {
+      "torch": "2.0.1",
+      "numpy": "1.26.4",
+      "fastapi": "0.124.0",
+      "pydantic": "2.8.2",
+      "SQLAlchemy": "2.0.44",
+      "alembic": "1.17.2",
+      "pytest": "8.3.2",
+      "pytest-asyncio": "0.25.2",
+      "opentelemetry-api": "1.38.0",
+      "opentelemetry-sdk": "1.38.0"
+    },
+    "application_database": "isolated SQLite",
+    "training_compute": "CPU",
+    "test_event_loop": "test-only polling selector; application loops unchanged"
+  },
+  "pytest": {
+    "tests": 206,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 2,
+    "passed": 204
+  },
+  "case_groups": {
+    "ml": 45,
+    "test_boundaries": 161
+  },
+  "checks": {
+    "strict_mypy_core_source_files": 30,
+    "dependency_boundaries": "passed",
+    "source_compilation": "passed",
+    "management_imports_without_torch": "passed",
+    "compose_official_json_schema": "passed",
+    "new_changed_source_unused_imports": "passed"
+  },
+  "demo": {
+    "job_id": "a789c100-bfa0-4037-8fd2-70c1503fb9db",
+    "state": "SUCCEEDED",
+    "model_binding_id": "33a58eac-a13e-466c-8a19-a4398a25ba4c",
+    "manifest_digest": "d46a6bf4356fbee50da823c63cd7978f2c43b26dddc79936c024f1cab5eb9c63",
+    "dataset_digest": "0d3b1bc213b97137c2046846ae72f600739146fdb61f8d2b0215558804ae1885",
+    "decision": "APPROVED_BY_POLICY",
+    "report_digest": "01dbaf8b75ae5d40f00d86b8a6163fd38ba8ca9b2684495e42b91cc1ee93958a",
+    "metrics": {
+      "accuracy": 1,
+      "samples": 64
+    }
+  },
+  "not_executed": [
+    "real Taskiq/RabbitMQ/Redis Receiver cases (2)",
+    "PostgreSQL contract profile",
+    "MLflow/S3 remote adapter qualification",
+    "role image builds and full Compose rollout",
+    "entire inherited template suite",
+    "OTLP collector delivery",
+    "production security/capacity/restore/SLO qualification"
+  ]
+}

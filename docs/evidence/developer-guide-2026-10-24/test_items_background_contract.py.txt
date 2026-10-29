@@ -1,0 +1,231 @@
+"""Review the optional background capability using its real public contracts."""
+
+from contextlib import AsyncExitStack, asynccontextmanager
+
+import pytest
+from httpx import ASGITransport, AsyncClient
+
+from bootstrap.components import ModuleCatalog, ModuleDefinition, ModuleExports
+from bootstrap.items import build_items_module
+from server import create_app
+from src.api.auth import current_principal
+from src.api.items.dependencies import get_item_read_jobs
+from src.api.items.routers import router
+from src.application.identity.facade import IdentityServices
+from src.application.items.facade import ItemServices
+from src.application.items.jobs import ItemReadJobService
+from src.application.items.service import ItemService
+from src.application.items.tasks import ItemReadHandler
+from src.application.jobs.service import JobService
+from src.application.registry import TaskRegistry
+from src.config.settings import Settings
+from src.domain.identity.errors import AuthenticationFailed, AuthorizationDenied
+from src.domain.items.errors import InvalidItem, ItemNotFound
+from src.infrastructure.persistence.mongo import MongoResource
+from tests.test_items_contract import (
+    OTHER,
+    OWNER,
+    PEER,
+    UNPRIVILEGED,
+    Collection,
+    Database,
+    FakeItemRepository,
+)
+
+
+class Dispatcher:
+    def __init__(self):
+        self.requests = []
+
+    async def dispatch(self, request):
+        self.requests.append(request)
+
+    async def get(self, job_id):
+        return None
+
+
+def owner_with_jobs():
+    return type(OWNER)(
+        OWNER.user_id,
+        OWNER.tenant_id,
+        OWNER.username,
+        OWNER.permissions | {"jobs.read"},
+    )
+
+
+def job_dependencies():
+    repository = FakeItemRepository()
+    service = ItemService(repository)
+    registry = TaskRegistry()
+    dispatcher = Dispatcher()
+
+    async def resolve(tenant_id, user_id):
+        return OWNER
+
+    registry.register("items.read", ItemReadHandler(service, resolve))
+    jobs = JobService(dispatcher, registry)
+    return repository, service, ItemReadJobService(service, jobs), dispatcher
+
+
+async def test_producer_authorizes_before_queue_and_sets_trusted_metadata():
+    _, service, jobs, dispatcher = job_dependencies()
+    item = await service.create(OWNER, "one")
+    for principal, error in [
+        (UNPRIVILEGED, AuthorizationDenied),
+        (PEER, ItemNotFound),
+        (OTHER, ItemNotFound),
+        (OWNER, AuthorizationDenied),
+    ]:
+        with pytest.raises(error):
+            await jobs.submit_read(principal, item.item_id)
+        assert dispatcher.requests == []
+    principal = owner_with_jobs()
+    snapshot = await jobs.submit_read(principal, item.item_id)
+    request = dispatcher.requests[0]
+    assert request.name == "items.read"
+    assert request.tenant_id == OWNER.tenant_id
+    assert request.owner_id == OWNER.user_id
+    assert request.payload == {
+        "tenant_id": OWNER.tenant_id,
+        "user_id": OWNER.user_id,
+        "item_id": item.item_id,
+    }
+    assert request.job_id == snapshot.job_id
+
+
+async def test_worker_rechecks_identity_permissions_and_read_replay_has_no_writes():
+    repository, service, _, _ = job_dependencies()
+    item = await service.create(OWNER, "one")
+    resolved = []
+    current = OWNER
+
+    async def resolve(tenant_id, user_id):
+        resolved.append((tenant_id, user_id))
+        return current
+
+    handler = ItemReadHandler(service, resolve)
+    payload = {
+        "tenant_id": OWNER.tenant_id,
+        "user_id": OWNER.user_id,
+        "item_id": item.item_id,
+    }
+    first = await handler(payload)
+    second = await handler(payload)
+    assert first == second
+    assert set(first) == {"item_id", "name", "created_at"}
+    assert isinstance(first["created_at"], str)
+    assert len(repository.items) == 1
+    assert resolved == [(OWNER.tenant_id, OWNER.user_id)] * 2
+    current = UNPRIVILEGED
+    with pytest.raises(AuthorizationDenied):
+        await handler(payload)
+
+
+async def test_worker_propagates_disabled_account_denial():
+    async def disabled(tenant_id, user_id):
+        raise AuthenticationFailed("Account unavailable")
+
+    handler = ItemReadHandler(ItemService(FakeItemRepository()), disabled)
+    with pytest.raises(AuthenticationFailed):
+        await handler({"tenant_id": OWNER.tenant_id, "user_id": OWNER.user_id, "item_id": "id"})
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        {},
+        {"tenant_id": 1},
+        {"tenant_id": "a", "user_id": "b", "item_id": ""},
+        {"tenant_id": "a", "user_id": "b", "item_id": 1},
+    ],
+)
+async def test_handler_validates_payload_before_resolving(payload):
+    async def unexpected(tenant_id, user_id):
+        pytest.fail("Invalid envelope must fail before identity resolution")
+
+    with pytest.raises(InvalidItem):
+        await ItemReadHandler(ItemService(FakeItemRepository()), unexpected)(payload)
+
+
+async def test_api_background_returns_202_location_and_forbids_identity_fields():
+    _, service, jobs, dispatcher = job_dependencies()
+    item = await service.create(OWNER, "one")
+    app = create_app(
+        Settings(_env_file=None, environment="test"),
+        modules=(ModuleDefinition("items", routers=(router,)),),
+    )
+    app.dependency_overrides[get_item_read_jobs] = lambda: jobs
+    app.dependency_overrides[current_principal] = owner_with_jobs
+    async with AsyncClient(transport=ASGITransport(app), base_url="http://test") as client:
+        response = await client.post("/api/v1/items/runs", json={"item_id": item.item_id})
+        assert response.status_code == 202
+        assert response.headers["location"] == f"/api/v1/jobs/{response.json()['job_id']}"
+        assert response.json()["status"] == "queued"
+        invalid = await client.post(
+            "/api/v1/items/runs",
+            json={
+                "item_id": item.item_id,
+                "tenant_id": OTHER.tenant_id,
+                "user_id": OTHER.user_id,
+            },
+        )
+        assert invalid.status_code == 422
+    assert len(dispatcher.requests) == 1
+
+
+@pytest.mark.parametrize("role", ["api", "worker"])
+async def test_module_real_facade_task_and_identity_in_both_roles(monkeypatch, role):
+    settings = Settings(_env_file=None, environment="test", expose_job_api=True)
+    collection = Collection()
+    monkeypatch.setattr(MongoResource, "database", property(lambda self: Database(collection)))
+    resolved = []
+
+    class Identity:
+        async def resolve_principal(self, tenant_id, user_id):
+            resolved.append((tenant_id, user_id))
+            return OWNER
+
+    @asynccontextmanager
+    async def identity_lifespan(context):
+        yield ModuleExports(services=IdentityServices(Identity()))
+
+    definition = build_items_module(settings)
+    catalog = ModuleCatalog(
+        (
+            definition,
+            ModuleDefinition("identity", kind="platform", lifespan=identity_lifespan),
+        )
+    )
+    assert [entry.name for entry in catalog.definitions] == ["identity", "items"]
+    registry = TaskRegistry()
+    dispatcher = Dispatcher()
+    jobs = JobService(dispatcher, registry)
+    async with AsyncExitStack() as stack, AsyncClient() as client:
+        bindings = await catalog.start(
+            stack,
+            settings=settings,
+            http_client=client,
+            role=role,
+            resources={"mongodb": MongoResource(settings)},
+            jobs=jobs,
+            registry=registry,
+        )
+        facade = bindings.services["items"]
+        assert isinstance(facade, ItemServices)
+        assert collection.indexes
+        item = await facade.items.create(OWNER, "one")
+        snapshot = await facade.read_jobs.submit_read(owner_with_jobs(), item.item_id)
+        result = await bindings.registry.resolve("items.read")(dispatcher.requests[0].payload)
+        assert result["item_id"] == item.item_id
+        assert snapshot.job_id == dispatcher.requests[0].job_id
+        assert resolved == [(OWNER.tenant_id, OWNER.user_id)]
+
+
+def test_module_requires_jobs_api_and_declared_identity():
+    with pytest.raises(ValueError, match="APP_EXPOSE_JOB_API=true"):
+        build_items_module(Settings(_env_file=None, environment="test", expose_job_api=False))
+    definition = build_items_module(
+        Settings(_env_file=None, environment="test", expose_job_api=True)
+    )
+    with pytest.raises(ValueError, match="Required module is not registered: identity"):
+        ModuleCatalog((definition,))

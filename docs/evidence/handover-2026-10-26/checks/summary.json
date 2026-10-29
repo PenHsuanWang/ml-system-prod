@@ -1,0 +1,77 @@
+{
+  "executed_at": "2026-10-26T03:26:17.568322+00:00",
+  "checks": [
+    {
+      "name": "ruff",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "ruff",
+        "check",
+        "."
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "format",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "mypy",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "mypy",
+        "src",
+        "bootstrap",
+        "scripts",
+        "server.py",
+        "worker.py",
+        "manage.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "boundaries",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "scripts/check_boundaries.py"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "pip-check",
+      "command": [
+        "/Users/pwang/Developer/python-backend-server-template/.venv/bin/python",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0
+    },
+    {
+      "name": "actionlint",
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--volume",
+        "/Users/pwang/Developer/python-backend-server-template:/repo:ro",
+        "--workdir",
+        "/repo",
+        "rhysd/actionlint:1.7.12@sha256:b1934ee5f1c509618f2508e6eb47ee0d3520686341fec936f3b79331f9315667",
+        "-color"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "passed": true
+}

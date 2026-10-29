@@ -1,0 +1,140 @@
+name: ml-system-ebm
+
+x-ml-environment: &ml-environment
+  ML_DATABASE_URL: postgresql+psycopg://ml:${ML_DB_PASSWORD:?set ML_DB_PASSWORD}@postgres:5432/ml
+  ML_TRACKER_BACKEND: mlflow
+  ML_TRACKING_URI: http://mlflow:5000
+  ML_RABBITMQ_URL: amqp://ml:${ML_MQ_PASSWORD:?set ML_MQ_PASSWORD}@rabbitmq:5672/
+  ML_REDIS_URL: redis://redis:6379/0
+  ML_ARTIFACT_ROOT: /app/var/artifacts
+  ML_DATASET_ROOT: /app/var/datasets
+  ML_EXECUTION_ROOT: /app/var/executions
+  ML_MODEL_ENVIRONMENT: dev
+  APP_TASK_BACKEND: disabled
+  APP_IDENTITY_ENABLED: "true"
+  APP_MONGO_ENABLED: "true"
+  APP_MONGO_URI: mongodb://root:${ML_MONGO_PASSWORD:?set ML_MONGO_PASSWORD}@mongo:27017/?authSource=admin
+  APP_MONGO_DATABASE: backend
+  APP_JWT_SECRET: ${APP_JWT_SECRET:?set APP_JWT_SECRET}
+  MLFLOW_HTTP_REQUEST_TIMEOUT: "5"
+  MLFLOW_HTTP_REQUEST_MAX_RETRIES: "1"
+  OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+
+x-ml-app: &ml-app
+  build: {context: ., dockerfile: Dockerfile.ml, target: api}
+  user: ${ML_UID:-1000}:${ML_GID:-1000}
+  environment: *ml-environment
+  volumes: [./var:/app/var]
+  init: true
+  restart: unless-stopped
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  depends_on:
+    postgres: {condition: service_healthy}
+    mongo: {condition: service_healthy}
+    rabbitmq: {condition: service_healthy}
+    mlflow: {condition: service_healthy}
+
+services:
+  postgres:
+    image: postgres:17
+    environment: {POSTGRES_DB: ml, POSTGRES_USER: ml, POSTGRES_PASSWORD: "${ML_DB_PASSWORD:?}"}
+    volumes: [app-db:/var/lib/postgresql/data]
+    healthcheck: {test: [CMD-SHELL, "pg_isready -U ml -d ml"], interval: 5s, timeout: 3s, retries: 20}
+  mlflow-db:
+    image: postgres:17
+    environment: {POSTGRES_DB: mlflow, POSTGRES_USER: mlflow, POSTGRES_PASSWORD: "${MLFLOW_DB_PASSWORD:?}"}
+    volumes: [mlflow-db:/var/lib/postgresql/data]
+    healthcheck: {test: [CMD-SHELL, "pg_isready -U mlflow -d mlflow"], interval: 5s, timeout: 3s, retries: 20}
+  rabbitmq:
+    image: rabbitmq:4.4-management
+    environment: {RABBITMQ_DEFAULT_USER: ml, RABBITMQ_DEFAULT_PASS: "${ML_MQ_PASSWORD:?}"}
+    volumes: [broker:/var/lib/rabbitmq]
+    healthcheck: {test: [CMD, rabbitmq-diagnostics, -q, ping], interval: 5s, timeout: 5s, retries: 20}
+  redis:
+    image: redis:7
+    command: [redis-server, --appendonly, "yes"]
+  mongo:
+    image: mongo:7
+    environment: {MONGO_INITDB_ROOT_USERNAME: root, MONGO_INITDB_ROOT_PASSWORD: "${ML_MONGO_PASSWORD:?}"}
+    volumes: [identity-db:/data/db]
+    healthcheck: {test: [CMD, mongosh, --quiet, --eval, "db.adminCommand('ping').ok"], interval: 5s, timeout: 5s, retries: 20}
+  minio:
+    image: minio/minio:latest
+    command: [server, /data]
+    environment: {MINIO_ROOT_USER: ml-artifacts, MINIO_ROOT_PASSWORD: "${ML_S3_PASSWORD:?}"}
+    volumes: [artifacts:/data]
+  minio-init:
+    image: minio/mc:latest
+    depends_on: [minio]
+    environment: {MINIO_ROOT_USER: ml-artifacts, MINIO_ROOT_PASSWORD: "${ML_S3_PASSWORD:?}"}
+    entrypoint: [/bin/sh, -c]
+    command:
+      - 'for attempt in $$(seq 1 30); do mc alias set internal http://minio:9000 "$$MINIO_ROOT_USER" "$$MINIO_ROOT_PASSWORD" && mc mb --ignore-existing internal/ml-artifacts && exit 0; sleep 1; done; exit 1'
+  mlflow:
+    build: {context: ., dockerfile: Dockerfile.mlflow}
+    environment:
+      MLFLOW_BACKEND_STORE_URI: postgresql+psycopg://mlflow:${MLFLOW_DB_PASSWORD:?}@mlflow-db:5432/mlflow
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: ml-artifacts
+      AWS_SECRET_ACCESS_KEY: ${ML_S3_PASSWORD:?}
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/health', timeout=2)"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    depends_on:
+      mlflow-db: {condition: service_healthy}
+      minio-init: {condition: service_completed_successfully}
+  migrate:
+    <<: *ml-app
+    restart: "no"
+    command: [python, -m, bootstrap.ml_cli, migrate]
+  management:
+    <<: *ml-app
+    ports: [127.0.0.1:8000:8000]
+    mem_limit: 512m
+    cpus: 1
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+  relay:
+    <<: *ml-app
+    command: [python, -m, bootstrap.ml_cli, relay]
+    environment: {<<: *ml-environment, ML_DEPLOYMENT_ROLE: relay}
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    mem_limit: 256m
+  supervisor:
+    <<: *ml-app
+    build: {context: ., dockerfile: Dockerfile.ml, target: training}
+    environment: {<<: *ml-environment, ML_DEPLOYMENT_ROLE: supervisor}
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    mem_limit: 1g
+    cpus: 1
+    pids_limit: 128
+    stop_grace_period: 40s
+    command: [taskiq, worker, "bootstrap.ml_worker:broker", --workers, "1", --max-async-tasks, "1", --ack-type, manual, --wait-tasks-timeout, "330"]
+  control:
+    <<: *ml-app
+    build: {context: ., dockerfile: Dockerfile.ml, target: training}
+    environment: {<<: *ml-environment, ML_DEPLOYMENT_ROLE: control}
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    command: [python, -m, bootstrap.ml_cli, control]
+    mem_limit: 2g
+    cpus: 2
+    pids_limit: 256
+    ports: [127.0.0.1:8001:8001]
+    stop_grace_period: 45s
+  gateway:
+    <<: *ml-app
+    network_mode: service:control
+    environment: {<<: *ml-environment, ML_DEPLOYMENT_ROLE: gateway}
+    command: [uvicorn, "bootstrap.ml_gateway:create_app", --factory, --host, 0.0.0.0, --port, "8001", --limit-concurrency, "64"]
+    depends_on: {control: {condition: service_started}}
+    mem_limit: 256m
+
+volumes:
+  app-db:
+  mlflow-db:
+  identity-db:
+  broker:
+  artifacts:

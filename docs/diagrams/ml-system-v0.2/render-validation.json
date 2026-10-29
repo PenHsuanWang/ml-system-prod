@@ -1,0 +1,41 @@
+{
+  "design_version": "ML-SAD-001 v0.2",
+  "date": "2026-10-27",
+  "renderer": "rsvg-convert version 2.61.3\n\nlibraries used:\n  cairo 1.18.4\n  pango 1.57.0\n  harfbuzz 12.3.0\n  fontconfig 2.17.1",
+  "scope": "Four proposed C4 views rebuilt from v0.2; unavailable earlier C4 sources were not compared",
+  "checks": [
+    {
+      "source": "c4-l1-context.svg",
+      "svg_sha256": "df77c7d74e05e9bed5b5f213921e839c779508682235e2821432e82762440c47",
+      "preview_width": 1500,
+      "preview_height": 942,
+      "render_exit_code": 0,
+      "visually_inspected": true
+    },
+    {
+      "source": "c4-l2-containers.svg",
+      "svg_sha256": "b2ccbee913448b13a155912b788930ea689f7d104d62574710eb29fa54d2618b",
+      "preview_width": 1800,
+      "preview_height": 1408,
+      "render_exit_code": 0,
+      "visually_inspected": true
+    },
+    {
+      "source": "c4-l3-training-runner.svg",
+      "svg_sha256": "8af41d1da81b0f957d78e37c3b366ba7c5efd311efe6b28d82316768de0da006",
+      "preview_width": 1650,
+      "preview_height": 1230,
+      "render_exit_code": 0,
+      "visually_inspected": true
+    },
+    {
+      "source": "c4-l4-serving-loader.svg",
+      "svg_sha256": "de1199adb82e32cbc25ffc2f7cad6103910a3f4e29d7af5dd8db3c01692e929a",
+      "preview_width": 1750,
+      "preview_height": 1209,
+      "render_exit_code": 0,
+      "visually_inspected": true
+    }
+  ],
+  "runtime_implementation_claim": false
+}

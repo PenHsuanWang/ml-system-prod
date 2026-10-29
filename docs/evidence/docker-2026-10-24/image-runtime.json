@@ -1,0 +1,15 @@
+{
+  "python": "3.13.17",
+  "uid": 999,
+  "platform": "linux/arm64",
+  "packages": {
+    "fastapi": "0.161.1",
+    "uvicorn": "0.54.0",
+    "taskiq": "0.12.6",
+    "taskiq-aio-pika": "0.6.1",
+    "redis": "8.1.0",
+    "pymongo": "4.19.0",
+    "pwdlib": "0.3.1",
+    "PyJWT": "2.15.1"
+  }
+}

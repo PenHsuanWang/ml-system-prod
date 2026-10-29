@@ -1,0 +1,5 @@
+Source: /home/pwang/pwang-dev/python-backend-server-template
+Repository: https://github.com/PenHsuanWang/python-backend-server-template
+Commit: a0cea22a2a5d118b42a2955d3b58ef02c9d16be9
+Copied in place: bootstrap/, src/, scripts/, tests/, server.py, worker.py, manage.py
+Also preserved: frontend/, baseline container/dependency files and referenced documentation/evidence.

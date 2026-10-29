@@ -1,0 +1,63 @@
+{
+  "status": "FULL_BACKEND_NOT_ACCEPTED",
+  "local_checks_passed": true,
+  "functional_backend_accepted": false,
+  "production_accepted": false,
+  "python": "3.10.12",
+  "torch": "2.0.1",
+  "pytest": {
+    "tests": 220,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3,
+    "passed": 217
+  },
+  "checks": [
+    {
+      "name": "boundaries",
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.165,
+      "log": "boundaries.log"
+    },
+    {
+      "name": "core-typing",
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 1.973,
+      "log": "core-typing.log"
+    },
+    {
+      "name": "unused-imports",
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.215,
+      "log": "unused-imports.log"
+    },
+    {
+      "name": "compile",
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 0.033,
+      "log": "compile.log"
+    },
+    {
+      "name": "pytest",
+      "exit_code": 0,
+      "passed": true,
+      "elapsed_seconds": 15.615,
+      "log": "pytest.log"
+    }
+  ],
+  "acceptance_blockers": [
+    "Target Python 3.12 was not used",
+    "Target Torch 2.6.0 was not used",
+    "Host-specific test event-loop workaround was used",
+    "Required isolated stack endpoints were not all enabled",
+    "Required suite contains skipped cases"
+  ],
+  "production_gates": [
+    "Qualified immutable images/dependency locks and security evidence",
+    "Approved capacity/SLO/retention/restore objectives and executed qualification"
+  ]
+}

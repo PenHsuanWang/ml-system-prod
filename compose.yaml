@@ -1,0 +1,147 @@
+name: modular-fastapi-backend
+
+x-app-environment: &app-environment
+  APP_APP_NAME: "${APP_APP_NAME:-Python Backend Platform}"
+  APP_ENVIRONMENT: development
+  APP_TASK_BACKEND: distributed
+  APP_RABBITMQ_URL: amqp://backend:local-backend-password@rabbitmq:5672/
+  APP_REDIS_URL: redis://redis:6379/0
+  APP_QUEUE_NAME: backend.jobs
+  APP_JOB_RETENTION_SECONDS: "${APP_JOB_RETENTION_SECONDS:-3600}"
+  APP_JOB_TIMEOUT_SECONDS: "${APP_JOB_TIMEOUT_SECONDS:-60}"
+  APP_SHUTDOWN_TIMEOUT_SECONDS: "${APP_SHUTDOWN_TIMEOUT_SECONDS:-10}"
+  APP_TASK_CONCURRENCY: "${APP_TASK_CONCURRENCY:-8}"
+  APP_LOG_LEVEL: "${APP_LOG_LEVEL:-info}"
+  APP_EXPOSE_JOB_API: "false"
+  APP_MONGO_ENABLED: "true"
+  APP_MONGO_URI: "mongodb://backend_root:${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD in .env}@mongodb:27017/backend?authSource=admin"
+  APP_MONGO_DATABASE: backend
+  APP_MONGO_POOL_SIZE: "${APP_MONGO_POOL_SIZE:-20}"
+  APP_IDENTITY_ENABLED: "true"
+  APP_JWT_SECRET: "${APP_JWT_SECRET:?Set APP_JWT_SECRET in .env}"
+  APP_JWT_ISSUER: "${APP_JWT_ISSUER:-backend}"
+  APP_JWT_AUDIENCE: "${APP_JWT_AUDIENCE:-backend-api}"
+  APP_ACCESS_TOKEN_SECONDS: "${APP_ACCESS_TOKEN_SECONDS:-900}"
+  APP_PASSWORD_HASH_CONCURRENCY: "${APP_PASSWORD_HASH_CONCURRENCY:-2}"
+  APP_THREAD_WORKERS: "${APP_THREAD_WORKERS:-4}"
+  APP_THREAD_QUEUE_SIZE: "${APP_THREAD_QUEUE_SIZE:-16}"
+  APP_KERNEL_API_ENABLED: "${APP_KERNEL_API_ENABLED:-false}"
+  APP_EXPORTS_API_ENABLED: "${APP_EXPORTS_API_ENABLED:-false}"
+  APP_KERNEL_TIMEOUT_SECONDS: "${APP_KERNEL_TIMEOUT_SECONDS:-30}"
+  APP_RESOURCE_BACKEND: redis
+  APP_RESOURCE_LIMITS: '${APP_RESOURCE_LIMITS:-{"compute":1}}'
+  APP_RESOURCE_LEASE_SECONDS: "${APP_RESOURCE_LEASE_SECONDS:-30}"
+
+x-infrastructure-dependencies: &infrastructure-dependencies
+  rabbitmq:
+    condition: service_healthy
+  redis:
+    condition: service_healthy
+  mongodb:
+    condition: service_healthy
+
+services:
+  api:
+    build: .
+    environment:
+      <<: *app-environment
+      APP_WORKERS: "${APP_WORKERS:-1}"
+      APP_RELOAD: "false"
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on: *infrastructure-dependencies
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=3).read()"
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    init: true
+    stop_grace_period: 30s
+    restart: unless-stopped
+
+  worker:
+    build: .
+    environment:
+      <<: *app-environment
+      APP_WORKER_PROCESSES: "${APP_WORKER_PROCESSES:-2}"
+    command:
+      - /bin/sh
+      - -c
+      - >-
+        exec taskiq worker worker:broker
+        --workers "$${APP_WORKER_PROCESSES}"
+        --max-async-tasks "$${APP_TASK_CONCURRENCY}"
+        --ack-type when_saved
+        --wait-tasks-timeout "$${APP_SHUTDOWN_TIMEOUT_SECONDS}"
+    depends_on: *infrastructure-dependencies
+    init: true
+    stop_grace_period: 30s
+    restart: unless-stopped
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    hostname: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: backend
+      RABBITMQ_DEFAULT_PASS: local-backend-password
+    ports:
+      - "127.0.0.1:5672:5672"
+      - "127.0.0.1:15672:15672"
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes", "--appendfsync", "everysec"]
+    ports:
+      - "127.0.0.1:6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  mongodb:
+    image: mongo:8
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: backend_root
+      MONGO_INITDB_ROOT_PASSWORD: "${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD in .env}"
+      MONGO_INITDB_DATABASE: backend
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          mongosh --quiet --host 127.0.0.1
+          --username "$${MONGO_INITDB_ROOT_USERNAME}"
+          --password "$${MONGO_INITDB_ROOT_PASSWORD}"
+          --authenticationDatabase admin
+          --eval 'quit(db.adminCommand({ping: 1}).ok ? 0 : 2)'
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    restart: unless-stopped
+
+volumes:
+  rabbitmq-data:
+  redis-data:
+  mongodb-data:

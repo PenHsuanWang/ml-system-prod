@@ -1,0 +1,16 @@
+{
+  "started_at": "2026-10-26T03:16:20.944867+00:00",
+  "passed": true,
+  "smoke": {
+    "version": "0.1.0",
+    "python": "3.13.11",
+    "non_editable": true,
+    "external_network_blocked": true,
+    "lifespan_and_health": true
+  },
+  "artifacts": {
+    "modular_fastapi_backend-0.1.0-py3-none-any.whl": "66d2e6042a2273d735d7e6fd277756ba5ecdc537ba61cef77f4134a2e20de1f0",
+    "modular_fastapi_backend-0.1.0.tar.gz": "e050ad9bfec5bd35ff5eb50321a87fe237b5bd37c5c9fe0cd11ff0be4a1525d7"
+  },
+  "finished_at": "2026-10-26T03:16:46.861665+00:00"
+}

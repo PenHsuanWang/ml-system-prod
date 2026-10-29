@@ -1,0 +1,6 @@
+FROM python:3.12-slim
+RUN pip install --no-cache-dir 'mlflow==3.6.0' 'psycopg[binary]>=3.2,<4' boto3
+RUN useradd --uid 10001 --create-home mlflow
+USER mlflow
+EXPOSE 5000
+ENTRYPOINT ["mlflow", "server", "--host", "0.0.0.0", "--port", "5000", "--serve-artifacts", "--artifacts-destination", "s3://ml-artifacts", "--allowed-hosts", "mlflow:5000,localhost:5000,127.0.0.1:5000"]

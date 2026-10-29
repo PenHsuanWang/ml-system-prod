@@ -1,0 +1,108 @@
+"""Exercise a freshly materialized guide capability with real container services."""
+
+import json
+import os
+import re
+import runpy
+import shutil
+import sys
+from datetime import UTC, datetime
+from pathlib import Path
+
+SOURCE = Path('/Users/pwang/Developer/python-backend-server-template')
+PROJECT = SOURCE / 'work/guide-validation/14a0a95638f6/background'
+for name in ('Dockerfile', '.dockerignore', 'compose.validation.yaml'):
+    shutil.copy2(SOURCE / name, PROJECT / name)
+# Refresh delivery scripts/locks from the final baseline; teaching modules stay
+# exactly as extracted by verify_guide.py, with no runtime-core edits.
+for name in ('requirements-runtime.lock', 'requirements-build.lock'):
+    shutil.copy2(SOURCE / name, PROJECT / name)
+shutil.copy2(SOURCE / 'scripts/verify_docker.py', PROJECT / 'scripts/verify_docker.py')
+override = PROJECT / 'compose.adoption.yaml'
+override.write_text('''services:
+  api:
+    environment:
+      ITEMS_ENABLED: "true"
+      APP_EXPOSE_JOB_API: "true"
+  worker:
+    environment:
+      ITEMS_ENABLED: "true"
+      APP_EXPOSE_JOB_API: "true"
+''')
+os.environ['BUILDX_CONFIG'] = str(SOURCE / 'work/docker-buildx')
+namespace = runpy.run_path(str(PROJECT / 'scripts/verify_docker.py'))
+run = namespace['Verification'](SOURCE / 'work/delivery-adoption', False)
+run.compose_args.extend(['-f', str(override)])
+run.report['purpose'] = 'Fresh guide background capability, real image/API/worker/Mongo/RabbitMQ/Redis'
+run.report['guide_sha256'] = json.loads((PROJECT.parent / 'summary.json').read_text())['guide_sha256']
+run.report['source_project'] = str(PROJECT)
+
+
+def login(base, tenant, username):
+    code, data, _ = run.http(base, '/api/v1/identity/login', body={
+        'tenant_id': tenant, 'username': username, 'password': run.admin_password,
+    })
+    assert code == 200, data
+    token = data['access_token']
+    run.passwords.append(token)
+    return token
+
+
+try:
+    run.execute()
+    base = f"http://127.0.0.1:{run.port('api', 8000)}"
+    for tenant, username in [('adoption', 'item_owner'), ('other', 'other_owner')]:
+        run.compose('exec', '-T', 'api', 'python', 'manage.py', 'create-admin',
+                    '--tenant-id', tenant, '--username', username,
+                    '--permission', 'items.read', '--permission', 'items.write',
+                    '--password-stdin', input_text=run.admin_password + '\n')
+    token = login(base, 'adoption', 'item_owner')
+    code, item, _ = run.http(base, '/api/v1/items', token=token, body={'name': 'neutral-item'})
+    assert code == 201, item
+    item_id = item['item_id']
+    assert run.http(base, f'/api/v1/items/{item_id}', token=token)[0] == 200
+    code, _, _ = run.http(base, '/api/v1/identity/register', token=token, body={
+        'username': 'item_peer', 'password': run.admin_password,
+        'permissions': ['items.read', 'items.write', 'jobs.read'],
+    })
+    assert code == 201
+    peer = login(base, 'adoption', 'item_peer')
+    other = login(base, 'other', 'other_owner')
+    for hidden in (peer, other):
+        assert run.http(base, f'/api/v1/items/{item_id}', token=hidden)[0] == 404
+        assert run.http(base, '/api/v1/items/runs', token=hidden, body={'item_id': item_id})[0] == 404
+    run.passed('documented Mongo capability creates/reads data and rejects peer-owner/cross-tenant access')
+    code, job, _ = run.http(base, '/api/v1/items/runs', token=token, body={'item_id': item_id})
+    assert code == 202, job
+    path = f"/api/v1/jobs/{job['job_id']}"
+
+    def completed():
+        code, snapshot, _ = run.http(base, path, token=token)
+        assert code == 200 and snapshot['status'] not in {'failed', 'cancelled'}, snapshot
+        if snapshot['status'] != 'succeeded':
+            return False
+        assert snapshot['result']['item_id'] == item_id
+        assert snapshot['result']['name'] == 'neutral-item'
+        return True
+
+    run.wait_for(completed)
+    for hidden in (peer, other):
+        assert run.http(base, path, token=hidden)[0] == 404
+    run.passed('documented items.read job completes through real RabbitMQ worker with owned result isolation')
+    run.report['passed'] = True
+except Exception as error:
+    run.report['passed'] = False
+    run.report['error'] = run.redact(f'{type(error).__name__}: {error}')
+    print(run.report['error'], flush=True)
+finally:
+    try:
+        run.cleanup()
+    except Exception as error:
+        run.report['cleanup_error'] = run.redact(str(error))
+        run.report['passed'] = False
+    run.report['finished_at'] = datetime.now(UTC).isoformat()
+    if run.report.get('cleanup_complete'):
+        run.env_file.unlink(missing_ok=True)
+    (run.output / 'report.json').write_text(run.redact(json.dumps(run.report, indent=2)))
+    print('Adoption evidence:', run.output, flush=True)
+sys.exit(0 if run.report['passed'] else 1)

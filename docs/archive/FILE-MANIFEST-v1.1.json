@@ -1,0 +1,126 @@
+{
+  "package": "PyTorch ML System Reviewed Documentation",
+  "document_status": "Design proposal / not implementation verification",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1039,
+      "sha256": "198949f38ebc695f46637639baaaf9add67125690becb7db6a24835c9bc741de"
+    },
+    {
+      "path": "REVIEW-REPORT.md",
+      "bytes": 6314,
+      "sha256": "721c98ecdf5b75d6cddfd54d169065cf6be12970157494afa64f601afcbb4dc3"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/01-c4-l1-system-context.svg",
+      "bytes": 9961,
+      "sha256": "265d39c5b65659d83643bb45d1eb283eb2f14ac40d718aaf0a13d783505a4054"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/02-c4-l2-containers.svg",
+      "bytes": 19319,
+      "sha256": "4aa8ec6d8a1d5772666c0feac31bd46ccf759939082e9e90dcfec9995a6d99cb"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/03-c4-l3-control-plane.svg",
+      "bytes": 14636,
+      "sha256": "07743e41a3fe4d047162f84e14c746db76f3e1e589d1083b099d1a675a620829"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/04-c4-l3-training-runtime.svg",
+      "bytes": 10470,
+      "sha256": "05e5ef8d5c04965ecb8bd0b0f51e56407eb38a2ba4011ae8302025736cf90486"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/05-c4-l3-serving-runtime.svg",
+      "bytes": 11183,
+      "sha256": "e3a32287bab7b202eb75fe248813b9d540db0d8a8f6262c2dd0ec2ee1e8dc530"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/06-c4-l4-code-ports.svg",
+      "bytes": 12776,
+      "sha256": "e4daad16667f61811345be8b75b3492f8464253d8a7155ee663620ee12b1ceca"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/07-c4-dynamic-training.svg",
+      "bytes": 12943,
+      "sha256": "e6ff7abc92d1234a4fa5cba1aafc5850d9373bdde374487c233f5c4eac77c6b5"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/08-c4-dynamic-model-lifecycle.svg",
+      "bytes": 13027,
+      "sha256": "30945aafc28185afb863dccda17ba594aa46912c104c16adacb18eb8e6f76146"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/09-c4-dynamic-serving.svg",
+      "bytes": 10683,
+      "sha256": "7e1ac308ce0629d4d9f03a913f946960141f2271eff341508ab16a0bd6b152f2"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/10-c4-deployment-production.svg",
+      "bytes": 12940,
+      "sha256": "dccafcba6760ffe555ee6ed36bee6f4b64e303ade0182f74e12cf240b375a28d"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/11-c4-data-ownership-lineage.svg",
+      "bytes": 12467,
+      "sha256": "05e357ecc9ee4ed14c7bd82fcc3678b2284e522838dcf91e02d2568c2999ea5e"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/12-sdd-durable-job-state.svg",
+      "bytes": 14873,
+      "sha256": "f3066e52e7e89bea06457c59abe02cc297debb77fd8aec5555611b52c7ad0f8b"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/13-c4-trust-boundaries.svg",
+      "bytes": 10220,
+      "sha256": "e3a3aea8599a05af183088fdd8332295bb8f3f5de0d671b6c8ac915f8c2e34ed"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/14-c4-deployment-local.svg",
+      "bytes": 11670,
+      "sha256": "c1f4a6e6e7e9b3c631cc450182097541e7e45d4b5b2149f8d5e0f8369a46b2b9"
+    },
+    {
+      "path": "docs/diagrams/ml-system-c4/15-c4-dynamic-rollback.svg",
+      "bytes": 11157,
+      "sha256": "807c97ee6458a1e3513e8f7feda2b9e4e87fae1ab1812578c2a98df6a628eccf"
+    },
+    {
+      "path": "docs/pytorch-ml-system-hld.md",
+      "bytes": 36440,
+      "sha256": "afdefa1cd88b06703b1f0d1a55326b6ef3557f7d69c57cf6c447d69e65571526"
+    },
+    {
+      "path": "docs/pytorch-ml-system-lld.md",
+      "bytes": 89602,
+      "sha256": "f32a422de524f62436801b1f070bd0838b64f871191b3a83b5c99d498c21eae2"
+    },
+    {
+      "path": "specs/001-durable-training-jobs/checklists/requirements.md",
+      "bytes": 1705,
+      "sha256": "bb9b8fe0b1ca7636d885cd6126399f27f39af334fc79972add904712b76ae9aa"
+    },
+    {
+      "path": "specs/001-durable-training-jobs/spec.md",
+      "bytes": 21440,
+      "sha256": "8beefe94334986d3740833e78ef211010033d0ff6b44728d64aee6abfd40d36f"
+    },
+    {
+      "path": "specs/README.md",
+      "bytes": 6967,
+      "sha256": "c27dfc2e1e9bceb8ceb098bbc348f900c5b7975cb93a2c5ed88a111509352763"
+    },
+    {
+      "path": "specs/constitution.md",
+      "bytes": 3887,
+      "sha256": "1b55bfd777eb3eef4fc8856c6156bd3e26487d844de9be37fdd294230f5aa8c4"
+    },
+    {
+      "path": "specs/templates/feature-spec-template.md",
+      "bytes": 3405,
+      "sha256": "bf90fcdfafdcc2775e4dce94e8b62bbacbb68c20710a2db2a66c8ec11be9ec86"
+    }
+  ]
+}

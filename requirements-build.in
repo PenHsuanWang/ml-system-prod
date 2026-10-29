@@ -1,0 +1,5 @@
+-r requirements-installer.in
+# Build backend versions must match pyproject.toml.
+build>=1.6,<2
+setuptools==84.2.1
+wheel==0.48.0

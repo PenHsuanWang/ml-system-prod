@@ -1,0 +1,54 @@
+........................................................................ [ 16%]
+........................................................................ [ 32%]
+........................................................................ [ 49%]
+........................................................................ [ 65%]
+........................................................................ [ 81%]
+........................................................................ [ 98%]
+........                                                                 [100%]
+================================ tests coverage ================================
+______________ coverage: platform darwin, python 3.13.11-final-0 _______________
+
+Name                                          Stmts   Miss Branch BrPart  Cover   Missing
+-----------------------------------------------------------------------------------------
+bootstrap/container.py                           34      1      4      1    95%   38
+bootstrap/identity.py                            33     18      4      0    41%   20-34, 38-47
+bootstrap/wiring.py                              20      4      6      2    77%   14-16, 27-29
+bootstrap/worker.py                             147     23     18      5    82%   90, 130->135, 159-160, 174->181, 186-193, 244-262, 270->exit
+manage.py                                        50     21     10      2    55%   24-38, 60-63, 76-78, 83
+server.py                                        68      1      8      1    97%   144
+src/api/auth.py                                  40     10     16      2    64%   25-33, 39
+src/api/dependencies.py                          13      1      2      1    87%   12
+src/api/exceptions.py                            76     26     26      2    57%   66-86, 96, 100-102, 106, 110-113, 120, 125, 138-139
+src/api/exports/routers.py                       40      6      2      0    81%   24-27, 72, 74
+src/api/identity/routers.py                      46     10      0      0    78%   31-32, 49-50, 80, 90-99
+src/api/kernels/routers.py                       30      5      6      2    75%   24-26, 38, 54
+src/application/exports/service.py              153     29     68     13    79%   42, 47, 61-64, 66-68, 72, 75, 85->exit, 88-89, 104, 110, 144, 147, 149-152, 171-174, 184, 192-193, 209
+src/application/identity/service.py             105      9     32      7    88%   56, 67, 116-117, 119, 164, 170, 185, 189
+src/application/jobs/service.py                  22      1      4      1    92%   25
+src/application/kernels/service.py              109      8     34      6    90%   48, 94->96, 119-120, 122, 126, 147->150, 170-171, 173
+src/application/registry.py                      14      1      2      1    88%   13
+src/config/settings.py                           71      5     24      5    89%   72, 76, 78, 86, 91
+src/domain/exports/models.py                     48      2     10      2    93%   50, 62
+src/domain/models.py                              8      8      0      0     0%   3-10
+src/domain/ports.py                               8      8      0      0     0%   3-10
+src/infrastructure/locking/resources.py         109      4     26      4    94%   61->64, 65, 77-78, 112, 148->142
+src/infrastructure/messaging/distributed.py      70     18     10      4    70%   59, 61, 65-73, 79->81, 86-87, 92-95, 100
+src/infrastructure/messaging/envelope.py         43      3     20      3    90%   29, 47, 62
+src/infrastructure/messaging/memory.py          130      3     28      0    98%   104-106
+src/infrastructure/messaging/redis_store.py      81     14     20      7    77%   48, 60->63, 65-67, 72->exit, 75-76, 81-84, 88, 97-98, 104
+src/infrastructure/persistence/exports.py        50      7     16      4    83%   43, 54, 60, 63, 85, 92-93
+src/infrastructure/persistence/identity.py       86     22      6      3    73%   24, 71-73, 81-82, 98->100, 101, 111-112, 128, 145, 149-175, 178-179
+src/infrastructure/security.py                   57      4     14      5    87%   31->exit, 53, 89, 91, 94
+src/services/concurrency.py                      61      2     18      0    97%   50-51
+src/services/lifecycle.py                         7      0      2      1    89%   16->18
+src/services/observability.py                    60      2     12      1    96%   91-92
+src/services/resource_manager.py                 23      4      2      1    80%   18-21
+src/utils/formatting.py                          15      1      8      1    91%   14
+worker.py                                         3      3      0      0     0%   3-7
+-----------------------------------------------------------------------------------------
+TOTAL                                          2527    284    554     87    86%
+
+67 files skipped due to complete coverage.
+Coverage XML written to file work/ci-precommit-coverage.xml
+Required test coverage of 85.0% reached. Total coverage: 86.47%
+440 passed, 4 deselected in 6.23s

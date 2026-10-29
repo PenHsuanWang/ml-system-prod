@@ -1,0 +1,18 @@
+{
+  ".pre-commit-config.yaml": "8d044614581d70346ee4a8f4fae576dbb46139f1f8945a4c3b44a1f307ec55ac",
+  ".gitleaks.toml": "ffec47ce2556b3200ab15ee16137c6258fa72a1425d9b6292e5cea977487e454",
+  ".github/workflows/ci.yml": "489e2d7960eddd6a2fbc4bab0d7c25f6447538edc62f441ac1ee6bce6e325874",
+  ".github/workflows/security.yml": "70d385d0c0062f58d5498e5536310feea490fd5f5abb62ed957dfd840163a784",
+  ".github/workflows/container.yml": "3f1e9f01170f7736cccfc8ea89ad24ba11e398b92405f0106939ef1a0131a8da",
+  "pyproject.toml": "d007c8290fde77611ecc23e4cb00ae244e43346b26b0d8c03c37f7c914f34ef3",
+  "requirements.lock": "0a29501d739aed94c1fa34afe76153873d8d92b8594e61c8b1dc23f8f3310710",
+  "requirements-dev.lock": "acca84088cfe7dc6622eb6e4f208736eb330d3a6b9c4841ac21d364713b8118f",
+  "requirements-build.lock": "0ce8f07e3f99bdd40e77c82f87d24166d1f35bc6e233226be86013c05be74dae",
+  "requirements-runtime.lock": "d865033b66e462d62077f1fef93fcfe52c47e12ab6860b2371395fd35f4e60a3",
+  "README.md": "e97d9bf67388048a7293b3a93cf52206c36b77985cb7aacb3b283c4c2a238fac",
+  "CONTRIBUTING.md": "f203267542b5fc0501342d8d0a377fd4935f6244e6aa034a66c63d2363dc49d8",
+  "docs/ci-precommit.md": "8f64382223f80fe4b8be04e530073515871cb5c8a3810ad42d1f8602f445f484",
+  "docs/engineering-baseline.md": "2033b98d3821c9af0c1cb55b448e7d05879356cdaa3f91f9db5e8d64be6a29f8",
+  "docs/handover.md": "790dc51680ef534cd98d12f826edcb22e8a5555ae514a6314db9ef00a7c0df9e",
+  "docs/validation.md": "72408943cd6f9c3e222f85e5792161f619945833d7fd1ae73b229ef0823e3b3b"
+}

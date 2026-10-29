@@ -1,0 +1,68 @@
+{
+  "guide_sha256": "564728f616a2be7410f3f9ddde36617db58d696485a7178cee1701326a2b2b59",
+  "blocks": 22,
+  "materialize_only": false,
+  "checks": [
+    {
+      "mode": "sync",
+      "name": "boundaries",
+      "exit_code": 0,
+      "log": "sync-boundaries.log"
+    },
+    {
+      "mode": "sync",
+      "name": "ruff",
+      "exit_code": 0,
+      "log": "sync-ruff.log"
+    },
+    {
+      "mode": "sync",
+      "name": "format",
+      "exit_code": 0,
+      "log": "sync-format.log"
+    },
+    {
+      "mode": "sync",
+      "name": "mypy",
+      "exit_code": 0,
+      "log": "sync-mypy.log"
+    },
+    {
+      "mode": "sync",
+      "name": "tests",
+      "exit_code": 0,
+      "log": "sync-tests.log"
+    },
+    {
+      "mode": "background",
+      "name": "boundaries",
+      "exit_code": 0,
+      "log": "background-boundaries.log"
+    },
+    {
+      "mode": "background",
+      "name": "ruff",
+      "exit_code": 0,
+      "log": "background-ruff.log"
+    },
+    {
+      "mode": "background",
+      "name": "format",
+      "exit_code": 0,
+      "log": "background-format.log"
+    },
+    {
+      "mode": "background",
+      "name": "mypy",
+      "exit_code": 0,
+      "log": "background-mypy.log"
+    },
+    {
+      "mode": "background",
+      "name": "tests",
+      "exit_code": 0,
+      "log": "background-tests.log"
+    }
+  ],
+  "passed": true
+}

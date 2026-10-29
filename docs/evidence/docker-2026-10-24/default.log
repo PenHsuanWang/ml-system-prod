@@ -1,0 +1,14 @@
+{"timestamp": "2026-10-24T03:51:55.622940+00:00", "level": "INFO", "logger": "src.server", "message": "Runtime started pid=1 backend=memory", "request_id": "-", "process_id": 1}
+INFO:     127.0.0.1:53298 - "GET /openapi.json HTTP/1.1" 200 OK
+{"timestamp": "2026-10-24T03:51:56.023232+00:00", "level": "INFO", "logger": "src.api.http", "message": "GET /openapi.json status=200 elapsed_ms=1.70", "request_id": "31ece89258b4414eafd17bc41c014d74", "process_id": 1}
+INFO:     127.0.0.1:53314 - "GET /health/ready HTTP/1.1" 200 OK
+{"timestamp": "2026-10-24T03:51:56.029204+00:00", "level": "INFO", "logger": "src.api.http", "message": "GET /health/ready status=200 elapsed_ms=5.64", "request_id": "1d36016204234a52add720a8a51e5ced", "process_id": 1}
+{"timestamp": "2026-10-24T03:51:56.245906+00:00", "level": "INFO", "logger": "src.server", "message": "Runtime stopping pid=1", "request_id": "-", "process_id": 1}
+INFO:     Started server process [1]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [1]

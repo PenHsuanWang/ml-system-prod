@@ -1,0 +1,2 @@
+# Installer is pinned separately from application dependencies.
+pip==26.2.2
