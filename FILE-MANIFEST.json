@@ -54,8 +54,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 8425,
-      "sha256": "bc52f562378e96da46269805707e870f7a06962e7f67548ba3f679ef70789ae4"
+      "bytes": 8672,
+      "sha256": "07a9ff0399fc57247c0683089072455e323ac0d46537fc0e8a2cda61fe013884"
     },
     {
       "path": "REVIEW-P1-P2-REMEDIATION.md",
@@ -176,6 +176,11 @@
       "path": "compose.yaml",
       "bytes": 4572,
       "sha256": "10bbf9c35e327333a0d597cc536365bc7cf0d04d3ee386e68d4c19196b25c51e"
+    },
+    {
+      "path": "docs/EBM_PoC_ML_System_Fit_Gap_2026-10-29.md",
+      "bytes": 30726,
+      "sha256": "08a26d0fb78ce32722413effc9a6f269a797717c411ea44769a5f98d0e98d1c3"
     },
     {
       "path": "docs/adr/014-implementation-baseline.md",
@@ -346,6 +351,11 @@
       "path": "docs/docker-validation.md",
       "bytes": 9191,
       "sha256": "beed308551cc6c5e296fbbc0be0a18d439a6b9354f6b62ba82c7124cf1528f5b"
+    },
+    {
+      "path": "docs/ebm-integration-plan.md",
+      "bytes": 20554,
+      "sha256": "48fb7dfd4a26ab0cee7dcc38e6b603767f6943205c5dc105b0fea8630692fba4"
     },
     {
       "path": "docs/engineering-baseline.md",

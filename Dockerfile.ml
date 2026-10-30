@@ -24,6 +24,12 @@ RUN pip install --no-cache-dir '.[dev,training,observability]'
 USER mlapp
 CMD ["python", "scripts/verify_ml_acceptance.py", "--require-stack", "--output-dir", "/app/var/acceptance"]
 
+FROM training AS ebm
+USER root
+RUN pip install --no-cache-dir 'scipy>=1.13,<2'
+USER mlapp
+CMD ["python", "-m", "bootstrap.ebm_cli", "smoke", "--output", "/app/var/ebm-smoke"]
+
 FROM python:3.12-slim AS serving
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1

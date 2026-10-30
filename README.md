@@ -107,6 +107,7 @@ See the [runbook](docs/ml-runbook.md) for recovery and backup/restore. Inherited
 
 - [HLD](docs/pytorch-ml-system-hld.md), [LLD v1.3](docs/pytorch-ml-system-lld.md), [ADR-014](docs/adr/014-implementation-baseline.md).
 - [Feature spec](specs/001-durable-training-jobs/spec.md), [implementation plan](specs/001-durable-training-jobs/plan.md).
+- [EBM Notebook fit–gap review](docs/EBM_PoC_ML_System_Fit_Gap_2026-10-29.md), [EBM integration plan](docs/ebm-integration-plan.md): source-verified gaps and proposed work packages; EBM training, calibration and serving are not implemented yet.
 - [Initial review](docs/architecture-review-2026-10-29.md), [v1.2 follow-up](docs/architecture-review-2026-10-29-v1.2.md).
 - [Upstream commit](docs/template-baseline.txt). Root v1.0 architecture files are explicitly superseded.
 - The original documentation manifest is retained in `docs/archive/FILE-MANIFEST-v1.1.json`; the root manifest describes the current source bundle.
