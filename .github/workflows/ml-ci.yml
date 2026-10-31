@@ -29,6 +29,7 @@ jobs:
       - run: python scripts/check_boundaries.py
       - run: python -m pyflakes bootstrap src tests/ml
       - run: python -m mypy --follow-imports=skip src/domain/ml.py src/domain/training src/domain/deployments src/domain/model_registry src/domain/prediction src/domain/datasets src/application/training src/application/deployments src/application/model_registry src/application/prediction src/application/datasets src/application/ml_services.py
+      - run: python scripts/check_ebm_typing.py
       - run: python -m pytest tests/ml tests/test_boundaries.py -q --junitxml=ml-results.xml
         env:
           ML_TEST_DATABASE_URL: "${{ matrix.database == 'postgres' && 'postgresql+psycopg://ml:ci-only@localhost:5432/ml_test' || '' }}"

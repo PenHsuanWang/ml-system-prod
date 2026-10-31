@@ -149,7 +149,7 @@ class FdcSpectrogramV1:
 
     def transform_trace(self, trace: Sequence[float]) -> NDArray[np.float32]:
         import numpy as np
-        from scipy.signal import spectrogram
+        from scipy.signal import spectrogram  # type: ignore[import-untyped]
 
         _, _, magnitude = spectrogram(
             self.fixed_trace(trace),

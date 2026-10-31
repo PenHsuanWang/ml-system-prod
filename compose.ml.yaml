@@ -10,6 +10,7 @@ x-ml-environment: &ml-environment
   ML_DATASET_ROOT: /app/var/datasets
   ML_EXECUTION_ROOT: /app/var/executions
   ML_MODEL_ENVIRONMENT: dev
+  ML_EBM_QUALITY_POLICY_JSON: ${ML_EBM_QUALITY_POLICY_JSON:-}
   APP_TASK_BACKEND: disabled
   APP_IDENTITY_ENABLED: "true"
   APP_MONGO_ENABLED: "true"

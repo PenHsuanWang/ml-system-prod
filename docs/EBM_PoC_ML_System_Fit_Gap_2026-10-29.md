@@ -1,5 +1,7 @@
 # EBM PoC Notebook 與 PyTorch ML System 架構 Fit–Gap 分析
 
+> 2026-10-31 實作更新：本文保留原始審查基線。本機 EBM 神經網路元件與平台整合現已實作，實際能力及未完成工作見 [目前實作狀態](ebm-implementation-status.md)；Databricks、校正／RUL、真實 Notebook 對照與目標環境資格仍待完成。
+
 > 日期：2026-10-29  
 > 修訂：依目前程式補正；整合實作仍待完成。  
 > 分析基礎：[Notebook](../EBM_final_forline.ipynb)（14 個 Cells）、[HLD v1.1](pytorch-ml-system-hld.md)、[LLD v1.3](pytorch-ml-system-lld.md)、[ADR-014](adr/014-implementation-baseline.md) 與目前程式碼。根目錄 HLD/LLD 為歷史副本。  

@@ -33,7 +33,7 @@ CMD ["python", "-m", "bootstrap.ebm_cli", "smoke", "--output", "/app/var/ebm-smo
 FROM python:3.12-slim AS serving
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
-RUN pip install --no-cache-dir torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu && pip install --no-cache-dir 'fastapi>=0.115,<1' 'uvicorn>=0.30,<1' 'pydantic>=2.8,<3' 'httpx>=0.27,<1' 'PyJWT[crypto]>=2.10,<3' 'pymongo>=4.13,<5' 'mlflow-skinny==3.6.0' 'opentelemetry-sdk>=1.28,<2' 'opentelemetry-exporter-otlp-proto-http>=1.28,<2'
+RUN pip install --no-cache-dir torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu && pip install --no-cache-dir 'numpy>=1.26,<3' 'fastapi>=0.115,<1' 'uvicorn>=0.30,<1' 'pydantic>=2.8,<3' 'httpx>=0.27,<1' 'PyJWT[crypto]>=2.10,<3' 'pymongo>=4.13,<5' 'mlflow-skinny==3.6.0' 'opentelemetry-sdk>=1.28,<2' 'opentelemetry-exporter-otlp-proto-http>=1.28,<2'
 COPY src ./src
 COPY bootstrap ./bootstrap
 RUN useradd --uid 10001 --create-home mlapp

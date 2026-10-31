@@ -5,7 +5,9 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import pickle
 import random
+import re
 import tempfile
 from collections.abc import Callable
 from pathlib import Path
@@ -34,13 +36,46 @@ from src.plugins.training.pytorch_trainer import atomic_json
 
 
 class EBMTrainingDataset(Protocol):
-    metadata: EBMDatasetMetadata
-    spectrograms: Any
-    content_digest: str
+    @property
+    def metadata(self) -> EBMDatasetMetadata: ...
+
+    @property
+    def spectrograms(self) -> Any: ...
+
+    @property
+    def content_digest(self) -> str: ...
 
 
 def _code(value: str) -> bool:
     return isinstance(value, str) and 1 <= len(value) <= 128 and value.strip() == value
+
+
+def _validate_existing_spec(path: Path, expected_digest: str) -> bool:
+    """Existing run provenance is immutable, including after rejected recovery."""
+    if not path.exists() and not path.is_symlink():
+        return False
+
+    def unique_pairs(items: list[tuple[str, Any]]) -> dict[str, Any]:
+        result: dict[str, Any] = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("Duplicate EBM training specification key")
+            result[key] = value
+        return result
+
+    def invalid_constant(value: str) -> None:
+        raise ValueError(f"Invalid EBM specification constant: {value}")
+
+    try:
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > 1024 * 1024:
+            raise ValueError("Invalid EBM training specification file")
+        existing = json.loads(path.read_bytes(), object_pairs_hook=unique_pairs,
+                              parse_constant=invalid_constant)
+        if not isinstance(existing, dict) or digest(existing) != expected_digest:
+            raise ValueError("Existing EBM training specification mismatch")
+    except (OSError, ValueError, TypeError, RecursionError) as exc:
+        raise MLError("Existing EBM training specification mismatch or invalid file") from exc
+    return True
 
 
 class EBMTrainerV1:
@@ -48,12 +83,18 @@ class EBMTrainerV1:
               progress: Callable[[int, dict[str, float]], None], *, dataset: EBMTrainingDataset,
               code_digest: str, model_config: EBMModelConfig | None = None,
               spectrogram_config: SpectrogramConfig | None = None,
-              producer: dict[str, str] | None = None, resume: Path | None = None) -> dict[str, Any]:
+              producer: dict[str, str] | None = None, resume: Path | None = None,
+              platform_spec_digest: str | None = None) -> dict[str, Any]:
         import numpy as np
         import torch
 
         if not isinstance(config, EBMTrainingConfig) or not _code(code_digest):
             raise MLError("EBM requires a validated training config and trusted code digest")
+        if platform_spec_digest is not None and (
+            not isinstance(platform_spec_digest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", platform_spec_digest)
+        ):
+            raise MLError("EBM platform training spec digest must contain 64 lowercase hex characters")
         metadata = EBMDatasetMetadata.parse(dataset.metadata.to_dict())
         raw = dataset.spectrograms
         if (not isinstance(raw, np.ndarray) or raw.dtype != np.dtype("float32")
@@ -62,7 +103,6 @@ class EBMTrainerV1:
             raise MLError("Invalid EBM training snapshot")
         if directory.is_symlink() or (directory / "bundle").exists():
             raise MLError("EBM output directory already contains a published bundle")
-        directory.mkdir(parents=True, exist_ok=True)
         if resume is None and (directory / "checkpoint.pt").exists():
             raise MLError("Existing EBM checkpoint requires explicit resume")
         resolved_model = model_config or EBMModelConfig()
@@ -98,10 +138,14 @@ class EBMTrainerV1:
                 "notebook_sha256": EBM_NOTEBOOK_SHA256, "semantics": "retrospective_replay",
                 "training": config.to_dict(), "model": resolved_model.to_dict(),
                 "spectrogram": resolved_feature.to_dict(), "code_digest": code_digest,
+                "platform_spec_digest": platform_spec_digest,
                 "lineage": lineage, "device": "cpu", "torch_version": torch.__version__,
                 "numpy_version": np.__version__, "checkpoint_boundary": "completed_epoch"}
         spec_digest = digest(spec)
-        atomic_json(directory / "training_spec.json", spec)
+        spec_path = directory / "training_spec.json"
+        has_spec = _validate_existing_spec(spec_path, spec_digest)
+        if not has_spec and (directory / "checkpoint.pt").exists():
+            raise MLError("Existing EBM checkpoint has no immutable training specification")
         torch.set_num_threads(1)
         torch.manual_seed(config.seed)
         random.seed(config.seed)
@@ -118,21 +162,34 @@ class EBMTrainerV1:
         recipe_tensor, segment_tensor = torch.from_numpy(recipes), torch.from_numpy(segments)
         start, history = 0, []
         if resume is not None:
-            if resume.is_symlink() or not resume.is_file() or resume.stat().st_size > 128 * 1024 * 1024:
-                raise MLError("Invalid EBM checkpoint")
-            saved = torch.load(resume, map_location="cpu", weights_only=True)
-            if (saved.get("checkpoint_version") != "ebm-checkpoint-v1"
-                    or saved.get("spec_digest") != spec_digest
-                    or type(saved.get("epoch")) is not int
-                    or not 0 <= saved["epoch"] < config.epochs):
-                raise MLError("EBM checkpoint dataset, configuration or runtime mismatch")
-            model.load_state_dict(saved["model"], strict=True)
-            optimizer.load_state_dict(saved["optimizer"])
-            torch.set_rng_state(saved["torch_rng"])
-            pair_generator.set_state(saved["pair_rng"])
-            rng.bit_generator.state = json.loads(saved["numpy_rng_json"])
-            random.setstate(saved["python_rng"])
-            start, history = saved["epoch"] + 1, saved["metric_history"]
+            try:
+                if (resume.is_symlink() or not resume.is_file()
+                        or resume.stat().st_size > 128 * 1024 * 1024):
+                    raise ValueError("Invalid EBM checkpoint")
+                saved = torch.load(resume, map_location="cpu", weights_only=True)
+                if (not isinstance(saved, dict)
+                        or saved.get("checkpoint_version") != "ebm-checkpoint-v1"
+                        or saved.get("spec_digest") != spec_digest
+                        or type(saved.get("epoch")) is not int
+                        or not 0 <= saved["epoch"] < config.epochs):
+                    raise ValueError("EBM checkpoint dataset, configuration or runtime mismatch")
+                model.load_state_dict(saved["model"], strict=True)
+                optimizer.load_state_dict(saved["optimizer"])
+                torch.set_rng_state(saved["torch_rng"])
+                pair_generator.set_state(saved["pair_rng"])
+                rng.bit_generator.state = json.loads(saved["numpy_rng_json"])
+                random.setstate(saved["python_rng"])
+                start, history = saved["epoch"] + 1, saved["metric_history"]
+                if not isinstance(history, list) or len(history) != start:
+                    raise ValueError("Invalid EBM checkpoint metric history")
+            except (OSError, ValueError, TypeError, KeyError, RuntimeError,
+                    EOFError, pickle.UnpicklingError) as exc:
+                raise MLError("Invalid EBM checkpoint or dataset/configuration/runtime mismatch") from exc
+        # Validate all resume state before touching run artifacts. Matching existing
+        # specifications keep their original bytes rather than being rewritten.
+        directory.mkdir(parents=True, exist_ok=True)
+        if not has_spec:
+            atomic_json(spec_path, spec)
         metrics_dir = directory / "metrics"
         metrics_dir.mkdir(exist_ok=True)
         for epoch in range(start, config.epochs):
@@ -179,11 +236,13 @@ class EBMTrainerV1:
             # Progress happens after durable checkpointing, so callback interruption can resume.
             progress(epoch, values)
         bundle = self._export(model, raw, metadata, normalizer, resolved_model, resolved_feature,
-                              config, directory, spec_digest, lineage, code_digest, producer or {})
+                              config, directory, spec_digest, lineage, code_digest, producer or {},
+                              platform_spec_digest)
         result = {"bundle_path": str(bundle), "manifest_digest": hashlib.sha256(
                     (bundle / "manifest.json").read_bytes()).hexdigest(),
                   "metrics": history, "dataset_digest": dataset.content_digest,
-                  "training_spec_digest": spec_digest, "recipe_id": EBM_RECIPE_ID,
+                  "training_spec_digest": platform_spec_digest or spec_digest,
+                  "trainer_spec_digest": spec_digest, "recipe_id": EBM_RECIPE_ID,
                   "quality_decision": "NOT_EVALUATED_BY_POLICY"}
         atomic_json(directory / "result.json", result)
         return result
@@ -193,7 +252,8 @@ class EBMTrainerV1:
                 normalizer: FittedSpectrogramNormalizer, model_config: EBMModelConfig,
                 feature_config: SpectrogramConfig, training: EBMTrainingConfig,
                 directory: Path, spec_digest: str, lineage: dict[str, str],
-                code_digest: str, producer: dict[str, str]) -> Path:
+                code_digest: str, producer: dict[str, str],
+                platform_spec_digest: str | None = None) -> Path:
         import numpy as np
         import torch
 
@@ -235,7 +295,8 @@ class EBMTrainerV1:
         atomic_json(bundle / "manifest.json", {"manifest_version": "2", "producer": producer,
             "recipe": {"recipe_id": EBM_RECIPE_ID, "recipe_version": EBM_RECIPE_VERSION,
                        "semantics": "retrospective_replay", "notebook_sha256": EBM_NOTEBOOK_SHA256},
-            "lineage": {**lineage, "training_spec_digest": spec_digest},
+            "lineage": {**lineage, "training_spec_digest": platform_spec_digest or spec_digest,
+                        "trainer_spec_digest": spec_digest},
             "artifact": {"format": "trusted_pytorch_state_dict", "profile": "ebm-neural-bundle-v1",
                          "files": files},
             "model": {"architecture_key": "ebm_cnn_v1", "architecture_version": "1",

@@ -33,6 +33,17 @@ python -m bootstrap.ml_cli register-dataset --tenant-id demo \
 
 The JSON contains `features` (rows of two finite numbers in `[-100,100]`), `labels` (0 or 1), and `splits` with nonempty `train`, `validation`, `test` index lists. Splits must be disjoint and cover every row; training must contain both classes. The importer validates and stores a content-addressed snapshot, including its split indices. Dataset versions are immutable and tenant-scoped. Submit its ID/version using the normal training API. Other feature shapes/tasks require a new approved recipe and schema.
 
+## EBM neural workload
+
+The approved `ebm_poc_replay_v1@1.0.0` workload adds immutable `[N,7,4,9,31]` feature snapshots, CNN training, safe epoch resume, complete neural bundles, exact-bundle evaluation and fixed-version neural serving. It uses the existing Job, Registry, Approval and Deployment flow.
+
+```sh
+python -m pip install -e '.[dev,training,ebm]'
+python -m bootstrap.ml_cli demo-ebm
+```
+
+The synthetic development demo registers an EBM dataset and trains in a supervised child. Without an explicitly configured quality policy, training can succeed but evaluation rejects approval. See [EBM usage and implementation status](docs/ebm-implementation-status.md) for dataset import, API contracts, policy configuration and the independent bundle smoke. Databricks ingestion, calibrated Energy/RUL and batch reports remain separate work packages.
+
 ## Reference development stack
 
 ```sh
@@ -107,7 +118,7 @@ See the [runbook](docs/ml-runbook.md) for recovery and backup/restore. Inherited
 
 - [HLD](docs/pytorch-ml-system-hld.md), [LLD v1.3](docs/pytorch-ml-system-lld.md), [ADR-014](docs/adr/014-implementation-baseline.md).
 - [Feature spec](specs/001-durable-training-jobs/spec.md), [implementation plan](specs/001-durable-training-jobs/plan.md).
-- [EBM Notebook fit–gap review](docs/EBM_PoC_ML_System_Fit_Gap_2026-10-29.md), [EBM integration plan](docs/ebm-integration-plan.md): source-verified gaps and proposed work packages; EBM training, calibration and serving are not implemented yet.
+- [EBM Notebook fit–gap review](docs/EBM_PoC_ML_System_Fit_Gap_2026-10-29.md), [EBM integration plan](docs/ebm-integration-plan.md), [current EBM implementation](docs/ebm-implementation-status.md): local neural training and platform serving are implemented; calibration/RUL, Databricks and target-environment qualification remain pending.
 - [Initial review](docs/architecture-review-2026-10-29.md), [v1.2 follow-up](docs/architecture-review-2026-10-29-v1.2.md).
 - [Upstream commit](docs/template-baseline.txt). Root v1.0 architecture files are explicitly superseded.
 - The original documentation manifest is retained in `docs/archive/FILE-MANIFEST-v1.1.json`; the root manifest describes the current source bundle.

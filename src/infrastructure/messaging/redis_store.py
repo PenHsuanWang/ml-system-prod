@@ -15,6 +15,8 @@ from src.domain.jobs.models import JobSnapshot, JobStatus
 from src.infrastructure.messaging.envelope import decode_request as decode_request
 from src.infrastructure.messaging.envelope import encode_request as encode_request
 
+__all__ = ["RedisJobStore", "encode_snapshot", "decode_snapshot", "encode_request", "decode_request"]
+
 
 def encode_snapshot(snapshot: JobSnapshot) -> dict[str, Any]:
     data = asdict(snapshot)

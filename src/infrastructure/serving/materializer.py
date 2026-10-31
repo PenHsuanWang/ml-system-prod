@@ -1,9 +1,23 @@
 import re
 import tempfile
 from pathlib import Path
+from typing import Any
 
 from src.domain.ml import MLError
 from src.infrastructure.serving.artifacts import ArtifactVerifier
+from src.infrastructure.serving.ebm_artifacts import EBMArtifactVerifier, read_json
+
+
+def verify_bundle(directory: Path, expected_digest: str) -> dict[str, Any]:
+    manifest = read_json(directory / "manifest.json", maximum_bytes=65536)
+    profile = manifest.get("artifact", {}).get("profile")
+    if profile == "ebm-neural-bundle-v1":
+        ebm_result: dict[str, Any] = EBMArtifactVerifier().verify(directory, expected_digest)
+        return ebm_result
+    if profile not in {None, "mlp-neural-bundle-v1"}:
+        raise MLError("Unapproved inference bundle profile")
+    result: dict[str, Any] = ArtifactVerifier().verify(directory, expected_digest)
+    return result
 
 
 class BundleMaterializer:
@@ -25,7 +39,7 @@ class BundleMaterializer:
             if not cache.exists():
                 with tempfile.TemporaryDirectory(dir=self.local_root) as staging:
                     result = Path(client.download_artifacts(match[1], "bundle", staging))
-                    ArtifactVerifier().verify(result, expected_digest)
+                    verify_bundle(result, expected_digest)
                     try:
                         result.rename(cache)
                     except FileExistsError:
@@ -35,5 +49,5 @@ class BundleMaterializer:
             directory = Path(artifact_ref).resolve(strict=True)
             if self.local_root not in directory.parents:
                 raise MLError("Artifact is outside the approved store")
-        ArtifactVerifier().verify(directory, expected_digest)
+        verify_bundle(directory, expected_digest)
         return directory

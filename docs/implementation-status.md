@@ -1,6 +1,10 @@
 # Implementation status
 
-Date: 2026-10-29. Source implementation and target-environment qualification are distinct.
+Updated: 2026-10-31. Source implementation and target-environment qualification are distinct.
+
+The EBM neural workload now has tenant-scoped feature import, controlled Recipe resolution, supervised CPU training, safe epoch resume, verified bundles, exact-bundle evaluation, explicit policy gating and fixed-version API serving. See [EBM implementation and usage](ebm-implementation-status.md). The historical Backend acceptance counts below are retained as dated evidence, not the current total. Databricks, calibration/RUL and batch reports remain unimplemented; target and real-service qualification is still pending.
+
+The 2026-10-31 ML/boundary regression passed 468 tests with 3 real-service skips; core and EBM typing, imports, boundaries and compilation passed. This run uses the documented legacy host and selector workaround. See [recorded result](evidence/ebm-2026-10-31/result.json).
 
 **Latest acceptance verdict: local checks passed; full Backend / production acceptance incomplete.** See the [Backend acceptance report](backend-acceptance-2026-10-29.md) for reproduced defects, fixes, executed evidence and remaining integration gates. The repeat run includes 217 passing tests and 3 skipped real-service cases.
 

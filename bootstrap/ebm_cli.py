@@ -7,7 +7,7 @@ import hashlib
 import json
 import sys
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from src.domain.datasets.ebm import EBM_PAD_ORDER, EBM_SIGNAL_ORDER
 from src.domain.training.ebm import EBMTrainingConfig
@@ -59,7 +59,8 @@ def synthetic_snapshot(root: Path) -> dict[str, str]:
                 "signal_order": list(EBM_SIGNAL_ORDER), "pad_order": list(EBM_PAD_ORDER),
                 "samples": samples, "splits": {"train": list(range(12)),
                     "validation": list(range(12, 18)), "test": list(range(18, 24))}}
-    return cast(dict[str, str], EBMFileDatasetSource(root).publish(metadata, features))
+    reference: dict[str, str] = EBMFileDatasetSource(root).publish(metadata, features)
+    return reference
 
 
 def evaluate_bundle(result: dict[str, Any], snapshot: Any, output: Path) -> dict[str, Any]:

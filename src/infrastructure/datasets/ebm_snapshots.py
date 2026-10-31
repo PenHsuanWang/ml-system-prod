@@ -13,13 +13,14 @@ import zipfile
 from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
-
-import numpy as np
-from numpy.typing import NDArray
+from typing import TYPE_CHECKING, Any
 
 from src.domain.datasets.ebm import EBM_FEATURE_SHAPE, EBMDatasetMetadata
 from src.domain.ml import MLError, canonical_json
+
+if TYPE_CHECKING:
+    import numpy as np
+    from numpy.typing import NDArray
 
 MAX_METADATA_BYTES = 8 * 1024 * 1024
 MAX_ARRAY_BYTES = 128 * 1024 * 1024
@@ -46,6 +47,8 @@ def _json(data: bytes) -> Any:
 
 
 def _validate_array(array: NDArray[Any], metadata: EBMDatasetMetadata) -> NDArray[np.float32]:
+    import numpy as np
+
     if (not isinstance(array, np.ndarray) or array.dtype != np.dtype("float32")
             or array.shape != (len(metadata.samples), *EBM_FEATURE_SHAPE)
             or array.nbytes > MAX_ARRAY_BYTES or not np.isfinite(array).all()):
@@ -60,6 +63,8 @@ def _validate_array(array: NDArray[Any], metadata: EBMDatasetMetadata) -> NDArra
 
 
 def _decode_npz(data: bytes, metadata: EBMDatasetMetadata) -> NDArray[np.float32]:
+    import numpy as np
+
     try:
         with zipfile.ZipFile(io.BytesIO(data)) as archive:
             members = archive.infolist()
@@ -178,6 +183,8 @@ class EBMFileDatasetSource:
 
     def publish(self, metadata: Mapping[str, Any], spectrograms: NDArray[Any]) -> dict[str, str]:
         """Publish by content digest using a staging directory and atomic rename."""
+        import numpy as np
+
         parsed = EBMDatasetMetadata.parse(dict(metadata))
         array = _validate_array(spectrograms, parsed)
         buffer = io.BytesIO()

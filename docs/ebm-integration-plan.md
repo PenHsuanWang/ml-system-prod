@@ -1,6 +1,6 @@
 # EBM Notebook 整合實作與驗收計畫
 
-> 日期：2026-10-29；狀態：Draft / Proposed。本文定義後續開發工作，**不代表 EBM 元件已實作、訓練已執行或 Serving 已通過驗收**。  
+> 日期：2026-10-29；2026-10-31 更新狀態：Implementation in progress。本機 CPU 元件與平台 NN 流程已實作；各工作包的實際證據及未完成資格驗證見 [EBM 實作狀態](ebm-implementation-status.md)。本文保留完整目標與退出條件，不能將本機 smoke 視為整個計畫通過驗收。
 > 依據：[Fit–Gap 分析](EBM_PoC_ML_System_Fit_Gap_2026-10-29.md)、[目前 LLD v1.3](pytorch-ml-system-lld.md)、[ADR-014](adr/014-implementation-baseline.md)、[實作狀態](implementation-status.md)、[原始 Notebook](../EBM_final_forline.ipynb)。  
 > 範圍：保留現有控制與治理能力，新增版本化 EBM workload。下列名稱、schema 與工作包為提案，尚未註冊新的正式 ML-SPEC 編號。
 
@@ -83,7 +83,7 @@ NN 模型核准不自動涵蓋新的校正或決策版本。Energy／RUL 的評�
 
 ## 4. 程式擴充映射
 
-下表左欄為現存檔案；右欄為後續修改或擬新增位置，尚未實作。
+下表為計畫的程式擴充映射；本機 NN 路徑已落地，遠端資料、校正與分析仍待實作，逐項現況見實作狀態。
 
 | 目前位置 | 計畫變更 |
 | --- | --- |
@@ -134,7 +134,7 @@ Remote 驗收至少包含：提交成功但回應遺失；run ID 儲存前程序
 
 ## 7. 驗收矩陣
 
-以下是待實作的測試案例，不是已執行結果。
+以下是完整驗收目標，不是全部已執行的結果；已實作的本機測試位於 `tests/ml/ebm/`，真實來源／服務、目標 Runtime 與時序品質仍需各自提供證據。
 
 | Case | 操作／反例 | 必須觀察到的結果 |
 | --- | --- | --- |
@@ -167,4 +167,4 @@ Remote 驗收至少包含：提交成功但回應遺失；run ID 儲存前程序
 | CDF 可得時間、校正更新規則、RUL 預測時點與 horizon | WP-08 線上有效性 | 純 NN Serving、版本化離線批次分析與 as-of 欄位 |
 | 預測品質、業務成本與延遲／容量門檻 | 正式 evaluation policy／線上驗收 | 計算可重現指標、蒐集測量；不自行沿用 demo 0.75 或虛構核准門檻 |
 
-這些是對應工作包的輸入條件，不是暫停全部實作的總閘門。下一個可開始的程式工作為 WP-01～04 的 CPU slice：先取得／定義 fixture 與 Replay 契約，擷取純 Feature／CNN／Loss，再做到可獨立 save/load 的 NN Bundle；工程正確性與時間外推品質分開記錄。
+這些是對應工作包的輸入條件，不是暫停全部實作的總閘門。WP-01～05 的本機 CPU／平台 NN 路徑已實作；後續以真實 Fixture／Reference、目標環境與外部服務驗收為優先，並另行完成 WP-06～08。工程正確性與時間外推品質分開記錄。

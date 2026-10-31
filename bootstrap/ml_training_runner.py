@@ -4,9 +4,43 @@ import argparse
 import json
 import os
 import resource
+from collections.abc import Callable
 from pathlib import Path
+from typing import Any
 
 from src.infrastructure.execution.local_process import process_identity
+from src.domain.ml import MLError
+from src.domain.training.workloads import EBM_WORKLOAD, workload_for_spec
+
+
+def run_training(spec: dict[str, Any], root: Path,
+                 progress: Callable[[int, dict[str, float]], None],
+                 producer: dict[str, str], *, platform_spec_digest: str) -> None:
+    workload = workload_for_spec(spec)
+    dataset_root = Path(os.environ["ML_DATASET_ROOT"])
+    if workload == EBM_WORKLOAD:
+        if (spec.get("resource_profile_id") != "cpu-ebm-v1"
+                or spec.get("model", {}).get("architecture") != "ebm_cnn_v1"):
+            raise MLError("EBM execution profile or model is not approved")
+        from src.domain.training.ebm import EBMTrainingConfig
+        from src.infrastructure.datasets.ebm_snapshots import EBMFileDatasetSource
+        from src.plugins.models.ebm_cnn_v1 import EBMModelConfig
+        from src.plugins.training.ebm_trainer_v1 import EBMTrainerV1
+
+        snapshot = EBMFileDatasetSource(dataset_root).load(spec["dataset"])
+        EBMTrainerV1().train(EBMTrainingConfig.from_dict(spec["training"]), root, progress,
+            dataset=snapshot, code_digest=spec["code_revision"],
+            model_config=EBMModelConfig.from_dict(spec["model"]["config"]), producer=producer,
+            platform_spec_digest=platform_spec_digest)
+    else:
+        if (spec.get("resource_profile_id") != "cpu-small-v1"
+                or spec.get("model", {}).get("architecture") != "mlp_v1"):
+            raise MLError("MLP execution profile or model is not approved")
+        from src.infrastructure.datasets.snapshots import FileDatasetSource
+        from src.plugins.training.pytorch_trainer import PyTorchTrainer
+
+        dataset = FileDatasetSource(dataset_root).load(spec["dataset"])
+        PyTorchTrainer().train(spec, root, progress, producer=producer, dataset=dataset)
 
 
 def main() -> None:
@@ -21,7 +55,7 @@ def main() -> None:
     # RSS is enforced by the role container/cgroup, not by a misleading Python lease.
     code = 1
     try:
-        from src.plugins.training.pytorch_trainer import PyTorchTrainer, atomic_json
+        from src.plugins.training.pytorch_trainer import atomic_json
         import torch
         torch.set_num_interop_threads(1)
         from src.domain.ml import canonical_json, digest
@@ -32,9 +66,8 @@ def main() -> None:
 
         def progress(step: int, values: dict[str, float]) -> None:
             atomic_json(root/"progress.json", {"step": step, "metrics": values})
-        from src.infrastructure.datasets.snapshots import FileDatasetSource
-        dataset = FileDatasetSource(Path(os.environ["ML_DATASET_ROOT"])).load(spec["dataset"])
-        PyTorchTrainer().train(spec, root, progress, producer=envelope["producer"], dataset=dataset)
+        run_training(spec, root, progress, envelope["producer"],
+                     platform_spec_digest=envelope["training_spec_digest"])
         code = 0
     finally:
         (root/"exit.json").write_text(json.dumps({"code": code}))

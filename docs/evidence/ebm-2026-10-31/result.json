@@ -1,0 +1,43 @@
+{
+  "date": "2026-10-31",
+  "source_baseline": "2e8e2da plus the current EBM repair worktree",
+  "status": "LOCAL_CHECKS_PASSED_TARGET_QUALIFICATION_PENDING",
+  "local_checks_passed": true,
+  "functional_backend_accepted": false,
+  "production_accepted": false,
+  "python": "3.10.12",
+  "torch": "2.0.1",
+  "numpy": "1.26.4",
+  "scipy": "1.15.3",
+  "checks": {
+    "boundaries": "PASS",
+    "core_typing": "PASS",
+    "ebm_typing": "PASS",
+    "unused_imports": "PASS",
+    "compile": "PASS",
+    "pytest": "PASS"
+  },
+  "pytest": {
+    "tests": 471,
+    "passed": 468,
+    "skipped": 3,
+    "failures": 0,
+    "errors": 0
+  },
+  "runner": "PYTHONPATH=/tmp/ml-ebm-deps:. python scripts/verify_ml_acceptance.py --host-selector-workaround --output-dir /tmp/ebm-repair.5fRB9Z/final-acceptance",
+  "platform_demo": {
+    "command": "python -m bootstrap.ml_cli demo-ebm with isolated temporary ML paths",
+    "job_state": "SUCCEEDED",
+    "evaluation_decision": "REJECTED_BY_POLICY",
+    "quality_policy_configured": false
+  },
+  "acceptance_blockers": [
+    "Target Python 3.12 was not used",
+    "Target Torch 2.6.0 was not used",
+    "Host-specific test event-loop workaround was used",
+    "Required isolated stack endpoints were not all enabled",
+    "Required suite contains skipped cases"
+  ],
+  "additional_template_checks": "tests/test_modules.py and tests/test_distributed.py could not collect: host Python 3.10 lacks datetime.UTC/enum.StrEnum and taskiq is not installed. They are outside the passing ML suite above.",
+  "notebook_sha256": "6559bcd463a79b4b9697a7d3916e110851d02a05ea3bbbb8e96d4d9f0448fba9"
+}

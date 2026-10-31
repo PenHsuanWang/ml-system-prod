@@ -29,6 +29,7 @@ class MLSettings:
     ack_timeout_ms: int = 1800000
     image_digest: str = "unqualified-development"
     code_revision: str = "development"
+    ebm_quality_policy_json: str = field(default="", repr=False)
 
     @classmethod
     def from_env(cls) -> "MLSettings":
@@ -42,7 +43,8 @@ class MLSettings:
                  "heartbeat_seconds": "ML_HEARTBEAT_SECONDS", "stale_after": "ML_STALE_AFTER_SECONDS",
                  "retention_seconds": "ML_IDEMPOTENCY_RETENTION_SECONDS",
                  "max_pending": "ML_MAX_PENDING_JOBS_PER_TENANT", "ack_timeout_ms": "ML_ACK_TIMEOUT_MS",
-                 "image_digest": "ML_IMAGE_DIGEST", "code_revision": "ML_CODE_REVISION"}
+                 "image_digest": "ML_IMAGE_DIGEST", "code_revision": "ML_CODE_REVISION",
+                 "ebm_quality_policy_json": "ML_EBM_QUALITY_POLICY_JSON"}
         defaults = cls()
         for name, variable in names.items():
             if variable not in os.environ:

@@ -139,9 +139,9 @@ def rollback(deployment_id: str, actor: ActorDependency, services: ServicesDepen
     return {"deployment_id": value.deployment_id, "generation": value.generation, "state": value.state}
 
 
-def install_errors(app: FastAPI) -> None:
+def install_errors(app: FastAPI, *, maximum_body_bytes: int = 65536) -> None:
     from src.api.ml_body_limit import BodyLimitMiddleware
-    app.add_middleware(BodyLimitMiddleware)
+    app.add_middleware(BodyLimitMiddleware, max_bytes=maximum_body_bytes)
 
     @app.exception_handler(MLError)
     async def domain_error(request: Request, error: MLError) -> JSONResponse:

@@ -12,6 +12,7 @@ from src.domain.ml import canonical_json, digest, Unavailable
 from src.domain.model_registry.models import Evaluation, ModelBinding
 from src.domain.training.execution import ExecutionHandle, TrainingOutput
 from src.domain.training.models import Claim, TrainingCommand
+from src.domain.training.workloads import workload_for_spec
 
 
 class Evaluator(Protocol):
@@ -38,6 +39,7 @@ class TrainingSupervisor:
         if claim.already_complete:
             return
         spec = json.loads(claim.job.spec_json)
+        workload_for_spec(spec)
         if (self.runtime_code is not None and spec["code_revision"] != self.runtime_code or
                 self.runtime_image is not None and spec["training_image_digest"] != self.runtime_image):
             self.repository.stop(claim, "RUNTIME_QUALIFICATION_MISMATCH", confirmed=True)
@@ -99,13 +101,16 @@ class TrainingSupervisor:
         # A transient external failure leaves recoverable phase evidence; no second fit.
         self.repository.checkpoint_phase(claim, "REGISTER", canonical_json(asdict(result)))
         spec = json.loads(claim.job.spec_json)
+        workload = workload_for_spec(spec)
         run_id = self.tracker.start(claim.job.attempt_id,
                                     {"training_job_id": claim.job.job_id, "spec_digest": claim.job.spec_digest,
                                      "dataset_version": spec["dataset"]["version"],
                                      "dataset_digest": spec["dataset"]["content_digest"],
                                      "recipe_version": spec["recipe"]["version"], "git_sha": spec["code_revision"],
                                      "image_digest": spec["training_image_digest"],
-                                     "compatibility_id": "torch-cpu-v1", "evaluation_policy_version": spec["evaluation_policy"]})
+                                     "compatibility_id": workload.compatibility_id,
+                                     "evaluator_version": workload.evaluator_version,
+                                     "evaluation_policy_version": spec["evaluation_policy"]})
         for item in result.metrics:
             self.tracker.metrics(run_id, dict(item.values), item.step)
         name = "tenant-"+digest(claim.job.tenant_id)[:16]+"-nn"
@@ -125,10 +130,11 @@ class TrainingSupervisor:
             metrics = {"error_code": "EVALUATION_EXECUTION_FAILED"}
             report = {"model_binding_id": binding.binding_id, "manifest_digest": binding.manifest_digest,
                       "dataset_digest": spec["dataset"]["content_digest"], "policy_version": spec["evaluation_policy"],
-                      "evaluator_version": "classifier-v1", "decision": "ERROR", "metrics": metrics}
+                      "evaluator_version": workload.evaluator_version,
+                      "decision": "ERROR", "metrics": metrics}
             self.registry.save_evaluation(Evaluation(str(uuid4()), binding.binding_id,
                                                      binding.manifest_digest, spec["dataset"]["content_digest"], spec["evaluation_policy"],
-                                                     "classifier-v1", "ERROR", canonical_json(metrics), digest(report)))
+                                                     workload.evaluator_version, "ERROR", canonical_json(metrics), digest(report)))
             raise
         evaluation = self.registry.save_evaluation(evaluation)
         self.repository.finish(claim, binding.binding_id, evaluation.evaluation_id)

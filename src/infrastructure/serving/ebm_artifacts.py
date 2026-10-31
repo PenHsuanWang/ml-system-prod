@@ -26,6 +26,8 @@ EBM_BUNDLE_FILES = frozenset({
 
 def _read_regular_bytes(path: Path, maximum_bytes: int) -> bytes:
     """Bound reads and reject links, including links in ancestor directories."""
+    if type(maximum_bytes) is not int or maximum_bytes < 1:
+        raise ValueError("Artifact read limit must be a positive integer")
     absolute = path.absolute()
     if ".." in absolute.parts or any(part.is_symlink() for part in (absolute, *absolute.parents)):
         raise ValueError("Artifact symbolic links and parent traversal are forbidden")
@@ -53,7 +55,14 @@ def _parse_json(data: bytes) -> dict[str, Any]:
     def invalid_constant(value: str) -> None:
         raise ValueError(f"Invalid JSON constant: {value}")
 
-    value = json.loads(data, object_pairs_hook=pairs, parse_constant=invalid_constant)
+    def finite_float(value: str) -> float:
+        parsed = float(value)
+        if not math.isfinite(parsed):
+            raise ValueError("Non-finite JSON number")
+        return parsed
+
+    value = json.loads(data, object_pairs_hook=pairs, parse_constant=invalid_constant,
+                       parse_float=finite_float)
     if not isinstance(value, dict):
         raise ValueError("Expected a JSON object")
     return value
@@ -62,26 +71,47 @@ def _parse_json(data: bytes) -> dict[str, Any]:
 def read_json(path: Path, *, maximum_bytes: int = 1024 * 1024) -> dict[str, Any]:
     """Reject duplicate keys and non-finite JSON before interpreting a contract."""
     try:
-        return _parse_json(_read_regular_bytes(path, maximum_bytes))
-    except (OSError, ValueError, TypeError, RecursionError) as exc:
+        return load_json_bytes(_read_regular_bytes(path, maximum_bytes),
+                               maximum_bytes=maximum_bytes)
+    except (MLError, OSError, ValueError, TypeError, RecursionError) as exc:
         raise MLError(f"Invalid EBM JSON contract: {path.name}") from exc
+
+
+def load_json_bytes(data: bytes, *, maximum_bytes: int = 1024 * 1024) -> dict[str, Any]:
+    """Interpret bounded immutable JSON bytes retained by artifact verification."""
+    try:
+        if (not isinstance(data, bytes) or type(maximum_bytes) is not int
+                or maximum_bytes < 1 or len(data) > maximum_bytes):
+            raise ValueError("Invalid bounded JSON payload")
+        return _parse_json(data)
+    except (ValueError, TypeError, RecursionError) as exc:
+        raise MLError("Invalid EBM JSON contract") from exc
 
 
 def load_npz(path: Path, shapes: dict[str, tuple[int, ...]], *,
              maximum_bytes: int) -> dict[str, Any]:
+    """Read a bounded regular file once, then inspect and load those exact bytes."""
+    try:
+        data = _read_regular_bytes(path, maximum_bytes + 65536)
+        return load_npz_bytes(data, shapes, maximum_bytes=maximum_bytes)
+    except (MLError, OSError, ValueError, TypeError) as exc:
+        raise MLError(f"Invalid EBM array contract: {path.name}") from exc
+
+
+def load_npz_bytes(data: bytes, shapes: dict[str, tuple[int, ...]], *,
+                   maximum_bytes: int) -> dict[str, Any]:
     """Preflight ZIP and NPY headers before array allocation; never enable pickle."""
     import numpy as np
 
     try:
         if (type(maximum_bytes) is not int or maximum_bytes < 1 or not shapes
+                or not isinstance(data, bytes) or len(data) > maximum_bytes + 65536
                 or any(not re.fullmatch(r"[a-zA-Z][a-zA-Z0-9_]*", key)
                        or not isinstance(shape, tuple) or not shape
                        or any(type(size) is not int or size < 1 for size in shape)
                        for key, shape in shapes.items())
                 or sum(math.prod(shape) * 4 for shape in shapes.values()) > maximum_bytes):
             raise ValueError("Invalid bounded EBM array shape contract")
-        # ZIP headers add a small overhead beyond the declared uncompressed NPY sizes.
-        data = _read_regular_bytes(path, maximum_bytes + 65536)
         with zipfile.ZipFile(io.BytesIO(data)) as archive:
             entries = archive.infolist()
             if ({entry.filename for entry in entries} != {f"{key}.npy" for key in shapes}
@@ -115,7 +145,7 @@ def load_npz(path: Path, shapes: dict[str, tuple[int, ...]], *,
         return result
     except (OSError, ValueError, KeyError, TypeError, EOFError, RecursionError,
             NotImplementedError, zipfile.BadZipFile) as exc:
-        raise MLError(f"Invalid EBM array contract: {path.name}") from exc
+        raise MLError("Invalid EBM array contract") from exc
 
 
 class EBMArtifactVerifier:
@@ -123,6 +153,12 @@ class EBMArtifactVerifier:
         self.maximum_bytes = maximum_bytes
 
     def verify(self, directory: Path, expected_digest: str) -> dict[str, Any]:
+        manifest, _ = self.verified_payloads(directory, expected_digest)
+        return manifest
+
+    def verified_payloads(self, directory: Path, expected_digest: str
+                          ) -> tuple[dict[str, Any], dict[str, bytes]]:
+        """Return the manifest and exact immutable bytes that satisfied every digest."""
         try:
             absolute = directory.absolute()
             if (".." in absolute.parts
@@ -143,6 +179,7 @@ class EBMArtifactVerifier:
             if not isinstance(entries, list) or len(entries) != len(EBM_BUNDLE_FILES):
                 raise ValueError("Invalid EBM file list")
             seen: set[str] = set()
+            payloads: dict[str, bytes] = {}
             total = 0
             for item in entries:
                 name, size, sha = item["path"], item["size_bytes"], item["sha256"]
@@ -160,8 +197,9 @@ class EBMArtifactVerifier:
                 if len(payload) != size or hashlib.sha256(payload).hexdigest() != sha:
                     raise ValueError("EBM artifact digest mismatch")
                 seen.add(name)
+                payloads[name] = payload
             if seen != EBM_BUNDLE_FILES:
                 raise ValueError("Incomplete EBM inference bundle")
-            return manifest
+            return manifest, payloads
         except (OSError, ValueError, KeyError, TypeError, AttributeError, RecursionError) as exc:
             raise MLError("EBM artifact verification failed") from exc

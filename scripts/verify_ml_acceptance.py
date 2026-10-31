@@ -57,17 +57,19 @@ def main() -> int:
                                                            [str(plugin), str(ROOT), environment.get("PYTHONPATH")]))
         pytest.extend(["-p", "host_selector_plugin"])
     lint_paths = sorted({str(path.relative_to(ROOT)) for pattern in (
-        "bootstrap/ml_*.py", "src/domain/ml.py", "src/domain/training/*.py", "src/domain/deployments/*.py",
+        "bootstrap/ml_*.py", "bootstrap/ebm_cli.py", "src/domain/ml.py", "src/domain/training/*.py", "src/domain/deployments/*.py",
         "src/domain/model_registry/*.py", "src/domain/prediction/*.py", "src/domain/datasets/*.py",
         "src/application/training/*.py", "src/application/deployments/*.py", "src/application/model_registry/*.py",
         "src/application/prediction/*.py", "src/application/datasets/*.py", "src/application/ml_services.py",
-        "src/api/ml_*.py", "src/infrastructure/ml_*.py", "src/infrastructure/persistence/ml_*.py",
+        "src/api/ml_*.py", "src/api/ebm_schemas.py", "src/infrastructure/ml_*.py", "src/infrastructure/persistence/ml_*.py",
         "src/infrastructure/messaging/ml_*.py", "src/infrastructure/datasets/*.py", "src/infrastructure/deployment/*.py",
         "src/infrastructure/execution/*.py", "src/infrastructure/serving/*.py", "src/infrastructure/mlflow/*.py",
-        "src/plugins/models/*.py", "src/plugins/training/*.py", "tests/ml/**/*.py", "migrations/**/*.py",
-        "scripts/verify_ml_acceptance.py") for path in ROOT.glob(pattern)})
+        "src/plugins/models/*.py", "src/plugins/features/*.py", "src/plugins/evaluation/*.py",
+        "src/plugins/training/*.py", "tests/ml/**/*.py", "migrations/**/*.py",
+        "scripts/check_ebm_typing.py", "scripts/verify_ml_acceptance.py") for path in ROOT.glob(pattern)})
     commands = [("boundaries", [sys.executable, "scripts/check_boundaries.py"]),
                 ("core-typing", [sys.executable, "-m", "mypy", "--follow-imports=skip", *CORE]),
+                ("ebm-typing", [sys.executable, "scripts/check_ebm_typing.py"]),
                 ("unused-imports", [sys.executable, "-m", "pyflakes", *lint_paths]),
                 ("compile", [sys.executable, "-m", "compileall", "-q",
                              "bootstrap", "src", "migrations", "scripts", "tests/ml"]),

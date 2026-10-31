@@ -8,3 +8,6 @@ from src.domain.identity.ports import ThreadRunner as ThreadRunner
 from src.domain.jobs.ports import JobDispatcher as JobDispatcher
 from src.domain.jobs.ports import TaskHandler as TaskHandler
 from src.domain.jobs.ports import TaskResolver as TaskResolver
+
+__all__ = ["CapacityCoordinator", "ExportSource", "IdentityRepository", "PrincipalAuthenticator",
+           "ThreadRunner", "JobDispatcher", "TaskHandler", "TaskResolver"]

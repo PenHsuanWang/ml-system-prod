@@ -111,14 +111,51 @@ def demo(settings: MLSettings) -> None:
         raise RuntimeError("Demo training did not succeed")
 
 
+def demo_ebm(settings: MLSettings) -> None:
+    """Exercise governed EBM training with synthetic data; never approve implicitly."""
+    if settings.environment != "dev":
+        raise ValueError("The synthetic EBM demo is available only in development")
+    from uuid import uuid4
+    from bootstrap.ebm_cli import synthetic_snapshot
+    from src.api.ml_schemas import EBMTrainingIntent
+    from src.infrastructure.persistence.ml_datasets import SQLDatasetCatalog
+    migrate(settings)
+    components = build_components(settings)
+    actor = Actor("demo", "demo-scientist", frozenset({"ml:train", "ml:model:read", "ml:dataset:manage"}))
+    try:
+        reference = synthetic_snapshot(settings.execution_root / "ebm-demo-input")
+        source = Path(reference["snapshot_ref"]).parent
+        SQLDatasetCatalog(components.database, settings.dataset_root).register_ebm(
+            actor, "ebm-synthetic", "v1", source / "metadata.json", source / "spectrograms.npz")
+        intent = EBMTrainingIntent(recipe={"id": "ebm_poc_replay_v1", "version": "1.0.0"},
+            dataset={"id": "ebm-synthetic", "version": "v1"},
+            model={"architecture": "ebm_cnn_v1", "config": {"channels": [4, 8]}},
+            training={"epochs": 1, "batch_size": 6, "pair_sample_size": 32})
+        job = components.services.training.submit(actor, str(uuid4()), canonical_json(intent.model_dump()))
+        items = SQLOutboxRepository(components.database).lease(100)
+        command = next(item.command for item in items if item.command.job_id == job.job_id)
+        components.supervisor().execute(command)
+        final = components.training.get(job.job_id)
+        evaluations = components.registry.list_evaluations(final.model_binding_id) if final.model_binding_id else ()
+        print(json.dumps({"job_id": final.job_id, "state": final.state,
+            "model_binding_id": final.model_binding_id,
+            "evaluation_decision": evaluations[-1].decision if evaluations else None}))
+        if final.state != "SUCCEEDED":
+            raise RuntimeError("EBM demo training did not succeed")
+    finally:
+        components.database.close()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("operation", choices=["migrate",
-                        "demo", "relay", "control", "register-dataset"])
+                        "demo", "demo-ebm", "relay", "control", "register-dataset", "register-ebm-dataset"])
     parser.add_argument("--tenant-id")
     parser.add_argument("--dataset-id")
     parser.add_argument("--version")
     parser.add_argument("--source-path", type=Path)
+    parser.add_argument("--metadata-path", type=Path)
+    parser.add_argument("--npz-path", type=Path)
     parser.add_argument("--once", action="store_true")
     args = parser.parse_args()
     settings = MLSettings.from_env()
@@ -129,6 +166,21 @@ def main() -> None:
         asyncio.run(relay(settings, args.once))
     elif args.operation == "control":
         control(settings, args.once)
+    elif args.operation == "demo-ebm":
+        demo_ebm(settings)
+    elif args.operation == "register-ebm-dataset":
+        if not all((args.tenant_id, args.dataset_id, args.version, args.metadata_path, args.npz_path)):
+            parser.error("EBM import requires tenant, dataset ID, version, metadata path and NPZ path")
+        from src.infrastructure.persistence.ml_datasets import SQLDatasetCatalog
+        components = build_components(settings)
+        actor = Actor(args.tenant_id, "dataset-operator", frozenset({"ml:dataset:manage"}))
+        try:
+            dataset = SQLDatasetCatalog(components.database, settings.dataset_root).register_ebm(
+                actor, args.dataset_id, args.version, args.metadata_path, args.npz_path)
+            print(json.dumps({"dataset_id": dataset.dataset_id, "version": dataset.version,
+                              "content_digest": dataset.content_digest}))
+        finally:
+            components.database.close()
     elif args.operation == "register-dataset":
         if not all((args.tenant_id, args.dataset_id, args.version, args.source_path)):
             parser.error("Dataset import requires tenant, dataset ID, version and source path")

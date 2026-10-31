@@ -56,3 +56,7 @@ strict = true
 [[tool.mypy.overrides]]
 module = ["taskiq.*", "taskiq_aio_pika.*", "aio_pika.*", "mlflow.*"]
 ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["pydantic", "pydantic.*"]
+follow_imports = "silent"

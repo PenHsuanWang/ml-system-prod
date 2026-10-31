@@ -13,6 +13,7 @@ from bootstrap.ml_telemetry import configure_telemetry
 from src.infrastructure.ml_tracing import MLTraceMiddleware, capture_context
 from src.api.ml_http import install_errors
 from src.api.ml_schemas import PredictionRequest
+from src.api.ebm_schemas import EBMPredictionRequest
 from src.infrastructure.deployment.local_serving import LocalServingExecutor
 from src.infrastructure.ml_identity import MongoActorResolver
 from src.domain.ml import Unavailable
@@ -41,7 +42,7 @@ def create_app() -> FastAPI:
                 components.database.close()
 
     app = FastAPI(title="ML prediction ingress", lifespan=lifespan)
-    install_errors(app)
+    install_errors(app, maximum_body_bytes=8 * 1024 * 1024)
     app.add_middleware(MLTraceMiddleware)
 
     @app.get("/health/live")
@@ -58,7 +59,7 @@ def create_app() -> FastAPI:
             return JSONResponse({"ready": False}, status_code=503)
 
     @app.post("/api/v1/prediction/predict")
-    async def predict(body: PredictionRequest, request: Request) -> JSONResponse:
+    async def predict(body: PredictionRequest | EBMPredictionRequest, request: Request) -> JSONResponse:
         from src.infrastructure.ml_identity import AuthenticationRequired
         authorization = request.headers.get("authorization", "")
         if not authorization.startswith("Bearer "):
