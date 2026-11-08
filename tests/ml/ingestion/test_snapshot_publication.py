@@ -5,8 +5,10 @@ import json
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
 from dataclasses import replace
 from pathlib import Path
+from threading import Event, Thread, get_ident
 
 import pytest
 
@@ -166,6 +168,56 @@ def test_concurrent_identical_publication_is_one_immutable_snapshot(staged):
     assert (
         len(list((store.root / "published" / digest(request.execution.tenant_id)).iterdir())) == 1
     )
+
+
+def test_missing_tenant_lookup_remains_a_miss_when_identical_publisher_finishes(
+    staged, monkeypatch
+):
+    store, request, batch = staged
+    intent = store.prepare(request, batch)
+    parent = store._final(intent.tenant_id, intent.snapshot_id).parent
+    original = raw_snapshot_writer.directory_fd
+    observed_missing, published = Event(), Event()
+    reader = get_ident()
+    first_lookup = True
+    results = {}
+
+    @contextmanager
+    def interleaved(path, *, create=False):
+        nonlocal first_lookup
+        if get_ident() == reader and path == parent and not create and first_lookup:
+            first_lookup = False
+            try:
+                with original(path, create=create) as descriptor:
+                    yield descriptor
+            except FileNotFoundError:
+                observed_missing.set()
+                assert published.wait(5), "Competing publication did not complete"
+                raise
+        else:
+            with original(path, create=create) as descriptor:
+                yield descriptor
+
+    def publish_competitor():
+        try:
+            assert observed_missing.wait(5), "Lookup did not observe a missing tenant"
+            results["snapshot"] = store.publish(intent)
+        except BaseException as error:
+            results["error"] = error
+        finally:
+            published.set()
+
+    monkeypatch.setattr(raw_snapshot_writer, "directory_fd", interleaved)
+    competitor = Thread(target=publish_competitor)
+    competitor.start()
+    try:
+        result = store.publish(intent)
+    finally:
+        competitor.join(timeout=5)
+    assert not competitor.is_alive()
+    assert "error" not in results, results.get("error")
+    assert result == results["snapshot"]
+    assert store.verify(result) == result
 
 
 def test_failure_before_atomic_rename_exposes_no_published_snapshot(staged, monkeypatch):

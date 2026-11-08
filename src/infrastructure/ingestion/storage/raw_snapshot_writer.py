@@ -410,12 +410,14 @@ class LocalRawSnapshotStore:
     def lookup(self, tenant_id: str, snapshot_id: str, manifest_digest: str) -> RawSnapshot | None:
         sha256(manifest_digest)
         path = self._final(tenant_id, snapshot_id)
+        identity_observed = False
         try:
             with directory_fd(path.parent) as descriptor:
                 try:
                     os.stat(snapshot_id, dir_fd=descriptor, follow_symlinks=False)
                 except FileNotFoundError:
                     return None
+                identity_observed = True
             data = _read_file(path, "manifest.json", _MANIFEST_LIMIT)
             if hashlib.sha256(data).hexdigest() != manifest_digest:
                 raise SnapshotConflict("Raw snapshot identity is already bound to other content")
@@ -433,11 +435,10 @@ class LocalRawSnapshotStore:
                 raise SnapshotInvalid("Immutable raw snapshot payload digest mismatch")
             return snapshot
         except FileNotFoundError:
-            # A missing tenant directory is not published. A present partial identity is invalid.
-            try:
-                with directory_fd(path.parent):
-                    pass
-            except FileNotFoundError:
+            # Classify the observation that failed. A competing publication can
+            # create the tenant directory before this handler runs, so probing
+            # its current existence would turn an ordinary miss into corruption.
+            if not identity_observed:
                 return None
             raise SnapshotInvalid("Incomplete raw snapshot is not published") from None
         except OSError as error:
