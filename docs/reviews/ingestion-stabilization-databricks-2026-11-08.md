@@ -5,6 +5,9 @@
 狀態：**實作與自動化測試已交付；PR 維持 Draft，尚未通過合併驗收。**
 使用者確認目前沒有核准的真實 Databricks 環境；未將替身或 skipped tests 視為遠端成功。
 
+2026-11-09 後續：CI cache 權限、EBM JSON depth 與 typing 已修復；本頁保留交付當日
+的驗證結果。最新結果與未完成驗收見 [後續修復紀錄](ci-ebm-fixes-2026-11-09.md)。
+
 ## 實作範圍
 
 沿既有九層 package／Application Ports／SQL Job／Raw Snapshot 契約擴充，
