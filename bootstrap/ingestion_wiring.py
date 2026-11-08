@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import json
-import math
 import os
+import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
@@ -14,11 +14,21 @@ from src.application.ingestion.registry import ApprovedSourceAdapterRegistry
 from src.application.ingestion.service import IngestionService
 from src.application.ingestion.supervisor import IngestionSupervisor
 from src.domain.ingestion.models import AdapterDescriptor
+from src.domain.ingestion.runtime_limits import validate_job_limits, validate_poll_seconds
 from src.infrastructure.ingestion.adapters.file_batch import FileBatchAdapter
 from src.infrastructure.ingestion.persistence.ingestion_jobs import SQLIngestionJobRepository
 from src.infrastructure.ingestion.persistence.source_catalog import SQLSourceCatalog
 from src.infrastructure.ingestion.storage.raw_snapshot_writer import LocalRawSnapshotStore
 from src.infrastructure.persistence.ml_database import Database
+
+
+def _unique_root_keys(pairs: list[tuple[str, object]]) -> dict[str, object]:
+    roots = {}
+    for key, value in pairs:
+        if key in roots:
+            raise ValueError("Duplicate approved ingestion root key")
+        roots[key] = value
+    return roots
 
 
 def ingress_enabled() -> bool:
@@ -46,7 +56,7 @@ class IngestionSettings:
         raw = os.environ.get("ML_INGESTION_FILE_ROOTS_JSON", "{}")
         if len(raw.encode()) > 65536:
             raise ValueError("Approved file roots configuration is too large")
-        roots = json.loads(raw)
+        roots = json.loads(raw, object_pairs_hook=_unique_root_keys)
         if (
             not isinstance(roots, dict)
             or len(roots) > 128
@@ -70,21 +80,38 @@ class IngestionSettings:
         )
 
     def __post_init__(self) -> None:
+        validate_job_limits(
+            lease_seconds=self.lease_seconds,
+            retry_delay=self.retry_delay,
+            queue_timeout=self.queue_timeout,
+            max_attempts=self.max_attempts,
+            reconcile_limit=self.reconcile_limit,
+            max_pending=self.max_pending,
+        )
+        validate_poll_seconds(self.poll_seconds)
         if (
-            not isinstance(self.file_roots, tuple)
-            or len(dict(self.file_roots)) != len(self.file_roots)
-            or any(
-                not math.isfinite(value) or value <= 0
-                for value in (self.lease_seconds, self.queue_timeout, self.poll_seconds)
-            )
-            or not math.isfinite(self.retry_delay)
-            or self.retry_delay < 0
-            or any(
-                type(value) is not int or not 1 <= value <= 1000
-                for value in (self.max_attempts, self.reconcile_limit, self.max_pending)
-            )
+            not isinstance(self.database_url, str)
+            or not self.database_url
+            or len(self.database_url) > 16384
+            or not isinstance(self.raw_root, Path)
+            or ".." in self.raw_root.absolute().parts
+            or not isinstance(self.file_roots, tuple)
+            or len(self.file_roots) > 128
         ):
-            raise ValueError("Invalid bounded ingestion runtime settings")
+            raise ValueError("Invalid approved ingestion storage configuration")
+        seen = set()
+        for item in self.file_roots:
+            if (
+                not isinstance(item, tuple)
+                or len(item) != 2
+                or not isinstance(item[0], str)
+                or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", item[0])
+                or item[0] in seen
+                or not isinstance(item[1], Path)
+                or ".." in item[1].absolute().parts
+            ):
+                raise ValueError("Invalid approved ingestion file root")
+            seen.add(item[0])
 
 
 @dataclass(frozen=True)

@@ -543,8 +543,10 @@ class LocalRawSnapshotStore:
         The caller supplies all nonterminal job IDs, including uncertain
         publication/reconciliation jobs. Final snapshot contents are untouched;
         only tagged private publication siblings qualify for cleanup. Each of
-        the two namespaces has its own 5,000-entry scan budget. Unrecognized
-        directories and symbolic links are left untouched.
+        the two namespaces has its own 5,000-entry scan budget and an atomically
+        persisted directory-cookie cursor, so later invocations resume instead
+        of rescanning the same history. Unrecognized directories and symbolic
+        links are left untouched.
         """
         if (
             not isinstance(protected_job_ids, frozenset)
@@ -561,107 +563,16 @@ class LocalRawSnapshotStore:
         ) + self._cleanup_publication_temps(protected_job_ids, older_than)
 
     def _cleanup_attempts(self, protected_job_ids: frozenset[str], older_than: float) -> int:
-        removed, scanned = 0, 0
-        base = self.root / ".staging"
-        try:
-            with directory_fd(base) as base_descriptor, os.scandir(base_descriptor) as tenants:
-                for tenant in tenants:
-                    scanned += 1
-                    if scanned > 5000:
-                        return removed
-                    if not re.fullmatch(r"[a-f0-9]{64}", tenant.name) or not tenant.is_dir(
-                        follow_symlinks=False
-                    ):
-                        continue
-                    tenant_path = base / tenant.name
-                    try:
-                        with (
-                            directory_fd(tenant_path) as tenant_descriptor,
-                            os.scandir(tenant_descriptor) as jobs,
-                        ):
-                            for job in jobs:
-                                scanned += 1
-                                if scanned > 5000:
-                                    return removed
-                                if (
-                                    not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", job.name)
-                                    or job.name in protected_job_ids
-                                    or not job.is_dir(follow_symlinks=False)
-                                ):
-                                    continue
-                                parent = tenant_path / job.name
-                                try:
-                                    with (
-                                        directory_fd(parent) as job_descriptor,
-                                        os.scandir(job_descriptor) as attempts,
-                                    ):
-                                        for attempt in attempts:
-                                            scanned += 1
-                                            if scanned > 5000:
-                                                return removed
-                                            if (
-                                                not re.fullmatch(
-                                                    r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}-[a-f0-9]{32}",
-                                                    attempt.name,
-                                                )
-                                                or not attempt.is_dir(follow_symlinks=False)
-                                                or attempt.stat(follow_symlinks=False).st_mtime
-                                                >= older_than
-                                            ):
-                                                continue
-                                            removed += int(
-                                                self._discard_path(parent / attempt.name, parent)
-                                            )
-                                except OSError:
-                                    continue
-                    except OSError:
-                        continue
-        except OSError:
-            return removed
-        return removed
+        from src.infrastructure.ingestion.storage.raw_snapshot_cleanup import cleanup_namespace
+
+        return cleanup_namespace(self, ".staging", protected_job_ids, older_than)
 
     def _cleanup_publication_temps(
         self, protected_job_ids: frozenset[str], older_than: float
     ) -> int:
-        removed, scanned = 0, 0
-        base = self.root / "published"
-        try:
-            with directory_fd(base) as base_descriptor, os.scandir(base_descriptor) as tenants:
-                for tenant in tenants:
-                    scanned += 1
-                    if scanned > 5000:
-                        return removed
-                    if not re.fullmatch(r"[a-f0-9]{64}", tenant.name) or not tenant.is_dir(
-                        follow_symlinks=False
-                    ):
-                        continue
-                    parent = base / tenant.name
-                    try:
-                        with (
-                            directory_fd(parent) as tenant_descriptor,
-                            os.scandir(tenant_descriptor) as candidates,
-                        ):
-                            for candidate in candidates:
-                                scanned += 1
-                                if scanned > 5000:
-                                    return removed
-                                match = re.fullmatch(
-                                    r"\.publish-([A-Za-z0-9][A-Za-z0-9_.-]{0,127})-[a-f0-9]{32}",
-                                    candidate.name,
-                                )
-                                if (
-                                    match is None
-                                    or match[1] in protected_job_ids
-                                    or not candidate.is_dir(follow_symlinks=False)
-                                    or candidate.stat(follow_symlinks=False).st_mtime >= older_than
-                                ):
-                                    continue
-                                removed += int(self._discard_path(parent / candidate.name, parent))
-                    except OSError:
-                        continue
-        except OSError:
-            return removed
-        return removed
+        from src.infrastructure.ingestion.storage.raw_snapshot_cleanup import cleanup_namespace
+
+        return cleanup_namespace(self, "published", protected_job_ids, older_than)
 
     def discard(self, staged: StagedBatch) -> None:
         path = self._staging_directory(staged)

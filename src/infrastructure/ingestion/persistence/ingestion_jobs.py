@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import json
-import math
 import re
 import time
 from collections.abc import Mapping
@@ -24,6 +23,7 @@ from src.domain.ingestion.models import (
     SourceDefinition,
     StagedBatch,
 )
+from src.domain.ingestion.runtime_limits import validate_job_limits
 from src.domain.ingestion.states import TERMINAL, validate_transition
 from src.domain.ml import (
     Actor,
@@ -84,32 +84,14 @@ class SQLIngestionJobRepository:
         queue_timeout: float = 600,
         max_pending: int = 100,
     ) -> None:
-        duration_bounds = (
-            (lease_seconds, 0, 3600),
-            (retry_delay, 0, 300),
-            (queue_timeout, 0, 86400),
+        validate_job_limits(
+            lease_seconds=lease_seconds,
+            retry_delay=retry_delay,
+            queue_timeout=queue_timeout,
+            max_attempts=max_attempts,
+            reconcile_limit=reconcile_limit,
+            max_pending=max_pending,
         )
-        if (
-            any(
-                isinstance(value, bool)
-                or not isinstance(value, (int, float))
-                or not math.isfinite(value)
-                or value < minimum
-                or value > maximum
-                for value, minimum, maximum in duration_bounds
-            )
-            or lease_seconds == 0
-            or queue_timeout == 0
-            or any(
-                type(value) is not int or not 1 <= value <= maximum
-                for value, maximum in (
-                    (max_attempts, 100),
-                    (reconcile_limit, 1000),
-                    (max_pending, 100000),
-                )
-            )
-        ):
-            raise ValueError("Ingestion queue bounds must be positive")
         self.db = database
         self.lease_seconds, self.retry_delay, self.queue_timeout = (
             lease_seconds,
