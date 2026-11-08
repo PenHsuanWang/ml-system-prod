@@ -35,9 +35,19 @@ def mount_routes(
     identity_enabled: bool,
     definitions: Sequence[RouteGroup],
     jobs_enabled: bool = True,
+    include_default_readiness: bool = True,
 ) -> None:
     """Apply the platform's existing URL and application authentication policy."""
-    app.include_router(health_router)
+    if include_default_readiness:
+        app.include_router(health_router)
+    else:
+        selected_health = APIRouter()
+        selected_health.routes.extend(
+            route
+            for route in health_router.routes
+            if getattr(route, "path", None) != "/health/ready"
+        )
+        app.include_router(selected_health)
     if jobs_enabled and (expose_job_api or kernel_api_enabled):
         app.include_router(jobs_router, prefix="/api/v1")
     if kernel_api_enabled:

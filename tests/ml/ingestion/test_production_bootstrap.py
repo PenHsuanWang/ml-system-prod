@@ -1,6 +1,7 @@
 """Exercise the production factory and lifespan; only external identity I/O is replaced."""
 
 import sys
+from dataclasses import replace
 
 import httpx
 import pytest
@@ -13,10 +14,24 @@ pytestmark = [
 ]
 
 
+async def test_generic_factory_preserves_default_readiness_without_mutating_shared_router():
+    from server import create_app
+    from src.config.settings import Settings
+
+    settings = Settings(task_backend="disabled", identity_enabled=False, mongo_enabled=False)
+    default = create_app(settings, modules=())
+    custom = create_app(settings, modules=(), include_default_readiness=False)
+    second_default = create_app(settings, modules=())
+    assert "/health/ready" in default.openapi()["paths"]
+    assert "/health/ready" not in custom.openapi()["paths"]
+    assert "/health/live" in custom.openapi()["paths"]
+    assert "/health/ready" in second_default.openapi()["paths"]
+
+
 @pytest.mark.parametrize("ingestion_enabled", [False, True])
 @pytest.mark.parametrize("dependency_state", ["ready", "mongo-unready", "sql-unready"])
 async def test_production_factory_registers_health_and_opt_in_ingestion(
-    components, tmp_path, monkeypatch, ingestion_enabled, dependency_state
+    components, actor, tmp_path, monkeypatch, ingestion_enabled, dependency_state
 ):
     # Import the actual production template only on its supported Python runtime.
     import bootstrap.ml_api as factory
@@ -84,9 +99,7 @@ async def test_production_factory_registers_health_and_opt_in_ingestion(
     assert len(built) == 1
     assert sum(getattr(route, "path", None) == "/health/ready" for route in app.routes) == 1
     assert (
-        bool(
-            any(getattr(route, "path", "").startswith("/api/v1/ingestion") for route in app.routes)
-        )
+        bool(any(path.startswith("/api/v1/ingestion") for path in app.openapi()["paths"]))
         == ingestion_enabled
     )
     assert "/health/ready" in app.openapi()["paths"]
@@ -103,6 +116,19 @@ async def test_production_factory_registers_health_and_opt_in_ingestion(
             assert response.status_code == (200 if ready else 503)
             assert response.json() == {"ready": ready}
             assert "private-storage-error" not in response.text
+            assert (await client.get("/metrics")).status_code == 401
+            from src.api.ml_http import get_actor
+
+            app.dependency_overrides[get_actor] = lambda: replace(
+                actor, permissions=frozenset({"ml:operate"})
+            )
+            metrics = await client.get("/metrics")
+            assert metrics.status_code == 200
+            assert "# TYPE ml_training_jobs gauge" in metrics.text
+            assert ("# TYPE ml_ingestion_jobs gauge" in metrics.text) == ingestion_enabled
+            app.dependency_overrides[get_actor] = lambda: replace(actor, permissions=frozenset())
+            assert (await client.get("/metrics")).status_code == 403
+            app.dependency_overrides.clear()
             assert (await client.get("/api/v1/training/jobs/no-such-job")).status_code == 401
     assert app.state.runtime is None
     assert mongo_lifecycle == ["start", "close"]

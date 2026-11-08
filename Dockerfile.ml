@@ -9,6 +9,20 @@ RUN pip install --no-cache-dir '.[observability]' && useradd --uid 10001 --creat
 USER mlapp
 CMD ["uvicorn", "bootstrap.ml_api:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000", "--limit-concurrency", "64"]
 
+FROM api AS ingestion
+USER root
+RUN pip install --no-cache-dir '.[databricks]'
+USER mlapp
+CMD ["python", "-m", "bootstrap.ingestion_cli", "work"]
+
+FROM ingestion AS ingestion-test
+USER root
+COPY tests ./tests
+COPY scripts ./scripts
+RUN pip install --no-cache-dir '.[dev]'
+USER mlapp
+CMD ["python", "-m", "pytest", "tests/ml/ingestion/test_http_e2e.py", "tests/ml/ingestion/test_production_bootstrap.py", "-q"]
+
 FROM api AS training
 USER root
 RUN pip install --no-cache-dir torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu && pip install --no-cache-dir 'mlflow-skinny==3.6.0' 'numpy>=1.26,<3'

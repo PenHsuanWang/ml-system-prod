@@ -18,7 +18,10 @@ from src.domain.ingestion.runtime_limits import validate_job_limits, validate_po
 from src.infrastructure.ingestion.adapters.file_batch import FileBatchAdapter
 from src.infrastructure.ingestion.persistence.ingestion_jobs import SQLIngestionJobRepository
 from src.infrastructure.ingestion.persistence.source_catalog import SQLSourceCatalog
-from src.infrastructure.ingestion.storage.raw_snapshot_writer import LocalRawSnapshotStore
+from src.infrastructure.ingestion.storage.raw_snapshot_writer import (
+    LocalRawSnapshotStore,
+    relative_file_fd,
+)
 from src.infrastructure.persistence.ml_database import Database
 
 
@@ -38,6 +41,28 @@ def ingress_enabled() -> bool:
     return value in {"true", "1"}
 
 
+def _databricks_enabled() -> bool:
+    value = os.environ.get("ML_DATABRICKS_ENABLED", "false").lower()
+    if value not in {"true", "false", "1", "0"}:
+        raise ValueError("ML_DATABRICKS_ENABLED must be an explicit boolean")
+    return value in {"true", "1"}
+
+
+def _approved_mapping(path: Path) -> dict[str, object]:
+    try:
+        with relative_file_fd(path.parent, path.name) as descriptor:
+            with os.fdopen(os.dup(descriptor), "rb") as stream:
+                data = stream.read(1024 * 1024 + 1)
+        if len(data) > 1024 * 1024:
+            raise ValueError
+        value = json.loads(data, object_pairs_hook=_unique_root_keys)
+        if not isinstance(value, dict):
+            raise ValueError
+        return value
+    except (OSError, ValueError, RecursionError):
+        raise ValueError("Approved Databricks configuration cannot be loaded") from None
+
+
 @dataclass(frozen=True)
 class IngestionSettings:
     database_url: str = "sqlite:///./var/ml.db"
@@ -50,6 +75,9 @@ class IngestionSettings:
     queue_timeout: float = 600
     max_pending: int = 100
     poll_seconds: float = 1
+    databricks_enabled: bool = False
+    databricks_connections_file: Path | None = None
+    databricks_sources_file: Path | None = None
 
     @classmethod
     def from_env(cls) -> IngestionSettings:
@@ -77,6 +105,17 @@ class IngestionSettings:
             queue_timeout=float(os.environ.get("ML_INGESTION_QUEUE_TIMEOUT", "600")),
             max_pending=int(os.environ.get("ML_INGESTION_MAX_PENDING", "100")),
             poll_seconds=float(os.environ.get("ML_INGESTION_POLL_SECONDS", "1")),
+            databricks_enabled=_databricks_enabled(),
+            databricks_connections_file=(
+                Path(os.environ["ML_DATABRICKS_CONNECTIONS_FILE"])
+                if os.environ.get("ML_DATABRICKS_CONNECTIONS_FILE")
+                else None
+            ),
+            databricks_sources_file=(
+                Path(os.environ["ML_DATABRICKS_SOURCES_FILE"])
+                if os.environ.get("ML_DATABRICKS_SOURCES_FILE")
+                else None
+            ),
         )
 
     def __post_init__(self) -> None:
@@ -89,6 +128,17 @@ class IngestionSettings:
             max_pending=self.max_pending,
         )
         validate_poll_seconds(self.poll_seconds)
+        if type(self.databricks_enabled) is not bool:
+            raise ValueError("Databricks enablement must be boolean")
+        for path in (self.databricks_connections_file, self.databricks_sources_file):
+            if path is not None and (
+                not isinstance(path, Path) or not path.is_absolute() or ".." in path.parts
+            ):
+                raise ValueError("Databricks configuration requires approved absolute files")
+        if self.databricks_enabled and (
+            self.databricks_connections_file is None or self.databricks_sources_file is None
+        ):
+            raise ValueError("Enabled Databricks requires approved configuration files")
         if (
             not isinstance(self.database_url, str)
             or not self.database_url
@@ -123,6 +173,7 @@ class IngestionComponents:
     registry: ApprovedSourceAdapterRegistry
     service: IngestionService
     owns_database: bool
+    approved_template_digests: tuple[tuple[str, str], ...] = ()
 
     def supervisor(self) -> IngestionSupervisor:
         return IngestionSupervisor(self.sources, self.registry, self.jobs, self.store)
@@ -138,11 +189,37 @@ def build_ingestion(
     database: Database | None = None,
     additional_registrations: Iterable[AdapterRegistration] = (),
 ) -> IngestionComponents:
+    registrations = []
+    template_digests: tuple[tuple[str, str], ...] = ()
+    if settings.databricks_enabled:
+        from src.infrastructure.ingestion.adapters.databricks_client import DatabricksSQLClient
+        from src.infrastructure.ingestion.adapters.databricks_contract import (
+            parse_connections,
+            parse_templates,
+        )
+        from src.infrastructure.ingestion.adapters.databricks_sql import DatabricksSQLBatchAdapter
+
+        assert settings.databricks_connections_file is not None
+        assert settings.databricks_sources_file is not None
+        connections = parse_connections(_approved_mapping(settings.databricks_connections_file))
+        templates = parse_templates(_approved_mapping(settings.databricks_sources_file))
+        if any(template.connection_ref not in connections for template in templates.values()):
+            raise ValueError("Databricks template references an unknown approved connection")
+        template_digests = tuple(
+            (key, template.digest(connections[template.connection_ref]))
+            for key, template in sorted(templates.items())
+        )
     store = LocalRawSnapshotStore(settings.raw_root)
     file_adapter = FileBatchAdapter(dict(settings.file_roots), store)
+    if settings.databricks_enabled:
+        databricks = DatabricksSQLBatchAdapter(connections, templates, DatabricksSQLClient(), store)
+        registrations.append(
+            (AdapterDescriptor("databricks-sql", "1"), databricks, databricks.validate_source)
+        )
     registry = ApprovedSourceAdapterRegistry(
         [
             (AdapterDescriptor("file", "1"), file_adapter, file_adapter.validate_source),
+            *registrations,
             *additional_registrations,
         ]
     )
@@ -158,4 +235,6 @@ def build_ingestion(
         max_pending=settings.max_pending,
     )
     service = IngestionService(sources, registry, jobs)
-    return IngestionComponents(db, sources, jobs, store, registry, service, database is None)
+    return IngestionComponents(
+        db, sources, jobs, store, registry, service, database is None, template_digests
+    )

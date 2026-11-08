@@ -1,0 +1,38 @@
+# Add to compose.ml.yaml to enable File Batch Ingestion and its separate worker.
+# Prepare the approved input directory before starting the stack.
+services:
+  management:
+    environment:
+      ML_INGESTION_ENABLED: "true"
+      ML_RAW_SNAPSHOT_ROOT: /app/var/raw-snapshots
+      ML_INGESTION_FILE_ROOTS_JSON: '{"inbox":"/app/ingestion-input"}'
+  ingestion-worker:
+    profiles: [ingestion]
+    build: {context: ., dockerfile: Dockerfile.ml, target: ingestion}
+    user: ${ML_UID:-1000}:${ML_GID:-1000}
+    command: [python, -m, bootstrap.ingestion_cli, work]
+    environment:
+      ML_DATABASE_URL: postgresql+psycopg://ml:${ML_DB_PASSWORD:?set ML_DB_PASSWORD}@postgres:5432/ml
+      ML_INGESTION_ENABLED: "true"
+      ML_DATABRICKS_ENABLED: "false"
+      ML_RAW_SNAPSHOT_ROOT: /app/var/raw-snapshots
+      ML_INGESTION_FILE_ROOTS_JSON: '{"inbox":"/app/ingestion-input"}'
+    volumes:
+      - ./var:/app/var
+      - ${ML_INGESTION_INPUT_DIR:?set approved input directory outside shared runtime volume}:/app/ingestion-input:ro
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    init: true
+    restart: unless-stopped
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 512m
+    cpus: 1
+    pids_limit: 128
+    stop_grace_period: 45s
+    healthcheck:
+      test: [CMD, python, -m, bootstrap.ingestion_cli, health]
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
