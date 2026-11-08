@@ -17,6 +17,8 @@ from src.domain.ml import MLError, digest
 from src.infrastructure.serving.ebm_artifacts import (
     EBM_BUNDLE_FILES,
     EBMArtifactVerifier,
+    MAX_JSON_NESTING,
+    load_json_bytes,
     load_npz,
     read_json,
 )
@@ -122,6 +124,36 @@ def test_json_contract_rejects_nonfinite_duplicate_and_deep_values(tmp_path, bod
     path.write_text(body)
     with pytest.raises(MLError, match="JSON contract"):
         read_json(path)
+
+
+@pytest.mark.parametrize("loader", ["file", "bytes"])
+@pytest.mark.parametrize("container", ["array", "object", "mixed"])
+@pytest.mark.parametrize("depth", [MAX_JSON_NESTING, MAX_JSON_NESTING + 1])
+def test_json_contract_has_an_explicit_container_depth_limit(tmp_path, loader, container, depth):
+    opens = [
+        '{"value":' if container == "object" or (container == "mixed" and index % 2) else '['
+        for index in range(depth - 1)
+    ]
+    body = ('{"value":' + ''.join(opens) + '0'
+            + ''.join('}' if item.startswith('{') else ']' for item in reversed(opens)) + '}')
+    data = body.encode()
+    path = tmp_path / "depth.json"
+    path.write_bytes(data)
+
+    def load():
+        return read_json(path) if loader == "file" else load_json_bytes(data)
+
+    if depth <= MAX_JSON_NESTING:
+        assert isinstance(load(), dict)
+    else:
+        with pytest.raises(MLError, match="JSON contract"):
+            load()
+
+
+@pytest.mark.parametrize("encoding", ["utf-8", "utf-16", "utf-32"])
+def test_json_depth_limit_preserves_encoded_strings_and_escaped_delimiters(encoding):
+    value = {'value': '[{"quoted": "\\\\\\\""}]' * 2000}
+    assert load_json_bytes(json.dumps(value).encode(encoding)) == value
 
 
 def test_importing_ebm_adapters_does_not_load_numerical_runtimes():

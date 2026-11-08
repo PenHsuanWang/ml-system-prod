@@ -7,7 +7,7 @@ import hashlib
 import json
 import sys
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from src.domain.datasets.ebm import EBM_PAD_ORDER, EBM_SIGNAL_ORDER
 from src.domain.training.ebm import EBMTrainingConfig
@@ -18,6 +18,9 @@ from src.plugins.features.fdc_spectrogram_v1 import FdcSpectrogramV1
 from src.plugins.models.ebm_cnn_v1 import EBMModelConfig, build_ebm_cnn
 from src.plugins.training.ebm_trainer_v1 import EBMTrainerV1
 from src.plugins.training.pytorch_trainer import atomic_json
+
+if TYPE_CHECKING:
+    from numpy.typing import NDArray
 
 
 def trusted_code_digest() -> str:
@@ -40,7 +43,7 @@ def synthetic_snapshot(root: Path) -> dict[str, str]:
     import numpy as np
 
     samples, traces = [], []
-    time = np.arange(256, dtype=np.float32)
+    time: NDArray[np.float32] = np.arange(256, dtype=np.float32)
     for lot in range(12):
         traces.append({signal: {pad: (np.sin(time * (0.05 + s * .01) + p * .3)
                            * (1 + lot * .05) + lot * .02).tolist()

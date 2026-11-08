@@ -10,10 +10,10 @@ import re
 import stat
 import tempfile
 import zipfile
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import IO, TYPE_CHECKING, Any, cast
 
 from src.domain.datasets.ebm import EBM_FEATURE_SHAPE, EBMDatasetMetadata
 from src.domain.ml import MLError, canonical_json
@@ -74,15 +74,23 @@ def _decode_npz(data: bytes, metadata: EBMDatasetMetadata) -> NDArray[np.float32
                 raise MLError("EBM NPZ must contain only one bounded spectrograms array")
             # Inspect the NPY header before numpy allocates memory for its shape.
             with archive.open(members[0]) as member:
-                # NumPy's public NPY header helpers do not ship typed signatures.
-                version = np.lib.format.read_magic(member)  # type: ignore[no-untyped-call]
+                # NumPy 1.x leaves these public helpers untyped; declare the
+                # same local read contract for both supported NumPy generations.
+                read_magic = cast(
+                    Callable[[IO[bytes]], tuple[int, int]], np.lib.format.read_magic
+                )
+                version = read_magic(member)
                 if version == (1, 0):
                     header_reader = np.lib.format.read_array_header_1_0
                 elif version == (2, 0):
                     header_reader = np.lib.format.read_array_header_2_0
                 else:
                     raise MLError("Unsupported EBM NPY format version")
-                shape, _, dtype = header_reader(member)  # type: ignore[no-untyped-call]
+                read_header = cast(
+                    Callable[[IO[bytes]], tuple[tuple[int, ...], bool, np.dtype[Any]]],
+                    header_reader,
+                )
+                shape, _, dtype = read_header(member)
                 if dtype != np.dtype("float32") or shape != (
                     len(metadata.samples), *EBM_FEATURE_SHAPE
                 ):
