@@ -1,0 +1,109 @@
+"""Read-only repository audit: private SQLite/File reproduction of two defects."""
+
+from __future__ import annotations
+
+import json
+import tempfile
+import time
+from pathlib import Path
+
+from bootstrap.ingestion_wiring import IngestionSettings, build_ingestion
+from src.domain.ingestion.errors import SnapshotConflict
+from src.domain.ingestion.models import IngestionRequest, SourceDefinition
+from src.domain.ml import Actor
+from src.infrastructure.persistence.ml_database import metadata
+
+
+def setup(root: Path, *, lease_seconds: float = 3, reconcile_limit: int = 10):
+    incoming = root / "incoming"
+    incoming.mkdir()
+    (incoming / "events.jsonl").write_text('{"event_id":1}\n', encoding="utf-8")
+    components = build_ingestion(
+        IngestionSettings(
+            database_url="sqlite:///" + str(root / "private.db"),
+            raw_root=root / "raw",
+            file_roots=(("approved", incoming),),
+            lease_seconds=lease_seconds,
+            retry_delay=0,
+            reconcile_limit=reconcile_limit,
+        )
+    )
+    metadata.create_all(components.database.engine)
+    actor = Actor("audit-tenant", "audit-operator", frozenset({"ml:source:manage", "ml:ingest"}))
+    source = SourceDefinition(
+        "events", "v1", actor.tenant_id, "file", "1",
+        json.dumps({"root_key": "approved", "relative_path": "events.jsonl"}),
+    )
+    components.registry.validate_source(source)
+    components.sources.register(actor, source)
+    job = components.service.submit(actor, "audit-request", IngestionRequest("events", "v1"))
+    return components, job
+
+
+def before_intent_conflict() -> None:
+    with tempfile.TemporaryDirectory(prefix="ingress-audit-pre-intent-") as directory:
+        components, job = setup(Path(directory))
+        try:
+            def conflict(*args):
+                raise SnapshotConflict("Audit preparation conflict")
+
+            components.store.prepare = conflict
+            try:
+                components.supervisor().run_once(job_id=job.job_id)
+            except Exception as error:
+                current = components.jobs.get(job.job_id)
+                print(
+                    "PRE_INTENT_CONFLICT",
+                    "exception=" + type(error).__name__,
+                    "message=" + repr(str(error)),
+                    "state=" + current.state,
+                    "has_intent=" + str(current.publication_intent_json is not None),
+                )
+                assert type(error).__name__ == "IngestionError"
+                assert str(error) == "No publication intent is available for reconciliation"
+                assert current.state == "VALIDATING"
+                assert current.publication_intent_json is None
+            else:
+                raise AssertionError("Expected the pre-intent conflict handling defect")
+        finally:
+            components.close()
+
+
+def slow_publication_verification() -> None:
+    with tempfile.TemporaryDirectory(prefix="ingress-audit-lease-") as directory:
+        components, job = setup(Path(directory), lease_seconds=0.2, reconcile_limit=2)
+        try:
+            original_lookup = components.store.lookup
+
+            def slow_lookup(*args):
+                time.sleep(0.3)
+                return original_lookup(*args)
+
+            components.store.lookup = slow_lookup
+            for attempt in range(4):
+                components.supervisor().run_once(job_id=job.job_id)
+                current = components.jobs.get(job.job_id)
+                print(
+                    "SLOW_PUBLICATION_VERIFICATION",
+                    "poll=" + str(attempt),
+                    "state=" + current.state,
+                    "error=" + str(current.error_code),
+                    "attempt_count=" + str(current.attempt_count),
+                )
+            assert current.state == "NEEDS_RECONCILIATION"
+            assert current.error_code == "RECONCILIATION_BUDGET_EXHAUSTED"
+            assert current.attempt_count == 3
+            assert current.publication_intent_json is not None
+            frozen = json.loads(current.publication_intent_json)
+            snapshot = original_lookup(
+                current.tenant_id, current.snapshot_id, frozen["manifest_digest"]
+            )
+            assert snapshot is not None
+            print("SLOW_PUBLICATION_VERIFICATION", "immutable_snapshot_exists=True", "sql_published=False")
+        finally:
+            components.close()
+
+
+if __name__ == "__main__":
+    before_intent_conflict()
+    slow_publication_verification()

@@ -1,0 +1,82 @@
+"""Deterministic concurrent identical-publication false failure; private temp store."""
+
+from contextlib import contextmanager
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from threading import Event, Thread, get_ident
+import traceback
+
+from src.domain.ingestion.errors import SnapshotInvalid
+from src.infrastructure.ingestion.storage import raw_snapshot_writer
+from src.infrastructure.ingestion.storage.raw_snapshot_writer import LocalRawSnapshotStore
+from tests.ml.ingestion.test_file_adapter import Control, extraction
+
+
+def main():
+    with TemporaryDirectory(prefix="ingress-publication-race-") as temporary:
+        store = LocalRawSnapshotStore(Path(temporary) / "raw")
+        request = extraction()
+        batch = store.stage(request, [b'{"value":1}\n'], Control())
+        intent = store.prepare(request, batch)
+        tenant_parent = store._final(intent.tenant_id, intent.snapshot_id).parent
+        original = raw_snapshot_writer.directory_fd
+        missing_observed, competitor_finished = Event(), Event()
+        reader = get_ident()
+        first_lookup = True
+        results = {}
+
+        @contextmanager
+        def interleaved_directory_fd(path, *, create=False):
+            nonlocal first_lookup
+            if get_ident() == reader and path == tenant_parent and not create and first_lookup:
+                first_lookup = False
+                try:
+                    with original(path, create=create) as descriptor:
+                        yield descriptor
+                except FileNotFoundError:
+                    # Pause exactly after the first lookup observes no tenant
+                    # directory, allowing the identical competing publication
+                    # to complete before the reader's exception handler runs.
+                    missing_observed.set()
+                    assert competitor_finished.wait(10), "Competing publisher did not finish"
+                    raise
+            else:
+                with original(path, create=create) as descriptor:
+                    yield descriptor
+
+        def competitor():
+            assert missing_observed.wait(10), "Reader did not observe the missing parent"
+            try:
+                results["competitor"] = store.publish(intent)
+            except BaseException as error:
+                results["competitor_error"] = error
+            finally:
+                competitor_finished.set()
+
+        raw_snapshot_writer.directory_fd = interleaved_directory_fd
+        publisher = Thread(target=competitor, name="identical-publisher")
+        publisher.start()
+        try:
+            try:
+                store.publish(intent)
+            except SnapshotInvalid as error:
+                results["reader_error"] = error
+                print("IDENTICAL_PUBLICATION_RACE: reader incorrectly raised", type(error).__name__)
+                traceback.print_exc()
+            else:
+                raise AssertionError("The reported publication race no longer reproduces")
+        finally:
+            raw_snapshot_writer.directory_fd = original
+            publisher.join(timeout=10)
+        assert not publisher.is_alive()
+        assert "competitor_error" not in results, results.get("competitor_error")
+        assert "reader_error" in results
+        snapshot = results["competitor"]
+        assert store.verify(snapshot) == snapshot
+        assert store.publish(intent) == snapshot
+        print("COMPETITOR_PUBLISHED=True; SNAPSHOT_VERIFIES=True; IDENTICAL_RETRY_SUCCEEDS=True")
+        print("RESULT=DEFECT_REPRODUCED; production source unchanged")
+
+
+if __name__ == "__main__":
+    main()

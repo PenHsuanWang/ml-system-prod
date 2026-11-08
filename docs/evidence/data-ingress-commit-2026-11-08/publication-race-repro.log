@@ -1,0 +1,11 @@
+IDENTICAL_PUBLICATION_RACE: reader incorrectly raised SnapshotInvalid
+COMPETITOR_PUBLISHED=True; SNAPSHOT_VERIFIES=True; IDENTICAL_RETRY_SUCCEEDS=True
+RESULT=DEFECT_REPRODUCED; production source unchanged
+Traceback (most recent call last):
+  File "/home/pwang/pwang-dev/ml-system-ebm/docs/evidence/data-ingress-commit-2026-11-08/publication-race-repro.py.txt", line 61, in main
+    store.publish(intent)
+  File "/home/pwang/pwang-dev/ml-system-ebm/src/infrastructure/ingestion/storage/raw_snapshot_writer.py", line 476, in publish
+    existing = self.lookup(intent.tenant_id, intent.snapshot_id, intent.manifest_digest)
+  File "/home/pwang/pwang-dev/ml-system-ebm/src/infrastructure/ingestion/storage/raw_snapshot_writer.py", line 442, in lookup
+    raise SnapshotInvalid("Incomplete raw snapshot is not published") from None
+src.domain.ingestion.errors.SnapshotInvalid: Incomplete raw snapshot is not published

@@ -245,3 +245,21 @@ pytest
 ```
 
 以上是本地檢查入口；完整已執行證據與未執行項目以 [驗證紀錄](validation.md) 為準。部署驗收仍需真實 broker／DB、程序數、資源配額、故障恢復與新增應用的使用案例測試；單元測試通過不代表已取得生產核准。
+
+## Data Ingress capability 實作補充（2026-10-31）
+
+本補充在既有九層 package 中加入可選的 File Batch Ingestion capability，不另建 `ml_core`／`backend/modules` 架構，也不變更通用 Template 的預設啟動能力。完整操作與限制見 [Data Ingress 實作指南](data-ingress-implementation.md)。
+
+- `src/domain/ingestion/` 保存純 DTO、合法狀態、identity／bounds／digest invariants 與安全錯誤；不依賴 FastAPI、SQLAlchemy、Spark、Kafka 或 MLflow。
+- `src/application/ingestion/ports.py` 定義這個使用案例消費的窄 Workflow Ports。Registry、Service、Supervisor 只依注入契約，不依具體 File／Databricks／Kafka Adapter。
+- `src/infrastructure/ingestion/` 實作檔案 FD 存取、JSONL Staging／Raw Store 與 SQL Source／Job／Raw metadata；不承載 EBM feature engineering。
+- `src/api/ingestion/` 處理嚴格 envelope、actor 與安全 metadata HTTP 回應；高成本檔案擷取不在 request handler 執行。
+- `bootstrap/ingestion_wiring.py` 負責具體建構、approved roots 與 `(adapter_type, version, capabilities)` 註冊；`bootstrap/ingestion_cli.py` 提供 operator／worker 入口。
+
+選入 ML Management factory 的 Ingestion ModuleDefinition 依賴 identity；預設需明確設定 `ML_INGESTION_ENABLED=true`。API 與 worker 共用 Application use case／SQL authority，worker 不透過內部 HTTP 呼叫管理 API。Bootstrap 提供資源及組裝，實際 Job orchestration 位於 Application。
+
+`ModuleExports.datasets` 仍代表既有 `ExportSource` 的 Egress，不能用它註冊 Data Ingress。既有 `DatasetCatalog`、`FileDatasetSource`、`EBMFileDatasetSource` 也不新增任意來源 fetch 方法。Raw Snapshot 與 ML DatasetVersion 分別有自己的 metadata／驗證／成功契約。
+
+File Batch Ingestion 使用獨立 durable SQL queue 與 migration `0006_ingestion`，不復用 Training 的模型 binding／evaluation finish 契約。Snapshot publication 前需先保存 owner-fenced exact intent；發布後 SQL commit 失敗必須保留同一候選對帳，不得盲目重新擷取來源。取消在 intent 前生效，intent 後回 409；沒有新增 ingestion AMQP ACK。
+
+新的 Source Adapter 應以 Bootstrap registration 及共用 Adapter Contract Tests 擴充，不修改穩定 Service／Job state machine。Streaming、Dataset Builder、多格式 Raw Snapshot 是不同契約的後續工作；本輪不建立非功能性的空 Adapter。這個實作補充不把 `docs/adr/015-approved-extensions-proposal.md` 本機提案（未納入本次提交）靜默標為 Accepted。

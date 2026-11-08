@@ -1,0 +1,6 @@
+PRE_INTENT_CONFLICT exception=IngestionError message='No publication intent is available for reconciliation' state=VALIDATING has_intent=False
+SLOW_PUBLICATION_VERIFICATION poll=0 state=PUBLISHING error=None attempt_count=1
+SLOW_PUBLICATION_VERIFICATION poll=1 state=PUBLISHING error=None attempt_count=2
+SLOW_PUBLICATION_VERIFICATION poll=2 state=PUBLISHING error=None attempt_count=3
+SLOW_PUBLICATION_VERIFICATION poll=3 state=NEEDS_RECONCILIATION error=RECONCILIATION_BUDGET_EXHAUSTED attempt_count=3
+SLOW_PUBLICATION_VERIFICATION immutable_snapshot_exists=True sql_published=False

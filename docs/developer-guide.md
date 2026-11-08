@@ -1179,3 +1179,36 @@ python scripts/verify_guide.py
 純同步能力可選 APP_TASK_BACKEND=disabled；此時 context.jobs 為 None，不能匯出 tasks 或開啟 job 查詢。步驟⑨使用背景工作，必須選 memory（僅開發單程序）或 distributed（共享工作）；步驟⑨-C 已示範拒絕缺少 job service。背景 worker 只接受 distributed。
 
 建立新產品時，保留目前分層與 bootstrap 註冊方式，依序完成：乾淨環境安裝 → 驗證空白基線 → 新增能力各層 → 明確 wiring → 契約／授權測試 → wheel／image 建置 → 實際依賴整合。新增能力允許修改明確註冊及必要依賴／部署設定；不應為單一能力修改共通 runtime 行為。使用第三方 SDK、持久副作用或既有 schema 時，依 [CONTRIBUTING](../CONTRIBUTING.md) 提供依賴、冪等及 migration 證據。
+
+## 13. 可選 Data Ingress capability（2026-10-31）
+
+File Batch Ingestion 已沿本手冊的九層結構加入。這個章節補充新的實作接點，不替換前述 `items` 教學、不改變既有 Python 程式碼區塊，也不聲稱原本的背景任務／匯出介面就是通用 Ingress。詳盡可執行操作見 [Data Ingress 實作指南](data-ingress-implementation.md)，實際驗收證據見 [本輪報告](reviews/data-ingress-implementation-report.md)。
+
+### 13.1 先選對擴充邊界
+
+如果需求是從核准來源取得原始資料，使用 `src/application/ingestion/ports.py` 的 Batch Port／Registry；如果需求是 resampling、Spectrogram、target／split construction，應另做版本化 Dataset Builder。Raw Snapshot 成功不會自動建立 EBM FeatureSnapshot。`ModuleExports.datasets`／`ExportSource` 是輸出下載，不要拿它包裝 Databricks 或 Kafka 擷取。
+
+File v1 的 Source 配置由 operator 管理，只有已註冊的 Source ID／Version 可以被 HTTP 選取。Adapter type／version、Source instance／version、Job／Attempt identity 分開管理；來源 SDK 的 credentials／client 不出現在 Domain／Application DTO 或公開 metadata。
+
+### 13.2 部署與操作順序
+
+1. 準備核准的 read-only File root 與 Raw Snapshot storage；設定 server-side `ML_INGESTION_FILE_ROOTS_JSON`、`ML_RAW_SNAPSHOT_ROOT` 與 `ML_DATABASE_URL`。
+2. 以 `python -m bootstrap.ml_cli migrate` 明確套用 migration；API startup 不建表。
+3. 用完整 SourceDefinition JSON 執行 `python -m bootstrap.ingestion_cli register-source --definition-path ... --tenant-id ...`。相同 ID／version 不可換內容；停用／恢復用 `disable-source`／`enable-source`。
+4. Management 選入 `ML_INGESTION_ENABLED=true`，透過既有身份權限明確賦予 `ml:ingest`、read／cancel／operate 或 `ml:source:manage`。各權限不互相隱含，不允許跨 tenant。
+5. 提交 `POST /api/v1/ingestion/jobs`，只傳 Source ID／version 與可縮小的預算，並提供 `Idempotency-Key`；HTTP 回覆 202 不表示資料已取得。
+6. 啟動獨立 `python -m bootstrap.ingestion_cli work` 或 `work --once`。本輪是 durable SQL polling queue，沒有新增 ingestion broker ACK。
+7. 查詢 Job／result metadata；只有 SQL 終態 `PUBLISHED` 才可交給 downstream Raw Reader。清理用明確 `cleanup`，保留所有非終態工作／不確定發布證據。
+
+完整 Source JSON、API body、環境變數及檔案格式細節集中於操作指南，避免在這裡複製另一份不一致的 schema。File v1 只接受有界 UTF-8 JSON object records；不對資料做模型特徵轉換。
+
+### 13.3 團隊新增來源時的交付要求
+
+- 以窄 `BatchSourceAdapter.acquire()` 及 Source validator 實作新 Adapter，利用 injected stager 串流 bytes；不引入共用 `fetch(*args, **kwargs)` 或不必要繼承樹。
+- 只在 Bootstrap explicit allowlist 註冊 `(AdapterDescriptor, adapter, validator)`；HTTP 不接受 import path、任意 SQL、endpoint 或 filesystem path。
+- 新增版本只宣告實際可支援的 capabilities；未知或未支援的操作須 fail closed。
+- 跑相同 Adapter Contract Suite，再跑 Service、tenant／grant、fault／recovery、HTTP 與既有 MLP／EBM 回歸。現有測試用 File／Memory／Generated 三種獨立來源示範 OCP 行為。
+- 對任何 side effect 說明 owner fencing、期限／取消、來源 revision、idempotency 及不確定結果。不要把 `PUBLISHED`、來源已回應、Broker ACK 或 Training 成功當成同一種完成條件。
+- 使用 `python scripts/check_ingestion.py`、既有 boundary／Ruff／Mypy／Pytest gates，並如實記錄 baseline failures、目標 Runtime 與外部服務的未驗證項目。
+
+Publication Intent 在可見發布前先存 SQL；之後取消會回 409，worker 只能完成或對帳同一候選。這個 crash-recovery 契約不能由 Adapter 覆寫。Kafka 需要另一個 ownership／bounded polling／offset checkpoint lifecycle；Databricks 需要釘選 Delta／export revision 與核准 query，兩者目前都沒有正式可運作的 Adapter。本輪也沒有採納整份 `docs/adr/015-approved-extensions-proposal.md` 本機提案（未納入本次提交）。

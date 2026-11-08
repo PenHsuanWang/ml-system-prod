@@ -1,0 +1,19 @@
+"""Reproduce the Management readiness route registration failure in isolation."""
+
+import fastapi
+from fastapi import FastAPI
+from fastapi.exceptions import FastAPIError
+from fastapi.responses import JSONResponse
+
+print("FastAPI", fastapi.__version__)
+try:
+    app = FastAPI()
+
+    @app.get("/health/ready")
+    async def ready() -> dict[str, bool] | JSONResponse:
+        return {"ready": True}
+
+except FastAPIError as error:
+    print(type(error).__name__ + ": " + str(error))
+else:
+    raise AssertionError("The reported route registration defect no longer reproduces")

@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-08",
+  "timezone": "Asia/Taipei",
+  "base_commit": "edc140061f7cac7d0b6881f35dded4a2a92a8d6c",
+  "scope": "Commit existing reviewed in-progress Data Ingress and File Adapter changes",
+  "production_source_repaired": false,
+  "acceptance_complete": false,
+  "precommit_ingestion_pytest": {
+    "passed": 166,
+    "failed": 1,
+    "duration_seconds": 10.6,
+    "failed_test": "tests/ml/ingestion/test_snapshot_publication.py::test_concurrent_identical_publication_is_one_immutable_snapshot"
+  },
+  "checks": {
+    "boundaries": "PASS",
+    "scoped_ruff": "PASS",
+    "scoped_mypy": "PASS: 28 source files on legacy host"
+  },
+  "deterministic_publication_race_probe": {
+    "exit_code": 0,
+    "result": "DEFECT REPRODUCED",
+    "snapshot_integrity": "verified",
+    "identical_retry": "succeeds"
+  },
+  "source_sha256": "e065bbaa6fb3ddb97246a329135d932ee4c77fb770f9000c43624c8931da2daa",
+  "qualification": "Known defects unresolved; Databricks/Kafka/builders unimplemented; target runtime/external integrations not qualified"
+}

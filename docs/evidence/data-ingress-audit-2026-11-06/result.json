@@ -1,0 +1,171 @@
+{
+  "audit_date": "2026-11-06",
+  "timezone": "Asia/Taipei",
+  "verdict": "INCOMPLETE",
+  "head": "edc140061f7cac7d0b6881f35dded4a2a92a8d6c",
+  "runtime": {
+    "python": "3.10.12",
+    "supported_python": ">=3.11",
+    "target_runtime_qualified": false,
+    "packages": {
+      "torch": "2.0.1",
+      "numpy": "1.26.4",
+      "fastapi": "0.124.0",
+      "pydantic": "2.8.2",
+      "SQLAlchemy": "2.0.44",
+      "pytest": "8.3.2",
+      "mypy": "1.11.1"
+    },
+    "ruff": "0.17.3",
+    "workaround": "docs/evidence/ml-cpu-2026-10-29/host_selector_plugin.py; cached dependencies under /tmp/ml-ebm-deps"
+  },
+  "checks": {
+    "ingestion_pytest": {
+      "result": "PASS",
+      "passed": 167,
+      "duration_seconds": 10.43
+    },
+    "ml_and_boundary_pytest": {
+      "result": "PASS WITH SKIPS",
+      "passed": 635,
+      "skipped": 3,
+      "warnings": 1,
+      "duration_seconds": 41.17
+    },
+    "boundaries": {
+      "result": "PASS"
+    },
+    "modified_production_mypy": {
+      "result": "PASS ON LEGACY HOST",
+      "files": 28
+    },
+    "ebm_mypy": {
+      "result": "PASS ON LEGACY HOST",
+      "files": 28
+    },
+    "pyflakes_bootstrap_src_tests_ml": {
+      "result": "PASS"
+    },
+    "scoped_ruff_check": {
+      "result": "PASS"
+    },
+    "new_slice_ruff_format": {
+      "result": "PASS",
+      "files": 37
+    },
+    "sqlite_migration_round_trip": {
+      "result": "PASS",
+      "path": "upgrade head -> downgrade 0005_trace_context -> upgrade head"
+    },
+    "template_plugin_module_regression": {
+      "result": "NOT VERIFIED",
+      "execution": "collection failed",
+      "causes": [
+        "Python 3.10 lacks enum.StrEnum",
+        "taskiq not installed in host dependency cache"
+      ]
+    },
+    "postgres_rabbitmq_target_runtime": {
+      "result": "NOT VERIFIED",
+      "reason": "No ML_TEST_DATABASE_URL / ML_TEST_AMQP_URL configured; no isolated project stack; existing unrelated containers not used"
+    }
+  },
+  "skipped_test_details": [
+    {
+      "classname": "tests.ml.integration.test_backend_stack",
+      "name": "test_live_backend_train_approve_predict_rollout_rollback_and_revoke",
+      "reason": "Set isolated ML_TEST_MANAGEMENT_URL and ML_TEST_PREDICTION_URL"
+    },
+    {
+      "classname": "tests.ml.integration.test_receiver",
+      "name": "test_real_receiver_persists_before_ack_and_deduplicates[False]",
+      "reason": "Set ML_TEST_AMQP_URL and ML_TEST_REDIS_URL for real receiver tests"
+    },
+    {
+      "classname": "tests.ml.integration.test_receiver",
+      "name": "test_real_receiver_persists_before_ack_and_deduplicates[True]",
+      "reason": "Set ML_TEST_AMQP_URL and ML_TEST_REDIS_URL for real receiver tests"
+    }
+  ],
+  "ruff_baseline_comparison": {
+    "HEAD": {
+      "check_exit": 1,
+      "errors": 351,
+      "files": 73,
+      "format_exit": 1,
+      "format_summary": [
+        "99 files would be reformatted, 210 files already formatted"
+      ]
+    },
+    "worktree": {
+      "check_exit": 1,
+      "errors": 1896,
+      "files": 72,
+      "format_exit": 1,
+      "format_summary": [
+        "102 files would be reformatted, 256 files already formatted"
+      ],
+      "new_slice_errors": [],
+      "notebook_errors": 1549,
+      "worst_files": [
+        [
+          "EBM_final_forline.ipynb",
+          1549
+        ],
+        [
+          "tests/ml/test_backend_acceptance.py",
+          23
+        ],
+        [
+          "src/infrastructure/persistence/ml_deployments.py",
+          18
+        ],
+        [
+          "src/infrastructure/persistence/ml_datasets.py",
+          17
+        ],
+        [
+          "src/infrastructure/persistence/ml_training.py",
+          16
+        ],
+        [
+          "scripts/verify_ml_acceptance.py",
+          14
+        ],
+        [
+          "src/api/ml_http.py",
+          14
+        ],
+        [
+          "tests/ml/integration/test_backend_stack.py",
+          14
+        ]
+      ]
+    }
+  },
+  "reproductions": {
+    "readiness": {
+      "exit_code": 0,
+      "result": "DEFECT REPRODUCED"
+    },
+    "durability": {
+      "exit_code": 0,
+      "result": "DEFECT REPRODUCED"
+    },
+    "cleanup": {
+      "exit_code": 0,
+      "result": "DEFECT REPRODUCED"
+    }
+  },
+  "source_sha256": {
+    "bootstrap/ml_api.py": "77b64a70ee3cb3f8ecc9de9dce7a6f7d1421e6b901f037b4017b27379000d14d",
+    "src/application/ingestion/supervisor.py": "0424f110452f8a6e0c729b9669b714cf9be8a6cf2999fe758259aedac1616354",
+    "src/infrastructure/ingestion/persistence/ingestion_jobs.py": "f0000e06cb1fb288899ca66573a7e93f82a8e5ad3459d948d86153ad67aa0f44",
+    "src/infrastructure/ingestion/storage/raw_snapshot_writer.py": "e065bbaa6fb3ddb97246a329135d932ee4c77fb770f9000c43624c8931da2daa",
+    "docs/data-ingress-implementation.md": "90cf9606af3637ff22a18af3dc306e6c3dadd715a6b7995396412f66bf1b8c23",
+    "docs/developer-guide.md": "e813f08661b9929c975e3ed95c7af8bd7b2ef7033cb3c552db41c37ec8fda8a6",
+    "docs/implementation-status.md": "cbf56330bdcfecadef1563ecf5847e4ef585e4d1c9c27a0879af8f1023dfa441"
+  },
+  "production_code_modified_by_audit": false,
+  "git_commit_or_push_performed": false
+}

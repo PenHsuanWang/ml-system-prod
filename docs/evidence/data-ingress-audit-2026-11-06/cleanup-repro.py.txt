@@ -1,0 +1,44 @@
+"""Reproduce bounded cleanup starvation without modifying repository contents."""
+
+import os
+import tempfile
+import time
+from pathlib import Path
+
+from src.domain.ml import digest
+from src.infrastructure.ingestion.storage.raw_snapshot_writer import LocalRawSnapshotStore
+
+
+def main() -> None:
+    with tempfile.TemporaryDirectory(prefix="ingress-audit-gc-") as temp:
+        store = LocalRawSnapshotStore(Path(temp) / "raw")
+        tenant = store.root / ".staging" / digest("tenant-a")
+        tenant.mkdir()
+        for index in range(5100):
+            (tenant / f"job-{index:05}").mkdir()
+        # Select an entry beyond the traversal budget in the actual filesystem's
+        # directory enumeration order, rather than assuming lexicographic order.
+        last = list(tenant.iterdir())[-1]
+        orphan = last / ("attempt-a-" + "a" * 32)
+        orphan.mkdir()
+        (orphan / "data.jsonl").write_bytes(b"{}\n")
+        old = time.time() - 1000
+        os.utime(orphan, (old, old))
+        removed = [
+            store.cleanup_abandoned(frozenset(), time.time() - 10)
+            for _ in range(3)
+        ]
+        print(
+            {
+                "job_directories": len(list(tenant.iterdir())),
+                "orphan_parent": last.name,
+                "removed_each_sweep": removed,
+                "orphan_remains": orphan.exists(),
+            }
+        )
+        assert removed == [0, 0, 0], "Reproduction no longer exhibits starvation"
+        assert orphan.exists(), "Reproduction no longer exhibits starvation"
+
+
+if __name__ == "__main__":
+    main()
