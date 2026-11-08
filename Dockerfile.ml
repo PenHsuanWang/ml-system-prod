@@ -20,6 +20,7 @@ USER root
 COPY tests ./tests
 COPY scripts ./scripts
 RUN pip install --no-cache-dir '.[dev]'
+ENV RUFF_CACHE_DIR=/home/mlapp/.cache/ruff MYPY_CACHE_DIR=/home/mlapp/.cache/mypy
 USER mlapp
 CMD ["python", "-m", "pytest", "tests/ml/ingestion/test_http_e2e.py", "tests/ml/ingestion/test_production_bootstrap.py", "-q"]
 
