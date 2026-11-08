@@ -51,15 +51,34 @@ class Actor:
     permissions: frozenset[str]
 
     @classmethod
-    def from_identity(cls, tenant_id: str, actor_id: str, permissions: frozenset[str]) -> "Actor":
+    def from_identity(cls, tenant_id: str, actor_id: str, permissions: frozenset[str]) -> Actor:
         # The template accepts dot-separated permissions; public ML scope names use ':'.
-        aliases = {"ml.train": "ml:train", "ml.cancel": "ml:cancel",
-                   "ml.dataset.read": "ml:dataset:read", "ml.dataset.manage": "ml:dataset:manage",
-                   "ml.model.read": "ml:model:read", "ml.model.approve": "ml:model:approve",
-                   "ml.deploy": "ml:deploy", "ml.predict": "ml:predict",
-                   "ml.jobs.read_all": "ml:jobs:read_all", "ml.operate": "ml:operate"}
-        return cls(tenant_id, actor_id, permissions | frozenset(
-            aliases[p] for p in permissions if p in aliases))
+        aliases = {
+            "ml.train": "ml:train",
+            "ml.cancel": "ml:cancel",
+            "ml.dataset.read": "ml:dataset:read",
+            "ml.dataset.manage": "ml:dataset:manage",
+            "ml.model.read": "ml:model:read",
+            "ml.model.approve": "ml:model:approve",
+            "ml.deploy": "ml:deploy",
+            "ml.predict": "ml:predict",
+            "ml.jobs.read_all": "ml:jobs:read_all",
+            "ml.operate": "ml:operate",
+        }
+        aliases.update(
+            {
+                "ml.ingest": "ml:ingest",
+                "ml.ingestion.read": "ml:ingestion:read",
+                "ml.ingestion.cancel": "ml:ingestion:cancel",
+                "ml.ingestion.operate": "ml:ingestion:operate",
+                "ml.source.manage": "ml:source:manage",
+            }
+        )
+        return cls(
+            tenant_id,
+            actor_id,
+            permissions | frozenset(aliases[p] for p in permissions if p in aliases),
+        )
 
     def require(self, permission: str) -> None:
         if permission not in self.permissions:
@@ -102,10 +121,14 @@ def canonical_json(value: object) -> str:
         normalized_items = {unicodedata.normalize("NFC", key): item for key, item in value.items()}
         if len(normalized_items) != len(value):
             raise MLError("Duplicate normalized JSON keys")
-        return "{" + ",".join(
-            canonical_json(key) + ":" + canonical_json(normalized_items[key])
-            for key in sorted(normalized_items)
-        ) + "}"
+        return (
+            "{"
+            + ",".join(
+                canonical_json(key) + ":" + canonical_json(normalized_items[key])
+                for key in sorted(normalized_items)
+            )
+            + "}"
+        )
     raise MLError("Unsupported canonical JSON value")
 
 

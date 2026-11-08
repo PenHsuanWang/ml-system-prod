@@ -2,7 +2,7 @@ from alembic import context
 from sqlalchemy import create_engine, pool
 
 from bootstrap.ml_config import MLSettings
-from src.infrastructure.persistence.ml_database import metadata
+from src.infrastructure.ingestion.persistence.schema import metadata
 
 config = context.config
 url = config.attributes.get("database_url") or MLSettings.from_env().database_url
