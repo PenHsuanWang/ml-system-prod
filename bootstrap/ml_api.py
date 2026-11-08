@@ -106,7 +106,7 @@ def create_app(
         route for route in app.router.routes if getattr(route, "path", None) != "/health/ready"
     ]
 
-    @app.get("/health/ready")
+    @app.get("/health/ready", response_model=None)
     async def ready() -> dict[str, bool] | JSONResponse:
         import asyncio
 
