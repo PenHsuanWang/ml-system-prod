@@ -1,0 +1,204 @@
+{
+  "date": "2026-11-08",
+  "base": "89030983c870265718d9755f003323725319ad36",
+  "tested_source_head": "83be55768d975ce068b4c6eda1bf0330bd9615e0",
+  "tested_source_tree": "ed19820f8d2c75a0cde0400c0edf04c837557935",
+  "verdict": "DRAFT: implementation delivered; merge acceptance blocked",
+  "python": "3.12.16",
+  "packages": {
+    "torch": "2.6.0+cpu",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "fastapi": "0.162.2",
+    "pydantic": "2.14.3",
+    "SQLAlchemy": "2.0.57",
+    "databricks-sql-connector": "4.2.6",
+    "databricks-sdk": "0.162.0",
+    "mypy": "2.4.1",
+    "pytest": "9.2.0"
+  },
+  "regression": {
+    "passed": 909,
+    "failed": [
+      {
+        "class": "tests.ml.ebm.test_artifact_safety",
+        "name": "test_json_contract_rejects_nonfinite_duplicate_and_deep_values[body4]"
+      }
+    ],
+    "skipped": [
+      {
+        "class": "tests.ml.ingestion.test_databricks_live",
+        "name": "test_live_warehouse_postgres_and_independent_worker",
+        "reason": "Requires approved Databricks fixture, OAuth secret files and PostgreSQL"
+      },
+      {
+        "class": "tests.ml.integration.test_backend_stack",
+        "name": "test_live_backend_train_approve_predict_rollout_rollback_and_revoke",
+        "reason": "Set isolated ML_TEST_MANAGEMENT_URL and ML_TEST_PREDICTION_URL"
+      },
+      {
+        "class": "tests.ml.integration.test_receiver",
+        "name": "test_real_receiver_persists_before_ack_and_deduplicates[False]",
+        "reason": "Set ML_TEST_AMQP_URL and ML_TEST_REDIS_URL for real receiver tests"
+      },
+      {
+        "class": "tests.ml.integration.test_receiver",
+        "name": "test_real_receiver_persists_before_ack_and_deduplicates[True]",
+        "reason": "Set ML_TEST_AMQP_URL and ML_TEST_REDIS_URL for real receiver tests"
+      }
+    ],
+    "duration": 54.16
+  },
+  "ingestion_regression": {
+    "passed": 374,
+    "failed": 0,
+    "real_warehouse": "NOT VERIFIED"
+  },
+  "container": {
+    "result": "PASS",
+    "exit_code": 0,
+    "summary": [
+      "372 passed, 1 warning in 27.66s"
+    ],
+    "image": "ml-system-ingestion-delivery:20261108",
+    "database": "isolated postgres:17",
+    "real_warehouse": "NOT VERIFIED",
+    "ordinary_event_loop": true,
+    "migration_and_health": [
+      {
+        "operation": "bootstrap.ml_cli migrate",
+        "exit_code": 0,
+        "output": ""
+      },
+      {
+        "operation": "bootstrap.ingestion_cli health",
+        "exit_code": 0,
+        "output": "{\"ready\": true, \"databricks_enabled\": false}\n"
+      }
+    ],
+    "image_id": "sha256:f6567cd56fcfe4dd876fa882184403385e7aa1b0c407543117de8e1e9b429e8f",
+    "task_postgres_removed": true
+  },
+  "baseline_comparison": {
+    "ebm-depth-baseline": {
+      "exit_code": 1,
+      "tail": [
+        "",
+        "tests/ml/ebm/test_artifact_safety.py:123: Failed",
+        "=========================== short test summary info ============================",
+        "FAILED tests/ml/ebm/test_artifact_safety.py::test_json_contract_rejects_nonfinite_duplicate_and_deep_values[body4]",
+        "1 failed, 4 passed in 0.50s"
+      ]
+    },
+    "ebm-mypy-baseline": {
+      "exit_code": 1,
+      "tail": [
+        "src/infrastructure/serving/ebm_artifacts.py:133: error: Unused \"type: ignore\" comment  [unused-ignore]",
+        "src/infrastructure/datasets/ebm_snapshots.py:78: error: Unused \"type: ignore\" comment  [unused-ignore]",
+        "src/infrastructure/datasets/ebm_snapshots.py:85: error: Unused \"type: ignore\" comment  [unused-ignore]",
+        "bootstrap/ebm_cli.py:43: error: Need type annotation for \"time\"  [var-annotated]",
+        "Found 7 errors in 5 files (checked 28 source files)"
+      ]
+    },
+    "ebm-mypy-current": {
+      "exit_code": 1,
+      "tail": [
+        "src/infrastructure/serving/ebm_artifacts.py:133: error: Unused \"type: ignore\" comment  [unused-ignore]",
+        "src/infrastructure/datasets/ebm_snapshots.py:78: error: Unused \"type: ignore\" comment  [unused-ignore]",
+        "src/infrastructure/datasets/ebm_snapshots.py:85: error: Unused \"type: ignore\" comment  [unused-ignore]",
+        "bootstrap/ebm_cli.py:43: error: Need type annotation for \"time\"  [var-annotated]",
+        "Found 7 errors in 5 files (checked 28 source files)"
+      ]
+    }
+  },
+  "quality": {
+    "scoped_ruff": "PASS",
+    "scoped_format": "PASS",
+    "strict_ingestion_mypy": "PASS: 36 source files",
+    "pyflakes": "PASS",
+    "architecture_boundaries": "PASS",
+    "baseline_ebm_typing": "7 existing errors in baseline and current; rules unchanged"
+  },
+  "qualification_limits": [
+    "No approved live Databricks/OAuth fixture",
+    "Existing EBM JSON depth baseline failure on Python 3.12",
+    "Existing seven EBM typing errors",
+    "Existing live Backend/RabbitMQ and production reliability gates not newly qualified",
+    "Host tests used external selector workaround; container used ordinary loop"
+  ],
+  "source_sha256": {
+    ".github/workflows/ml-ci.yml": "0e56701f1c1fb197b7b53c2116e840089b6ae127da6172467bcd9e6551e9bc2c",
+    "Dockerfile.ml": "f6ace2e432ccae6817b38d64b71f2ecb308b4492cd5d60c42c5890bc156df4f9",
+    "bootstrap/ingestion_cli.py": "3ce67a157aeeae9443d65aa2f6bbc31c928fb7684c6128e6e5f88e2f79fdfb5e",
+    "bootstrap/ingestion_wiring.py": "b3aeb3de683d3b7acce063551347a6d1e24d8f9b63ac8535c553227f7988aa57",
+    "bootstrap/ml_api.py": "6e3075b62c312b55641660ab47537cdfc5b298c6173a327b34fbdc8989511c92",
+    "compose.ml.databricks.yaml": "f6fbebb7daa03cb64b17b06c62479ba50a957d79599aa902e6c62b1d6fecf29e",
+    "compose.ml.ingestion.yaml": "42a0fa5516ad2ae1c426247084b4d654c1099a166089d25112bd7bf23bed4ba3",
+    "pyproject.toml": "93dc1de7655524c86cf9e7ae77cd8848500a316d6888a80f0c3e92712ec5d975",
+    "scripts/check_ingestion.py": "ff4b7841f7880e07b3f409c2d78a6737240763dd08fd4b45bd5364432717c33b",
+    "server.py": "e694814ea04a7d171f1bdf9d40937637df883e5bb0b0f8d3e07f32fe946ea1ba",
+    "src/api/routers.py": "c98ee5972b921dfb37affa0525cd399a5b57e64f20cdbaa92a1b16e8af626b7d",
+    "src/application/ingestion/supervisor.py": "920094545bf6544bee28384ca4ca0ef588ca051cd7aca63406d7ebc20a50f113",
+    "src/domain/ingestion/runtime_limits.py": "8eba0b0828ccd9295e638c14fbf00b1ad62b61eb4db98e469ececdbb9f4d4440",
+    "src/infrastructure/ingestion/adapters/databricks_client.py": "682f8f72d6c5c790a3228442aec6a2831df3cd868f2fca2444d8f281f91f313a",
+    "src/infrastructure/ingestion/adapters/databricks_contract.py": "93488044600d015be4965afda9e0d8273dcf2a4d44b8d29f17c91a846f794006",
+    "src/infrastructure/ingestion/adapters/databricks_sql.py": "1e3021e15b1d6e9af0bdf891db60cf9067d71d3660950268856cb2dc5453ed91",
+    "src/infrastructure/ingestion/persistence/ingestion_jobs.py": "dc57754b93d31c62a9ecd1c7087585922513c20787206f52265611b089785be8",
+    "src/infrastructure/ingestion/persistence/metrics.py": "37473f111f9014f7de509f8cfd06d8c5fe9619d1b5cf8992fb09da74ebc7de1d",
+    "src/infrastructure/ingestion/storage/raw_snapshot_cleanup.py": "02a65b0353e6aaf20a67bcf15c23fd00ad5afdd49ae654ca7c428406ccca5ce5",
+    "src/infrastructure/ingestion/storage/raw_snapshot_writer.py": "481e32edf250418fa8888df1de777002412ffe41358c4f25f5c2a5322ac819ef",
+    "tests/ml/ingestion/test_cleanup_progress.py": "f343d50c738927e7a1e78c747c8d462e8810ea099b59ad9a4e3fd444d2fc9cba",
+    "tests/ml/ingestion/test_cli_operations.py": "b2cf5b62c4bef68d6e4ed9bdbecc592719ecda55d502a360d1098955f5720ce1",
+    "tests/ml/ingestion/test_databricks_adapter.py": "26957adafa7edc03a62b78eabb3862773de118dc4ddc00ebfb556bec5c38f261",
+    "tests/ml/ingestion/test_databricks_client.py": "9a8e8871ee1fe14e3afcecb3165f0f54338809e52c493282f5ebd01b7ce3587f",
+    "tests/ml/ingestion/test_databricks_contract.py": "f54b842cfe16d71edcb3c627f0d32706a22dccadabcae5b315f8b94ae8a97d89",
+    "tests/ml/ingestion/test_databricks_live.py": "93348e730a6aed71f33376f86316f5d264c4d13ad34966155aa2cce7ae633bcf",
+    "tests/ml/ingestion/test_databricks_recovery.py": "2b9d6d5d9029bcf5cd0b322724193c65610ed53ecd05ed092152a6fe8446e6ec",
+    "tests/ml/ingestion/test_databricks_wiring.py": "e5ba1eeb919ba5900f467926b4c932710db5b89374aa6d46f4b4df08f1948c72",
+    "tests/ml/ingestion/test_ingestion_deployment.py": "0b728f37090e6ec0d426d017a673a8dde141e822156b109fef1ae8b63887691e",
+    "tests/ml/ingestion/test_ingestion_metrics.py": "f50bb3fc760e8be8dcdaff27ee510e960edfc2d504cd796e5e0a28074e42f31d",
+    "tests/ml/ingestion/test_production_bootstrap.py": "9fe0bfc896b73759973d8d8bf46b725ce6930483af524449fa826d98b133ca36",
+    "tests/ml/ingestion/test_runtime_fencing.py": "2c859867183c81c38940c02947cb914c62ace7e58a033a9d847d87b9e1531c4b",
+    "tests/ml/ingestion/test_settings.py": "0878f8a6e883e7395fbf5da59342db1a451bdf5988b60d9014fa5d8479d5cef3",
+    "tests/ml/ingestion/test_snapshot_publication.py": "6acfb5b13d7d3ca07e86e0015e5016e400bb21a240bcac747bbb6a3f053f0433"
+  },
+  "changed_files": [
+    ".env.ml.ingestion.example",
+    ".github/workflows/ml-ci.yml",
+    "Dockerfile.ml",
+    "bootstrap/ingestion_cli.py",
+    "bootstrap/ingestion_wiring.py",
+    "bootstrap/ml_api.py",
+    "compose.ml.databricks.yaml",
+    "compose.ml.ingestion.yaml",
+    "docs/adr/016-databricks-batch-ingestion.md",
+    "pyproject.toml",
+    "scripts/check_ingestion.py",
+    "server.py",
+    "src/api/routers.py",
+    "src/application/ingestion/supervisor.py",
+    "src/domain/ingestion/runtime_limits.py",
+    "src/infrastructure/ingestion/adapters/databricks_client.py",
+    "src/infrastructure/ingestion/adapters/databricks_contract.py",
+    "src/infrastructure/ingestion/adapters/databricks_sql.py",
+    "src/infrastructure/ingestion/persistence/ingestion_jobs.py",
+    "src/infrastructure/ingestion/persistence/metrics.py",
+    "src/infrastructure/ingestion/storage/raw_snapshot_cleanup.py",
+    "src/infrastructure/ingestion/storage/raw_snapshot_writer.py",
+    "tests/ml/ingestion/test_cleanup_progress.py",
+    "tests/ml/ingestion/test_cli_operations.py",
+    "tests/ml/ingestion/test_databricks_adapter.py",
+    "tests/ml/ingestion/test_databricks_client.py",
+    "tests/ml/ingestion/test_databricks_contract.py",
+    "tests/ml/ingestion/test_databricks_live.py",
+    "tests/ml/ingestion/test_databricks_recovery.py",
+    "tests/ml/ingestion/test_databricks_wiring.py",
+    "tests/ml/ingestion/test_ingestion_deployment.py",
+    "tests/ml/ingestion/test_ingestion_metrics.py",
+    "tests/ml/ingestion/test_production_bootstrap.py",
+    "tests/ml/ingestion/test_runtime_fencing.py",
+    "tests/ml/ingestion/test_settings.py",
+    "tests/ml/ingestion/test_snapshot_publication.py"
+  ],
+  "evidence_format": "Trailing whitespace normalized; original console captures remain under /tmp"
+}

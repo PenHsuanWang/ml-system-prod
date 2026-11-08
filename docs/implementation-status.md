@@ -1,5 +1,14 @@
 # Implementation status
 
+2026-11-08 Data Ingress update: API startup, identical publication race, lease /
+reconciliation, cleanup progress and settings bounds have regression fixes.
+The opt-in Databricks SQL Warehouse adapter, OAuth M2M client, strict JSONL codec,
+worker image, independent CI and metrics are implemented. Real Warehouse
+qualification remains unavailable and the PR must remain Draft. See the
+[current delivery report](reviews/ingestion-stabilization-databricks-2026-11-08.md)
+for executed PostgreSQL/container evidence and unchanged EBM baseline failures.
+Historical acceptance counts below retain their original dates.
+
 Updated: 2026-10-31. Source implementation and target-environment qualification are distinct.
 
 The EBM neural workload now has tenant-scoped feature import, controlled Recipe resolution, supervised CPU training, safe epoch resume, verified bundles, exact-bundle evaluation, explicit policy gating and fixed-version API serving. See [EBM implementation and usage](ebm-implementation-status.md). The historical Backend acceptance counts below are retained as dated evidence, not the current total. Databricks, calibration/RUL and batch reports remain unimplemented; target and real-service qualification is still pending.

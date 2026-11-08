@@ -1,0 +1,25 @@
+{
+  "result": "PASS",
+  "exit_code": 0,
+  "summary": [
+    "372 passed, 1 warning in 27.66s"
+  ],
+  "image": "ml-system-ingestion-delivery:20261108",
+  "database": "isolated postgres:17",
+  "real_warehouse": "NOT VERIFIED",
+  "ordinary_event_loop": true,
+  "migration_and_health": [
+    {
+      "operation": "bootstrap.ml_cli migrate",
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "operation": "bootstrap.ingestion_cli health",
+      "exit_code": 0,
+      "output": "{\"ready\": true, \"databricks_enabled\": false}\n"
+    }
+  ],
+  "image_id": "sha256:f6567cd56fcfe4dd876fa882184403385e7aa1b0c407543117de8e1e9b429e8f",
+  "task_postgres_removed": true
+}

@@ -248,6 +248,12 @@ pytest
 
 ## Data Ingress capability 實作補充（2026-10-31）
 
+2026-11-08 補充：Concrete `databricks-sql@1`、OAuth SDK child-process client 與
+核准 template validator 位於 Infrastructure；Bootstrap 僅在明確啟用時註冊。
+Service／Supervisor 沒有 provider-specific dispatch。Generic factory 新增預設為 true
+的 `include_default_readiness` 組裝選項，ML factory 可提供獨立 readiness，不修改
+共用 router 或其他 factory 的預設 Health contract。見 [本輪交付報告](reviews/ingestion-stabilization-databricks-2026-11-08.md)。
+
 本補充在既有九層 package 中加入可選的 File Batch Ingestion capability，不另建 `ml_core`／`backend/modules` 架構，也不變更通用 Template 的預設啟動能力。完整操作與限制見 [Data Ingress 實作指南](data-ingress-implementation.md)。
 
 - `src/domain/ingestion/` 保存純 DTO、合法狀態、identity／bounds／digest invariants 與安全錯誤；不依賴 FastAPI、SQLAlchemy、Spark、Kafka 或 MLflow。

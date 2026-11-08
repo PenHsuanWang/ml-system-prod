@@ -1,0 +1,8 @@
+src/plugins/training/grouped_rank_sampler.py:59: error: Need type annotation for "shuffled"  [var-annotated]
+src/plugins/features/fdc_spectrogram_v1.py:181: error: Need type annotation for "result"  [var-annotated]
+src/infrastructure/serving/ebm_artifacts.py:126: error: Unused "type: ignore" comment  [unused-ignore]
+src/infrastructure/serving/ebm_artifacts.py:133: error: Unused "type: ignore" comment  [unused-ignore]
+src/infrastructure/datasets/ebm_snapshots.py:78: error: Unused "type: ignore" comment  [unused-ignore]
+src/infrastructure/datasets/ebm_snapshots.py:85: error: Unused "type: ignore" comment  [unused-ignore]
+bootstrap/ebm_cli.py:43: error: Need type annotation for "time"  [var-annotated]
+Found 7 errors in 5 files (checked 28 source files)

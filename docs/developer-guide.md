@@ -1182,6 +1182,11 @@ python scripts/verify_guide.py
 
 ## 13. 可選 Data Ingress capability（2026-10-31）
 
+2026-11-08：已增加 `databricks-sql@1` Adapter 與穩定化修復；部署方式、Source
+template digest、OAuth secret-file 及真實驗收步驟見 [Databricks runbook](databricks-ingestion-runbook.md)。
+本節首版中 Databricks 尚未實作的敘述是歷史狀態；Kafka 與 Dataset Builder 仍未實作。
+`scripts/check_ingestion.py` 現已交付，依舊保留 strict typing 與原有 CI gates。
+
 File Batch Ingestion 已沿本手冊的九層結構加入。這個章節補充新的實作接點，不替換前述 `items` 教學、不改變既有 Python 程式碼區塊，也不聲稱原本的背景任務／匯出介面就是通用 Ingress。詳盡可執行操作見 [Data Ingress 實作指南](data-ingress-implementation.md)，實際驗收證據見 [本輪報告](reviews/data-ingress-implementation-report.md)。
 
 ### 13.1 先選對擴充邊界

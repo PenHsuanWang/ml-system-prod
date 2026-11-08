@@ -1,5 +1,11 @@
 # Data Ingress 實作與操作指南
 
+2026-11-08 更新：File 與 Databricks SQL Warehouse Batch Adapter 均已有程式實作。
+正式環境尚未核准；真實 Warehouse 驗收待執行。Databricks 的實際設定／型別／
+credentials／container 操作以 [Databricks runbook](databricks-ingestion-runbook.md)
+為準，修復與驗收結果見 [本輪交付報告](reviews/ingestion-stabilization-databricks-2026-11-08.md)。
+下方首版說明與歷史證據保留，不代表尚未實作的 Kafka／Dataset Builder 已完成。
+
 更新日期：2026-10-31。本指南描述已交付的 File Batch Ingestion vertical slice。既有 [Data Ingress 設計提案](data-ingress-adapter-design.md) 與 `docs/adr/015-approved-extensions-proposal.md`（本機提案，未納入本次提交）保持提案狀態；本輪實作沒有將整份提案靜默改為 Accepted。實際驗證結果與環境限制以 [實作報告](reviews/data-ingress-implementation-report.md) 為準。
 
 ## 1. 範圍與邊界
@@ -231,7 +237,7 @@ Acquisition 預設最多三次 attempts，只有分類為 retryable 的安全錯
 python -m bootstrap.ingestion_cli cleanup --minimum-age-seconds 86400
 ```
 
-Cleanup 取得所有租戶的非終態 Job IDs（包含 lease 過期與 reconciliation budget 耗盡者），只清理超過保留時間、未被這些 IDs 保護的 `.staging` attempt directories。它不掃描／刪除 published snapshots、不跟隨 symlink，也不進行任意 recursive delete。仍屬非終態 Job 的舊 attempts 會保守保留；可能遺留的 private `.publish-*` crash directories 位於 published tree，尚未包含在這個 maintenance sweep 中，應納入後續 GC／容量治理。
+Cleanup 取得所有租戶的非終態 Job IDs（包含 lease 過期與 reconciliation budget 耗盡者），只清理超過保留時間、未被這些 IDs 保護的 private staging 與 `.publish-*` copies，不刪除 final snapshots、不跟隨 symlink。每個 namespace 每次最多處理 5,000 entries；以 Linux directory cookies、原子 cursor checkpoint 與 maintenance lock 保證多次程序啟動會持續前進。來源配置與 uncertain publication evidence 仍須保留，不能以刪除候選取代對帳。
 
 ## 8. Raw 格式、Manifest 與安全限制
 
@@ -257,9 +263,11 @@ File v1 與本機 Raw Store 支援 UTF-8 JSONL，每筆是 JSON object。檔案�
 
 ## 10. 下一階段來源與 Dataset Builder 契約
 
-### Databricks Batch：設計完成範圍，未實作／未驗證
+### Databricks Batch：已實作，真實 Warehouse 驗收待執行
 
-新增實作應沿用同一 Batch Port、Registry、Job 與 Raw Publisher，並具備：
+`DatabricksSQLBatchAdapter` 已沿用同一 Batch Port、Registry、Job 與 Raw Publisher。
+本版為 OAuth M2M／固定 Delta Version／bounded JSONL；下列原設計中的 incremental、
+remote export orchestration 仍是未來能力，並未在本版宣告支援：
 
 - Source Definition 只保存核准 connection／workspace reference、table 或 query-template ID／version；secret 由部署的 credentials provider 注入，禁止 caller SQL 或 endpoint。
 - 每次 bounded extraction 先釘選 Delta table version 或 immutable export reference；多表來源需保存各自版本。Query 參數、partition／time window 必須有 server-approved schema 與上限。

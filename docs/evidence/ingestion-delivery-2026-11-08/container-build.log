@@ -1,0 +1,555 @@
+Sending build context to Docker daemon  14.38MB
+
+Step 1/22 : FROM python:3.12-slim AS api
+ ---> 78976a69c067
+Step 2/22 : WORKDIR /app
+ ---> Using cache
+ ---> 0a87da6958ea
+Step 3/22 : ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ ---> Using cache
+ ---> 5f3e3cb80c00
+Step 4/22 : COPY pyproject.toml README.md alembic.ini server.py worker.py manage.py ./
+ ---> Using cache
+ ---> 1ed01f08850f
+Step 5/22 : COPY src ./src
+ ---> Using cache
+ ---> 35e8fd9bb177
+Step 6/22 : COPY bootstrap ./bootstrap
+ ---> e78875514daa
+Step 7/22 : COPY migrations ./migrations
+ ---> 4c1dbe741580
+Step 8/22 : RUN pip install --no-cache-dir '.[observability]' && useradd --uid 10001 --create-home mlapp && mkdir -p var && chown mlapp:mlapp var
+ ---> Running in 54d4b674958a
+Processing /app
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting fastapi<1,>=0.115 (from ml-system-ebm==0.1.0)
+  Downloading fastapi-0.162.2-py3-none-any.whl.metadata (27 kB)
+Collecting uvicorn<1,>=0.30 (from ml-system-ebm==0.1.0)
+  Downloading uvicorn-0.54.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting pydantic<3,>=2.8 (from ml-system-ebm==0.1.0)
+  Downloading pydantic-2.14.3-py3-none-any.whl.metadata (141 kB)
+Collecting pydantic-settings<3,>=2.6 (from ml-system-ebm==0.1.0)
+  Downloading pydantic_settings-2.16.2-py3-none-any.whl.metadata (4.0 kB)
+Collecting httpx<1,>=0.27 (from ml-system-ebm==0.1.0)
+  Downloading httpx-0.28.1-py3-none-any.whl.metadata (7.1 kB)
+Collecting SQLAlchemy<2.1,>=2.0.44 (from ml-system-ebm==0.1.0)
+  Downloading sqlalchemy-2.0.57-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (9.6 kB)
+Collecting alembic<2,>=1.17 (from ml-system-ebm==0.1.0)
+  Downloading alembic-1.20.1-py3-none-any.whl.metadata (7.3 kB)
+Collecting psycopg<4,>=3.2 (from psycopg[binary]<4,>=3.2->ml-system-ebm==0.1.0)
+  Downloading psycopg-3.3.8-py3-none-any.whl.metadata (4.4 kB)
+Collecting PyJWT<3,>=2.10 (from PyJWT[crypto]<3,>=2.10->ml-system-ebm==0.1.0)
+  Downloading pyjwt-2.15.1-py3-none-any.whl.metadata (3.5 kB)
+Collecting pymongo<5,>=4.13 (from ml-system-ebm==0.1.0)
+  Downloading pymongo-4.19.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (10 kB)
+Collecting pwdlib<1,>=0.2 (from pwdlib[argon2]<1,>=0.2->ml-system-ebm==0.1.0)
+  Downloading pwdlib-0.3.1-py3-none-any.whl.metadata (5.6 kB)
+Collecting redis<9,>=5 (from ml-system-ebm==0.1.0)
+  Downloading redis-8.1.0-py3-none-any.whl.metadata (16 kB)
+Collecting taskiq<0.13,>=0.12.6 (from ml-system-ebm==0.1.0)
+  Downloading taskiq-0.12.6-py3-none-any.whl.metadata (6.8 kB)
+Collecting taskiq-aio-pika<0.7,>=0.6.1 (from ml-system-ebm==0.1.0)
+  Downloading taskiq_aio_pika-0.6.1-py3-none-any.whl.metadata (6.6 kB)
+Collecting aio-pika<10,>=9.5 (from ml-system-ebm==0.1.0)
+  Downloading aio_pika-9.6.2-py3-none-any.whl.metadata (15 kB)
+Collecting opentelemetry-api<2,>=1.28 (from ml-system-ebm==0.1.0)
+  Downloading opentelemetry_api-1.45.2-py3-none-any.whl.metadata (1.4 kB)
+Collecting opentelemetry-sdk<2,>=1.28 (from ml-system-ebm==0.1.0)
+  Downloading opentelemetry_sdk-1.45.2-py3-none-any.whl.metadata (1.6 kB)
+Collecting opentelemetry-exporter-otlp-proto-http<2,>=1.28 (from ml-system-ebm==0.1.0)
+  Downloading opentelemetry_exporter_otlp_proto_http-1.45.2-py3-none-any.whl.metadata (3.0 kB)
+Collecting aiormq<7,>=6.8 (from aio-pika<10,>=9.5->ml-system-ebm==0.1.0)
+  Downloading aiormq-6.9.4-py3-none-any.whl.metadata (19 kB)
+Collecting yarl (from aio-pika<10,>=9.5->ml-system-ebm==0.1.0)
+  Downloading yarl-1.25.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (111 kB)
+Collecting Mako (from alembic<2,>=1.17->ml-system-ebm==0.1.0)
+  Downloading mako-1.4.3-py3-none-any.whl.metadata (2.9 kB)
+Collecting typing-extensions>=4.12 (from alembic<2,>=1.17->ml-system-ebm==0.1.0)
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting starlette>=0.46.0 (from fastapi<1,>=0.115->ml-system-ebm==0.1.0)
+  Downloading starlette-1.10.0-py3-none-any.whl.metadata (6.6 kB)
+Collecting typing-inspection>=0.4.2 (from fastapi<1,>=0.115->ml-system-ebm==0.1.0)
+  Downloading typing_inspection-0.4.5-py3-none-any.whl.metadata (2.6 kB)
+Collecting annotated-doc>=0.0.2 (from fastapi<1,>=0.115->ml-system-ebm==0.1.0)
+  Downloading annotated_doc-0.0.5-py3-none-any.whl.metadata (6.5 kB)
+Collecting anyio (from httpx<1,>=0.27->ml-system-ebm==0.1.0)
+  Downloading anyio-4.16.0-py3-none-any.whl.metadata (4.7 kB)
+Collecting certifi (from httpx<1,>=0.27->ml-system-ebm==0.1.0)
+  Downloading certifi-2026.10.23-py3-none-any.whl.metadata (2.5 kB)
+Collecting httpcore==1.* (from httpx<1,>=0.27->ml-system-ebm==0.1.0)
+  Downloading httpcore-1.0.9-py3-none-any.whl.metadata (21 kB)
+Collecting idna (from httpx<1,>=0.27->ml-system-ebm==0.1.0)
+  Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+Collecting h11>=0.16 (from httpcore==1.*->httpx<1,>=0.27->ml-system-ebm==0.1.0)
+  Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+Collecting googleapis-common-protos~=1.52 (from opentelemetry-exporter-otlp-proto-http<2,>=1.28->ml-system-ebm==0.1.0)
+  Downloading googleapis_common_protos-1.76.0-py3-none-any.whl.metadata (8.5 kB)
+Collecting opentelemetry-exporter-http-transport==0.66b2 (from opentelemetry-exporter-http-transport[requests]==0.66b2->opentelemetry-exporter-otlp-proto-http<2,>=1.28->ml-system-ebm==0.1.0)
+  Downloading opentelemetry_exporter_http_transport-0.66b2-py3-none-any.whl.metadata (2.3 kB)
+Collecting opentelemetry-exporter-otlp-common==0.66b2 (from opentelemetry-exporter-otlp-proto-http<2,>=1.28->ml-system-ebm==0.1.0)
+  Downloading opentelemetry_exporter_otlp_common-0.66b2-py3-none-any.whl.metadata (1.9 kB)
+Collecting opentelemetry-exporter-otlp-proto-common==1.45.2 (from opentelemetry-exporter-otlp-proto-http<2,>=1.28->ml-system-ebm==0.1.0)
+  Downloading opentelemetry_exporter_otlp_proto_common-1.45.2-py3-none-any.whl.metadata (1.8 kB)
+Collecting opentelemetry-proto==1.45.2 (from opentelemetry-exporter-otlp-proto-http<2,>=1.28->ml-system-ebm==0.1.0)
+  Downloading opentelemetry_proto-1.45.2-py3-none-any.whl.metadata (2.3 kB)
+Collecting requests~=2.7 (from opentelemetry-exporter-otlp-proto-http<2,>=1.28->ml-system-ebm==0.1.0)
+  Downloading requests-2.34.2-py3-none-any.whl.metadata (4.8 kB)
+Collecting protobuf<8.0,>=5.0 (from opentelemetry-proto==1.45.2->opentelemetry-exporter-otlp-proto-http<2,>=1.28->ml-system-ebm==0.1.0)
+  Downloading protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl.metadata (595 bytes)
+Collecting opentelemetry-semantic-conventions==0.66b2 (from opentelemetry-sdk<2,>=1.28->ml-system-ebm==0.1.0)
+  Downloading opentelemetry_semantic_conventions-0.66b2-py3-none-any.whl.metadata (2.4 kB)
+Collecting psycopg-binary==3.3.8 (from psycopg[binary]<4,>=3.2->ml-system-ebm==0.1.0)
+  Downloading psycopg_binary-3.3.8-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.7 kB)
+Collecting argon2-cffi>=23.1.0 (from pwdlib[argon2]<1,>=0.2->ml-system-ebm==0.1.0)
+  Downloading argon2_cffi-25.1.0-py3-none-any.whl.metadata (4.1 kB)
+Collecting annotated-types>=0.6.0 (from pydantic<3,>=2.8->ml-system-ebm==0.1.0)
+  Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+Collecting pydantic-core==2.50.4 (from pydantic<3,>=2.8->ml-system-ebm==0.1.0)
+  Downloading pydantic_core-2.50.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (6.6 kB)
+Collecting python-dotenv>=1.2.2 (from pydantic-settings<3,>=2.6->ml-system-ebm==0.1.0)
+  Downloading python_dotenv-1.2.4-py3-none-any.whl.metadata (29 kB)
+Collecting cryptography>=3.4.0 (from PyJWT[crypto]<3,>=2.10->ml-system-ebm==0.1.0)
+  Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl.metadata (4.4 kB)
+Collecting dnspython<3.0.0,>=2.7.0 (from pymongo<5,>=4.13->ml-system-ebm==0.1.0)
+  Downloading dnspython-2.9.2-py3-none-any.whl.metadata (5.8 kB)
+Collecting greenlet>=1 (from SQLAlchemy<2.1,>=2.0.44->ml-system-ebm==0.1.0)
+  Downloading greenlet-3.5.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+Collecting aiohttp>=3 (from taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0)
+  Downloading aiohttp-3.14.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (8.3 kB)
+Collecting packaging>=19 (from taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0)
+  Downloading packaging-26.3-py3-none-any.whl.metadata (3.5 kB)
+Collecting pycron>=3.0.0 (from taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0)
+  Downloading pycron-3.3.0-py3-none-any.whl.metadata (3.0 kB)
+Collecting taskiq-dependencies<2,>=1.3.1 (from taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0)
+  Downloading taskiq_dependencies-1.5.7-py3-none-any.whl.metadata (9.9 kB)
+Collecting click>=7.0 (from uvicorn<1,>=0.30->ml-system-ebm==0.1.0)
+  Downloading click-8.5.1-py3-none-any.whl.metadata (2.6 kB)
+Collecting aiohappyeyeballs>=2.5.0 (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0)
+  Downloading aiohappyeyeballs-2.7.1-py3-none-any.whl.metadata (5.9 kB)
+Collecting aiosignal>=1.4.0 (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0)
+  Downloading aiosignal-1.4.0-py3-none-any.whl.metadata (3.7 kB)
+Collecting attrs>=17.3.0 (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0)
+  Downloading attrs-26.1.0-py3-none-any.whl.metadata (8.8 kB)
+Collecting frozenlist>=1.1.1 (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0)
+  Downloading frozenlist-1.8.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl.metadata (20 kB)
+Collecting multidict<8.0,>=4.5 (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0)
+  Downloading multidict-7.2.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (6.1 kB)
+Collecting propcache>=0.2.0 (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0)
+  Downloading propcache-0.5.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (25 kB)
+Collecting pamqp==3.3.0 (from aiormq<7,>=6.8->aio-pika<10,>=9.5->ml-system-ebm==0.1.0)
+  Downloading pamqp-3.3.0-py2.py3-none-any.whl.metadata (4.7 kB)
+Collecting argon2-cffi-bindings (from argon2-cffi>=23.1.0->pwdlib[argon2]<1,>=0.2->ml-system-ebm==0.1.0)
+  Downloading argon2_cffi_bindings-26.1.0-cp310-abi3-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl.metadata (7.5 kB)
+Collecting cffi>=2.0.0 (from cryptography>=3.4.0->PyJWT[crypto]<3,>=2.10->ml-system-ebm==0.1.0)
+  Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl.metadata (2.5 kB)
+Collecting charset_normalizer<4,>=2 (from requests~=2.7->opentelemetry-exporter-otlp-proto-http<2,>=1.28->ml-system-ebm==0.1.0)
+  Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+Collecting urllib3<3,>=1.26 (from requests~=2.7->opentelemetry-exporter-otlp-proto-http<2,>=1.28->ml-system-ebm==0.1.0)
+  Downloading urllib3-2.8.0-py3-none-any.whl.metadata (7.4 kB)
+Collecting MarkupSafe>=2.0 (from Mako->alembic<2,>=1.17->ml-system-ebm==0.1.0)
+  Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.7 kB)
+Collecting pycparser (from cffi>=2.0.0->cryptography>=3.4.0->PyJWT[crypto]<3,>=2.10->ml-system-ebm==0.1.0)
+  Downloading pycparser-3.12-py3-none-any.whl.metadata (9.7 kB)
+Downloading aio_pika-9.6.2-py3-none-any.whl (56 kB)
+Downloading alembic-1.20.1-py3-none-any.whl (270 kB)
+Downloading fastapi-0.162.2-py3-none-any.whl (151 kB)
+Downloading httpx-0.28.1-py3-none-any.whl (73 kB)
+Downloading httpcore-1.0.9-py3-none-any.whl (78 kB)
+Downloading opentelemetry_api-1.45.2-py3-none-any.whl (60 kB)
+Downloading opentelemetry_exporter_otlp_proto_http-1.45.2-py3-none-any.whl (22 kB)
+Downloading opentelemetry_exporter_http_transport-0.66b2-py3-none-any.whl (12 kB)
+Downloading opentelemetry_exporter_otlp_common-0.66b2-py3-none-any.whl (12 kB)
+Downloading opentelemetry_exporter_otlp_proto_common-1.45.2-py3-none-any.whl (15 kB)
+Downloading opentelemetry_proto-1.45.2-py3-none-any.whl (72 kB)
+Downloading opentelemetry_sdk-1.45.2-py3-none-any.whl (141 kB)
+Downloading opentelemetry_semantic_conventions-0.66b2-py3-none-any.whl (206 kB)
+Downloading psycopg-3.3.8-py3-none-any.whl (216 kB)
+Downloading psycopg_binary-3.3.8-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (5.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.2/5.2 MB 4.5 MB/s eta 0:00:00
+Downloading pwdlib-0.3.1-py3-none-any.whl (9.3 kB)
+Downloading pydantic-2.14.3-py3-none-any.whl (494 kB)
+Downloading pydantic_core-2.50.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (2.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.3/2.3 MB 6.2 MB/s eta 0:00:00
+Downloading pydantic_settings-2.16.2-py3-none-any.whl (81 kB)
+Downloading pyjwt-2.15.1-py3-none-any.whl (33 kB)
+Downloading pymongo-4.19.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.1/1.1 MB 7.7 MB/s eta 0:00:00
+Downloading redis-8.1.0-py3-none-any.whl (560 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 560.6/560.6 kB 10.5 MB/s eta 0:00:00
+Downloading sqlalchemy-2.0.57-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (3.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.5/3.5 MB 6.5 MB/s eta 0:00:00
+Downloading taskiq-0.12.6-py3-none-any.whl (94 kB)
+Downloading taskiq_aio_pika-0.6.1-py3-none-any.whl (11 kB)
+Downloading uvicorn-0.54.0-py3-none-any.whl (87 kB)
+Downloading aiohttp-3.14.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.9 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.9/1.9 MB 7.7 MB/s eta 0:00:00
+Downloading aiormq-6.9.4-py3-none-any.whl (32 kB)
+Downloading pamqp-3.3.0-py2.py3-none-any.whl (33 kB)
+Downloading annotated_doc-0.0.5-py3-none-any.whl (5.3 kB)
+Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+Downloading anyio-4.16.0-py3-none-any.whl (134 kB)
+Downloading argon2_cffi-25.1.0-py3-none-any.whl (14 kB)
+Downloading click-8.5.1-py3-none-any.whl (126 kB)
+Downloading cryptography-50.0.2-cp311-abi3-manylinux_2_34_x86_64.whl (4.8 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.8/4.8 MB 8.6 MB/s eta 0:00:00
+Downloading dnspython-2.9.2-py3-none-any.whl (360 kB)
+Downloading googleapis_common_protos-1.76.0-py3-none-any.whl (307 kB)
+Downloading greenlet-3.5.6-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (621 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 621.4/621.4 kB 8.6 MB/s eta 0:00:00
+Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+Downloading idna-3.20-py3-none-any.whl (69 kB)
+Downloading packaging-26.3-py3-none-any.whl (129 kB)
+Downloading pycron-3.3.0-py3-none-any.whl (5.0 kB)
+Downloading python_dotenv-1.2.4-py3-none-any.whl (23 kB)
+Downloading requests-2.34.2-py3-none-any.whl (73 kB)
+Downloading certifi-2026.10.23-py3-none-any.whl (135 kB)
+Downloading starlette-1.10.0-py3-none-any.whl (80 kB)
+Downloading taskiq_dependencies-1.5.7-py3-none-any.whl (13 kB)
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading typing_inspection-0.4.5-py3-none-any.whl (14 kB)
+Downloading yarl-1.25.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (117 kB)
+Downloading mako-1.4.3-py3-none-any.whl (80 kB)
+Downloading aiohappyeyeballs-2.7.1-py3-none-any.whl (15 kB)
+Downloading aiosignal-1.4.0-py3-none-any.whl (7.5 kB)
+Downloading attrs-26.1.0-py3-none-any.whl (67 kB)
+Downloading cffi-2.1.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (221 kB)
+Downloading charset_normalizer-3.5.2-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (257 kB)
+Downloading frozenlist-1.8.0-cp312-cp312-manylinux1_x86_64.manylinux_2_28_x86_64.manylinux_2_5_x86_64.whl (242 kB)
+Downloading markupsafe-3.0.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (22 kB)
+Downloading multidict-7.2.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (516 kB)
+Downloading propcache-0.5.4-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (250 kB)
+Downloading protobuf-7.36.2-cp310-abi3-manylinux2014_x86_64.whl (343 kB)
+Downloading urllib3-2.8.0-py3-none-any.whl (135 kB)
+Downloading argon2_cffi_bindings-26.1.0-cp310-abi3-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl (26 kB)
+Downloading pycparser-3.12-py3-none-any.whl (62 kB)
+Building wheels for collected packages: ml-system-ebm
+  Building wheel for ml-system-ebm (pyproject.toml): started
+  Building wheel for ml-system-ebm (pyproject.toml): finished with status 'done'
+  Created wheel for ml-system-ebm: filename=ml_system_ebm-0.1.0-py3-none-any.whl size=253287 sha256=f5d4e540d313614ab0e7050fefd1ec95a1f1b2e9ca5fd1a1d8389c0fd1db2807
+  Stored in directory: /tmp/pip-ephem-wheel-cache-z5ck23cw/wheels/54/1b/b7/aa63e25c8f14f4f2ae7b04e6097bdecb770e455c5c1ee0a600
+Successfully built ml-system-ebm
+Installing collected packages: urllib3, typing-extensions, taskiq-dependencies, redis, python-dotenv, PyJWT, pycron, pycparser, pwdlib, psycopg-binary, protobuf, propcache, pamqp, packaging, multidict, MarkupSafe, idna, h11, greenlet, frozenlist, dnspython, click, charset_normalizer, certifi, attrs, annotated-types, annotated-doc, aiohappyeyeballs, yarl, uvicorn, typing-inspection, SQLAlchemy, requests, pymongo, pydantic-core, psycopg, opentelemetry-proto, opentelemetry-api, Mako, httpcore, googleapis-common-protos, cffi, anyio, aiosignal, starlette, pydantic, opentelemetry-semantic-conventions, opentelemetry-exporter-otlp-proto-common, opentelemetry-exporter-http-transport, httpx, cryptography, argon2-cffi-bindings, alembic, aiormq, aiohttp, taskiq, pydantic-settings, opentelemetry-sdk, fastapi, argon2-cffi, aio-pika, taskiq-aio-pika, opentelemetry-exporter-otlp-common, opentelemetry-exporter-otlp-proto-http, ml-system-ebm
+Successfully installed Mako-1.4.3 MarkupSafe-3.0.4 PyJWT-2.15.1 SQLAlchemy-2.0.57 aio-pika-9.6.2 aiohappyeyeballs-2.7.1 aiohttp-3.14.5 aiormq-6.9.4 aiosignal-1.4.0 alembic-1.20.1 annotated-doc-0.0.5 annotated-types-0.8.0 anyio-4.16.0 argon2-cffi-25.1.0 argon2-cffi-bindings-26.1.0 attrs-26.1.0 certifi-2026.10.23 cffi-2.1.1 charset_normalizer-3.5.2 click-8.5.1 cryptography-50.0.2 dnspython-2.9.2 fastapi-0.162.2 frozenlist-1.8.0 googleapis-common-protos-1.76.0 greenlet-3.5.6 h11-0.16.0 httpcore-1.0.9 httpx-0.28.1 idna-3.20 ml-system-ebm-0.1.0 multidict-7.2.1 opentelemetry-api-1.45.2 opentelemetry-exporter-http-transport-0.66b2 opentelemetry-exporter-otlp-common-0.66b2 opentelemetry-exporter-otlp-proto-common-1.45.2 opentelemetry-exporter-otlp-proto-http-1.45.2 opentelemetry-proto-1.45.2 opentelemetry-sdk-1.45.2 opentelemetry-semantic-conventions-0.66b2 packaging-26.3 pamqp-3.3.0 propcache-0.5.4 protobuf-7.36.2 psycopg-3.3.8 psycopg-binary-3.3.8 pwdlib-0.3.1 pycparser-3.12 pycron-3.3.0 pydantic-2.14.3 pydantic-core-2.50.4 pydantic-settings-2.16.2 pymongo-4.19.0 python-dotenv-1.2.4 redis-8.1.0 requests-2.34.2 starlette-1.10.0 taskiq-0.12.6 taskiq-aio-pika-0.6.1 taskiq-dependencies-1.5.7 typing-extensions-4.16.0 typing-inspection-0.4.5 urllib3-2.8.0 uvicorn-0.54.0 yarl-1.25.1
+[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+[0m[91m
+[notice] A new release of pip is available: 25.0.1 -> 26.3
+[notice] To update, run: pip install --upgrade pip
+[0m ---> Removed intermediate container 54d4b674958a
+ ---> d027cc33321d
+Step 9/22 : USER mlapp
+ ---> Running in e353f29cbe3c
+ ---> Removed intermediate container e353f29cbe3c
+ ---> 9b7d20e56d79
+Step 10/22 : CMD ["uvicorn", "bootstrap.ml_api:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000", "--limit-concurrency", "64"]
+ ---> Running in 12c8d7ccf64d
+ ---> Removed intermediate container 12c8d7ccf64d
+ ---> e1bdc828ad10
+Step 11/22 : FROM api AS ingestion
+ ---> e1bdc828ad10
+Step 12/22 : USER root
+ ---> Running in 3d9133e2c158
+ ---> Removed intermediate container 3d9133e2c158
+ ---> 692c84bb4f89
+Step 13/22 : RUN pip install --no-cache-dir '.[databricks]'
+ ---> Running in 496b846189a8
+Processing /app
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: fastapi<1,>=0.115 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (0.162.2)
+Requirement already satisfied: uvicorn<1,>=0.30 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (0.54.0)
+Requirement already satisfied: pydantic<3,>=2.8 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (2.14.3)
+Requirement already satisfied: pydantic-settings<3,>=2.6 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (2.16.2)
+Requirement already satisfied: httpx<1,>=0.27 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (0.28.1)
+Requirement already satisfied: SQLAlchemy<2.1,>=2.0.44 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (2.0.57)
+Requirement already satisfied: alembic<2,>=1.17 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (1.20.1)
+Requirement already satisfied: psycopg<4,>=3.2 in /usr/local/lib/python3.12/site-packages (from psycopg[binary]<4,>=3.2->ml-system-ebm==0.1.0) (3.3.8)
+Requirement already satisfied: PyJWT<3,>=2.10 in /usr/local/lib/python3.12/site-packages (from PyJWT[crypto]<3,>=2.10->ml-system-ebm==0.1.0) (2.15.1)
+Requirement already satisfied: pymongo<5,>=4.13 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (4.19.0)
+Requirement already satisfied: pwdlib<1,>=0.2 in /usr/local/lib/python3.12/site-packages (from pwdlib[argon2]<1,>=0.2->ml-system-ebm==0.1.0) (0.3.1)
+Requirement already satisfied: redis<9,>=5 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (8.1.0)
+Requirement already satisfied: taskiq<0.13,>=0.12.6 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (0.12.6)
+Requirement already satisfied: taskiq-aio-pika<0.7,>=0.6.1 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (0.6.1)
+Requirement already satisfied: aio-pika<10,>=9.5 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (9.6.2)
+Requirement already satisfied: opentelemetry-api<2,>=1.28 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (1.45.2)
+Collecting databricks-sql-connector==4.2.6 (from ml-system-ebm==0.1.0)
+  Downloading databricks_sql_connector-4.2.6-py3-none-any.whl.metadata (6.0 kB)
+Collecting databricks-sdk<1,>=0.18 (from ml-system-ebm==0.1.0)
+  Downloading databricks_sdk-0.162.0-py3-none-any.whl.metadata (44 kB)
+Collecting lz4<5.0.0,>=4.0.2 (from databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0)
+  Downloading lz4-4.4.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (3.8 kB)
+Collecting oauthlib<4.0.0,>=3.1.0 (from databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0)
+  Downloading oauthlib-3.3.1-py3-none-any.whl.metadata (7.9 kB)
+Collecting openpyxl<4.0.0,>=3.0.10 (from databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0)
+  Downloading openpyxl-3.1.5-py2.py3-none-any.whl.metadata (2.5 kB)
+Collecting pandas<2.4.0,>=1.2.5 (from databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0)
+  Downloading pandas-2.3.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl.metadata (91 kB)
+Collecting pybreaker<2.0.0,>=1.0.0 (from databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0)
+  Downloading pybreaker-1.4.1-py3-none-any.whl.metadata (11 kB)
+Collecting python-dateutil<3.0.0,>=2.8.0 (from databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0)
+  Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl.metadata (8.4 kB)
+Requirement already satisfied: requests<3.0.0,>=2.18.1 in /usr/local/lib/python3.12/site-packages (from databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0) (2.34.2)
+Collecting thrift<0.23.0,>=0.22.0 (from databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0)
+  Downloading thrift-0.22.0.tar.gz (62 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: urllib3>=1.26 in /usr/local/lib/python3.12/site-packages (from databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0) (2.8.0)
+Requirement already satisfied: aiormq<7,>=6.8 in /usr/local/lib/python3.12/site-packages (from aio-pika<10,>=9.5->ml-system-ebm==0.1.0) (6.9.4)
+Requirement already satisfied: yarl in /usr/local/lib/python3.12/site-packages (from aio-pika<10,>=9.5->ml-system-ebm==0.1.0) (1.25.1)
+Requirement already satisfied: Mako in /usr/local/lib/python3.12/site-packages (from alembic<2,>=1.17->ml-system-ebm==0.1.0) (1.4.3)
+Requirement already satisfied: typing-extensions>=4.12 in /usr/local/lib/python3.12/site-packages (from alembic<2,>=1.17->ml-system-ebm==0.1.0) (4.16.0)
+Requirement already satisfied: certifi>=2026.10.19 in /usr/local/lib/python3.12/site-packages (from databricks-sdk<1,>=0.18->ml-system-ebm==0.1.0) (2026.10.23)
+Collecting google-auth~=2.0 (from databricks-sdk<1,>=0.18->ml-system-ebm==0.1.0)
+  Downloading google_auth-2.62.1-py3-none-any.whl.metadata (6.0 kB)
+Requirement already satisfied: protobuf!=5.26.*,!=5.27.*,!=5.28.*,!=5.29.0,!=5.29.1,!=5.29.2,!=5.29.3,!=5.29.4,!=6.30.0,!=6.30.1,!=6.31.0,<8.0,>=4.25.8 in /usr/local/lib/python3.12/site-packages (from databricks-sdk<1,>=0.18->ml-system-ebm==0.1.0) (7.36.2)
+Requirement already satisfied: starlette>=0.46.0 in /usr/local/lib/python3.12/site-packages (from fastapi<1,>=0.115->ml-system-ebm==0.1.0) (1.10.0)
+Requirement already satisfied: typing-inspection>=0.4.2 in /usr/local/lib/python3.12/site-packages (from fastapi<1,>=0.115->ml-system-ebm==0.1.0) (0.4.5)
+Requirement already satisfied: annotated-doc>=0.0.2 in /usr/local/lib/python3.12/site-packages (from fastapi<1,>=0.115->ml-system-ebm==0.1.0) (0.0.5)
+Requirement already satisfied: anyio in /usr/local/lib/python3.12/site-packages (from httpx<1,>=0.27->ml-system-ebm==0.1.0) (4.16.0)
+Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.12/site-packages (from httpx<1,>=0.27->ml-system-ebm==0.1.0) (1.0.9)
+Requirement already satisfied: idna in /usr/local/lib/python3.12/site-packages (from httpx<1,>=0.27->ml-system-ebm==0.1.0) (3.20)
+Requirement already satisfied: h11>=0.16 in /usr/local/lib/python3.12/site-packages (from httpcore==1.*->httpx<1,>=0.27->ml-system-ebm==0.1.0) (0.16.0)
+Requirement already satisfied: psycopg-binary==3.3.8 in /usr/local/lib/python3.12/site-packages (from psycopg[binary]<4,>=3.2->ml-system-ebm==0.1.0) (3.3.8)
+Requirement already satisfied: argon2-cffi>=23.1.0 in /usr/local/lib/python3.12/site-packages (from pwdlib[argon2]<1,>=0.2->ml-system-ebm==0.1.0) (25.1.0)
+Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.12/site-packages (from pydantic<3,>=2.8->ml-system-ebm==0.1.0) (0.8.0)
+Requirement already satisfied: pydantic-core==2.50.4 in /usr/local/lib/python3.12/site-packages (from pydantic<3,>=2.8->ml-system-ebm==0.1.0) (2.50.4)
+Requirement already satisfied: python-dotenv>=1.2.2 in /usr/local/lib/python3.12/site-packages (from pydantic-settings<3,>=2.6->ml-system-ebm==0.1.0) (1.2.4)
+Requirement already satisfied: cryptography>=3.4.0 in /usr/local/lib/python3.12/site-packages (from PyJWT[crypto]<3,>=2.10->ml-system-ebm==0.1.0) (50.0.2)
+Requirement already satisfied: dnspython<3.0.0,>=2.7.0 in /usr/local/lib/python3.12/site-packages (from pymongo<5,>=4.13->ml-system-ebm==0.1.0) (2.9.2)
+Requirement already satisfied: greenlet>=1 in /usr/local/lib/python3.12/site-packages (from SQLAlchemy<2.1,>=2.0.44->ml-system-ebm==0.1.0) (3.5.6)
+Requirement already satisfied: aiohttp>=3 in /usr/local/lib/python3.12/site-packages (from taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (3.14.5)
+Requirement already satisfied: packaging>=19 in /usr/local/lib/python3.12/site-packages (from taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (26.3)
+Requirement already satisfied: pycron>=3.0.0 in /usr/local/lib/python3.12/site-packages (from taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (3.3.0)
+Requirement already satisfied: taskiq-dependencies<2,>=1.3.1 in /usr/local/lib/python3.12/site-packages (from taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (1.5.7)
+Requirement already satisfied: click>=7.0 in /usr/local/lib/python3.12/site-packages (from uvicorn<1,>=0.30->ml-system-ebm==0.1.0) (8.5.1)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in /usr/local/lib/python3.12/site-packages (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (2.7.1)
+Requirement already satisfied: aiosignal>=1.4.0 in /usr/local/lib/python3.12/site-packages (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (1.4.0)
+Requirement already satisfied: attrs>=17.3.0 in /usr/local/lib/python3.12/site-packages (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (26.1.0)
+Requirement already satisfied: frozenlist>=1.1.1 in /usr/local/lib/python3.12/site-packages (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (1.8.0)
+Requirement already satisfied: multidict<8.0,>=4.5 in /usr/local/lib/python3.12/site-packages (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (7.2.1)
+Requirement already satisfied: propcache>=0.2.0 in /usr/local/lib/python3.12/site-packages (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (0.5.4)
+Requirement already satisfied: pamqp==3.3.0 in /usr/local/lib/python3.12/site-packages (from aiormq<7,>=6.8->aio-pika<10,>=9.5->ml-system-ebm==0.1.0) (3.3.0)
+Requirement already satisfied: argon2-cffi-bindings in /usr/local/lib/python3.12/site-packages (from argon2-cffi>=23.1.0->pwdlib[argon2]<1,>=0.2->ml-system-ebm==0.1.0) (26.1.0)
+Requirement already satisfied: cffi>=2.0.0 in /usr/local/lib/python3.12/site-packages (from cryptography>=3.4.0->PyJWT[crypto]<3,>=2.10->ml-system-ebm==0.1.0) (2.1.1)
+Collecting pyasn1-modules>=0.2.1 (from google-auth~=2.0->databricks-sdk<1,>=0.18->ml-system-ebm==0.1.0)
+  Downloading pyasn1_modules-0.4.2-py3-none-any.whl.metadata (3.5 kB)
+Collecting et-xmlfile (from openpyxl<4.0.0,>=3.0.10->databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0)
+  Downloading et_xmlfile-2.0.0-py3-none-any.whl.metadata (2.7 kB)
+Collecting numpy>=1.26.0 (from pandas<2.4.0,>=1.2.5->databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0)
+  Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (6.6 kB)
+Collecting pytz>=2020.1 (from pandas<2.4.0,>=1.2.5->databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0)
+  Downloading pytz-2026.6-py2.py3-none-any.whl.metadata (22 kB)
+Collecting tzdata>=2022.7 (from pandas<2.4.0,>=1.2.5->databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0)
+  Downloading tzdata-2026.6-py2.py3-none-any.whl.metadata (1.4 kB)
+Collecting six>=1.5 (from python-dateutil<3.0.0,>=2.8.0->databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0)
+  Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+Requirement already satisfied: charset_normalizer<4,>=2 in /usr/local/lib/python3.12/site-packages (from requests<3.0.0,>=2.18.1->databricks-sql-connector==4.2.6->ml-system-ebm==0.1.0) (3.5.2)
+Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.12/site-packages (from Mako->alembic<2,>=1.17->ml-system-ebm==0.1.0) (3.0.4)
+Requirement already satisfied: pycparser in /usr/local/lib/python3.12/site-packages (from cffi>=2.0.0->cryptography>=3.4.0->PyJWT[crypto]<3,>=2.10->ml-system-ebm==0.1.0) (3.12)
+Collecting pyasn1<0.7.0,>=0.6.1 (from pyasn1-modules>=0.2.1->google-auth~=2.0->databricks-sdk<1,>=0.18->ml-system-ebm==0.1.0)
+  Downloading pyasn1-0.6.5-py3-none-any.whl.metadata (8.4 kB)
+Downloading databricks_sql_connector-4.2.6-py3-none-any.whl (216 kB)
+Downloading databricks_sdk-0.162.0-py3-none-any.whl (1.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.2/1.2 MB 1.9 MB/s eta 0:00:00
+Downloading google_auth-2.62.1-py3-none-any.whl (267 kB)
+Downloading lz4-4.4.5-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (1.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 2.8 MB/s eta 0:00:00
+Downloading oauthlib-3.3.1-py3-none-any.whl (160 kB)
+Downloading openpyxl-3.1.5-py2.py3-none-any.whl (250 kB)
+Downloading pandas-2.3.3-cp312-cp312-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (12.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.4/12.4 MB 3.9 MB/s eta 0:00:00
+Downloading pybreaker-1.4.1-py3-none-any.whl (12 kB)
+Downloading python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Downloading numpy-2.5.4-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (16.7 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 16.7/16.7 MB 5.1 MB/s eta 0:00:00
+Downloading pyasn1_modules-0.4.2-py3-none-any.whl (181 kB)
+Downloading pytz-2026.6-py2.py3-none-any.whl (506 kB)
+Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+Downloading tzdata-2026.6-py2.py3-none-any.whl (348 kB)
+Downloading et_xmlfile-2.0.0-py3-none-any.whl (18 kB)
+Downloading pyasn1-0.6.5-py3-none-any.whl (84 kB)
+Building wheels for collected packages: ml-system-ebm, thrift
+  Building wheel for ml-system-ebm (pyproject.toml): started
+  Building wheel for ml-system-ebm (pyproject.toml): finished with status 'done'
+  Created wheel for ml-system-ebm: filename=ml_system_ebm-0.1.0-py3-none-any.whl size=253287 sha256=0d8eef2d6886b7c2175e75a088f6af7e0fc33d33c8501ac1aa7decc8c7c15c8c
+  Stored in directory: /tmp/pip-ephem-wheel-cache-jybbd2hj/wheels/54/1b/b7/aa63e25c8f14f4f2ae7b04e6097bdecb770e455c5c1ee0a600
+  Building wheel for thrift (pyproject.toml): started
+  Building wheel for thrift (pyproject.toml): finished with status 'done'
+  Created wheel for thrift: filename=thrift-0.22.0-py3-none-any.whl size=68533 sha256=d7a767df85c074a09d3058518400f6f40b723aa1d6684453cc2efb28eedad2c3
+  Stored in directory: /tmp/pip-ephem-wheel-cache-jybbd2hj/wheels/03/30/a2/6e53de46f9d8f098a6b7c4a57dbdcafa5f11e87274e139f50b
+Successfully built ml-system-ebm thrift
+Installing collected packages: thrift, pytz, tzdata, six, pybreaker, pyasn1, oauthlib, numpy, lz4, et-xmlfile, python-dateutil, pyasn1-modules, openpyxl, pandas, google-auth, databricks-sql-connector, databricks-sdk, ml-system-ebm
+  Attempting uninstall: ml-system-ebm
+    Found existing installation: ml-system-ebm 0.1.0
+    Uninstalling ml-system-ebm-0.1.0:
+      Successfully uninstalled ml-system-ebm-0.1.0
+Successfully installed databricks-sdk-0.162.0 databricks-sql-connector-4.2.6 et-xmlfile-2.0.0 google-auth-2.62.1 lz4-4.4.5 ml-system-ebm-0.1.0 numpy-2.5.4 oauthlib-3.3.1 openpyxl-3.1.5 pandas-2.3.3 pyasn1-0.6.5 pyasn1-modules-0.4.2 pybreaker-1.4.1 python-dateutil-2.9.0.post0 pytz-2026.6 six-1.17.0 thrift-0.22.0 tzdata-2026.6
+[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+[0m[91m
+[notice] A new release of pip is available: 25.0.1 -> 26.3
+[notice] To update, run: pip install --upgrade pip
+[0m ---> Removed intermediate container 496b846189a8
+ ---> 50cf48987fdc
+Step 14/22 : USER mlapp
+ ---> Running in eb18e3078e3f
+ ---> Removed intermediate container eb18e3078e3f
+ ---> 241658c6e8a1
+Step 15/22 : CMD ["python", "-m", "bootstrap.ingestion_cli", "work"]
+ ---> Running in f0a3b4f8a501
+ ---> Removed intermediate container f0a3b4f8a501
+ ---> fd885228610a
+Step 16/22 : FROM ingestion AS ingestion-test
+ ---> fd885228610a
+Step 17/22 : USER root
+ ---> Running in 66aafca5a675
+ ---> Removed intermediate container 66aafca5a675
+ ---> 94aaf5fed922
+Step 18/22 : COPY tests ./tests
+ ---> ea49b26dbba3
+Step 19/22 : COPY scripts ./scripts
+ ---> 5282b241489c
+Step 20/22 : RUN pip install --no-cache-dir '.[dev]'
+ ---> Running in 9e453f2fe14d
+Processing /app
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Requirement already satisfied: fastapi<1,>=0.115 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (0.162.2)
+Requirement already satisfied: uvicorn<1,>=0.30 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (0.54.0)
+Requirement already satisfied: pydantic<3,>=2.8 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (2.14.3)
+Requirement already satisfied: pydantic-settings<3,>=2.6 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (2.16.2)
+Requirement already satisfied: httpx<1,>=0.27 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (0.28.1)
+Requirement already satisfied: SQLAlchemy<2.1,>=2.0.44 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (2.0.57)
+Requirement already satisfied: alembic<2,>=1.17 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (1.20.1)
+Requirement already satisfied: psycopg<4,>=3.2 in /usr/local/lib/python3.12/site-packages (from psycopg[binary]<4,>=3.2->ml-system-ebm==0.1.0) (3.3.8)
+Requirement already satisfied: PyJWT<3,>=2.10 in /usr/local/lib/python3.12/site-packages (from PyJWT[crypto]<3,>=2.10->ml-system-ebm==0.1.0) (2.15.1)
+Requirement already satisfied: pymongo<5,>=4.13 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (4.19.0)
+Requirement already satisfied: pwdlib<1,>=0.2 in /usr/local/lib/python3.12/site-packages (from pwdlib[argon2]<1,>=0.2->ml-system-ebm==0.1.0) (0.3.1)
+Requirement already satisfied: redis<9,>=5 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (8.1.0)
+Requirement already satisfied: taskiq<0.13,>=0.12.6 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (0.12.6)
+Requirement already satisfied: taskiq-aio-pika<0.7,>=0.6.1 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (0.6.1)
+Requirement already satisfied: aio-pika<10,>=9.5 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (9.6.2)
+Requirement already satisfied: opentelemetry-api<2,>=1.28 in /usr/local/lib/python3.12/site-packages (from ml-system-ebm==0.1.0) (1.45.2)
+Collecting pytest<10,>=8 (from ml-system-ebm==0.1.0)
+  Downloading pytest-9.2.0-py3-none-any.whl.metadata (7.9 kB)
+Collecting pytest-asyncio<2,>=0.25 (from ml-system-ebm==0.1.0)
+  Downloading pytest_asyncio-1.4.1.post1-py3-none-any.whl.metadata (4.4 kB)
+Collecting ruff<1,>=0.12 (from ml-system-ebm==0.1.0)
+  Downloading ruff-0.17.4-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (20 kB)
+Collecting mypy<3,>=1.15 (from ml-system-ebm==0.1.0)
+  Downloading mypy-2.4.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (2.4 kB)
+Collecting pyflakes<4,>=3.2 (from ml-system-ebm==0.1.0)
+  Downloading pyflakes-3.4.0-py2.py3-none-any.whl.metadata (3.5 kB)
+Requirement already satisfied: aiormq<7,>=6.8 in /usr/local/lib/python3.12/site-packages (from aio-pika<10,>=9.5->ml-system-ebm==0.1.0) (6.9.4)
+Requirement already satisfied: yarl in /usr/local/lib/python3.12/site-packages (from aio-pika<10,>=9.5->ml-system-ebm==0.1.0) (1.25.1)
+Requirement already satisfied: Mako in /usr/local/lib/python3.12/site-packages (from alembic<2,>=1.17->ml-system-ebm==0.1.0) (1.4.3)
+Requirement already satisfied: typing-extensions>=4.12 in /usr/local/lib/python3.12/site-packages (from alembic<2,>=1.17->ml-system-ebm==0.1.0) (4.16.0)
+Requirement already satisfied: starlette>=0.46.0 in /usr/local/lib/python3.12/site-packages (from fastapi<1,>=0.115->ml-system-ebm==0.1.0) (1.10.0)
+Requirement already satisfied: typing-inspection>=0.4.2 in /usr/local/lib/python3.12/site-packages (from fastapi<1,>=0.115->ml-system-ebm==0.1.0) (0.4.5)
+Requirement already satisfied: annotated-doc>=0.0.2 in /usr/local/lib/python3.12/site-packages (from fastapi<1,>=0.115->ml-system-ebm==0.1.0) (0.0.5)
+Requirement already satisfied: anyio in /usr/local/lib/python3.12/site-packages (from httpx<1,>=0.27->ml-system-ebm==0.1.0) (4.16.0)
+Requirement already satisfied: certifi in /usr/local/lib/python3.12/site-packages (from httpx<1,>=0.27->ml-system-ebm==0.1.0) (2026.10.23)
+Requirement already satisfied: httpcore==1.* in /usr/local/lib/python3.12/site-packages (from httpx<1,>=0.27->ml-system-ebm==0.1.0) (1.0.9)
+Requirement already satisfied: idna in /usr/local/lib/python3.12/site-packages (from httpx<1,>=0.27->ml-system-ebm==0.1.0) (3.20)
+Requirement already satisfied: h11>=0.16 in /usr/local/lib/python3.12/site-packages (from httpcore==1.*->httpx<1,>=0.27->ml-system-ebm==0.1.0) (0.16.0)
+Collecting mypy_extensions>=1.0.0 (from mypy<3,>=1.15->ml-system-ebm==0.1.0)
+  Downloading mypy_extensions-1.2.0-py3-none-any.whl.metadata (1.1 kB)
+Collecting pathspec>=1.0.0 (from mypy<3,>=1.15->ml-system-ebm==0.1.0)
+  Downloading pathspec-1.1.1-py3-none-any.whl.metadata (14 kB)
+Collecting librt>=0.16.0 (from mypy<3,>=1.15->ml-system-ebm==0.1.0)
+  Downloading librt-0.16.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (1.3 kB)
+Collecting ast-serialize<1.0.0,>=0.12.1 (from mypy<3,>=1.15->ml-system-ebm==0.1.0)
+  Downloading ast_serialize-0.13.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (1.4 kB)
+Requirement already satisfied: psycopg-binary==3.3.8 in /usr/local/lib/python3.12/site-packages (from psycopg[binary]<4,>=3.2->ml-system-ebm==0.1.0) (3.3.8)
+Requirement already satisfied: argon2-cffi>=23.1.0 in /usr/local/lib/python3.12/site-packages (from pwdlib[argon2]<1,>=0.2->ml-system-ebm==0.1.0) (25.1.0)
+Requirement already satisfied: annotated-types>=0.6.0 in /usr/local/lib/python3.12/site-packages (from pydantic<3,>=2.8->ml-system-ebm==0.1.0) (0.8.0)
+Requirement already satisfied: pydantic-core==2.50.4 in /usr/local/lib/python3.12/site-packages (from pydantic<3,>=2.8->ml-system-ebm==0.1.0) (2.50.4)
+Requirement already satisfied: python-dotenv>=1.2.2 in /usr/local/lib/python3.12/site-packages (from pydantic-settings<3,>=2.6->ml-system-ebm==0.1.0) (1.2.4)
+Requirement already satisfied: cryptography>=3.4.0 in /usr/local/lib/python3.12/site-packages (from PyJWT[crypto]<3,>=2.10->ml-system-ebm==0.1.0) (50.0.2)
+Requirement already satisfied: dnspython<3.0.0,>=2.7.0 in /usr/local/lib/python3.12/site-packages (from pymongo<5,>=4.13->ml-system-ebm==0.1.0) (2.9.2)
+Collecting iniconfig>=2 (from pytest<10,>=8->ml-system-ebm==0.1.0)
+  Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+Requirement already satisfied: packaging>=24 in /usr/local/lib/python3.12/site-packages (from pytest<10,>=8->ml-system-ebm==0.1.0) (26.3)
+Collecting pluggy<2,>=1.6 (from pytest<10,>=8->ml-system-ebm==0.1.0)
+  Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+Collecting pygments>=2.15 (from pytest<10,>=8->ml-system-ebm==0.1.0)
+  Downloading pygments-2.21.0-py3-none-any.whl.metadata (2.5 kB)
+Requirement already satisfied: greenlet>=1 in /usr/local/lib/python3.12/site-packages (from SQLAlchemy<2.1,>=2.0.44->ml-system-ebm==0.1.0) (3.5.6)
+Requirement already satisfied: aiohttp>=3 in /usr/local/lib/python3.12/site-packages (from taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (3.14.5)
+Requirement already satisfied: pycron>=3.0.0 in /usr/local/lib/python3.12/site-packages (from taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (3.3.0)
+Requirement already satisfied: taskiq-dependencies<2,>=1.3.1 in /usr/local/lib/python3.12/site-packages (from taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (1.5.7)
+Requirement already satisfied: click>=7.0 in /usr/local/lib/python3.12/site-packages (from uvicorn<1,>=0.30->ml-system-ebm==0.1.0) (8.5.1)
+Requirement already satisfied: aiohappyeyeballs>=2.5.0 in /usr/local/lib/python3.12/site-packages (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (2.7.1)
+Requirement already satisfied: aiosignal>=1.4.0 in /usr/local/lib/python3.12/site-packages (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (1.4.0)
+Requirement already satisfied: attrs>=17.3.0 in /usr/local/lib/python3.12/site-packages (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (26.1.0)
+Requirement already satisfied: frozenlist>=1.1.1 in /usr/local/lib/python3.12/site-packages (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (1.8.0)
+Requirement already satisfied: multidict<8.0,>=4.5 in /usr/local/lib/python3.12/site-packages (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (7.2.1)
+Requirement already satisfied: propcache>=0.2.0 in /usr/local/lib/python3.12/site-packages (from aiohttp>=3->taskiq<0.13,>=0.12.6->ml-system-ebm==0.1.0) (0.5.4)
+Requirement already satisfied: pamqp==3.3.0 in /usr/local/lib/python3.12/site-packages (from aiormq<7,>=6.8->aio-pika<10,>=9.5->ml-system-ebm==0.1.0) (3.3.0)
+Requirement already satisfied: argon2-cffi-bindings in /usr/local/lib/python3.12/site-packages (from argon2-cffi>=23.1.0->pwdlib[argon2]<1,>=0.2->ml-system-ebm==0.1.0) (26.1.0)
+Requirement already satisfied: cffi>=2.0.0 in /usr/local/lib/python3.12/site-packages (from cryptography>=3.4.0->PyJWT[crypto]<3,>=2.10->ml-system-ebm==0.1.0) (2.1.1)
+Requirement already satisfied: MarkupSafe>=2.0 in /usr/local/lib/python3.12/site-packages (from Mako->alembic<2,>=1.17->ml-system-ebm==0.1.0) (3.0.4)
+Requirement already satisfied: pycparser in /usr/local/lib/python3.12/site-packages (from cffi>=2.0.0->cryptography>=3.4.0->PyJWT[crypto]<3,>=2.10->ml-system-ebm==0.1.0) (3.12)
+Downloading mypy-2.4.1-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (15.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 15.6/15.6 MB 3.9 MB/s eta 0:00:00
+Downloading pyflakes-3.4.0-py2.py3-none-any.whl (63 kB)
+Downloading pytest-9.2.0-py3-none-any.whl (411 kB)
+Downloading pytest_asyncio-1.4.1.post1-py3-none-any.whl (17 kB)
+Downloading ruff-0.17.4-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (10.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.6/10.6 MB 12.3 MB/s eta 0:00:00
+Downloading ast_serialize-0.13.1-cp39-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (1.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 19.5 MB/s eta 0:00:00
+Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+Downloading librt-0.16.0-cp312-cp312-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (531 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 532.0/532.0 kB 19.8 MB/s eta 0:00:00
+Downloading mypy_extensions-1.2.0-py3-none-any.whl (5.1 kB)
+Downloading pathspec-1.1.1-py3-none-any.whl (57 kB)
+Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+Downloading pygments-2.21.0-py3-none-any.whl (1.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 16.7 MB/s eta 0:00:00
+Building wheels for collected packages: ml-system-ebm
+  Building wheel for ml-system-ebm (pyproject.toml): started
+  Building wheel for ml-system-ebm (pyproject.toml): finished with status 'done'
+  Created wheel for ml-system-ebm: filename=ml_system_ebm-0.1.0-py3-none-any.whl size=253287 sha256=4f173850dd98c2473be3ac51dedefad6aed6f2e20ca3a72cf834091c53110756
+  Stored in directory: /tmp/pip-ephem-wheel-cache-koidr7xe/wheels/54/1b/b7/aa63e25c8f14f4f2ae7b04e6097bdecb770e455c5c1ee0a600
+Successfully built ml-system-ebm
+Installing collected packages: ruff, pygments, pyflakes, pluggy, pathspec, mypy_extensions, librt, iniconfig, ast-serialize, pytest, mypy, pytest-asyncio, ml-system-ebm
+  Attempting uninstall: ml-system-ebm
+    Found existing installation: ml-system-ebm 0.1.0
+    Uninstalling ml-system-ebm-0.1.0:
+      Successfully uninstalled ml-system-ebm-0.1.0
+Successfully installed ast-serialize-0.13.1 iniconfig-2.3.1 librt-0.16.0 ml-system-ebm-0.1.0 mypy-2.4.1 mypy_extensions-1.2.0 pathspec-1.1.1 pluggy-1.7.0 pyflakes-3.4.0 pygments-2.21.0 pytest-9.2.0 pytest-asyncio-1.4.1.post1 ruff-0.17.4
+[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager, possibly rendering your system unusable. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv. Use the --root-user-action option if you know what you are doing and want to suppress this warning.
+[0m[91m
+[notice] A new release of pip is available: 25.0.1 -> 26.3
+[notice] To update, run: pip install --upgrade pip
+[0m ---> Removed intermediate container 9e453f2fe14d
+ ---> c7cde781239f
+Step 21/22 : USER mlapp
+ ---> Running in 745a5bb9483c
+ ---> Removed intermediate container 745a5bb9483c
+ ---> bf5ee600f584
+Step 22/22 : CMD ["python", "-m", "pytest", "tests/ml/ingestion/test_http_e2e.py", "tests/ml/ingestion/test_production_bootstrap.py", "-q"]
+ ---> Running in ac0bcde9a5dd
+ ---> Removed intermediate container ac0bcde9a5dd
+ ---> f6567cd56fcf
+Successfully built f6567cd56fcf
+Successfully tagged ml-system-ingestion-delivery:20261108
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
