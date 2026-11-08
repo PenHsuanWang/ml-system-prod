@@ -60,3 +60,7 @@ ignore_missing_imports = true
 [[tool.mypy.overrides]]
 module = ["pydantic", "pydantic.*"]
 follow_imports = "silent"
+
+[[tool.mypy.overrides]]
+module = ["fastapi", "fastapi.*"]
+follow_imports = "silent"
