@@ -48,3 +48,11 @@ MinIO／mc source 編譯已完成，固定版本的 module directory 已實際�
 包裝與 Backend stack 驗收仍須由本地 image 測試及更新後 Actions 結果確認。
 不能將編譯、Compose parse 或 skipped case 當作完整 Backend 驗收成功。
 真實 Databricks 仍待核准外部環境，PR 保持 Draft；不修改主分支、不執行 Merge。
+
+後續驗證：兩個 source image 均已完成包裝，實際 bucket／S3 寫入讀回通過，測試
+container／volume／network 已移除。更新後的 push／PR Contracts 與 Ingestion jobs
+均通過，Backend 進到 MLflow 啟動後發現獨立 server image 安裝了 SQLAlchemy 2.1.8，
+使 MLflow 3.6 無法 import `FallbackAsyncAdaptedQueuePool`。
+`Dockerfile.mlflow` 現沿用主系統的 `SQLAlchemy>=2.0.44,<2.1` 契約，並在 build
+階段 import Tracking／Registry SQL stores；本地 SQLAlchemy 2.0.57 的兩個 store
+imports 通過。完整服務結果仍以修復後 Actions 為準。
