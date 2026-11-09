@@ -192,6 +192,12 @@ jobs:
         run: docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" up --build -d management relay supervisor control gateway
       - name: Require supported runtime and zero skipped integration cases
         run: docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" run --build --rm --no-deps acceptance
+      - name: Capture disposable stack diagnostics
+        if: failure()
+        run: |
+          mkdir -p "$ML_ACCEPTANCE_VAR_DIR/acceptance"
+          docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" ps -a > "$ML_ACCEPTANCE_VAR_DIR/acceptance/stack-status.log" 2>&1 || true
+          docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" logs --no-color --tail 200 > "$ML_ACCEPTANCE_VAR_DIR/acceptance/stack-services.log" 2>&1 || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:

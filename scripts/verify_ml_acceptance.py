@@ -20,6 +20,24 @@ CORE = ["src/domain/ml.py", "src/domain/training", "src/domain/deployments",
         "src/application/training", "src/application/deployments", "src/application/model_registry",
         "src/application/prediction", "src/application/datasets", "src/application/ml_services.py"]
 
+# These cases have independent execution environments and qualification gates.
+# Excluding them from the Backend stack scope does not count them as accepted.
+SEPARATE_QUALIFICATIONS = {
+    "tests/ml/ingestion/test_databricks_live.py":
+        "Protected databricks-live job requires an approved external Warehouse fixture",
+    "tests/ml/ingestion/test_ingestion_deployment.py":
+        "Contracts jobs run Compose model checks on the Docker-enabled host",
+}
+
+
+def pytest_command(output: Path, *, require_stack: bool) -> list[str]:
+    command = [sys.executable, "-m", "pytest", "tests/ml", "tests/test_boundaries.py", "-q",
+               "-p", "pytest_asyncio.plugin", "-p", "no:cacheprovider", "-o", "faulthandler_timeout=45",
+               "--junitxml="+str(output/"junit.xml")]
+    if require_stack:
+        command.extend("--ignore="+path for path in SEPARATE_QUALIFICATIONS)
+    return command
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -33,6 +51,9 @@ def main() -> int:
     environment = dict(os.environ)
     environment["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
     environment["MYPY_CACHE_DIR"] = str(output/"mypy-cache")
+    # Explicit compileall also writes bytecode despite PYTHONDONTWRITEBYTECODE.
+    # Keep the image's root-owned source tree read-only to the runtime user.
+    environment["PYTHONPYCACHEPREFIX"] = str(output/"pycache")
     environment["ML_REQUIRE_STACK_ACCEPTANCE"] = "1" if args.require_stack else "0"
     required = ("ML_TEST_DATABASE_URL", "ML_TEST_AMQP_URL", "ML_TEST_REDIS_URL",
                 "ML_TEST_MANAGEMENT_URL", "ML_TEST_PREDICTION_URL")
@@ -48,9 +69,7 @@ def main() -> int:
         for key in ("ML_TEST_DATABASE_URL", "ML_TEST_AMQP_URL", "ML_TEST_REDIS_URL",
                     "ML_TEST_MANAGEMENT_URL", "ML_TEST_PREDICTION_URL"):
             environment.pop(key, None)
-    pytest = [sys.executable, "-m", "pytest", "tests/ml", "tests/test_boundaries.py", "-q",
-              "-p", "pytest_asyncio.plugin", "-p", "no:cacheprovider", "-o", "faulthandler_timeout=45",
-              "--junitxml="+str(output/"junit.xml")]
+    pytest = pytest_command(output, require_stack=args.require_stack)
     if args.host_selector_workaround:
         plugin = ROOT/"docs/evidence/ml-cpu-2026-10-29"
         environment["PYTHONPATH"] = os.pathsep.join(filter(None,
@@ -116,6 +135,7 @@ def main() -> int:
               "local_checks_passed": checks_passed, "functional_backend_accepted": accepted,
               "production_accepted": False, "python": sys.version.split()[0], "torch": torch,
               "pytest": counts, "checks": checks, "acceptance_blockers": blockers,
+              "separate_qualifications": SEPARATE_QUALIFICATIONS if args.require_stack else {},
               "production_gates": ["Qualified immutable images/dependency locks and security evidence",
                                    "Approved capacity/SLO/retention/restore objectives and executed qualification"]}
     (output/"result.json").write_text(json.dumps(report, indent=2)+"\n")

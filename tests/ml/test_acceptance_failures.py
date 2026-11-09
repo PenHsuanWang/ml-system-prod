@@ -178,3 +178,74 @@ def test_repeated_prediction_failures_release_physical_slots():
                 executor.predict(((1.0, 1.0),))
     finally:
         executor.close()
+
+
+@pytest.mark.parametrize("require_stack", [False, True])
+def test_acceptance_collection_keeps_backend_services_and_separates_other_gates(tmp_path, require_stack):
+    import os
+    import subprocess
+
+    from scripts import verify_ml_acceptance as runner
+
+    result = subprocess.run(
+        [*runner.pytest_command(tmp_path, require_stack=require_stack), "--collect-only"],
+        cwd=runner.ROOT, env={**os.environ, "PYTEST_DISABLE_PLUGIN_AUTOLOAD": "1"},
+        capture_output=True, text=True, timeout=60, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    collected = result.stdout
+    assert "test_live_backend_train_approve_predict_rollout_rollback_and_revoke" in collected
+    assert "test_real_receiver_persists_before_ack_and_deduplicates" in collected
+    assert "test_json_contract_rejects_nonfinite_duplicate_and_deep_values" in collected
+    assert ("test_live_warehouse_postgres_and_independent_worker" in collected) is not require_stack
+    assert ("test_worker_and_management_share_raw_storage_with_least_privilege_mounts" in collected) is not require_stack
+
+
+def test_stack_acceptance_rejects_skipped_required_case_and_compiles_readonly_source(tmp_path, monkeypatch):
+    import subprocess
+    import sys
+    from types import SimpleNamespace
+
+    from scripts import verify_ml_acceptance as runner
+
+    output = tmp_path / "acceptance"
+    for name in ("ML_TEST_DATABASE_URL", "ML_TEST_AMQP_URL", "ML_TEST_REDIS_URL",
+                 "ML_TEST_MANAGEMENT_URL", "ML_TEST_PREDICTION_URL"):
+        monkeypatch.setenv(name, "isolated-test-endpoint")
+    monkeypatch.setattr(sys, "argv", ["verify_ml_acceptance.py", "--require-stack",
+                                      "--output-dir", str(output)])
+    actual_run = subprocess.run
+    environments = {}
+
+    def successful_checks_with_skipped_required_case(command, **options):
+        if command[1:3] == ["-m", "compileall"]:
+            environments["compile"] = options["env"]
+        if command[1:3] == ["-m", "pytest"]:
+            (output / "junit.xml").write_text(
+                '<testsuite tests="1" failures="0" errors="0" skipped="1">'
+                '<testcase name="required_backend"><skipped message="service unavailable"/>'
+                '</testcase></testsuite>'
+            )
+        return SimpleNamespace(returncode=0)
+
+    monkeypatch.setattr(runner.subprocess, "run", successful_checks_with_skipped_required_case)
+    assert runner.main() == 1
+    report = json.loads((output / "result.json").read_text())
+    assert report["functional_backend_accepted"] is False
+    assert "Required suite contains skipped cases" in report["acceptance_blockers"]
+    assert report["separate_qualifications"]
+
+    source = tmp_path / "readonly-source"
+    source.mkdir()
+    (source / "module.py").write_text("value = 1\n")
+    source.chmod(0o555)
+    try:
+        result = actual_run(
+            [sys.executable, "-m", "compileall", "-q", str(source)],
+            env=environments["compile"], capture_output=True, text=True, timeout=30, check=False,
+        )
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert not (source / "__pycache__").exists()
+        assert list((output / "pycache").rglob("module.*.pyc"))
+    finally:
+        source.chmod(0o755)
