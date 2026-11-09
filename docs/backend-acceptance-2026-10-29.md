@@ -79,7 +79,7 @@ python scripts/verify_ml_acceptance.py --output-dir var/acceptance/local
 export ML_ACCEPTANCE_VAR_DIR="$PWD/var/acceptance-stack-data"
 mkdir -p "$ML_ACCEPTANCE_VAR_DIR"
 docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml \
-  -p ml-acceptance up --build -d management relay supervisor control gateway
+  -p ml-acceptance up --build -d management relay supervisor control gateway redis
 docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml \
   -p ml-acceptance run --build --rm --no-deps acceptance
 docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml \

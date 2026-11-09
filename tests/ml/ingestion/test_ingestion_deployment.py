@@ -74,6 +74,11 @@ def test_worker_and_management_share_raw_storage_with_least_privilege_mounts(tmp
     assert result.returncode == 0, result.stderr
     assert secret_value not in result.stdout
     model = json.loads(result.stdout)
+    # MLflow 3.6 artifact repositories consult the SDK environment even when
+    # the application's client was constructed with an explicit tracking URI.
+    for role in ("migrate", "management", "relay", "supervisor", "control", "gateway"):
+        tracking = model["services"][role]["environment"]
+        assert tracking["MLFLOW_TRACKING_URI"] == tracking["ML_TRACKING_URI"], role
     worker, management = model["services"]["ingestion-worker"], model["services"]["management"]
     assert worker["build"]["target"] == "ingestion"
     assert worker["command"] == ["python", "-m", "bootstrap.ingestion_cli", "work"]

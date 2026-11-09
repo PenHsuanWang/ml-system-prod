@@ -4,6 +4,7 @@ x-ml-environment: &ml-environment
   ML_DATABASE_URL: postgresql+psycopg://ml:${ML_DB_PASSWORD:?set ML_DB_PASSWORD}@postgres:5432/ml
   ML_TRACKER_BACKEND: mlflow
   ML_TRACKING_URI: http://mlflow:5000
+  MLFLOW_TRACKING_URI: http://mlflow:5000
   ML_RABBITMQ_URL: amqp://ml:${ML_MQ_PASSWORD:?set ML_MQ_PASSWORD}@rabbitmq:5672/
   ML_REDIS_URL: redis://redis:6379/0
   ML_ARTIFACT_ROOT: /app/var/artifacts

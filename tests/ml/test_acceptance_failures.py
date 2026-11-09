@@ -65,6 +65,118 @@ def test_concurrent_serving_prepare_creates_only_one_process(tmp_path, deploymen
     assert len(launches) == 1
 
 
+@pytest.mark.parametrize("scoped_credentials", [False, True])
+def test_serving_child_preserves_tracking_uri_without_inheriting_parent_secrets(
+        tmp_path, deployment, monkeypatch, scoped_credentials):
+    import stat
+    import subprocess
+    import sys
+    from pathlib import Path
+
+    tracking_uri = "http://approved-tracker:5000"
+    monkeypatch.setenv("ML_TRACKING_URI", tracking_uri)
+    monkeypatch.setenv("MLFLOW_TRACKING_URI", tracking_uri)
+    parent_home = tmp_path / "parent-home"
+    (parent_home / ".aws").mkdir(parents=True)
+    (parent_home / ".aws" / "credentials").write_text("private-parent-credentials")
+    monkeypatch.setenv("HOME", str(parent_home))
+    sensitive = {
+        "MLFLOW_TRACKING_USERNAME": "parent-registry-user",
+        "MLFLOW_TRACKING_PASSWORD": "parent-registry-password",
+        "ML_DATABASE_URL": "private-management-database",
+        "ML_RABBITMQ_URL": "private-training-broker",
+        "AWS_ACCESS_KEY_ID": "private-artifact-writer",
+        "AWS_SECRET_ACCESS_KEY": "private-artifact-writer-secret",
+        "DATABRICKS_CLIENT_SECRET": "private-ingestion-secret",
+    }
+    for name, value in sensitive.items():
+        monkeypatch.setenv(name, value)
+    if scoped_credentials:
+        monkeypatch.setenv("ML_SERVING_MLFLOW_USERNAME", "readonly-serving-user")
+        monkeypatch.setenv("ML_SERVING_MLFLOW_PASSWORD", "readonly-serving-password")
+    else:
+        monkeypatch.delenv("ML_SERVING_MLFLOW_USERNAME", raising=False)
+        monkeypatch.delenv("ML_SERVING_MLFLOW_PASSWORD", raising=False)
+    launched = {}
+
+    class Reservation:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            pass
+
+        def bind(self, address):
+            pass
+
+        def getsockname(self):
+            return ("127.0.0.1", 18001)
+
+    def launch(command, **options):
+        launched.update(options["env"])
+        return SimpleNamespace(pid=123)
+
+    with monkeypatch.context() as launch_patch:
+        launch_patch.setattr("src.infrastructure.deployment.local_serving.socket.socket", Reservation)
+        launch_patch.setattr("src.infrastructure.deployment.local_serving.subprocess.Popen", launch)
+        LocalServingExecutor(tmp_path).prepare(deployment)
+
+    assert launched["ML_TRACKING_URI"] == launched["MLFLOW_TRACKING_URI"] == tracking_uri
+    assert not set(sensitive.values()) & set(launched.values())
+    assert not {"ML_DATABASE_URL", "ML_RABBITMQ_URL", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY",
+                "DATABRICKS_CLIENT_SECRET", "ML_SERVING_MLFLOW_USERNAME",
+                "ML_SERVING_MLFLOW_PASSWORD"} & launched.keys()
+    if scoped_credentials:
+        assert launched["MLFLOW_TRACKING_USERNAME"] == "readonly-serving-user"
+        assert launched["MLFLOW_TRACKING_PASSWORD"] == "readonly-serving-password"
+    else:
+        assert "MLFLOW_TRACKING_USERNAME" not in launched
+        assert "MLFLOW_TRACKING_PASSWORD" not in launched
+    runtime_home = Path(launched["HOME"])
+    assert runtime_home == tmp_path / deployment.deployment_id / "home"
+    assert stat.S_IMODE(runtime_home.stat().st_mode) == 0o700
+    assert not (runtime_home / ".aws").exists()
+    # Reproduce passwd lookup failure for an unknown container UID. Path.home
+    # and SDK-style cache writes must work from the actual child environment.
+    code = """
+import json, pwd
+from pathlib import Path
+def unknown_uid(uid):
+    raise KeyError(uid)
+pwd.getpwuid = unknown_uid
+runtime_home = Path.home()
+cache = runtime_home / '.cache'
+cache.mkdir()
+(cache / 'probe').write_text('ready')
+print(json.dumps({'home': str(runtime_home)}))
+"""
+    result = subprocess.run([sys.executable, "-c", code], env=launched,
+                            capture_output=True, text=True, timeout=20, check=False)
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout)["home"] == str(runtime_home)
+    assert (runtime_home / ".cache" / "probe").read_text() == "ready"
+
+
+def test_serving_private_home_cannot_redirect_to_an_existing_directory(tmp_path, deployment, monkeypatch):
+    import stat
+
+    outside = tmp_path / "outside-home"
+    outside.mkdir(mode=0o755)
+    original_mode = stat.S_IMODE(outside.stat().st_mode)
+    directory = tmp_path / deployment.deployment_id
+    directory.mkdir()
+    (directory / "home").symlink_to(outside, target_is_directory=True)
+
+    def forbidden_launch(*args, **kwargs):
+        pytest.fail("An existing home link must never launch a serving child")
+
+    monkeypatch.setattr("src.infrastructure.deployment.local_serving.subprocess.Popen", forbidden_launch)
+    with pytest.raises(Conflict):
+        LocalServingExecutor(tmp_path).prepare(deployment)
+    assert stat.S_IMODE(outside.stat().st_mode) == original_mode
+    assert not list(outside.iterdir())
+
+
 def test_serving_requires_positive_readiness(tmp_path, deployment, monkeypatch):
     directory = tmp_path/deployment.deployment_id
     directory.mkdir()

@@ -56,3 +56,26 @@ container／volume／network 已移除。更新後的 push／PR Contracts 與 In
 `Dockerfile.mlflow` 現沿用主系統的 `SQLAlchemy>=2.0.44,<2.1` 契約，並在 build
 階段 import Tracking／Registry SQL stores；本地 SQLAlchemy 2.0.57 的兩個 store
 imports 通過。完整服務結果仍以修復後 Actions 為準。
+
+完整服務測試另確認 MLflow 3.6 的 artifact proxy 需要標準
+`MLFLOW_TRACKING_URI`；只有主系統的 `ML_TRACKING_URI` 時，SDK 仍可能使用
+`file:///app/mlruns`，使完成訓練的 Job 留在可恢復的 REGISTER phase。
+Compose 現設定相同的兩個 endpoint，Serving child 的受限白名單也保留此別名；
+不設定全域 active run，不擴大一般 MLflow／DB／Broker／AWS／Databricks secrets
+的繼承範圍。新的 Serving launch regression 覆蓋 endpoint 與 credential 邊界。
+本地 explicit client 的真實 MLflow／S3 artifact 上傳、下載與 SHA256 核對通過。
+
+Backend CI 的限定啟動清單原本沒有啟動 Redis，兩個必要 Receiver tests 因 DNS
+解析不到 `redis` 而失敗。啟動清單與 acceptance dependency 現明確包含 Redis，
+保留兩個真實 Receiver tests 與零 skipped 的驗收條件。
+
+Serving 的受限環境也需要有效 home：自訂 UID 未出現在 image passwd database 時，
+缺少 HOME 會使 MLflow import 的 `Path.home()` 失敗。每個 deployment 現在取得
+execution directory 下私有 `0700` home，不繼承父程序 home 或其 credentials；
+既有 home／symlink 會拒絕啟動。未知 UID、實際子程序 cache write、symlink 與
+credential-filtering 回歸通過。
+
+補齊以上設定後，以獨立的完整真實 Backend stack 執行三個目標整合案例：
+**3 passed、零 skipped**，涵蓋訓練、MLflow／S3 registry、部署、推論、generation
+rollback、JWT revocation，以及兩個真實 RabbitMQ／Redis Receiver 案例。
+這是目標整合驗證；完整 suite／其他 qualification 的最終結果仍以更新後 CI 為準。

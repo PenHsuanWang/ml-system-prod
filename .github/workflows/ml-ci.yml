@@ -189,7 +189,7 @@ jobs:
           python scripts/create_ml_env.py
           mkdir -p "$ML_ACCEPTANCE_VAR_DIR"
       - name: Start isolated real Backend roles
-        run: docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" up --build -d management relay supervisor control gateway
+        run: docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" up --build -d management relay supervisor control gateway redis
       - name: Require supported runtime and zero skipped integration cases
         run: docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" run --build --rm --no-deps acceptance
       - name: Capture disposable stack diagnostics

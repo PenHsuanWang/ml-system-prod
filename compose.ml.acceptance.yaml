@@ -41,3 +41,4 @@ services:
       gateway: {condition: service_started}
       supervisor: {condition: service_started}
       relay: {condition: service_started}
+      redis: {condition: service_started}
