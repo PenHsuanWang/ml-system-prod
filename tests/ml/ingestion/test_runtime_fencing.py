@@ -2,8 +2,9 @@
 
 import json
 import time
-from threading import Event, get_ident
+from threading import Condition, Event, get_ident
 from threading import enumerate as live_threads
+from types import SimpleNamespace
 
 import pytest
 from sqlalchemy import update
@@ -29,15 +30,58 @@ def test_slow_io_beyond_initial_lease_completes_under_live_owner(runtime_env, mo
     ingress, _, actor, _, _ = runtime_env
     ingress.jobs.lease_seconds = 0.2
     original = getattr(ingress.store, phase)
+    original_heartbeat = ingress.jobs.heartbeat
+    clock = [time.time()]
+    wall_time = SimpleNamespace(time=lambda: clock[0], monotonic=time.monotonic)
+    monkeypatch.setattr("src.application.ingestion.supervisor.time", wall_time)
+    monkeypatch.setattr("src.infrastructure.ingestion.persistence.ingestion_jobs.time", wall_time)
+    main_thread = get_ident()
+    renewed = Condition()
+    io_active = Event()
+    renewals = []
+    blocked = False
+
+    def heartbeat(claim):
+        result = original_heartbeat(claim)
+        if get_ident() != main_thread and io_active.is_set():
+            with renewed:
+                renewals.append(result.lease_until)
+                renewed.notify_all()
+        return result
 
     def slow(*args, **kwargs):
-        time.sleep(0.35)
+        nonlocal blocked
+        if blocked:
+            return original(*args, **kwargs)
+        blocked = True
+        initial_expiry = clock[0] + ingress.jobs.lease_seconds
+        io_active.set()
+        try:
+            # Advance wall time while this I/O call is blocked, waiting for each
+            # committed background renewal before progressing to the next step.
+            # Runner scheduling delays therefore leave the lease clock frozen.
+            for _ in range(3):
+                with renewed:
+                    clock[0] += ingress.jobs.lease_seconds * 0.75
+                    expected_expiry = clock[0] + ingress.jobs.lease_seconds
+                    assert renewed.wait_for(
+                        lambda expected=expected_expiry: (
+                            bool(renewals) and renewals[-1] >= expected
+                        ),
+                        timeout=5,
+                    ), "Background ownership renewal did not commit during blocked I/O"
+                assert ingress.jobs.claim_next(job_id=job.job_id) is None
+            assert clock[0] > initial_expiry
+        finally:
+            io_active.clear()
         return original(*args, **kwargs)
 
+    monkeypatch.setattr(ingress.jobs, "heartbeat", heartbeat)
     monkeypatch.setattr(ingress.store, phase, slow)
     job = ingress.service.submit(actor, "slow-" + phase, IngestionRequest("events", "v1"))
     result = ingress.supervisor().run_once(job_id=job.job_id)
     assert result.state == "PUBLISHED" and result.attempt_count == 1
+    assert blocked and len(renewals) >= 3
     assert count_rows(ingress.database, raw_snapshots) == 1
     assert not any(thread.name == "ingestion-lease" for thread in live_threads())
 
