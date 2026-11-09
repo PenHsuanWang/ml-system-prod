@@ -179,5 +179,7 @@ python -m pytest tests/ml/ingestion/test_databricks_live.py -q --junitxml=databr
 CI 有獨立的 ingestion-container PostgreSQL gate；live gate 透過手動 dispatch、
 `databricks-qualification` protected environment 與完整 fixture／secret 設定執行，
 要求零 skipped。缺少環境時維持 Draft，不能用 SDK 替身或 skipped test 宣稱驗收成功。
+Backend stack 驗收明確分開這個外部 Warehouse gate；其成功不代表 Databricks
+已完成 qualification。Backend report 會列出獨立驗收範圍與原因。
 Kafka、incremental extraction、Parquet publisher、remote Spark Jobs、Dataset Builder
 及 Raw-to-Feature／Training orchestration 均不在本次 MVP 範圍。
