@@ -1,6 +1,10 @@
 # ML runtime operations
 
+For first installation, external MLflow configuration, private role files, migration and release Go/No-Go, start with the [Day-1 deployment runbook](deployment/day1-deployment-runbook.md). This document covers Day-2 ownership, recovery and coordinated backup/restore. The reference `compose.ml.yaml` is a development stack; it is not the external production profile.
+
 Run from the repository root. Apply `python -m bootstrap.ml_cli migrate` before upgraded roles start. Startup never creates tables.
+
+In the production profile, execute approved maintenance through its secret-loading role entrypoint (`docker compose ... run --rm --no-deps ...`); a bare `exec` does not reload private role configuration. Preserve the Controller's host/process identity and shared execution/network assumptions when deciding whether a maintenance command may reconcile a live generation.
 
 ## Ownership and recovery
 

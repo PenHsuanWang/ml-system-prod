@@ -1,8 +1,13 @@
 # Databricks Batch Ingestion 操作手冊
 
-更新：2026-11-08。狀態：已實作，真實 Warehouse 驗收待執行；PR 必須維持 Draft。
+更新：2026-11-09。狀態：已實作，真實 Warehouse 驗收待執行；PR 必須維持 Draft。
 設計決策見 [ADR-016](adr/016-databricks-batch-ingestion.md)，驗收結果見
 [本輪交付報告](reviews/ingestion-stabilization-databricks-2026-11-08.md)。
+
+若目標是使用已存在的外部 MLflow 與 Databricks 部署完整 ML System，先依
+[Day-1 部署手冊](deployment/day1-deployment-runbook.md) 執行；其中使用獨立 production
+profile、private role 設定及 operator container。本文保留來源契約與 Ingestion
+專用操作細節。
 
 ## 執行邊界
 
@@ -106,6 +111,13 @@ python -m bootstrap.ingestion_cli register-source --definition-path /absolute/ap
 python -m bootstrap.ingestion_cli work
 ```
 
+上面的直接 Python 指令適用於已載入核准設定的 trusted 管理環境。Production
+profile 使用 `operator` service 的 `run --rm --no-deps` 載入 private role 設定，
+SourceDefinition 由 host `ML_OPERATOR_DEFINITIONS_DIR` 唯讀掛載為
+`/run/ml/operator-definitions`，不放在 runtime storage。完整註冊與結果核對範例見
+[Day-1 Source 操作](deployment/day1-deployment-runbook.md#8-首筆真實-databricks-ingestion-與-digest-驗證)。
+不要用 `docker compose exec` 代替 production operator entrypoint。
+
 沿既有 Bearer／`ml:ingest` 權限提交 `POST /api/v1/ingestion/jobs`，帶
 Idempotency-Key 與 `{"source_id":"approved-events","source_version":"v1"}`。
 202 代表已接受工作；只有 result endpoint 返回已提交的 `PUBLISHED` metadata
@@ -166,6 +178,20 @@ python scripts/check_boundaries.py
 python scripts/check_ingestion.py
 python -m pytest tests/ml/ingestion -q
 ```
+
+這組具名 `management ingestion-worker` 指令只用於 Ingestion 參考驗證，不表示
+Relay、Training Supervisor、Controller、Gateway 都已啟動。完整的**開發參考 stack**
+使用相同三個 Compose files 與 `--profile ingestion`，但不限制 service 清單：
+
+```sh
+docker compose --env-file .env.ml --env-file .env.ml.ingestion --profile ingestion \
+  -f compose.ml.yaml -f compose.ml.ingestion.yaml -f compose.ml.databricks.yaml \
+  up --build -d
+```
+
+此路徑會建立內建 MLflow／MinIO，仍是 `dev`。正式外部 MLflow 部署改用
+[Day-1 的獨立 profile](deployment/day1-deployment-runbook.md#3-建立固定的操作入口與離線-preflight)，
+並核對所有 runtime roles、依賴 qualification 與首筆受控 Job。
 
 真實 qualification 使用專用 PostgreSQL 測試 DB（fixture 只建立／刪除自己的 UUID
 schema）、核准且非空的小型 Delta fixture。設定 `ML_TEST_DATABASE_URL`、上方兩個
