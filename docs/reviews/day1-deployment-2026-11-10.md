@@ -57,6 +57,20 @@ its writable evidence directory, alongside the existing Mypy/bytecode caches.
 The check remains required; no test or quality rule was disabled. The repaired
 source must pass a new complete workflow before it is counted as accepted.
 
+The cache-repair push then exposed a timing dependency in the existing
+PostgreSQL starvation regression: its direct setup of 101 exhausted jobs used
+a three-second ownership lease without the runtime's heartbeat. Slow SQL/fsync
+could expire setup ownership before staging. The repository correctly rejected
+that attempt; the matching PR matrix passed. This queue-admission test now uses
+a scoped fixed repository clock, retaining the full backlog and expired-work
+assertions. Production leases and the separate expiration/heartbeat fencing
+tests remain unchanged.
+The corrected case passed five independent PostgreSQL 17 subprocess runs;
+the related operations, runtime-fencing and persistence suite passed **28
+cases with zero skips**. SQLite operations/fencing passed 13 cases. The
+disposable PostgreSQL container and network were removed; evidence is in
+`/tmp/day1-postgres-regression-t377dj6x`.
+
 A disposable **local** lab exercised the real MLflow 3.6 server, PostgreSQL 17
 through psycopg2, and source-built MinIO S3. A test-only TLS reverse proxy
 implemented Basic writer and GET-only reader authorization. The production
