@@ -65,7 +65,7 @@ def test_concurrent_serving_prepare_creates_only_one_process(tmp_path, deploymen
     assert len(launches) == 1
 
 
-@pytest.mark.parametrize("scoped_credentials", [False, True])
+@pytest.mark.parametrize("scoped_credentials", [None, "basic", "token"])
 def test_serving_child_preserves_tracking_uri_without_inheriting_parent_secrets(
         tmp_path, deployment, monkeypatch, scoped_credentials):
     import stat
@@ -76,6 +76,10 @@ def test_serving_child_preserves_tracking_uri_without_inheriting_parent_secrets(
     tracking_uri = "http://approved-tracker:5000"
     monkeypatch.setenv("ML_TRACKING_URI", tracking_uri)
     monkeypatch.setenv("MLFLOW_TRACKING_URI", tracking_uri)
+    certificate = tmp_path / "approved-ca.pem"
+    certificate.write_text("public-trust-bundle-for-environment-boundary-test")
+    monkeypatch.setenv("MLFLOW_TRACKING_SERVER_CERT_PATH", str(certificate))
+    monkeypatch.setenv("MLFLOW_TRACKING_INSECURE_TLS", "true")
     parent_home = tmp_path / "parent-home"
     (parent_home / ".aws").mkdir(parents=True)
     (parent_home / ".aws" / "credentials").write_text("private-parent-credentials")
@@ -83,6 +87,7 @@ def test_serving_child_preserves_tracking_uri_without_inheriting_parent_secrets(
     sensitive = {
         "MLFLOW_TRACKING_USERNAME": "parent-registry-user",
         "MLFLOW_TRACKING_PASSWORD": "parent-registry-password",
+        "MLFLOW_TRACKING_TOKEN": "parent-registry-token",
         "ML_DATABASE_URL": "private-management-database",
         "ML_RABBITMQ_URL": "private-training-broker",
         "AWS_ACCESS_KEY_ID": "private-artifact-writer",
@@ -91,12 +96,15 @@ def test_serving_child_preserves_tracking_uri_without_inheriting_parent_secrets(
     }
     for name, value in sensitive.items():
         monkeypatch.setenv(name, value)
-    if scoped_credentials:
+    monkeypatch.delenv("ML_SERVING_MLFLOW_TOKEN", raising=False)
+    if scoped_credentials == "basic":
         monkeypatch.setenv("ML_SERVING_MLFLOW_USERNAME", "readonly-serving-user")
         monkeypatch.setenv("ML_SERVING_MLFLOW_PASSWORD", "readonly-serving-password")
     else:
         monkeypatch.delenv("ML_SERVING_MLFLOW_USERNAME", raising=False)
         monkeypatch.delenv("ML_SERVING_MLFLOW_PASSWORD", raising=False)
+        if scoped_credentials == "token":
+            monkeypatch.setenv("ML_SERVING_MLFLOW_TOKEN", "readonly-serving-token")
     launched = {}
 
     class Reservation:
@@ -122,16 +130,24 @@ def test_serving_child_preserves_tracking_uri_without_inheriting_parent_secrets(
         LocalServingExecutor(tmp_path).prepare(deployment)
 
     assert launched["ML_TRACKING_URI"] == launched["MLFLOW_TRACKING_URI"] == tracking_uri
+    assert launched["MLFLOW_TRACKING_SERVER_CERT_PATH"] == str(certificate)
+    assert "MLFLOW_TRACKING_INSECURE_TLS" not in launched
     assert not set(sensitive.values()) & set(launched.values())
     assert not {"ML_DATABASE_URL", "ML_RABBITMQ_URL", "AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY",
                 "DATABRICKS_CLIENT_SECRET", "ML_SERVING_MLFLOW_USERNAME",
-                "ML_SERVING_MLFLOW_PASSWORD"} & launched.keys()
-    if scoped_credentials:
+                "ML_SERVING_MLFLOW_PASSWORD", "ML_SERVING_MLFLOW_TOKEN"} & launched.keys()
+    if scoped_credentials == "basic":
         assert launched["MLFLOW_TRACKING_USERNAME"] == "readonly-serving-user"
         assert launched["MLFLOW_TRACKING_PASSWORD"] == "readonly-serving-password"
+        assert "MLFLOW_TRACKING_TOKEN" not in launched
+    elif scoped_credentials == "token":
+        assert launched["MLFLOW_TRACKING_TOKEN"] == "readonly-serving-token"
+        assert "MLFLOW_TRACKING_USERNAME" not in launched
+        assert "MLFLOW_TRACKING_PASSWORD" not in launched
     else:
         assert "MLFLOW_TRACKING_USERNAME" not in launched
         assert "MLFLOW_TRACKING_PASSWORD" not in launched
+        assert "MLFLOW_TRACKING_TOKEN" not in launched
     runtime_home = Path(launched["HOME"])
     assert runtime_home == tmp_path / deployment.deployment_id / "home"
     assert stat.S_IMODE(runtime_home.stat().st_mode) == 0o700

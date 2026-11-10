@@ -73,13 +73,15 @@ class LocalServingExecutor:
                                                                  "created_at": time.time(), "parent": process_identity(os.getpid())}))
         self._persist(spec, deployment.spec_json)
         permitted = {"PATH", "PYTHONPATH", "LANG", "LD_LIBRARY_PATH", "ML_ARTIFACT_ROOT",
-                     "ML_TRACKING_URI", "MLFLOW_TRACKING_URI", "ML_TRACKER_BACKEND", "ML_MODEL_ENVIRONMENT", "ML_IMAGE_DIGEST",
+                     "ML_TRACKING_URI", "MLFLOW_TRACKING_URI", "MLFLOW_TRACKING_SERVER_CERT_PATH",
+                     "ML_TRACKER_BACKEND", "ML_MODEL_ENVIRONMENT", "ML_IMAGE_DIGEST",
                      "ML_CODE_REVISION", "APP_MONGO_URI", "APP_MONGO_DATABASE", "APP_JWT_SECRET",
                      "APP_JWT_ISSUER", "APP_JWT_AUDIENCE", "ML_PREDICTION_TIMEOUT_SECONDS",
                      "OTEL_EXPORTER_OTLP_ENDPOINT", "OTEL_EXPORTER_OTLP_HEADERS"}
         environment = {key: value for key, value in os.environ.items() if key in permitted}
         for source, target in (("ML_SERVING_MLFLOW_USERNAME", "MLFLOW_TRACKING_USERNAME"),
-                               ("ML_SERVING_MLFLOW_PASSWORD", "MLFLOW_TRACKING_PASSWORD")):
+                               ("ML_SERVING_MLFLOW_PASSWORD", "MLFLOW_TRACKING_PASSWORD"),
+                               ("ML_SERVING_MLFLOW_TOKEN", "MLFLOW_TRACKING_TOKEN")):
             if source in os.environ:
                 environment[target] = os.environ[source]
         environment.update(HOME=str(runtime_home), ML_DEPLOYMENT_SPEC_PATH=str(spec),

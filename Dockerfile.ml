@@ -45,6 +45,17 @@ RUN pip install --no-cache-dir 'scipy>=1.13,<2'
 USER mlapp
 CMD ["python", "-m", "bootstrap.ebm_cli", "smoke", "--output", "/app/var/ebm-smoke"]
 
+FROM ebm AS production
+USER root
+RUN pip install --no-cache-dir '.[databricks]'
+ARG ML_RELEASE_CODE_REVISION
+RUN python -c 'import re,sys; assert re.fullmatch(r"[a-f0-9]{40}", sys.argv[1]), "A complete release Git revision is required"' "$ML_RELEASE_CODE_REVISION"
+LABEL org.opencontainers.image.revision="${ML_RELEASE_CODE_REVISION}" \
+      org.opencontainers.image.source="https://github.com/PenHsuanWang/ml-system-prod"
+USER mlapp
+ENTRYPOINT ["python", "-m", "bootstrap.deployment_entrypoint"]
+CMD ["uvicorn", "bootstrap.ml_api:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000", "--limit-concurrency", "64"]
+
 FROM python:3.12-slim AS serving
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1
