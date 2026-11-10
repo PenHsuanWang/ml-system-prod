@@ -49,6 +49,14 @@ the current-head CI rebuild is the check for the final source. The local
 receipt is `/tmp/day1-production-image-evidence-20261110/result.json`. Its
 Docker config ID is not a Registry release digest.
 
+The first current-source Actions Backend run executed **963 passing tests,
+zero failures and zero skips**, but correctly rejected acceptance because the
+new Ruff gate tried to create `/app/.ruff_cache` in the non-root container's
+read-only source directory. The acceptance runner now sends Ruff's cache to
+its writable evidence directory, alongside the existing Mypy/bytecode caches.
+The check remains required; no test or quality rule was disabled. The repaired
+source must pass a new complete workflow before it is counted as accepted.
+
 A disposable **local** lab exercised the real MLflow 3.6 server, PostgreSQL 17
 through psycopg2, and source-built MinIO S3. A test-only TLS reverse proxy
 implemented Basic writer and GET-only reader authorization. The production

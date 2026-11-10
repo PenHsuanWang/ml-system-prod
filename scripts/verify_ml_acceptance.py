@@ -51,6 +51,7 @@ def main() -> int:
     environment = dict(os.environ)
     environment["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
     environment["MYPY_CACHE_DIR"] = str(output/"mypy-cache")
+    environment["RUFF_CACHE_DIR"] = str(output/"ruff-cache")
     # Explicit compileall also writes bytecode despite PYTHONDONTWRITEBYTECODE.
     # Keep the image's root-owned source tree read-only to the runtime user.
     environment["PYTHONPYCACHEPREFIX"] = str(output/"pycache")
