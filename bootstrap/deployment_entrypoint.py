@@ -136,7 +136,7 @@ def load_runtime_environment(environ: Mapping[str, str]) -> dict[str, str]:
         if reader and writer_identity == _credential_identity(private, "ML_SERVING_MLFLOW_"):
             raise ValueError("Writer and serving identities must be distinct")
     for key, schemes in (
-        ("ML_DATABASE_URL", {"postgresql", "postgresql+psycopg"}),
+        ("ML_DATABASE_URL", {"postgresql+psycopg"}),
         ("ML_RABBITMQ_URL", {"amqp", "amqps"}),
         ("ML_REDIS_URL", {"redis", "rediss"}),
         ("APP_MONGO_URI", {"mongodb", "mongodb+srv"}),

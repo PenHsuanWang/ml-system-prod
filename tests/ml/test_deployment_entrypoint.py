@@ -128,6 +128,15 @@ def test_private_json_rejects_duplicate_keys(deployment_environment):
         entrypoint.load_runtime_environment(deployment_environment)
 
 
+def test_database_url_requires_the_unified_images_psycopg_driver(deployment_environment):
+    update_private(
+        deployment_environment,
+        ML_DATABASE_URL="postgresql://operator:test@database.example/release",
+    )
+    with pytest.raises(ValueError, match="connection configuration"):
+        entrypoint.load_runtime_environment(deployment_environment)
+
+
 @pytest.mark.parametrize("role", ["migrate", "management", "relay", "gateway", "ingestion-worker"])
 def test_writer_or_serving_secrets_are_rejected_for_nonwriter_roles(deployment_environment, role):
     deployment_environment["ML_RUNTIME_ROLE"] = role
