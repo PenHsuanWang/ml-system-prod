@@ -76,7 +76,7 @@ def main() -> int:
                                                            [str(plugin), str(ROOT), environment.get("PYTHONPATH")]))
         pytest.extend(["-p", "host_selector_plugin"])
     lint_paths = sorted({str(path.relative_to(ROOT)) for pattern in (
-        "bootstrap/ml_*.py", "bootstrap/ebm_cli.py", "src/domain/ml.py", "src/domain/training/*.py", "src/domain/deployments/*.py",
+        "bootstrap/ml_*.py", "bootstrap/ebm_cli.py", "bootstrap/deployment_*.py", "src/domain/ml.py", "src/domain/training/*.py", "src/domain/deployments/*.py",
         "src/domain/model_registry/*.py", "src/domain/prediction/*.py", "src/domain/datasets/*.py",
         "src/application/training/*.py", "src/application/deployments/*.py", "src/application/model_registry/*.py",
         "src/application/prediction/*.py", "src/application/datasets/*.py", "src/application/ml_services.py",
@@ -89,6 +89,7 @@ def main() -> int:
     commands = [("boundaries", [sys.executable, "scripts/check_boundaries.py"]),
                 ("core-typing", [sys.executable, "-m", "mypy", "--follow-imports=skip", *CORE]),
                 ("ebm-typing", [sys.executable, "scripts/check_ebm_typing.py"]),
+                ("deployment", [sys.executable, "scripts/check_deployment.py"]),
                 ("unused-imports", [sys.executable, "-m", "pyflakes", *lint_paths]),
                 ("compile", [sys.executable, "-m", "compileall", "-q",
                              "bootstrap", "src", "migrations", "scripts", "tests/ml"]),
