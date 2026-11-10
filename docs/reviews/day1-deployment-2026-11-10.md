@@ -113,4 +113,4 @@ they are not implied by this deployment change.
 Use the [Day-1 runbook](../deployment/day1-deployment-runbook.md) for the actual
 deployment sequence. The earlier [Actions repair record](actions-failure-fixes-2026-11-09.md)
 contains the prior `5ec1c6f` Backend qualification. Current-head CI results are
-recorded on the same Draft PR; historical green runs do not qualify later code.
+recorded on PR #1; historical green runs do not qualify later code.

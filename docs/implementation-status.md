@@ -1,37 +1,75 @@
 # Implementation status
 
-2026-11-08 Data Ingress update: API startup, identical publication race, lease /
-reconciliation, cleanup progress and settings bounds have regression fixes.
-The opt-in Databricks SQL Warehouse adapter, OAuth M2M client, strict JSONL codec,
-worker image, independent CI and metrics are implemented. Real Warehouse
-qualification remains unavailable and the PR must remain Draft. See the
-[current delivery report](reviews/ingestion-stabilization-databricks-2026-11-08.md)
-for executed PostgreSQL/container evidence and unchanged EBM baseline failures.
-Historical acceptance counts below retain their original dates.
+Updated: 2026-11-10. This page describes the implemented CPU ML and batch
+ingestion baseline. Repository integration, target-environment qualification and
+the remaining EBM work packages are separate decisions.
 
-Updated: 2026-10-31. Source implementation and target-environment qualification are distinct.
+## Current implementation and evidence
 
-The EBM neural workload now has tenant-scoped feature import, controlled Recipe resolution, supervised CPU training, safe epoch resume, verified bundles, exact-bundle evaluation, explicit policy gating and fixed-version API serving. See [EBM implementation and usage](ebm-implementation-status.md). The historical Backend acceptance counts below are retained as dated evidence, not the current total. Databricks, calibration/RUL and batch reports remain unimplemented; target and real-service qualification is still pending.
+The current PR implements the CPU MLP/EBM training and fixed-version Serving
+paths, the provider-neutral Data Ingress framework, File Batch acquisition and
+the Databricks SQL Warehouse batch adapter. No unfinished concrete runtime
+stub or missing integration was found in the source-completion review.
+See the [merge assessment](reviews/merge-readiness-2026-11-10.md) for scope and
+the explicitly deferred work.
 
-The 2026-10-31 ML/boundary regression passed 468 tests with 3 real-service skips; core and EBM typing, imports, boundaries and compilation passed. This run uses the documented legacy host and selector workaround. See [recorded result](evidence/ebm-2026-10-31/result.json).
+At audited source `7a175ad0a2da02fcc70962d297b032a63a58db0d`, both the
+[push workflow](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/42742534571)
+and [PR workflow](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/42742540971)
+passed every required job. Each independent Backend report recorded
+**FUNCTIONAL_BACKEND_ACCEPTED: 963 passed, zero failures/errors/skips** on
+Python 3.12.16 / Torch 2.6 CPU. Each SQLite/PostgreSQL contract matrix recorded
+971 passed and two separate opt-in skips. The protected Databricks live job was
+not invoked; it is not included in Backend acceptance.
 
-**Latest acceptance verdict: local checks passed; full Backend / production acceptance incomplete.** See the [Backend acceptance report](backend-acceptance-2026-10-29.md) for reproduced defects, fixes, executed evidence and remaining integration gates. The repeat run includes 217 passing tests and 3 skipped real-service cases.
+The actual unified image and private non-root entrypoint were built and
+verified. Real-service Backend CI covers PostgreSQL, MongoDB, RabbitMQ, Redis,
+MLflow/S3, training, evaluation, manual model approval, deployment, prediction,
+rollback and identity revocation. These are isolated test services, not the
+user's production endpoints.
 
-| Area | Implemented | Evidence / outstanding qualification |
+| Area | Implemented | Remaining qualification / separate work |
 | --- | --- | --- |
-| Architecture | pinned template, opt-in factories, immutable DTOs and narrow ports | boundary checker and core strict typing |
-| Jobs | atomic SQL idempotency/admission/attempt/outbox, owner fencing, cancellation and result guards | SQLite concurrency/races; PostgreSQL opt-in/CI |
-| Transport | confirmed mandatory RabbitMQ publisher, manual Taskiq Receiver, Redis ACK evidence | real-service test supplied; not executed locally |
-| Training/data | actual CPU MLP child process, immutable tenant snapshot import, fixed splits/train-only transforms, epoch metrics, checkpoint/resume | real subprocess/custom-label training/evaluation/cancel smoke tests |
-| Registry/governance | complete immutable bundles, local and MLflow adapters, durable evaluation ERROR/recovery, exact evaluation/report/approval binding | local path exercised; remote MLflow/S3 still requires live evidence |
-| Serving | fixed handle, verified golden warm-up, strict input/output, bounded physical inference and provenance | real ASGI prediction and resource tests |
-| Rollout | local/VM serving processes, SQL-authoritative ingress, routing revision/fencing, new-generation rollback/drain | contract tests; full multi-role Compose rollout pending |
-| Operations | schema-aware readiness, low-cardinality gauges, W3C propagation and bounded optional OTLP export, finite recovery/publication budgets, five migrations, runbook, CI and container definitions | context/privacy tests; collector/image build, restore, capacity/SLO/security qualification pending |
+| Architecture | pinned template, role factories, immutable DTOs and narrow Protocol ports | source boundaries and strict typing pass; new architectural extensions need their own review |
+| Jobs | atomic SQL idempotency/admission/attempt/outbox, ownership fencing, cancellation and recovery | SQLite/PostgreSQL contracts pass; production load/capacity remains unqualified |
+| Transport | confirmed RabbitMQ publication, manual Taskiq Receiver and Redis ACK evidence | actual Receiver integration passes; site broker permissions/operations still require qualification |
+| Training/data | CPU MLP and EBM child processes, immutable tenant datasets, fixed splits, train-only transforms, metrics and safe epoch resume | representative PoC numerical parity/quality and production resource limits need approved data |
+| Registry/governance | immutable bundles, MLflow/local adapters, exact-bundle evaluation, durable ERROR/recovery, manual Approval binding | test MLflow/S3 roundtrips pass; the supplied external server needs its own TLS/permission/artifact qualification |
+| Serving/rollout | verified fixed-version runtimes, golden warm-up, bounded physical execution, provenance, fenced routes, generation rollback/drain | actual multi-role lifecycle passes; site ingress, SLOs and load/restore evidence remain open |
+| Raw ingress | Source Registry, File/Databricks adapters, OAuth M2M, fixed Delta SQL, bounded JSONL, private staging, durable publication/reconciliation and cleanup | live Databricks plus PostgreSQL gate DBX-09 has executable tests but no approved external fixture/result |
+| Deployment/operations | explicit migrations, six long-lived roles, one-shot operator, standalone external-service profile, private role secrets, CA/reader propagation, image preflight, metrics/tracing and runbooks | trusted Registry release digest/SBOM, approved environment, capacity, security, backup/restore and Go-Live sign-off |
 
-Executed local evidence is recorded in [CPU smoke evidence](evidence/ml-cpu-2026-10-29/README.md), including JUnit results and the exact host workaround. The CLI demo reached durable `SUCCEEDED` with a registered binding and held-out evaluation. Source compilation, management imports without Torch, dependency boundaries, core typing and the official Compose JSON Schema were also checked. Compose schema validity does not prove a container can build or start.
+Use the [Day-1 runbook](deployment/day1-deployment-runbook.md) for deployment and
+the [current delivery evidence](reviews/day1-deployment-2026-11-10.md) for the
+implemented profile and local TLS/RBAC lab. That lab uses real MLflow,
+PostgreSQL and S3 with a test-only authorization gateway; it does not qualify
+the user's external services. All production acceptance flags remain false.
 
-The local environment has Python 3.10 instead of the supported 3.11/3.12 target, cannot resolve package indexes, and cannot access Docker. Cached Torch 2.0.1 and dependencies were recovered under `/tmp` without changing the global environment to obtain real CPU smoke evidence. This does not qualify the target Torch 2.6.0 CPU/Python 3.12 image.
+## Explicitly unfinished follow-up scope
 
-This host delays asyncio cross-thread wakeups while its selector sleeps. ASGI tests used an external test-only polling-selector plugin; application event loops were not patched. Normal commands and target CI use the ordinary event loop.
+Raw Snapshots and ML DatasetVersions remain separate. The automatic
+Raw-to-Feature/Dataset Builder is not implemented. Databricks Remote Executor,
+CalibrationSnapshot, calibrated Energy/RUL, Batch Analysis/Report Store and
+as-of/rolling-origin qualification are also separate, unfinished work packages.
+GPU, DDP, HPO and multi-host/Kubernetes deployment are outside the CPU MVP.
 
-Inherited template locks and evidence preserve upstream provenance; the entire inherited template suite was not rerun on this unsupported host. New complete hash locks, built image digests/SBOM, executed real-service CI and a qualified production profile have not been produced offline. Production sign-off, numeric SLOs, retention and RPO/RTO are not inferred from fixture training.
+The implemented EBM path serves neural outputs from precomputed Spectrograms.
+It does not implement the entire Notebook's calibrated decision pipeline.
+See [EBM implementation/usage](ebm-implementation-status.md) and the
+[full integration plan](ebm-integration-plan.md) for those boundaries.
+
+## Historical evidence
+
+The [2026-10-29 Backend report](backend-acceptance-2026-10-29.md) records the
+earlier 217-pass/three-skip result. The
+[2026-10-31 EBM evidence](evidence/ebm-2026-10-31/result.json) records 468 passes
+and three skips on the legacy Python 3.10 / Torch 2.0.1 host with its selector
+workaround. Those dated host limitations and counts are historical; current
+CI uses the supported Python 3.12 / Torch 2.6 CPU image and ordinary event loop.
+
+The [2026-11-08 ingestion delivery](reviews/ingestion-stabilization-databricks-2026-11-08.md)
+and [2026-11-09 Actions repairs](reviews/actions-failure-fixes-2026-11-09.md)
+retain earlier findings and execution records. Their then-current Draft and
+environment status should not be read as the current source-completion verdict.
+Production sign-off, representative model quality, numeric SLOs, retention and
+RPO/RTO are still not inferred from engineering fixtures or green CI.
