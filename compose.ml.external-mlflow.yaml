@@ -1,0 +1,202 @@
+# Standalone production candidate. Do not merge this file with the dev stack.
+# All infrastructure endpoints/credentials are operator-managed private JSON.
+# No bundled MLflow/MinIO/database/broker service can be started by this model.
+name: ml-system-external
+
+x-runtime-environment: &runtime-environment
+  ML_RUNTIME_CONFIG_FILE: /run/secrets/runtime.json
+  ML_MODEL_ENVIRONMENT: prod
+  ML_TRACKER_BACKEND: mlflow
+  ML_TRACKING_URI: ${ML_EXTERNAL_MLFLOW_URI:?set approved HTTPS MLflow endpoint}
+  MLFLOW_TRACKING_URI: ${ML_EXTERNAL_MLFLOW_URI:?set approved HTTPS MLflow endpoint}
+  MLFLOW_TRACKING_SERVER_CERT_PATH: /run/config/mlflow-ca.pem
+  MLFLOW_TRACKING_INSECURE_TLS: "false"
+  MLFLOW_HTTP_REQUEST_TIMEOUT: "5"
+  MLFLOW_HTTP_REQUEST_MAX_RETRIES: "1"
+  ML_IMAGE_DIGEST: ${ML_IMAGE_DIGEST:?set the digest of ML_RELEASE_IMAGE}
+  ML_CODE_REVISION: ${ML_CODE_REVISION:?set approved source revision}
+  ML_ARTIFACT_ROOT: /app/var/artifacts
+  ML_DATASET_ROOT: /app/var/datasets
+  ML_EXECUTION_ROOT: /app/var/executions
+  ML_QUEUE_NAME: ${ML_QUEUE_NAME:?set approved queue name}
+  ML_TRAINING_TIMEOUT_SECONDS: ${ML_TRAINING_TIMEOUT_SECONDS:?set approved training deadline}
+  ML_QUEUE_TIMEOUT_SECONDS: ${ML_QUEUE_TIMEOUT_SECONDS:?set approved queue deadline}
+  ML_CANCEL_GRACE_SECONDS: ${ML_CANCEL_GRACE_SECONDS:?set approved cancellation grace}
+  ML_HEARTBEAT_SECONDS: ${ML_HEARTBEAT_SECONDS:?set approved heartbeat interval}
+  ML_STALE_AFTER_SECONDS: ${ML_STALE_AFTER_SECONDS:?set approved stale threshold}
+  ML_IDEMPOTENCY_RETENTION_SECONDS: ${ML_IDEMPOTENCY_RETENTION_SECONDS:?set approved retention}
+  ML_MAX_PENDING_JOBS_PER_TENANT: ${ML_MAX_PENDING_JOBS_PER_TENANT:?set approved pending limit}
+  ML_ACK_TIMEOUT_MS: ${ML_ACK_TIMEOUT_MS:?set approved broker acknowledgement deadline}
+  ML_PREDICTION_TIMEOUT_SECONDS: ${ML_PREDICTION_TIMEOUT_SECONDS:?set approved prediction deadline}
+  ML_EBM_QUALITY_POLICY_JSON: ${ML_EBM_QUALITY_POLICY_JSON:-}
+  APP_TASK_BACKEND: disabled
+  APP_IDENTITY_ENABLED: "true"
+  APP_MONGO_ENABLED: "true"
+  APP_MONGO_DATABASE: ${APP_MONGO_DATABASE:?set approved identity database}
+
+x-runtime: &runtime
+  image: ${ML_RELEASE_IMAGE:?set approved unified image@sha256 reference}
+  user: ${ML_UID:?set approved runtime UID}:${ML_GID:?set approved runtime GID}
+  entrypoint: [python, -m, bootstrap.deployment_entrypoint]
+  environment: *runtime-environment
+  volumes:
+    - type: bind
+      source: ${ML_RUNTIME_ROOT:?set existing private runtime directory}
+      target: /app/var
+      bind: {create_host_path: false}
+  configs:
+    - source: mlflow_ca
+      target: /run/config/mlflow-ca.pem
+  init: true
+  restart: unless-stopped
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  pids_limit: ${ML_RUNTIME_PIDS_LIMIT:?set approved per-container process limit}
+
+x-ingestion-environment: &ingestion-environment
+  ML_INGESTION_ENABLED: "true"
+  ML_DATABRICKS_ENABLED: "true"
+  ML_RAW_SNAPSHOT_ROOT: /app/var/raw-snapshots
+  ML_INGESTION_FILE_ROOTS_JSON: '{}'
+  ML_DATABRICKS_CONNECTIONS_FILE: /app/config/databricks-connections.json
+  ML_DATABRICKS_SOURCES_FILE: /app/config/databricks-sources.json
+
+x-databricks-connections: &databricks-connections
+  type: bind
+  source: ${ML_DATABRICKS_CONNECTIONS_CONFIG:?set approved connection JSON file}
+  target: /app/config/databricks-connections.json
+  read_only: true
+  bind: {create_host_path: false}
+
+x-databricks-sources: &databricks-sources
+  type: bind
+  source: ${ML_DATABRICKS_SOURCES_CONFIG:?set approved source JSON file}
+  target: /app/config/databricks-sources.json
+  read_only: true
+  bind: {create_host_path: false}
+
+x-operator-definitions: &operator-definitions
+  type: bind
+  source: ${ML_OPERATOR_DEFINITIONS_DIR:?set approved SourceDefinition directory}
+  target: /run/ml/operator-definitions
+  read_only: true
+  bind: {create_host_path: false}
+
+services:
+  migrate:
+    <<: *runtime
+    restart: "no"
+    environment: {<<: *runtime-environment, ML_RUNTIME_ROLE: migrate}
+    secrets: [{source: runtime_migrate, target: runtime.json}]
+    command: [python, -m, bootstrap.ml_cli, migrate]
+    cpus: ${ML_MIGRATE_CPUS:?set approved migration CPU limit}
+    mem_limit: ${ML_MIGRATE_MEMORY:?set approved migration memory limit}
+  management:
+    <<: *runtime
+    environment: {<<: [*runtime-environment, *ingestion-environment], ML_RUNTIME_ROLE: management}
+    secrets: [{source: runtime_management, target: runtime.json}]
+    volumes:
+      - type: bind
+        source: ${ML_RUNTIME_ROOT:?}
+        target: /app/var
+        bind: {create_host_path: false}
+      - *databricks-connections
+      - *databricks-sources
+    command: [uvicorn, "bootstrap.ml_api:create_app", --factory, --host, 0.0.0.0, --port, "8000", --limit-concurrency, "${ML_API_CONCURRENCY:?set approved API concurrency}"]
+    ports: ["127.0.0.1:${ML_MANAGEMENT_PORT:?set local management port}:8000"]
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    cpus: ${ML_MANAGEMENT_CPUS:?set approved API CPU limit}
+    mem_limit: ${ML_MANAGEMENT_MEMORY:?set approved API memory limit}
+  relay:
+    <<: *runtime
+    environment: {<<: *runtime-environment, ML_RUNTIME_ROLE: relay}
+    secrets: [{source: runtime_relay, target: runtime.json}]
+    command: [python, -m, bootstrap.ml_cli, relay]
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    cpus: ${ML_RELAY_CPUS:?set approved relay CPU limit}
+    mem_limit: ${ML_RELAY_MEMORY:?set approved relay memory limit}
+  supervisor:
+    <<: *runtime
+    environment: {<<: *runtime-environment, ML_RUNTIME_ROLE: supervisor}
+    secrets: [{source: runtime_supervisor, target: runtime.json}]
+    command: [taskiq, worker, "bootstrap.ml_worker:broker", --workers, "1", --max-async-tasks, "1", --ack-type, manual, --wait-tasks-timeout, "330"]
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    stop_grace_period: 40s
+    cpus: ${ML_SUPERVISOR_CPUS:?set approved training CPU limit}
+    mem_limit: ${ML_SUPERVISOR_MEMORY:?set approved training memory limit}
+  control:
+    <<: *runtime
+    environment: {<<: *runtime-environment, ML_RUNTIME_ROLE: control}
+    secrets: [{source: runtime_control, target: runtime.json}]
+    command: [python, -m, bootstrap.ml_cli, control]
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    ports: ["127.0.0.1:${ML_PREDICTION_PORT:?set local prediction port}:8001"]
+    stop_grace_period: 45s
+    cpus: ${ML_CONTROL_CPUS:?set approved controller CPU limit}
+    mem_limit: ${ML_CONTROL_MEMORY:?set approved controller memory limit}
+  gateway:
+    <<: *runtime
+    environment: {<<: *runtime-environment, ML_RUNTIME_ROLE: gateway}
+    secrets: [{source: runtime_gateway, target: runtime.json}]
+    command: [uvicorn, "bootstrap.ml_gateway:create_app", --factory, --host, 0.0.0.0, --port, "8001", --limit-concurrency, "${ML_GATEWAY_CONCURRENCY:?set approved prediction ingress concurrency}"]
+    network_mode: service:control
+    depends_on: {control: {condition: service_started}}
+    cpus: ${ML_GATEWAY_CPUS:?set approved gateway CPU limit}
+    mem_limit: ${ML_GATEWAY_MEMORY:?set approved gateway memory limit}
+  ingestion-worker:
+    <<: *runtime
+    environment: {<<: [*runtime-environment, *ingestion-environment], ML_RUNTIME_ROLE: ingestion-worker}
+    secrets:
+      - {source: runtime_ingestion_worker, target: runtime.json}
+      - {source: databricks_client_secret, target: databricks_client_secret}
+    volumes:
+      - type: bind
+        source: ${ML_RUNTIME_ROOT:?}
+        target: /app/var
+        bind: {create_host_path: false}
+      - *databricks-connections
+      - *databricks-sources
+    command: [python, -m, bootstrap.ingestion_cli, work]
+    depends_on: {migrate: {condition: service_completed_successfully}}
+    healthcheck:
+      test: [CMD, python, -m, bootstrap.deployment_entrypoint, python, -m, bootstrap.ingestion_cli, health]
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    stop_grace_period: 45s
+    cpus: ${ML_INGESTION_CPUS:?set approved ingestion CPU limit}
+    mem_limit: ${ML_INGESTION_MEMORY:?set approved ingestion memory limit}
+  operator:
+    <<: *runtime
+    profiles: [ops]
+    restart: "no"
+    environment: {<<: [*runtime-environment, *ingestion-environment], ML_RUNTIME_ROLE: operator}
+    secrets: [{source: runtime_operator, target: runtime.json}]
+    volumes:
+      - type: bind
+        source: ${ML_RUNTIME_ROOT:?}
+        target: /app/var
+        bind: {create_host_path: false}
+      - *databricks-connections
+      - *databricks-sources
+      - *operator-definitions
+    command: [python, -m, bootstrap.deployment_cli, preflight, --help]
+    cpus: ${ML_OPERATOR_CPUS:?set approved operator CPU limit}
+    mem_limit: ${ML_OPERATOR_MEMORY:?set approved operator memory limit}
+
+configs:
+  mlflow_ca:
+    file: ${ML_MLFLOW_CA_FILE:?set approved MLflow CA bundle}
+
+secrets:
+  runtime_migrate: {file: "${ML_DEPLOYMENT_CONFIG_DIR:?set private role configuration directory}/migrate.json"}
+  runtime_management: {file: "${ML_DEPLOYMENT_CONFIG_DIR:?}/management.json"}
+  runtime_relay: {file: "${ML_DEPLOYMENT_CONFIG_DIR:?}/relay.json"}
+  runtime_supervisor: {file: "${ML_DEPLOYMENT_CONFIG_DIR:?}/supervisor.json"}
+  runtime_control: {file: "${ML_DEPLOYMENT_CONFIG_DIR:?}/control.json"}
+  runtime_gateway: {file: "${ML_DEPLOYMENT_CONFIG_DIR:?}/gateway.json"}
+  runtime_ingestion_worker: {file: "${ML_DEPLOYMENT_CONFIG_DIR:?}/ingestion-worker.json"}
+  runtime_operator: {file: "${ML_DEPLOYMENT_CONFIG_DIR:?}/operator.json"}
+  databricks_client_secret:
+    file: ${ML_DATABRICKS_CLIENT_SECRET_FILE:?set private OAuth secret file}

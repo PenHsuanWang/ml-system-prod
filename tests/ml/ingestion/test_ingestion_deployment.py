@@ -121,3 +121,209 @@ def test_worker_and_management_share_raw_storage_with_least_privilege_mounts(tmp
     else:
         assert worker["environment"]["ML_DATABRICKS_ENABLED"] == "false"
         assert not worker.get("secrets")
+
+
+@pytest.fixture
+def external_production_environment(tmp_path):
+    values = {}
+    for line in (ROOT / ".env.ml.production.example").read_text().splitlines():
+        if line and not line.startswith("#"):
+            key, _, value = line.partition("=")
+            values[key] = value
+    paths = {
+        "ML_RUNTIME_ROOT": tmp_path / "runtime",
+        "ML_DEPLOYMENT_CONFIG_DIR": tmp_path / "private-roles",
+        "ML_OPERATOR_DEFINITIONS_DIR": tmp_path / "approved-definitions",
+    }
+    for key, directory in paths.items():
+        directory.mkdir()
+        values[key] = str(directory)
+    marker = "not-a-real-secret-must-not-appear-in-compose"
+    for role in (
+        "migrate",
+        "management",
+        "relay",
+        "supervisor",
+        "control",
+        "gateway",
+        "ingestion-worker",
+        "operator",
+    ):
+        source = paths["ML_DEPLOYMENT_CONFIG_DIR"] / (role + ".json")
+        source.write_text(json.dumps({"APP_JWT_SECRET": marker}))
+        source.chmod(0o600)
+    for key, filename, body in (
+        ("ML_MLFLOW_CA_FILE", "ca.pem", "test-only-ca"),
+        ("ML_DATABRICKS_CONNECTIONS_CONFIG", "connections.json", "{}"),
+        ("ML_DATABRICKS_SOURCES_CONFIG", "sources.json", "{}"),
+        ("ML_DATABRICKS_CLIENT_SECRET_FILE", "oauth-secret", marker),
+    ):
+        path = tmp_path / filename
+        path.write_text(body)
+        values[key] = str(path)
+    values.update(
+        ML_RELEASE_IMAGE="registry.example.internal/ml-system@sha256:" + "a" * 64,
+        ML_IMAGE_DIGEST="sha256:" + "a" * 64,
+        ML_CODE_REVISION="b" * 40,
+    )
+    return {**os.environ, **values}, marker
+
+
+def external_production_model(environment, *, operator=False):
+    command = [*compose_command(), "--env-file", "/dev/null"]
+    if operator:
+        command.extend(["--profile", "ops"])
+    return subprocess.run(
+        [*command, "-f", "compose.ml.external-mlflow.yaml", "config", "--format=json"],
+        cwd=ROOT,
+        env=environment,
+        capture_output=True,
+        text=True,
+        timeout=30,
+        check=False,
+    )
+
+
+@pytest.mark.parametrize("operator", [False, True])
+def test_external_production_is_standalone_pinned_and_starts_all_runtime_roles(
+    external_production_environment, operator
+):
+    environment, marker = external_production_environment
+    parsed = external_production_model(environment, operator=operator)
+    assert parsed.returncode == 0, parsed.stderr
+    assert marker not in parsed.stdout
+    model = json.loads(parsed.stdout)
+    required = {
+        "migrate",
+        "management",
+        "relay",
+        "supervisor",
+        "control",
+        "gateway",
+        "ingestion-worker",
+    }
+    assert set(model["services"]) == required | ({"operator"} if operator else set())
+    assert (
+        not {"mlflow", "mlflow-db", "minio", "minio-init", "postgres", "mongo", "rabbitmq", "redis"}
+        & model["services"].keys()
+    )
+    for role, service in model["services"].items():
+        assert "build" not in service
+        assert service["image"] == environment["ML_RELEASE_IMAGE"]
+        assert service["entrypoint"] == ["python", "-m", "bootstrap.deployment_entrypoint"]
+        public = service["environment"]
+        assert public["ML_RUNTIME_ROLE"] == role
+        assert public["ML_RUNTIME_CONFIG_FILE"] == "/run/secrets/runtime.json"
+        assert public["ML_MODEL_ENVIRONMENT"] == "prod"
+        assert public["ML_TRACKER_BACKEND"] == "mlflow"
+        assert public["ML_IMAGE_DIGEST"] == environment["ML_IMAGE_DIGEST"]
+        assert public["ML_CODE_REVISION"] == environment["ML_CODE_REVISION"]
+        assert public["ML_TRACKING_URI"] == public["MLFLOW_TRACKING_URI"]
+        assert public["ML_TRACKING_URI"] == environment["ML_EXTERNAL_MLFLOW_URI"]
+        assert public["MLFLOW_TRACKING_SERVER_CERT_PATH"] == "/run/config/mlflow-ca.pem"
+        assert public["MLFLOW_TRACKING_INSECURE_TLS"] == "false"
+        assert (
+            not {
+                "ML_DATABASE_URL",
+                "APP_MONGO_URI",
+                "APP_JWT_SECRET",
+                "MLFLOW_TRACKING_PASSWORD",
+                "MLFLOW_TRACKING_TOKEN",
+            }
+            & public.keys()
+        )
+        assert service["user"] == "10001:10001"
+        assert float(service["cpus"]) > 0 and int(service["mem_limit"]) > 0
+        assert service["pids_limit"] > 0
+        assert service["cap_drop"] == ["ALL"]
+        assert service["security_opt"] == ["no-new-privileges:true"]
+        assert set(service.get("depends_on", {})) <= required
+    assert model["services"]["gateway"]["network_mode"] == "service:control"
+    assert not model["services"]["ingestion-worker"].get("profiles")
+    assert model["services"]["migrate"]["restart"] == "no"
+    if operator:
+        assert model["services"]["operator"]["profiles"] == ["ops"]
+
+
+def test_external_production_mounts_role_secrets_and_operator_inputs_without_oauth_leak(
+    external_production_environment,
+):
+    environment, _ = external_production_environment
+    parsed = external_production_model(environment, operator=True)
+    assert parsed.returncode == 0, parsed.stderr
+    model = json.loads(parsed.stdout)
+    for role, service in model["services"].items():
+        role_secret = next(item for item in service["secrets"] if item["target"] == "runtime.json")
+        secret_file = model["secrets"][role_secret["source"]]["file"]
+        assert Path(secret_file) == Path(environment["ML_DEPLOYMENT_CONFIG_DIR"]) / (role + ".json")
+        assert service["configs"] == [
+            {"source": "mlflow_ca", "target": "/run/config/mlflow-ca.pem"}
+        ]
+        raw = next(volume for volume in service["volumes"] if volume["target"] == "/app/var")
+        assert raw["source"] == environment["ML_RUNTIME_ROOT"]
+        assert raw["bind"].get("create_host_path", False) is False
+        assert not raw.get("read_only", False)
+        has_oauth = any(item["source"] == "databricks_client_secret" for item in service["secrets"])
+        assert has_oauth is (role == "ingestion-worker")
+    for role in ("management", "ingestion-worker", "operator"):
+        service = model["services"][role]
+        approved = [v for v in service["volumes"] if v["target"].startswith("/app/config/")]
+        assert len(approved) == 2 and all(v["read_only"] for v in approved)
+        assert service["environment"]["ML_DATABRICKS_ENABLED"] == "true"
+    operator = model["services"]["operator"]
+    definitions = next(
+        v for v in operator["volumes"] if v["target"] == "/run/ml/operator-definitions"
+    )
+    assert definitions["read_only"] is True
+    assert definitions["source"] == environment["ML_OPERATOR_DEFINITIONS_DIR"]
+    assert not any(
+        v["target"] == "/run/ml/operator-definitions"
+        for role, service in model["services"].items()
+        if role != "operator"
+        for v in service["volumes"]
+    )
+    assert model["services"]["ingestion-worker"]["healthcheck"]["test"] == [
+        "CMD",
+        "python",
+        "-m",
+        "bootstrap.deployment_entrypoint",
+        "python",
+        "-m",
+        "bootstrap.ingestion_cli",
+        "health",
+    ]
+
+
+def test_external_compose_capture_matches_offline_preflight_contract(
+    external_production_environment,
+):
+    from bootstrap.deployment_cli import preflight
+
+    environment, _ = external_production_environment
+    parsed = external_production_model(environment, operator=True)
+    assert parsed.returncode == 0, parsed.stderr
+    # This metadata is a unit fixture, not an image provenance assertion.
+    inspection = {
+        "Os": "linux",
+        "Architecture": "amd64",
+        "RepoDigests": [environment["ML_RELEASE_IMAGE"]],
+        "Config": {
+            "Labels": {"org.opencontainers.image.revision": environment["ML_CODE_REVISION"]}
+        },
+    }
+    report = preflight(json.loads(parsed.stdout), inspection)
+    assert report["status"] == "CONFIGURATION_PREFLIGHT_PASSED"
+    assert report["connectivity_qualified"] is False
+    assert report["production_accepted"] is False
+
+
+@pytest.mark.parametrize(
+    "missing", ["ML_RELEASE_IMAGE", "ML_CODE_REVISION", "ML_EXTERNAL_MLFLOW_URI"]
+)
+def test_external_production_rejects_missing_public_release_inputs(
+    external_production_environment, missing
+):
+    environment, _ = external_production_environment
+    parsed = external_production_model({**environment, missing: ""})
+    assert parsed.returncode != 0
+    assert missing in parsed.stderr
