@@ -1,5 +1,10 @@
 # Universal Data Ingress — implementation report
 
+Current continuation: the [2026-11-08 stabilization and Databricks delivery](ingestion-stabilization-databricks-2026-11-08.md)
+records the implemented fixes/provider and actual qualification gates. Sections
+below preserve the earlier baseline, audit and commit history rather than
+superseding current source evidence.
+
 ## Inspection baseline
 
 Inspected `master` at `edc140061f7cac7d0b6881f35dded4a2a92a8d6c`, origin

@@ -1,6 +1,13 @@
 # EBM 實作與使用說明
 
-更新日期：2026-10-31。本文描述 `ebm_poc_replay_v1@1.0.0` 的本機工程能力；原始整合計畫的工作包與數值／環境驗收條件仍適用。
+更新日期：2026-11-10。本文描述 `ebm_poc_replay_v1@1.0.0` 已實作的 CPU 工程能力；原始整合計畫的後續工作包與真實 PoC 數值／環境驗收條件仍適用。
+
+目前 CPU NN 與 Data Ingress 的程式完成度、正式環境限制及合併範圍，見
+[實作總表](implementation-status.md) 與 [合併檢查](reviews/merge-readiness-2026-11-10.md)。
+
+2026-11-09 已修復 Python 3.12 JSON depth 與既有 7 個 typing errors；JSON artifact
+限制最多 64 層 object／array（包含根 object）。驗證與環境限制見
+[後續修復紀錄](reviews/ci-ebm-fixes-2026-11-09.md)。下方 2026-10-31 的測試結果保留為歷史紀錄。
 
 ## 已實作的流程
 
@@ -39,7 +46,7 @@ python -m bootstrap.ml_cli demo-ebm
 ```sh
 python -m bootstrap.ebm_cli verify \
   --bundle /absolute/path/to/bundle \
-  --manifest-digest <result.json中的manifest_digest>
+  --manifest-digest '<result.json 中的 manifest_digest>'
 ```
 
 此獨立 CLI 的 Code Digest 由本機來源檔案計算；平台 Worker／Serving 則使用凍結的 `ML_CODE_REVISION`。兩條執行路徑的來源綁定必須一致，不能任意互換其預期 Digest。
@@ -106,19 +113,29 @@ python -m pytest tests/ml tests/test_boundaries.py -q
 python scripts/verify_ml_acceptance.py
 ```
 
-本機 smoke 使用受限主機上的 Python 3.10、cached Torch 2.0.1、NumPy 1.26.4／SciPy 1.15.3；ASGI 回歸沿用已有的 test-only selector workaround。這些證據不構成 Python 3.12／Torch 2.6.0、真實 MLflow／RabbitMQ／PostgreSQL 或容器的正式資格驗證。
+目前已驗證來源 `7a175ad` 的 push／PR CI 均通過全部必要 jobs。兩份完整 Backend 報告各為
+**963 passed、0 failures／errors／skipped**，使用 Python 3.12.16／Torch 2.6 CPU 與普通
+event loop；真實測試服務涵蓋 MLflow／S3、PostgreSQL、RabbitMQ、Redis、MongoDB 及
+完整 Training／Approval／Deployment／Prediction／Rollback。實際統一 image 與非 root
+私有設定 entrypoint 亦通過驗證。證據與正式環境限制見
+[Day-1 交付紀錄](reviews/day1-deployment-2026-11-10.md)；這不代表客戶外部服務或模型真實數值已驗收。
+
+以下是歷史結果：2026-10-31 的本機 smoke 使用受限主機上的 Python 3.10、cached Torch
+2.0.1、NumPy 1.26.4／SciPy 1.15.3，以及 test-only selector workaround。它不是目前 CI 的環境。
 
 2026-10-31 本輪驗證：ML／boundary suite 共 **468 passed、3 skipped、0 failures／errors**；核心與 EBM strict typing、Pyflakes、依賴邊界、編譯均通過。三個跳過項目需要真實管理／預測服務及 RabbitMQ／Redis。另嘗試的舊模板 module／distributed suite 因本機 Python 3.10 缺少 `datetime.UTC`／`enum.StrEnum`、且未安裝 Taskiq 而無法收集，不算作通過。可追溯摘要見 [本輪證據](evidence/ebm-2026-10-31/result.json)。
 
 | 工作包 | 現況 | 尚待完成／驗證 |
 | --- | --- | --- |
 | WP-01 | Notebook Hash、Replay 語意及合成 Fixture 已具備 | 真實脫敏 Fixture 與 Notebook Reference Outputs |
-| WP-02 | 本機不可變 Snapshot、tenant Catalog、受控 Recipe 已實作 | 來源完整 provenance 及真實資料規模資格 |
-| WP-03 | 特徵、CNN、Loss、Sampler、CPU Trainer、Epoch Resume 已實作 | 真實 PoC 數值對照、目標環境與資源量測 |
-| WP-04 | Neural Bundle、獨立 Runtime、Golden I/O、Evaluator／Policy 接點已實作 | 真實品質門檻與目標 Runtime 資格 |
-| WP-05 | 本機 Job／Registry／Approval／Deployment／API 已接入 | 真 MLflow round trip、多角色服務與目標環境驗收 |
-| WP-06 | 未實作 | Databricks ingestion／Export 或 Remote Executor |
+| WP-02 | 不可變 FeatureSnapshot、tenant Catalog、受控 Recipe 已實作 | Raw→Feature Dataset Builder、來源完整 provenance 及真實資料規模資格 |
+| WP-03 | 特徵、CNN、Loss、Sampler、CPU Trainer、Epoch Resume 已實作；目標 CPU image 已驗證 | 真實 PoC 數值對照及正式資源量測 |
+| WP-04 | Neural Bundle、獨立 Runtime、Golden I/O、Evaluator／Policy 接點與 CPU image 已驗證 | 真實品質門檻、核准 Registry release 與站台 Runtime 資格 |
+| WP-05 | Job／Registry／Approval／Deployment／API 已接入；真 MLflow／S3 與多角色 Backend CI 已通過 | 指定外部 MLflow 權限、正式站台與真實模型驗收 |
+| WP-06 | Databricks SQL Batch Raw acquisition、Source Registry、Worker 與 CI 已實作 | DBX-09 真實 Warehouse fixture 驗收；Dataset Builder、Export／Remote Executor 尚未實作 |
 | WP-07 | 未實作 | CalibrationSnapshot、Batch Analysis、RUL、Report Store |
 | WP-08 | 未實作 | As-of 時序限制與獨立 Rolling-origin 驗證 |
 
-本次新增測試與來源檔案需與修改一起納入版本控制；本輪不自動建立 Commit。原始 Notebook 的內容保持不變。
+WP-06 的 Raw acquisition 不會自動產生 WP-02 的 FeatureSnapshot／DatasetVersion。
+因此本次工程基線可執行預先計算特徵的 NN Training／Serving，但不能宣稱原始 EBM
+整合計畫全部完成。原始 Notebook 的內容保持不變。

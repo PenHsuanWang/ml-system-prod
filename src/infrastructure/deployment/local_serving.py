@@ -60,6 +60,11 @@ class LocalServingExecutor:
             temporary.unlink(missing_ok=True)
 
     def _launch(self, deployment: Deployment, directory: Path, spec: Path) -> None:
+        # Compose may run a host UID absent from the image's passwd database.
+        # Give this generation its own home without inheriting user credentials.
+        runtime_home = directory/"home"
+        runtime_home.mkdir(mode=0o700)
+        runtime_home.chmod(0o700)
         with socket.socket() as reservation:
             reservation.bind(("127.0.0.1", 0))
             port = reservation.getsockname()[1]
@@ -68,16 +73,18 @@ class LocalServingExecutor:
                                                                  "created_at": time.time(), "parent": process_identity(os.getpid())}))
         self._persist(spec, deployment.spec_json)
         permitted = {"PATH", "PYTHONPATH", "LANG", "LD_LIBRARY_PATH", "ML_ARTIFACT_ROOT",
-                     "ML_TRACKING_URI", "ML_TRACKER_BACKEND", "ML_MODEL_ENVIRONMENT", "ML_IMAGE_DIGEST",
+                     "ML_TRACKING_URI", "MLFLOW_TRACKING_URI", "MLFLOW_TRACKING_SERVER_CERT_PATH",
+                     "ML_TRACKER_BACKEND", "ML_MODEL_ENVIRONMENT", "ML_IMAGE_DIGEST",
                      "ML_CODE_REVISION", "APP_MONGO_URI", "APP_MONGO_DATABASE", "APP_JWT_SECRET",
                      "APP_JWT_ISSUER", "APP_JWT_AUDIENCE", "ML_PREDICTION_TIMEOUT_SECONDS",
                      "OTEL_EXPORTER_OTLP_ENDPOINT", "OTEL_EXPORTER_OTLP_HEADERS"}
         environment = {key: value for key, value in os.environ.items() if key in permitted}
         for source, target in (("ML_SERVING_MLFLOW_USERNAME", "MLFLOW_TRACKING_USERNAME"),
-                               ("ML_SERVING_MLFLOW_PASSWORD", "MLFLOW_TRACKING_PASSWORD")):
+                               ("ML_SERVING_MLFLOW_PASSWORD", "MLFLOW_TRACKING_PASSWORD"),
+                               ("ML_SERVING_MLFLOW_TOKEN", "MLFLOW_TRACKING_TOKEN")):
             if source in os.environ:
                 environment[target] = os.environ[source]
-        environment.update(ML_DEPLOYMENT_SPEC_PATH=str(spec),
+        environment.update(HOME=str(runtime_home), ML_DEPLOYMENT_SPEC_PATH=str(spec),
                            ML_DEPLOYMENT_SPEC_DIGEST=deployment.spec_digest,
                            ML_DEPLOYMENT_ROLE="serving",
                            ML_SERVING_EXECUTION_DIRECTORY=str(directory),

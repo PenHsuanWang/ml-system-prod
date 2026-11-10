@@ -31,6 +31,7 @@ def create_app(
     settings: Settings | None = None,
     *,
     modules: Sequence[ModuleDefinition] | None = None,
+    include_default_readiness: bool = True,
 ) -> FastAPI:
     config = settings or load_settings()
     catalog = ModuleCatalog(build_modules(config) if modules is None else modules)
@@ -111,6 +112,7 @@ def create_app(
         identity_enabled=config.identity_enabled,
         definitions=catalog.definitions,
         jobs_enabled=config.task_backend != "disabled",
+        include_default_readiness=include_default_readiness,
     )
     return app
 

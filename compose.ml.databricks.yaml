@@ -1,0 +1,39 @@
+# Add after compose.ml.ingestion.yaml. JSON files are approved operator inputs;
+# the OAuth secret is mounted only into the dedicated ingestion worker.
+# A connection's client_secret_file must be /run/secrets/databricks_client_secret.
+services:
+  management:
+    environment:
+      ML_DATABRICKS_ENABLED: "true"
+      ML_DATABRICKS_CONNECTIONS_FILE: /app/config/databricks-connections.json
+      ML_DATABRICKS_SOURCES_FILE: /app/config/databricks-sources.json
+    volumes:
+      - type: bind
+        source: ${ML_DATABRICKS_CONNECTIONS_CONFIG:?set approved connection JSON file}
+        target: /app/config/databricks-connections.json
+        read_only: true
+      - type: bind
+        source: ${ML_DATABRICKS_SOURCES_CONFIG:?set approved source JSON file}
+        target: /app/config/databricks-sources.json
+        read_only: true
+  ingestion-worker:
+    environment:
+      ML_DATABRICKS_ENABLED: "true"
+      ML_DATABRICKS_CONNECTIONS_FILE: /app/config/databricks-connections.json
+      ML_DATABRICKS_SOURCES_FILE: /app/config/databricks-sources.json
+    volumes:
+      - type: bind
+        source: ${ML_DATABRICKS_CONNECTIONS_CONFIG:?set approved connection JSON file}
+        target: /app/config/databricks-connections.json
+        read_only: true
+      - type: bind
+        source: ${ML_DATABRICKS_SOURCES_CONFIG:?set approved source JSON file}
+        target: /app/config/databricks-sources.json
+        read_only: true
+    secrets:
+      - source: databricks_client_secret
+        target: databricks_client_secret
+
+secrets:
+  databricks_client_secret:
+    file: ${ML_DATABRICKS_CLIENT_SECRET_FILE:?set operator-owned OAuth secret file}

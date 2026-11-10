@@ -9,6 +9,21 @@ RUN pip install --no-cache-dir '.[observability]' && useradd --uid 10001 --creat
 USER mlapp
 CMD ["uvicorn", "bootstrap.ml_api:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000", "--limit-concurrency", "64"]
 
+FROM api AS ingestion
+USER root
+RUN pip install --no-cache-dir '.[databricks]'
+USER mlapp
+CMD ["python", "-m", "bootstrap.ingestion_cli", "work"]
+
+FROM ingestion AS ingestion-test
+USER root
+COPY tests ./tests
+COPY scripts ./scripts
+RUN pip install --no-cache-dir '.[dev]'
+ENV RUFF_CACHE_DIR=/home/mlapp/.cache/ruff MYPY_CACHE_DIR=/home/mlapp/.cache/mypy
+USER mlapp
+CMD ["python", "-m", "pytest", "tests/ml/ingestion/test_http_e2e.py", "tests/ml/ingestion/test_production_bootstrap.py", "-q"]
+
 FROM api AS training
 USER root
 RUN pip install --no-cache-dir torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu && pip install --no-cache-dir 'mlflow-skinny==3.6.0' 'numpy>=1.26,<3'
@@ -20,7 +35,7 @@ FROM training AS acceptance
 USER root
 COPY tests ./tests
 COPY scripts ./scripts
-RUN pip install --no-cache-dir '.[dev,training,observability]'
+RUN pip install --no-cache-dir '.[dev,training,ebm,observability]'
 USER mlapp
 CMD ["python", "scripts/verify_ml_acceptance.py", "--require-stack", "--output-dir", "/app/var/acceptance"]
 
@@ -29,6 +44,17 @@ USER root
 RUN pip install --no-cache-dir 'scipy>=1.13,<2'
 USER mlapp
 CMD ["python", "-m", "bootstrap.ebm_cli", "smoke", "--output", "/app/var/ebm-smoke"]
+
+FROM ebm AS production
+USER root
+RUN pip install --no-cache-dir '.[databricks]'
+ARG ML_RELEASE_CODE_REVISION
+RUN python -c 'import re,sys; assert re.fullmatch(r"[a-f0-9]{40}", sys.argv[1]), "A complete release Git revision is required"' "$ML_RELEASE_CODE_REVISION"
+LABEL org.opencontainers.image.revision="${ML_RELEASE_CODE_REVISION}" \
+      org.opencontainers.image.source="https://github.com/PenHsuanWang/ml-system-prod"
+USER mlapp
+ENTRYPOINT ["python", "-m", "bootstrap.deployment_entrypoint"]
+CMD ["uvicorn", "bootstrap.ml_api:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000", "--limit-concurrency", "64"]
 
 FROM python:3.12-slim AS serving
 WORKDIR /app

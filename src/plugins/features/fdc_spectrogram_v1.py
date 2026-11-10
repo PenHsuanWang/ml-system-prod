@@ -178,7 +178,7 @@ class FdcSpectrogramV1:
 
         if not lots:
             raise ValueError("At least one Lot is required")
-        result = np.empty((len(lots), *FEATURE_SHAPE), dtype=np.float32)
+        result: NDArray[np.float32] = np.empty((len(lots), *FEATURE_SHAPE), dtype=np.float32)
         for lot_index, lot in enumerate(lots):
             if not isinstance(lot, Mapping) or set(lot) != set(self.signal_order):
                 raise ValueError("Lot signals do not match the declared signal order")

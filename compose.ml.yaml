@@ -4,6 +4,7 @@ x-ml-environment: &ml-environment
   ML_DATABASE_URL: postgresql+psycopg://ml:${ML_DB_PASSWORD:?set ML_DB_PASSWORD}@postgres:5432/ml
   ML_TRACKER_BACKEND: mlflow
   ML_TRACKING_URI: http://mlflow:5000
+  MLFLOW_TRACKING_URI: http://mlflow:5000
   ML_RABBITMQ_URL: amqp://ml:${ML_MQ_PASSWORD:?set ML_MQ_PASSWORD}@rabbitmq:5672/
   ML_REDIS_URL: redis://redis:6379/0
   ML_ARTIFACT_ROOT: /app/var/artifacts
@@ -61,12 +62,12 @@ services:
     volumes: [identity-db:/data/db]
     healthcheck: {test: [CMD, mongosh, --quiet, --eval, "db.adminCommand('ping').ok"], interval: 5s, timeout: 5s, retries: 20}
   minio:
-    image: minio/minio:latest
+    build: {context: ., dockerfile: Dockerfile.minio, target: server}
     command: [server, /data]
     environment: {MINIO_ROOT_USER: ml-artifacts, MINIO_ROOT_PASSWORD: "${ML_S3_PASSWORD:?}"}
     volumes: [artifacts:/data]
   minio-init:
-    image: minio/mc:latest
+    build: {context: ., dockerfile: Dockerfile.minio, target: client}
     depends_on: [minio]
     environment: {MINIO_ROOT_USER: ml-artifacts, MINIO_ROOT_PASSWORD: "${ML_S3_PASSWORD:?}"}
     entrypoint: [/bin/sh, -c]

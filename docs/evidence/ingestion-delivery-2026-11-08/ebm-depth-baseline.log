@@ -1,0 +1,22 @@
+....F                                                                    [100%]
+=================================== FAILURES ===================================
+____ test_json_contract_rejects_nonfinite_duplicate_and_deep_values[body4] _____
+
+tmp_path = PosixPath('/tmp/pytest-of-pwang/pytest-89/test_json_contract_rejects_non4')
+body = '{"value":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[...]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}'
+
+    @pytest.mark.parametrize("body", [
+        '{"value":NaN}', '{"value":Infinity}', '{"value":1e999}',
+        '{"value":1,"value":2}', '{"value":' + '[' * 2000 + '0' + ']' * 2000 + '}',
+    ])
+    def test_json_contract_rejects_nonfinite_duplicate_and_deep_values(tmp_path, body):
+        path = tmp_path / "invalid.json"
+        path.write_text(body)
+>       with pytest.raises(MLError, match="JSON contract"):
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       Failed: DID NOT RAISE MLError
+
+tests/ml/ebm/test_artifact_safety.py:123: Failed
+=========================== short test summary info ============================
+FAILED tests/ml/ebm/test_artifact_safety.py::test_json_contract_rejects_nonfinite_duplicate_and_deep_values[body4]
+1 failed, 4 passed in 0.50s

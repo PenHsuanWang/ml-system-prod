@@ -56,7 +56,7 @@ def grouped_rank_batches(
         groups.setdefault((recipe, segment), []).append(index)
     batches = []
     for indices in groups.values():
-        shuffled = np.asarray(indices, dtype=np.int64)
+        shuffled: NDArray[np.int64] = np.asarray(indices, dtype=np.int64)
         rng.shuffle(shuffled)
         for start in range(0, len(shuffled), batch_size):
             batch = shuffled[start : start + batch_size]

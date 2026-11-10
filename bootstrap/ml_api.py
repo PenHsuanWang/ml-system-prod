@@ -33,7 +33,7 @@ def create_app(
     if services is not None:
         if identity is None:
             raise ValueError("An explicit identity provider is required")
-        app = FastAPI(title="ML Management")
+        app: FastAPI = FastAPI(title="ML Management")
         app.state.ml_services, app.state.ml_identity = services, identity
         mount_management(app)
         if ingestion_service is not None:
@@ -74,7 +74,7 @@ def create_app(
         definitions.append(
             ModuleDefinition("ingestion", requires=("identity",), routers=(ingestion_router,))
         )
-    app = template_factory(config, modules=definitions)
+    app = template_factory(config, modules=definitions, include_default_readiness=False)
     original_lifespan = app.router.lifespan_context
 
     class TemplateIdentity:
@@ -101,12 +101,7 @@ def create_app(
     app.router.lifespan_context = lifespan
     install_errors(app)
     app.add_middleware(MLTraceMiddleware)
-    # Replace the generic readiness probe with the ML role's dependency checks.
-    app.router.routes = [
-        route for route in app.router.routes if getattr(route, "path", None) != "/health/ready"
-    ]
 
-    @app.get("/health/ready")
     async def ready() -> dict[str, bool] | JSONResponse:
         import asyncio
 
@@ -119,12 +114,17 @@ def create_app(
             return JSONResponse(status_code=503, content={"ready": False})
         return {"ready": True}
 
-    @app.get("/metrics", response_class=PlainTextResponse)
     def metrics(actor: ActorDependency) -> str:
         from src.infrastructure.ml_metrics import SQLMetricsReader
 
         actor.require("ml:operate")
         rendered: str = SQLMetricsReader(components.database).render()
+        if ingress is not None:
+            from src.infrastructure.ingestion.persistence.metrics import SQLIngestionMetricsReader
+
+            rendered += SQLIngestionMetricsReader(components.database).render()
         return rendered
 
+    app.add_api_route("/health/ready", ready, methods=["GET"], response_model=None)
+    app.add_api_route("/metrics", metrics, methods=["GET"], response_class=PlainTextResponse)
     return app

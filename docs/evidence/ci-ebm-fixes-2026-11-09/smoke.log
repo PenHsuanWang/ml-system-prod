@@ -1,0 +1,36 @@
+{"epoch": 0, "loss": 3.3113515377044678, "cdf_anchor_loss": 0.6933206021785736, "lot_mean_corr_loss": 1.1977800130844116, "wafer_rank_loss": 0.334022119641304, "reconstruction_loss": 1.0862287878990173}
+{
+  "bundle_path": "/tmp/ci-ebm-smoke-20261109/bundle",
+  "manifest_digest": "bb527c9b0c487253d04ea441f4971ccddf0359b3a68a3c4f680814bf6f45c0ec",
+  "metrics": [
+    {
+      "step": 0,
+      "loss": 3.3113515377044678,
+      "cdf_anchor_loss": 0.6933206021785736,
+      "lot_mean_corr_loss": 1.1977800130844116,
+      "wafer_rank_loss": 0.334022119641304,
+      "reconstruction_loss": 1.0862287878990173
+    }
+  ],
+  "dataset_digest": "780d757fb0397fbba6e3dc574ba351117ded0b9e0d01d5b7a1e3d84ada6d62c7",
+  "training_spec_digest": "efca062388f7cd52e5a700859a5b6f8acbcc9bfa260ef28778b70b7acf71e7e8",
+  "trainer_spec_digest": "efca062388f7cd52e5a700859a5b6f8acbcc9bfa260ef28778b70b7acf71e7e8",
+  "recipe_id": "ebm_poc_replay_v1",
+  "quality_decision": "NOT_EVALUATED_BY_POLICY",
+  "evaluation": {
+    "evaluator_version": "ebm-neural-v1",
+    "manifest_digest": "bb527c9b0c487253d04ea441f4971ccddf0359b3a68a3c4f680814bf6f45c0ec",
+    "dataset_digest": "780d757fb0397fbba6e3dc574ba351117ded0b9e0d01d5b7a1e3d84ada6d62c7",
+    "split": "test",
+    "metrics": {
+      "cdf_anchor_smooth_l1": 1.3778667406956593,
+      "lot_mean_raw_score_cdf_pearson": 0.9994784057993726,
+      "samples": 6,
+      "lots": 3
+    },
+    "semantics": "retrospective_replay",
+    "policy_version": null,
+    "decision": "NOT_EVALUATED_BY_POLICY"
+  }
+}
+{"golden_io": "passed", "manifest_digest": "bb527c9b0c487253d04ea441f4971ccddf0359b3a68a3c4f680814bf6f45c0ec"}

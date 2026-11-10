@@ -6,7 +6,24 @@ The code extends the pinned backend template in place. Domain and application la
 
 Implementation and target-environment qualification are tracked separately in [implementation status](docs/implementation-status.md).
 
-The latest [Backend acceptance report](docs/backend-acceptance-2026-10-29.md) records 217 passing local tests and 3 skipped real-service cases. Full Backend acceptance remains incomplete until the required target-runtime and real-service checks execute successfully.
+At qualified source `5ec1c6f` (2026-11-09), the [push](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/42551064847) and [PR](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/42551069725) workflows passed Contracts, Ingestion container and Backend acceptance. The complete local Backend run recorded **864 passed, zero failures, zero skipped** on Python 3.12 / Torch 2.6 CPU with real infrastructure services. See the [qualification and repair record](docs/reviews/actions-failure-fixes-2026-11-09.md); the older [2026-10-29 report](docs/backend-acceptance-2026-10-29.md) is historical evidence.
+
+Databricks batch acquisition is implemented. Its protected live Warehouse test still needs an approved external fixture and credentials. Passing Backend CI does not qualify that connection, production capacity, backup/restore or a production Go decision.
+
+## Choose a deployment path
+
+| Goal | Entry point | What it starts / requires |
+| --- | --- | --- |
+| Local algorithm development | `bootstrap.ml_cli demo` / `demo-ebm` below | SQLite, a development tracker and synthetic data |
+| Reference development stack | `compose.ml.yaml` below | Project-owned infrastructure, MLflow and MinIO; `dev` settings |
+| Reference stack with batch ingestion | Add Ingestion / Databricks overlays below | The separate Ingestion Worker plus approved source configuration |
+| A release using existing external services | [Day-1 deployment runbook](docs/deployment/day1-deployment-runbook.md) | Pinned release image/source, production settings, existing MLflow and approved infrastructure / secrets |
+
+Start with the Day-1 runbook when MLflow and Databricks are already supplied by another team. It gives the preflight, migration, dependency qualification, complete role startup, operator source registration, smoke tests and Go/No-Go evidence in one order. The reference development command is not the production deployment command.
+
+The [2026-11-10 deployment delivery record](docs/reviews/day1-deployment-2026-11-10.md) separates the new profile's implementation and isolated qualification from site-specific production gates. The earlier qualified-source CI above does not claim this new profile or your external services have passed production acceptance.
+
+Raw acquisition publishes an immutable **Raw Snapshot**. Training consumes a separately approved **DatasetVersion**; this release has no automatic Raw-to-Feature / Dataset Builder.
 
 ## Real local training
 
@@ -42,7 +59,7 @@ python -m pip install -e '.[dev,training,ebm]'
 python -m bootstrap.ml_cli demo-ebm
 ```
 
-The synthetic development demo registers an EBM dataset and trains in a supervised child. Without an explicitly configured quality policy, training can succeed but evaluation rejects approval. See [EBM usage and implementation status](docs/ebm-implementation-status.md) for dataset import, API contracts, policy configuration and the independent bundle smoke. Databricks ingestion, calibrated Energy/RUL and batch reports remain separate work packages.
+The synthetic development demo registers an EBM dataset and trains in a supervised child. Without an explicitly configured quality policy, training can succeed but evaluation rejects approval. See [EBM usage and implementation status](docs/ebm-implementation-status.md) for dataset import, API contracts, policy configuration and the independent bundle smoke. [Databricks batch ingestion](docs/databricks-ingestion-runbook.md) is a separate implemented Raw Snapshot capability; the Dataset Builder, calibrated Energy/RUL and batch reports remain separate work packages.
 
 ## Reference development stack
 
@@ -51,9 +68,26 @@ python scripts/create_ml_env.py
 docker compose --env-file .env.ml -f compose.ml.yaml up --build -d
 ```
 
+`create_ml_env.py` generates private credentials for this local reference stack and refuses to overwrite an existing file. It is not production secrets provisioning. This Compose file explicitly uses the built-in `http://mlflow:5000` endpoint and `dev` mode; adding an external URI to `.env.ml` alone does not replace those service settings or dependencies.
+
 Management is at `http://127.0.0.1:8000`; prediction ingress is at `http://127.0.0.1:8001`. Roles include management, relay, training supervisor and controller, backed by PostgreSQL, RabbitMQ quorum queues, Redis, Mongo Identity, MLflow and MinIO. MLflow has its own metadata database. An explicit one-shot service applies migrations.
 
-The local/VM controller starts a separate serving process for each generation; the reference ingress shares its network namespace in Compose. The standalone `serving` Docker target also accepts a controller-delivered DeploymentSpec and externally supplied expected digest. These images/Compose services still require actual build and qualification evidence.
+The local/VM controller starts a separate serving process for each generation; the reference ingress shares its network namespace in Compose. The standalone `serving` Docker target also accepts a controller-delivered DeploymentSpec and externally supplied expected digest. Reference images and the complete Backend path have the qualification above; a production release still needs its own approved image/code identity and deployment evidence.
+
+To add the implemented Databricks worker to the **complete reference stack**, first copy and fill the approved paths in `.env.ml.ingestion.example`, then use all three files:
+
+```sh
+cp .env.ml.ingestion.example .env.ml.ingestion
+# Set the approved host paths before continuing.
+docker compose --env-file .env.ml --env-file .env.ml.ingestion --profile ingestion \
+  -f compose.ml.yaml -f compose.ml.ingestion.yaml -f compose.ml.databricks.yaml \
+  config --quiet
+docker compose --env-file .env.ml --env-file .env.ml.ingestion --profile ingestion \
+  -f compose.ml.yaml -f compose.ml.ingestion.yaml -f compose.ml.databricks.yaml \
+  up --build -d
+```
+
+This starts Management, Relay, Supervisor, Controller, Gateway and Ingestion Worker with reference dependencies. `migrate` is a one-shot service and should exit successfully. `ingestion_cli health` checks local configuration/storage/schema, not Warehouse OAuth or query access. Complete the [source registration and qualification](docs/databricks-ingestion-runbook.md) before accepting data; use the [Day-1 runbook](docs/deployment/day1-deployment-runbook.md) for external MLflow and release deployment.
 
 Provision an operator explicitly; startup never creates accounts:
 
@@ -98,7 +132,7 @@ Prediction input is `{"endpoint_id":"quality","instances":[{"features":{"sensor_
 
 ## Tests and operations
 
-Run the reproducible local acceptance checks with `python scripts/verify_ml_acceptance.py`. The [full-stack acceptance procedure](docs/backend-acceptance-2026-10-29.md#可重跑的驗收入口) uses a disposable Compose project, real services and `--require-stack`; missing endpoints, skipped required cases or runtime mismatch prevent acceptance. CI includes this stack job, but no remote run is claimed.
+Run the reproducible local acceptance checks with `python scripts/verify_ml_acceptance.py`. The [full-stack acceptance procedure](docs/backend-acceptance-2026-10-29.md#可重跑的驗收入口) uses a disposable Compose project, real services and `--require-stack`; missing endpoints, skipped required cases or runtime mismatch prevent acceptance. The source-qualified CI runs linked above executed this job. External Databricks and host-only Compose qualification have independent scopes; they are not silently counted as Backend acceptance.
 
 ```sh
 python scripts/check_boundaries.py
@@ -112,13 +146,13 @@ Tests use isolated SQLite files by default. Set `ML_TEST_DATABASE_URL` to a dedi
 
 W3C trace context and request IDs propagate through HTTP, durable Outbox, publisher and worker; prediction ingress forwards the same context to the fixed serving process. Bodies, credentials and baggage are excluded. Install `.[observability]` and set `OTEL_EXPORTER_OTLP_ENDPOINT` to enable bounded OTLP HTTP export; the role images include this extra. Exporter availability is not business truth. The reference serving pool has two runtime slots and retains reservations until physical retirement is confirmed.
 
-See the [runbook](docs/ml-runbook.md) for recovery and backup/restore. Inherited template locks describe the upstream baseline; target ML dependency locks, image digests/SBOM, real-service CI and numeric SLOs still require environment evidence.
+Use the [Day-1 runbook](docs/deployment/day1-deployment-runbook.md) for installation and Go/No-Go, then the [runtime runbook](docs/ml-runbook.md) for recovery and backup/restore. Inherited template locks describe the upstream baseline; production dependency locks, image digests/SBOM, capacity/SLOs and restore objectives still require approved environment evidence.
 
 ## Design and provenance
 
 - [HLD](docs/pytorch-ml-system-hld.md), [LLD v1.3](docs/pytorch-ml-system-lld.md), [ADR-014](docs/adr/014-implementation-baseline.md).
 - [Feature spec](specs/001-durable-training-jobs/spec.md), [implementation plan](specs/001-durable-training-jobs/plan.md).
-- [EBM Notebook fit–gap review](docs/EBM_PoC_ML_System_Fit_Gap_2026-10-29.md), [EBM integration plan](docs/ebm-integration-plan.md), [current EBM implementation](docs/ebm-implementation-status.md): local neural training and platform serving are implemented; calibration/RUL, Databricks and target-environment qualification remain pending.
+- [EBM Notebook fit–gap review](docs/EBM_PoC_ML_System_Fit_Gap_2026-10-29.md), [EBM integration plan](docs/ebm-integration-plan.md), [current EBM implementation](docs/ebm-implementation-status.md): neural training/serving and separate Databricks Raw Snapshot acquisition are implemented; calibration/RUL, the Dataset Builder, live Warehouse and production qualification remain pending.
 - [Initial review](docs/architecture-review-2026-10-29.md), [v1.2 follow-up](docs/architecture-review-2026-10-29-v1.2.md).
 - [Upstream commit](docs/template-baseline.txt). Root v1.0 architecture files are explicitly superseded.
 - The original documentation manifest is retained in `docs/archive/FILE-MANIFEST-v1.1.json`; the root manifest describes the current source bundle.

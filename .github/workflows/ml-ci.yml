@@ -1,5 +1,17 @@
 name: ML contracts and CPU lifecycle
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      qualify_databricks:
+        description: Run the approved live Databricks/PostgreSQL acceptance gate
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
 
 jobs:
   contracts:
@@ -25,10 +37,14 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12', cache: pip}
       - run: python -m pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cpu
-      - run: python -m pip install -e '.[dev,training,ebm,observability]' pyflakes
+      - run: python -m pip install -e '.[dev,training,ebm,observability,databricks]' pyflakes
       - run: python scripts/check_boundaries.py
       - run: python -m pyflakes bootstrap src tests/ml
       - run: python -m mypy --follow-imports=skip src/domain/ml.py src/domain/training src/domain/deployments src/domain/model_registry src/domain/prediction src/domain/datasets src/application/training src/application/deployments src/application/model_registry src/application/prediction src/application/datasets src/application/ml_services.py
+      - name: Ingestion source typing and formatting
+        run: python scripts/check_ingestion.py
+      - name: Deployment configuration and qualification boundaries
+        run: python scripts/check_deployment.py
       - run: python scripts/check_ebm_typing.py
       - run: python -m pytest tests/ml tests/test_boundaries.py -q --junitxml=ml-results.xml
         env:
@@ -43,6 +59,137 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with: {name: "ml-results-${{ matrix.database }}", path: ml-results.xml}
+
+  ingestion-container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17
+        env: {POSTGRES_DB: ingestion_test, POSTGRES_USER: ingestion, POSTGRES_PASSWORD: ci-only}
+        ports: [5432:5432]
+        options: --health-cmd "pg_isready -U ingestion -d ingestion_test" --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the supported standalone ingestion image
+        run: docker build --target ingestion-test --tag ml-ingestion-ci:test --file Dockerfile.ml .
+      - name: Require the supported Python and official OAuth connector
+        run: |
+          docker run --rm ml-ingestion-ci:test python -c 'import sys; from importlib.metadata import version; from databricks import sql; from databricks.sdk.core import Config, oauth_service_principal; assert sys.version_info[:2] == (3, 12); print({"python": sys.version, "sql_connector": version("databricks-sql-connector"), "sdk": version("databricks-sdk")})'
+      - name: Require the scoped ingestion quality gate
+        run: docker run --rm ml-ingestion-ci:test python scripts/check_ingestion.py
+      - name: Require migration, health and a real PostgreSQL worker process
+        env:
+          ML_DATABASE_URL: postgresql+psycopg://ingestion:ci-only@127.0.0.1:5432/ingestion_test
+        run: |
+          mkdir -p "$RUNNER_TEMP/ingestion-evidence"
+          chmod 0777 "$RUNNER_TEMP/ingestion-evidence"
+          docker run --rm --network host -e ML_DATABASE_URL ml-ingestion-ci:test python -m bootstrap.ml_cli migrate
+          docker run --rm --network host -e ML_DATABASE_URL ml-ingestion-ci:test python -m bootstrap.ingestion_cli health
+          docker run --rm --network host -e ML_TEST_DATABASE_URL="$ML_DATABASE_URL" -v "$RUNNER_TEMP/ingestion-evidence:/app/var" ml-ingestion-ci:test python -m pytest tests/ml/ingestion/test_http_e2e.py tests/ml/ingestion/test_production_bootstrap.py -q --junitxml=/app/var/ingestion-container-junit.xml
+          python - <<'PY'
+          import os, xml.etree.ElementTree as ET
+          from pathlib import Path
+          report = Path(os.environ["RUNNER_TEMP"]) / "ingestion-evidence/ingestion-container-junit.xml"
+          cases = list(ET.parse(report).iter("testcase"))
+          if not cases or any(case.find(name) is not None for case in cases for name in ("skipped", "failure", "error")):
+              raise SystemExit("Container qualification requires executed passing cases and zero skips")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ingestion-container-results
+          path: ${{ runner.temp }}/ingestion-evidence/
+
+  deployment-image:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Build the unified production candidate
+        run: docker build --target production --build-arg "ML_RELEASE_CODE_REVISION=${GITHUB_SHA}" --tag ml-production-ci:test --file Dockerfile.ml .
+      - name: Verify the real image and private non-root entrypoint
+        run: python scripts/verify_deployment_image.py --image ml-production-ci:test --code-revision "$GITHUB_SHA" --output-dir "$RUNNER_TEMP/deployment-image-evidence"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: deployment-image-results, path: "${{ runner.temp }}/deployment-image-evidence/"}
+
+  databricks-live:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.qualify_databricks }}
+    environment: databricks-qualification
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      postgres:
+        image: postgres:17
+        env: {POSTGRES_DB: databricks_test, POSTGRES_USER: ingestion, POSTGRES_PASSWORD: ci-only}
+        ports: [5432:5432]
+        options: --health-cmd "pg_isready -U ingestion -d databricks_test" --health-interval 5s --health-timeout 3s --health-retries 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12', cache: pip}
+      - run: python -m pip install -e '.[dev,databricks]'
+      - name: Require approved fixture and materialize the worker-only secret
+        env:
+          DATABRICKS_CLIENT_SECRET: ${{ secrets.DATABRICKS_CLIENT_SECRET }}
+          CONNECTIONS_JSON: ${{ vars.ML_DATABRICKS_CONNECTIONS_JSON }}
+          SOURCES_JSON: ${{ vars.ML_DATABRICKS_SOURCES_JSON }}
+          TEMPLATE_REF: ${{ vars.ML_TEST_DATABRICKS_TEMPLATE_REF }}
+          EXPECTED_RECORDS: ${{ vars.ML_TEST_DATABRICKS_EXPECTED_RECORDS }}
+          EXPECTED_SHA256: ${{ vars.ML_TEST_DATABRICKS_EXPECTED_SHA256 }}
+        run: |
+          python - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          required = ("DATABRICKS_CLIENT_SECRET", "CONNECTIONS_JSON", "SOURCES_JSON", "TEMPLATE_REF", "EXPECTED_RECORDS", "EXPECTED_SHA256")
+          if any(not os.environ.get(name) for name in required):
+              raise SystemExit("Approved Databricks qualification configuration is incomplete")
+          if not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}", os.environ["TEMPLATE_REF"]):
+              raise SystemExit("Invalid approved template reference")
+          if not re.fullmatch(r"[a-f0-9]{64}", os.environ["EXPECTED_SHA256"]):
+              raise SystemExit("Invalid approved expected digest")
+          if not os.environ["EXPECTED_RECORDS"].isdigit() or not 1 <= int(os.environ["EXPECTED_RECORDS"]) <= 1000000:
+              raise SystemExit("Invalid approved expected record count")
+          root = Path(os.environ["RUNNER_TEMP"]) / "databricks-qualification"
+          root.mkdir(mode=0o700)
+          secret = root / "oauth-secret"
+          secret.write_text(os.environ["DATABRICKS_CLIENT_SECRET"])
+          secret.chmod(0o600)
+          connections = json.loads(os.environ["CONNECTIONS_JSON"])
+          if not isinstance(connections, dict) or len(connections) != 1:
+              raise SystemExit("Qualification requires exactly one approved connection")
+          connection = next(iter(connections.values()))
+          if not isinstance(connection, dict):
+              raise SystemExit("Invalid approved connection configuration")
+          connection["client_secret_file"] = str(secret)
+          connection_file, source_file = root / "connections.json", root / "sources.json"
+          connection_file.write_text(json.dumps(connections))
+          source_file.write_text(os.environ["SOURCES_JSON"])
+          with Path(os.environ["GITHUB_ENV"]).open("a") as output:
+              output.write("ML_DATABRICKS_ENABLED=true\n")
+              output.write(f"ML_DATABRICKS_CONNECTIONS_FILE={connection_file}\n")
+              output.write(f"ML_DATABRICKS_SOURCES_FILE={source_file}\n")
+              output.write(f"ML_TEST_DATABRICKS_TEMPLATE_REF={os.environ['TEMPLATE_REF']}\n")
+              output.write(f"ML_TEST_DATABRICKS_EXPECTED_RECORDS={os.environ['EXPECTED_RECORDS']}\n")
+              output.write(f"ML_TEST_DATABRICKS_EXPECTED_SHA256={os.environ['EXPECTED_SHA256']}\n")
+          PY
+      - name: Require the real Warehouse and PostgreSQL acceptance result
+        env:
+          ML_TEST_DATABASE_URL: postgresql+psycopg://ingestion:ci-only@127.0.0.1:5432/databricks_test
+        run: |
+          python -m pytest tests/ml/ingestion/test_databricks_live.py -q --junitxml=databricks-live-junit.xml
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          cases = list(ET.parse("databricks-live-junit.xml").iter("testcase"))
+          if not cases or any(case.find(name) is not None for case in cases for name in ("skipped", "failure", "error")):
+              raise SystemExit("Live qualification requires executed passing cases and zero skips")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: databricks-live-results, path: databricks-live-junit.xml}
 
   backend-stack:
     needs: contracts
@@ -59,9 +206,15 @@ jobs:
           python scripts/create_ml_env.py
           mkdir -p "$ML_ACCEPTANCE_VAR_DIR"
       - name: Start isolated real Backend roles
-        run: docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" up --build -d management relay supervisor control gateway
+        run: docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" up --build -d management relay supervisor control gateway redis
       - name: Require supported runtime and zero skipped integration cases
         run: docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" run --build --rm --no-deps acceptance
+      - name: Capture disposable stack diagnostics
+        if: failure()
+        run: |
+          mkdir -p "$ML_ACCEPTANCE_VAR_DIR/acceptance"
+          docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" ps -a > "$ML_ACCEPTANCE_VAR_DIR/acceptance/stack-status.log" 2>&1 || true
+          docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" logs --no-color --tail 200 > "$ML_ACCEPTANCE_VAR_DIR/acceptance/stack-services.log" 2>&1 || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:

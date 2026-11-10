@@ -4,6 +4,9 @@
 
 本次重新執行測試、補上 Backend HTTP 生命週期與故障注入測試，並修正可重現的缺陷。原始紀錄與機器可讀結果見 [驗收證據](evidence/backend-acceptance-2026-10-29/README.md)。
 
+2026-11-09 的 Actions／容器後續修復見 [修復紀錄](reviews/actions-failure-fixes-2026-11-09.md)。
+本頁的測試數字與環境限制保留為 2026-10-29 的歷史結果。
+
 ## 已執行結果
 
 | 項目 | 結果 | 證據範圍 |
@@ -76,7 +79,7 @@ python scripts/verify_ml_acceptance.py --output-dir var/acceptance/local
 export ML_ACCEPTANCE_VAR_DIR="$PWD/var/acceptance-stack-data"
 mkdir -p "$ML_ACCEPTANCE_VAR_DIR"
 docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml \
-  -p ml-acceptance up --build -d management relay supervisor control gateway
+  -p ml-acceptance up --build -d management relay supervisor control gateway redis
 docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml \
   -p ml-acceptance run --build --rm --no-deps acceptance
 docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml \
@@ -84,3 +87,9 @@ docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.ya
 ```
 
 `.env.ml` 必須先按 README 建立；現有檔案不會被產生器覆寫。`--require-stack` 缺少必要端點時回傳非零；指定 Runtime 不符、必要案例跳過或任一檢查失敗也不能得到完整功能驗收通過。CI workflow 尚未遠端執行；Production 還需要不可變 image／lock、安全、負載與 restore 證據及產品核准。
+
+目前的 Backend stack suite 保留真實 HTTP／Identity／MLflow／RabbitMQ 案例，明確
+分開 protected Databricks live gate 與 Docker-enabled host 的 Compose parser gate；
+報告列出這些獨立 qualification。Backend suite 通過不代表 Databricks 已驗收，
+所選 suite 的 skipped case 仍會使驗收失敗。MinIO／mc 由固定官方 source 建置，
+首次建置需要 Go module 下載與編譯。

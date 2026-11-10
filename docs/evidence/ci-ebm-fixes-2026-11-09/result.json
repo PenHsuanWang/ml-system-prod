@@ -1,0 +1,114 @@
+{
+  "date": "2026-11-09",
+  "base": "505be87ca2c0d4ad68227178d369b72fd73a9b2a",
+  "source_commit_local": "d588f82c7d5efeb136c567b732bb0628e3064ebc",
+  "source_commit_remote": "32d35aa5181d5f27e36b32445c4a2aac9f9ba986",
+  "source_tree": "cdaba07a627ffdc8bf7d635149a5d66a1f92a875",
+  "regression": {
+    "command": "python -m pytest tests/ml tests/test_boundaries.py tests/test_plugin_loader.py tests/test_modules.py -q",
+    "passed": 915,
+    "failed": 0,
+    "errors": 0,
+    "skipped": [
+      {
+        "class": "tests.ml.ingestion.test_databricks_live",
+        "name": "test_live_warehouse_postgres_and_independent_worker",
+        "reason": "Requires approved Databricks fixture, OAuth secret files and PostgreSQL"
+      },
+      {
+        "class": "tests.ml.integration.test_backend_stack",
+        "name": "test_live_backend_train_approve_predict_rollout_rollback_and_revoke",
+        "reason": "Set isolated ML_TEST_MANAGEMENT_URL and ML_TEST_PREDICTION_URL"
+      },
+      {
+        "class": "tests.ml.integration.test_receiver",
+        "name": "test_real_receiver_persists_before_ack_and_deduplicates[False]",
+        "reason": "Set ML_TEST_AMQP_URL and ML_TEST_REDIS_URL for real receiver tests"
+      },
+      {
+        "class": "tests.ml.integration.test_receiver",
+        "name": "test_real_receiver_persists_before_ack_and_deduplicates[True]",
+        "reason": "Set ML_TEST_AMQP_URL and ML_TEST_REDIS_URL for real receiver tests"
+      }
+    ],
+    "ordinary_event_loop": true
+  },
+  "targeted_artifact_dataset_after_numpy_compatibility": {
+    "passed": 111,
+    "failed": 0
+  },
+  "typing": {
+    "ebm": "PASS: 28 source files",
+    "numpy126_stubs": "PASS: 28 source files, no-incremental isolated NumPy-only overlay",
+    "numpy126_runtime": "NOT VERIFIED: available 1.26 binary is CPython 3.10; tests use CPython 3.12",
+    "ingestion": "PASS: 36 source files",
+    "core": "PASS: 34 source files"
+  },
+  "quality": {
+    "ingestion_ruff_format": "PASS: 61 files",
+    "pyflakes": "PASS",
+    "dependency_boundaries": "PASS"
+  },
+  "container": {
+    "image": "ml-system-ingestion-fix:20261109",
+    "image_id": "sha256:7f117d53c85403e832f8207c0560f360c623ba92f095946822e77a1e518996c2",
+    "passed": 372,
+    "failed": 0,
+    "skipped": 0,
+    "database": "isolated postgres:17",
+    "ordinary_event_loop": true,
+    "real_databricks": "NOT VERIFIED",
+    "checks": [
+      {
+        "command": [
+          "python",
+          "-m",
+          "bootstrap.ml_cli",
+          "migrate"
+        ],
+        "output": ""
+      },
+      {
+        "command": [
+          "python",
+          "-m",
+          "bootstrap.ingestion_cli",
+          "health"
+        ],
+        "output": "{\"ready\": true, \"databricks_enabled\": false}"
+      }
+    ],
+    "task_owned_resources_removed": true
+  },
+  "nonroot_quality": {
+    "passed": true,
+    "uid": 10001,
+    "ruff_cache": "/home/mlapp/.cache/ruff",
+    "mypy_cache": "/home/mlapp/.cache/mypy"
+  },
+  "smoke": {
+    "cpu_training": true,
+    "evaluation": "retrospective synthetic replay; no quality policy approval",
+    "independent_bundle_verify": "PASS"
+  },
+  "ci_snapshot": {
+    "run_url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/42510103965",
+    "code_sha": "32d35aa5181d5f27e36b32445c4a2aac9f9ba986",
+    "ingestion_container": "SUCCESS",
+    "contracts_sqlite": "SUCCESS",
+    "contracts_postgres": "SUCCESS",
+    "backend_stack": "FAILED before acceptance: minio/minio:latest pull access denied",
+    "backend_job_url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/42510103965/job/128821941124",
+    "databricks_live": "SKIPPED: no approved environment; manual gate not invoked"
+  },
+  "real_databricks": "NOT VERIFIED: no approved environment or fixture; PR remains Draft",
+  "source_sha256": {
+    "Dockerfile.ml": "9eb999c3cea273ae847035b5b489c596721cb5ecad5f42a3022135ffdd8c5584",
+    "bootstrap/ebm_cli.py": "67ec3569701c98bee70b4680936205252d5ad9fe064590ab806ab83f74673b73",
+    "src/infrastructure/datasets/ebm_snapshots.py": "9c2c20a4769f4686328aef0110ee4f887e72c4e914d0b20ebde3378b59899205",
+    "src/infrastructure/serving/ebm_artifacts.py": "7b3d5faff54d12de63bbf0fcc7e137144cb1a50c7fba26c88fe66785db745c0a",
+    "src/plugins/features/fdc_spectrogram_v1.py": "4043e8ba72ffd8e9846ed91afdd5b1035b278378728328a80774b40e45275a62",
+    "src/plugins/training/grouped_rank_sampler.py": "b4b35084ae4f9d3cd99192542e0f75f1c733fc2f1f805df0b71dee439518cb59",
+    "tests/ml/ebm/test_artifact_safety.py": "39c06cdbd5ab2b8c335fa36097bbea2bc672baf27323799dea839bf5c8e62232"
+  }
+}

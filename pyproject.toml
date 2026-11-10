@@ -21,6 +21,7 @@ dependencies = [
 training = ["torch>=2.6,<3", "numpy>=1.26,<3", "mlflow>=3.6,<4"]
 serving = ["torch>=2.6,<3", "numpy>=1.26,<3", "mlflow>=3.6,<4"]
 ebm = ["torch>=2.6,<3", "numpy>=1.26,<3", "scipy>=1.13,<2"]
+databricks = ["databricks-sql-connector==4.2.6", "databricks-sdk>=0.18,<1"]
 dev = ["pytest>=8,<10", "pytest-asyncio>=0.25,<2", "ruff>=0.12,<1", "mypy>=1.15,<3", "pyflakes>=3.2,<4"]
 observability = ["opentelemetry-sdk>=1.28,<2", "opentelemetry-exporter-otlp-proto-http>=1.28,<2"]
 
@@ -54,7 +55,7 @@ python_version = "3.11"
 strict = true
 
 [[tool.mypy.overrides]]
-module = ["taskiq.*", "taskiq_aio_pika.*", "aio_pika.*", "mlflow.*"]
+module = ["taskiq.*", "taskiq_aio_pika.*", "aio_pika.*", "mlflow.*", "databricks", "databricks.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]

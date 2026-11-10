@@ -1,5 +1,6 @@
 FROM python:3.12-slim
-RUN pip install --no-cache-dir 'mlflow==3.6.0' 'psycopg[binary]>=3.2,<4' boto3
+RUN pip install --no-cache-dir 'mlflow==3.6.0' 'SQLAlchemy>=2.0.44,<2.1' 'psycopg[binary]>=3.2,<4' boto3
+RUN python -c 'import sqlalchemy; from mlflow.store.tracking.sqlalchemy_store import SqlAlchemyStore as TrackingStore; from mlflow.store.model_registry.sqlalchemy_store import SqlAlchemyStore as RegistryStore; print({"sqlalchemy": sqlalchemy.__version__, "tracking_store": TrackingStore.__module__, "registry_store": RegistryStore.__module__})'
 RUN useradd --uid 10001 --create-home mlflow
 USER mlflow
 EXPOSE 5000

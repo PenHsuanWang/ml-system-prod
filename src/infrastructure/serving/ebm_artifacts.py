@@ -10,13 +10,17 @@ import os
 import re
 import stat
 import zipfile
+from collections.abc import Callable, Iterator
 from pathlib import Path
-from typing import Any
+from typing import IO, Any, cast
 
 from src.domain.ml import MLError
 
 EBM_ARTIFACT_PROFILE = "ebm-neural-bundle-v1"
 EBM_COMPATIBILITY_ID = "ebm-torch-cpu-v1"
+# Bundle contracts are shallow schemas; bound nesting independently of the
+# interpreter's JSON parser and recursion limit. The root object counts as one.
+MAX_JSON_NESTING = 64
 EBM_BUNDLE_FILES = frozenset({
     "weights.pt", "model_config.json", "feature_schema.json", "spectrogram_config.json",
     "preprocessing.json", "normalization.npz", "output_mapping.json", "golden_io.json",
@@ -65,11 +69,24 @@ def _parse_json(data: bytes) -> dict[str, Any]:
                        parse_float=finite_float)
     if not isinstance(value, dict):
         raise ValueError("Expected a JSON object")
+    # Retain json.loads' encoding and string handling, then inspect containers
+    # without recursive calls or a stack proportional to the document's width.
+    containers: list[Iterator[Any]] = [iter(value.values())]
+    while containers:
+        try:
+            child = next(containers[-1])
+        except StopIteration:
+            containers.pop()
+            continue
+        if isinstance(child, (dict, list)):
+            if len(containers) >= MAX_JSON_NESTING:
+                raise ValueError("JSON nesting exceeds the artifact contract limit")
+            containers.append(iter(child.values() if isinstance(child, dict) else child))
     return value
 
 
 def read_json(path: Path, *, maximum_bytes: int = 1024 * 1024) -> dict[str, Any]:
-    """Reject duplicate keys and non-finite JSON before interpreting a contract."""
+    """Reject duplicate keys, non-finite values and excessive JSON nesting."""
     try:
         return load_json_bytes(_read_regular_bytes(path, maximum_bytes),
                                maximum_bytes=maximum_bytes)
@@ -122,15 +139,23 @@ def load_npz_bytes(data: bytes, shapes: dict[str, tuple[int, ...]], *,
             for entry in entries:
                 key = entry.filename[:-4]
                 with archive.open(entry) as member:
-                    # NumPy's public NPY header helpers have no typed signatures.
-                    version = np.lib.format.read_magic(member)  # type: ignore[no-untyped-call]
+                    # NumPy 1.x leaves these public helpers untyped; declare the
+                    # same local read contract for both supported NumPy generations.
+                    read_magic = cast(
+                        Callable[[IO[bytes]], tuple[int, int]], np.lib.format.read_magic
+                    )
+                    version = read_magic(member)
                     if version == (1, 0):
                         header_reader = np.lib.format.read_array_header_1_0
                     elif version == (2, 0):
                         header_reader = np.lib.format.read_array_header_2_0
                     else:
                         raise ValueError("Unsupported NPY header version")
-                    shape, _, dtype = header_reader(member)  # type: ignore[no-untyped-call]
+                    read_header = cast(
+                        Callable[[IO[bytes]], tuple[tuple[int, ...], bool, np.dtype[Any]]],
+                        header_reader,
+                    )
+                    shape, _, dtype = read_header(member)
                     if dtype != np.dtype("float32") or shape != shapes[key]:
                         raise ValueError("NPY shape or dtype does not match the approved contract")
                     expected_payload = math.prod(shapes[key]) * 4

@@ -3,6 +3,7 @@
 import json
 import time
 from dataclasses import replace
+from types import SimpleNamespace
 
 import pytest
 from sqlalchemy import update
@@ -81,9 +82,18 @@ def test_operator_reconciliation_preserves_intent_and_cannot_reopen_terminal(
         ingress.service.reconcile(operator, job.job_id)
 
 
-def test_exhausted_publications_do_not_starve_later_queued_ingestions(components, actor, tmp_path):
+def test_exhausted_publications_do_not_starve_later_queued_ingestions(
+    components, actor, tmp_path, monkeypatch
+):
     ingress, _, owner, source, _ = ingress_environment(components, actor, tmp_path)
     ingress.jobs.max_pending = 200
+    # Build queue state without making this admission-policy test depend on a
+    # three-second wall-clock lease while SQL/fsync runs on a busy CI host.
+    now = time.time()
+    monkeypatch.setattr(
+        "src.infrastructure.ingestion.persistence.ingestion_jobs.time",
+        SimpleNamespace(time=lambda: now),
+    )
 
     class Control:
         def check(self):
@@ -108,7 +118,7 @@ def test_exhausted_publications_do_not_starve_later_queued_ingestions(components
                     lease_until=0,
                     reconciliation_count=ingress.jobs.reconcile_limit,
                     error_code="RECONCILIATION_BUDGET_EXHAUSTED",
-                    deadline=time.time() - 1,
+                    deadline=now - 1,
                 )
             )
     queued = ingress.service.submit(owner, "new-work", IngestionRequest("events", "v1"))
