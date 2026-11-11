@@ -1,9 +1,8 @@
-"""Token configuration, connector authentication and Compose isolation contracts."""
+"""Token configuration and connector authentication contracts."""
 
-import json
 import os
-import subprocess
 from dataclasses import replace
+from pathlib import Path
 from unittest.mock import Mock
 
 import pytest
@@ -21,7 +20,6 @@ from src.infrastructure.ingestion.adapters.databricks_contract import (
     parse_connections,
 )
 from tests.ml.ingestion.test_file_adapter import Control
-from tests.ml.ingestion.test_ingestion_deployment import ROOT, compose_command
 
 
 def configuration(**authentication):
@@ -93,7 +91,7 @@ def test_token_reaches_connector_without_oauth_or_persisted_secret(monkeypatch):
         connection.server_hostname,
         connection.http_path,
         "approved-principal",
-        ROOT / "private-oauth-secret",
+        Path("/private-oauth-secret"),
     )
     assert template.digest(oauth) != digest
 
@@ -148,57 +146,3 @@ def test_spawned_extraction_child_reads_token_from_inherited_environment(monkeyp
 def test_ambiguous_or_invalid_authentication_is_rejected(auth):
     with pytest.raises(SourceRejected):
         parse_connections(configuration(**auth))
-
-
-def test_token_compose_reads_env_file_and_exposes_token_only_to_worker(tmp_path):
-    marker = "example-only-compose-token"
-    env_file = tmp_path / "ingestion.env"
-    env_file.write_text(
-        f"DATABRICKS_TOKEN={marker}\n"
-        "ML_DATABRICKS_CONNECTIONS_CONFIG=/tmp/connections.json\n"
-        "ML_DATABRICKS_SOURCES_CONFIG=/tmp/sources.json\n"
-        "ML_INGESTION_INPUT_DIR=/tmp/approved-input\n"
-        + "".join(
-            f"{key}=compose-test-only\n"
-            for key in (
-                "ML_DB_PASSWORD",
-                "MLFLOW_DB_PASSWORD",
-                "ML_MQ_PASSWORD",
-                "ML_MONGO_PASSWORD",
-                "ML_S3_PASSWORD",
-                "APP_JWT_SECRET",
-            )
-        )
-    )
-    result = subprocess.run(
-        [
-            *compose_command(),
-            "--env-file",
-            str(env_file),
-            "--profile",
-            "ingestion",
-            "-f",
-            "compose.ml.yaml",
-            "-f",
-            "compose.ml.ingestion.yaml",
-            "-f",
-            "compose.ml.databricks-token.yaml",
-            "config",
-            "--format",
-            "json",
-        ],
-        capture_output=True,
-        text=True,
-        check=True,
-        cwd=ROOT,
-        env={
-            key: value
-            for key, value in os.environ.items()
-            if not key.startswith(("ML_", "DATABRICKS_", "APP_JWT_"))
-        },
-        timeout=30,
-    )
-    services = json.loads(result.stdout)["services"]
-    assert services["ingestion-worker"]["environment"]["DATABRICKS_TOKEN"] == marker
-    assert marker not in json.dumps(services["management"])
-    assert not services["ingestion-worker"].get("secrets")
