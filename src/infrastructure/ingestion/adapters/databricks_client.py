@@ -1,4 +1,4 @@
-"""Official SQL Connector isolated behind bounded byte streaming and OAuth M2M.
+"""Official SQL Connector isolated behind bounded byte streaming and explicit authentication.
 
 SDK imports and secret material stay inside a dedicated spawned child. The
 parent exchanges bounded bytes, applies cooperative cancellation/lease checks,
@@ -88,6 +88,8 @@ def _sql_kind(value: object) -> str | None:
 
 def _read_secret(config: ConnectionConfig) -> str:
     path = config.client_secret_file
+    if path is None:
+        raise SourceRejected("OAuth credential file is unavailable")
     try:
         with relative_file_fd(path.parent, path.name) as descriptor:
             info = os.fstat(descriptor)
@@ -110,7 +112,7 @@ def _read_secret(config: ConnectionConfig) -> str:
         raise SourceRejected("OAuth credential file is unavailable") from error
 
 
-def _connect_oauth(
+def _connect_authenticated(
     config: ConnectionConfig,
     limits: ExtractionLimits,
     *,
@@ -118,6 +120,13 @@ def _connect_oauth(
     config_factory: Callable[..., object],
     oauth_provider: Callable[[object], object],
 ) -> SQLConnection:
+    if config.access_token_env is not None:
+        token = os.environ.get(config.access_token_env, "")
+        if not 1 <= len(token) <= 4096 or any(
+            ord(character) < 33 or ord(character) > 126 for character in token
+        ):
+            raise SourceRejected("Databricks access token is unavailable or invalid")
+        return _connect_sql(config, limits, connect=connect, access_token=token)
     secret = _read_secret(config)
     oauth_config = config_factory(
         host="https://" + config.server_hostname,
@@ -129,12 +138,22 @@ def _connect_oauth(
     def credentials_provider() -> object:
         return oauth_provider(oauth_config)
 
+    return _connect_sql(config, limits, connect=connect, credentials_provider=credentials_provider)
+
+
+def _connect_sql(
+    config: ConnectionConfig,
+    limits: ExtractionLimits,
+    *,
+    connect: Callable[..., object],
+    **authentication: object,
+) -> SQLConnection:
     return cast(
         SQLConnection,
         connect(
             server_hostname=config.server_hostname,
             http_path=config.http_path,
-            credentials_provider=credentials_provider,
+            **authentication,
             use_inline_params=False,
             use_cloud_fetch=False,
             enable_telemetry=False,
@@ -154,7 +173,7 @@ def _official_connect(config: ConnectionConfig, limits: ExtractionLimits) -> SQL
     from databricks import sql
     from databricks.sdk.core import Config, oauth_service_principal
 
-    return _connect_oauth(
+    return _connect_authenticated(
         config,
         limits,
         connect=sql.connect,

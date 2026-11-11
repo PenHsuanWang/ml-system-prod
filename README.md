@@ -156,3 +156,6 @@ Use the [Day-1 runbook](docs/deployment/day1-deployment-runbook.md) for installa
 - [Initial review](docs/architecture-review-2026-10-29.md), [v1.2 follow-up](docs/architecture-review-2026-10-29-v1.2.md).
 - [Upstream commit](docs/template-baseline.txt). Root v1.0 architecture files are explicitly superseded.
 - The original documentation manifest is retained in `docs/archive/FILE-MANIFEST-v1.1.json`; the root manifest describes the current source bundle.
+
+Databricks access token 可透過 `.env` 的 `DATABRICKS_TOKEN` 設定；連線 JSON 與 Compose 用法見
+[Databricks 操作手冊](docs/databricks-ingestion-runbook.md#access-tokenenv)。

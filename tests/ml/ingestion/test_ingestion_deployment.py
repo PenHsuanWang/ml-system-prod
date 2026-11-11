@@ -327,3 +327,22 @@ def test_external_production_rejects_missing_public_release_inputs(
     parsed = external_production_model({**environment, missing: ""})
     assert parsed.returncode != 0
     assert missing in parsed.stderr
+
+
+def test_external_production_token_is_available_only_to_ingestion_worker(
+    external_production_environment,
+):
+    environment, _ = external_production_environment
+    marker = "example-only-production-token"
+    environment = {
+        **environment,
+        "DATABRICKS_TOKEN": marker,
+        "ML_DATABRICKS_CLIENT_SECRET_FILE": "/dev/null",
+    }
+    parsed = external_production_model(environment, operator=True)
+    assert parsed.returncode == 0, parsed.stderr
+    services = json.loads(parsed.stdout)["services"]
+    assert services["ingestion-worker"]["environment"]["DATABRICKS_TOKEN"] == marker
+    for role, service in services.items():
+        if role != "ingestion-worker":
+            assert marker not in json.dumps(service)

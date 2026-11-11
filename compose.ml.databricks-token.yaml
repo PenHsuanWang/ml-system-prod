@@ -1,0 +1,32 @@
+# Token alternative to compose.ml.databricks.yaml; add after compose.ml.ingestion.yaml.
+# Connections must use access_token_env: DATABRICKS_TOKEN.
+services:
+  management:
+    environment:
+      ML_DATABRICKS_ENABLED: "true"
+      ML_DATABRICKS_CONNECTIONS_FILE: /app/config/databricks-connections.json
+      ML_DATABRICKS_SOURCES_FILE: /app/config/databricks-sources.json
+    volumes:
+      - type: bind
+        source: ${ML_DATABRICKS_CONNECTIONS_CONFIG:?set approved connection JSON file}
+        target: /app/config/databricks-connections.json
+        read_only: true
+      - type: bind
+        source: ${ML_DATABRICKS_SOURCES_CONFIG:?set approved source JSON file}
+        target: /app/config/databricks-sources.json
+        read_only: true
+  ingestion-worker:
+    environment:
+      DATABRICKS_TOKEN: ${DATABRICKS_TOKEN:?set Databricks access token}
+      ML_DATABRICKS_ENABLED: "true"
+      ML_DATABRICKS_CONNECTIONS_FILE: /app/config/databricks-connections.json
+      ML_DATABRICKS_SOURCES_FILE: /app/config/databricks-sources.json
+    volumes:
+      - type: bind
+        source: ${ML_DATABRICKS_CONNECTIONS_CONFIG:?set approved connection JSON file}
+        target: /app/config/databricks-connections.json
+        read_only: true
+      - type: bind
+        source: ${ML_DATABRICKS_SOURCES_CONFIG:?set approved source JSON file}
+        target: /app/config/databricks-sources.json
+        read_only: true
