@@ -11,7 +11,7 @@ profile、private role 設定及 operator container。本文保留來源契約�
 
 ## 執行邊界
 
-`databricks-sql@1` 使用官方 SQL Connector 4.2.6 與 SDK OAuth M2M。
+`databricks-sql@1` 使用官方 SQL Connector 4.2.6 ，支援 SDK OAuth M2M 及 access token。
 它只讀取核准 Unity Catalog Delta table 的固定版本，產出 private staging／
 immutable JSONL Raw Snapshot；不建立 ML DatasetVersion、不呼叫 Trainer、
 不進行 Spectrogram／Normalizer／split／MLflow 操作。
@@ -39,6 +39,46 @@ Connections JSON：
   }
 }
 ```
+
+### Access token（.env）
+
+Connections JSON 可改用環境變數參照；同一連線不能同時指定 OAuth 欄位。
+Token 值不放進 JSON、Source Definition 或 API request：
+
+```json
+{
+  "production-warehouse": {
+    "server_hostname": "dbc-approved.cloud.databricks.com",
+    "http_path": "/sql/1.0/warehouses/0123456789abcdef",
+    "access_token_env": "DATABRICKS_TOKEN"
+  }
+}
+```
+
+在忽略於 Git 的 `.env.ml.ingestion` 加入 `DATABRICKS_TOKEN=<access-token>`，
+並設定上述 connections 與 sources 的 host paths。限制 `.env` 權限為 0600。
+使用 token overlay **取代** OAuth overlay（不需要 OAuth secret file）：
+
+```sh
+docker compose --env-file .env.ml --env-file .env.ml.ingestion --profile ingestion \
+  -f compose.ml.yaml -f compose.ml.ingestion.yaml -f compose.ml.databricks-token.yaml \
+  up --build -d management ingestion-worker
+```
+
+Token 只注入 ingestion worker，Management 載入設定時不讀憑證。
+原生 Python 執行時須先將 `.env` 的變數匯入 process environment；程式不會自動讀 `.env`。
+自訂 `access_token_env` 名稱可用於原生部署；此 Compose overlay 固定傳入 `DATABRICKS_TOKEN`。
+缺少、空白、控制字元、非 ASCII 或超過 4096 字元的 token 會拒絕連線，不會退回 OAuth。
+
+完整 external-MLflow production profile 同樣支援 `.env.ml.production` 的
+`DATABRICKS_TOKEN`。改用上述 token connections JSON，並將
+`ML_DATABRICKS_CLIENT_SECRET_FILE=/dev/null`，滿足既有 production Compose 的
+secret mount；token 模式不會讀取該檔案。其餘步驟依 Day-1 部署手冊。
+
+Token 模式的 digest 保留 endpoint、warehouse 與 `client_id: null`；
+token 值及環境變數名稱不參與 digest，因此輪替 token 不變更 source version。
+從 OAuth 切換到 token 會變更 digest，必須重新核准 Source Definition。
+Token 所屬帳號仍須具有 Warehouse 使用權與核准 table SELECT 權限。
 
 Sources JSON：
 

@@ -19,7 +19,7 @@ from src.domain.ingestion.models import ExtractionLimits
 from src.domain.ml import Conflict
 from src.infrastructure.ingestion.adapters.databricks_client import (
     DatabricksSQLClient,
-    _connect_oauth,
+    _connect_authenticated,
     _read_secret,
     _sdk_stream,
 )
@@ -141,7 +141,7 @@ def test_oauth_m2m_connection_is_explicit_private_and_uses_safe_driver_options(c
         received["connection"] = kwargs
         return Session(Cursor([]))
 
-    _connect_oauth(
+    _connect_authenticated(
         connection,
         ExtractionLimits(timeout_seconds=2.2),
         connect=connect,

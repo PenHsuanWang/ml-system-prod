@@ -123,6 +123,60 @@ def test_worker_and_management_share_raw_storage_with_least_privilege_mounts(tmp
         assert not worker.get("secrets")
 
 
+def test_databricks_token_overlay_reads_env_file_and_exposes_token_only_to_worker(tmp_path):
+    marker = "example-only-compose-token"
+    env_file = tmp_path / "ingestion.env"
+    env_file.write_text(
+        f"DATABRICKS_TOKEN={marker}\n"
+        "ML_DATABRICKS_CONNECTIONS_CONFIG=/tmp/connections.json\n"
+        "ML_DATABRICKS_SOURCES_CONFIG=/tmp/sources.json\n"
+        "ML_INGESTION_INPUT_DIR=/tmp/approved-input\n"
+        + "".join(
+            f"{key}=compose-test-only\n"
+            for key in (
+                "ML_DB_PASSWORD",
+                "MLFLOW_DB_PASSWORD",
+                "ML_MQ_PASSWORD",
+                "ML_MONGO_PASSWORD",
+                "ML_S3_PASSWORD",
+                "APP_JWT_SECRET",
+            )
+        )
+    )
+    result = subprocess.run(
+        [
+            *compose_command(),
+            "--env-file",
+            str(env_file),
+            "--profile",
+            "ingestion",
+            "-f",
+            "compose.ml.yaml",
+            "-f",
+            "compose.ml.ingestion.yaml",
+            "-f",
+            "compose.ml.databricks-token.yaml",
+            "config",
+            "--format",
+            "json",
+        ],
+        capture_output=True,
+        text=True,
+        check=True,
+        cwd=ROOT,
+        env={
+            key: value
+            for key, value in os.environ.items()
+            if not key.startswith(("ML_", "DATABRICKS_", "APP_JWT_"))
+        },
+        timeout=30,
+    )
+    services = json.loads(result.stdout)["services"]
+    assert services["ingestion-worker"]["environment"]["DATABRICKS_TOKEN"] == marker
+    assert marker not in json.dumps(services["management"])
+    assert not services["ingestion-worker"].get("secrets")
+
+
 @pytest.fixture
 def external_production_environment(tmp_path):
     values = {}
@@ -327,3 +381,22 @@ def test_external_production_rejects_missing_public_release_inputs(
     parsed = external_production_model({**environment, missing: ""})
     assert parsed.returncode != 0
     assert missing in parsed.stderr
+
+
+def test_external_production_token_is_available_only_to_ingestion_worker(
+    external_production_environment,
+):
+    environment, _ = external_production_environment
+    marker = "example-only-production-token"
+    environment = {
+        **environment,
+        "DATABRICKS_TOKEN": marker,
+        "ML_DATABRICKS_CLIENT_SECRET_FILE": "/dev/null",
+    }
+    parsed = external_production_model(environment, operator=True)
+    assert parsed.returncode == 0, parsed.stderr
+    services = json.loads(parsed.stdout)["services"]
+    assert services["ingestion-worker"]["environment"]["DATABRICKS_TOKEN"] == marker
+    for role, service in services.items():
+        if role != "ingestion-worker":
+            assert marker not in json.dumps(service)

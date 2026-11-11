@@ -1,0 +1,148 @@
+"""Token configuration and connector authentication contracts."""
+
+import os
+from dataclasses import replace
+from pathlib import Path
+from unittest.mock import Mock
+
+import pytest
+
+from src.domain.ingestion.errors import SourceRejected
+from src.domain.ingestion.models import ExtractionLimits
+from src.infrastructure.ingestion.adapters.databricks_client import (
+    DatabricksSQLClient,
+    _connect_authenticated,
+)
+from src.infrastructure.ingestion.adapters.databricks_contract import (
+    Column,
+    ConnectionConfig,
+    Template,
+    parse_connections,
+)
+from tests.ml.ingestion.test_file_adapter import Control
+
+
+def configuration(**authentication):
+    return {
+        "warehouse": {
+            "server_hostname": "approved.cloud.databricks.com",
+            "http_path": "/sql/1.0/warehouses/abcdef",
+            **authentication,
+        }
+    }
+
+
+def token_connection():
+    return parse_connections(configuration(access_token_env="DATABRICKS_TOKEN"))["warehouse"]
+
+
+def _spawned_token_rows(config, _template, limits):
+    def connect(**options):
+        assert options["access_token"] == "inherited-example-token"
+        assert "credentials_provider" not in options
+        return object()
+
+    def unexpected_oauth(*_args, **_kwargs):
+        raise AssertionError("Token authentication must not construct an OAuth provider")
+
+    _connect_authenticated(
+        config,
+        limits,
+        connect=connect,
+        config_factory=unexpected_oauth,
+        oauth_provider=unexpected_oauth,
+    )
+    yield b'{"id":1}\n'
+
+
+def test_token_reaches_connector_without_oauth_or_persisted_secret(monkeypatch):
+
+    connection = token_connection()  # Management does not need the credential.
+    marker = "example-only-token"
+    monkeypatch.setenv("DATABRICKS_TOKEN", marker)
+    connect = Mock()
+    config_factory = Mock(side_effect=AssertionError("OAuth config must not be constructed"))
+    oauth_provider = Mock(side_effect=AssertionError("OAuth provider must not be invoked"))
+    _connect_authenticated(
+        connection,
+        ExtractionLimits(timeout_seconds=2),
+        connect=connect,
+        config_factory=config_factory,
+        oauth_provider=oauth_provider,
+    )
+    options = connect.call_args.kwargs
+    assert options["access_token"] == marker
+    assert "credentials_provider" not in options and "client_secret" not in options
+    assert options["server_hostname"] == connection.server_hostname
+    assert options["http_path"] == connection.http_path
+    assert options["use_cloud_fetch"] is options["use_inline_params"] is False
+    assert options["enable_telemetry"] is options["force_enable_telemetry"] is False
+    assert options["_socket_timeout"] == 2
+    assert options["_retry_stop_after_attempts_count"] == 1
+    config_factory.assert_not_called()
+    oauth_provider.assert_not_called()
+    assert marker not in repr(connection)
+    template = Template("warehouse", ("main", "approved", "events"), 42, (Column("id", "integer"),))
+    digest = template.digest(connection)
+    monkeypatch.setenv("DATABRICKS_TOKEN", "rotated-example-token")
+    assert template.digest(connection) == digest
+    assert template.digest(replace(connection, access_token_env="ROTATED_TOKEN")) == digest
+    oauth = ConnectionConfig(
+        connection.server_hostname,
+        connection.http_path,
+        "approved-principal",
+        Path("/private-oauth-secret"),
+    )
+    assert template.digest(oauth) != digest
+
+
+@pytest.mark.parametrize(
+    "value", [None, "", " ", "token\n", "token\r", "token\x00", "非ASCII", "x" * 4097]
+)
+def test_invalid_tokens_fail_before_connect_without_exposing_value(monkeypatch, value):
+    monkeypatch.delenv("DATABRICKS_TOKEN", raising=False)
+    if value is not None and "\x00" not in value:
+        monkeypatch.setenv("DATABRICKS_TOKEN", value)
+    # os.environ rejects NUL itself; patch lookup to exercise boundary validation.
+    if value is not None and "\x00" in value:
+        monkeypatch.setattr(os.environ, "get", lambda *args: value)
+    connect = Mock()
+    with pytest.raises(SourceRejected, match="Databricks access token is unavailable or invalid"):
+        _connect_authenticated(
+            token_connection(),
+            ExtractionLimits(),
+            connect=connect,
+            config_factory=Mock(),
+            oauth_provider=Mock(),
+        )
+    connect.assert_not_called()
+
+
+def test_spawned_extraction_child_reads_token_from_inherited_environment(monkeypatch):
+    monkeypatch.setenv("DATABRICKS_TOKEN", "inherited-example-token")
+    template = Template("warehouse", ("main", "approved", "events"), 42, (Column("id", "integer"),))
+    records = list(
+        DatabricksSQLClient(producer=_spawned_token_rows).stream(
+            token_connection(), template, ExtractionLimits(), Control()
+        )
+    )
+    assert records == [b'{"id":1}\n']
+
+
+@pytest.mark.parametrize(
+    "auth",
+    [
+        {"access_token_env": None},
+        {"access_token_env": ""},
+        {"access_token_env": "bad-name"},
+        {"access_token_env": "lowercase"},
+        {"access_token_env": 42},
+        {"access_token_env": "DATABRICKS_TOKEN", "client_id": "principal"},
+        {"access_token_env": "DATABRICKS_TOKEN", "client_secret_file": "/secret"},
+        {"access_token": "inline-token"},
+        {},
+    ],
+)
+def test_ambiguous_or_invalid_authentication_is_rejected(auth):
+    with pytest.raises(SourceRejected):
+        parse_connections(configuration(**auth))

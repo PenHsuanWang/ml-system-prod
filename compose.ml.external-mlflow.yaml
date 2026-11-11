@@ -145,7 +145,7 @@ services:
     mem_limit: ${ML_GATEWAY_MEMORY:?set approved gateway memory limit}
   ingestion-worker:
     <<: *runtime
-    environment: {<<: [*runtime-environment, *ingestion-environment], ML_RUNTIME_ROLE: ingestion-worker}
+    environment: {<<: [*runtime-environment, *ingestion-environment], ML_RUNTIME_ROLE: ingestion-worker, DATABRICKS_TOKEN: "${DATABRICKS_TOKEN:-}"}
     secrets:
       - {source: runtime_ingestion_worker, target: runtime.json}
       - {source: databricks_client_secret, target: databricks_client_secret}

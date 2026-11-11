@@ -42,8 +42,9 @@ def _reference(value: str) -> None:
 class ConnectionConfig:
     server_hostname: str
     http_path: str
-    client_id: str
-    client_secret_file: Path = field(repr=False)
+    client_id: str | None = None
+    client_secret_file: Path | None = field(default=None, repr=False)
+    access_token_env: str | None = field(default=None, repr=False)
 
     def __post_init__(self) -> None:
         hostname = self.server_hostname
@@ -60,7 +61,18 @@ class ConnectionConfig:
             )
             or not isinstance(self.http_path, str)
             or not re.fullmatch(r"/sql/1\.0/warehouses/[a-f0-9]{1,64}", self.http_path)
-            or not isinstance(self.client_id, str)
+        ):
+            raise SourceRejected("Invalid approved Databricks SQL connection")
+        if self.access_token_env is not None:
+            if (
+                self.client_id is not None
+                or self.client_secret_file is not None
+                or not isinstance(self.access_token_env, str)
+                or not re.fullmatch(r"[A-Z_][A-Z0-9_]{0,127}", self.access_token_env)
+            ):
+                raise SourceRejected("Invalid Databricks access token environment reference")
+        elif (
+            not isinstance(self.client_id, str)
             or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,255}", self.client_id)
             or not isinstance(self.client_secret_file, Path)
             or not self.client_secret_file.is_absolute()
@@ -190,13 +202,25 @@ def parse_connections(value: dict[str, Any]) -> dict[str, ConnectionConfig]:
     result = {}
     for name, item in value.items():
         _reference(name)
-        data = _object(item, {"server_hostname", "http_path", "client_id", "client_secret_file"})
-        path = data["client_secret_file"]
-        if not isinstance(path, str) or not 1 <= len(path) <= 4096:
-            raise SourceRejected("Invalid Databricks credential file reference")
-        result[name] = ConnectionConfig(
-            data["server_hostname"], data["http_path"], data["client_id"], Path(path)
-        )
+        if isinstance(item, dict) and "access_token_env" in item:
+            data = _object(item, {"server_hostname", "http_path", "access_token_env"})
+            if data["access_token_env"] is None:
+                raise SourceRejected("Invalid Databricks access token environment reference")
+            result[name] = ConnectionConfig(
+                data["server_hostname"],
+                data["http_path"],
+                access_token_env=data["access_token_env"],
+            )
+        else:
+            data = _object(
+                item, {"server_hostname", "http_path", "client_id", "client_secret_file"}
+            )
+            path = data["client_secret_file"]
+            if not isinstance(path, str) or not 1 <= len(path) <= 4096:
+                raise SourceRejected("Invalid Databricks credential file reference")
+            result[name] = ConnectionConfig(
+                data["server_hostname"], data["http_path"], data["client_id"], Path(path)
+            )
     return result
 
 
