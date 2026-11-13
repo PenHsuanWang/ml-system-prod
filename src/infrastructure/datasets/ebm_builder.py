@@ -6,7 +6,7 @@ import hashlib
 import os
 import re
 from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import Any
 from uuid import uuid4
 
 from src.domain.datasets.ebm import EBMDatasetMetadata
@@ -25,10 +25,6 @@ from src.infrastructure.ingestion.storage.raw_snapshot_writer import (
     relative_file_fd,
 )
 from src.infrastructure.persistence.ml_datasets import SQLDatasetCatalog
-
-if TYPE_CHECKING:
-    import numpy as np
-    from numpy.typing import NDArray
 
 _DATASET_IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}")
 _MAX_RECEIPT_BYTES = 64 * 1024
@@ -153,7 +149,7 @@ class LocalEBMDatasetPublisher:
         snapshot_set: EBMRawSnapshotSet,
         config: EBMDatasetBuilderConfig,
         metadata: EBMDatasetMetadata,
-        spectrograms: NDArray[np.float32],
+        spectrograms: Any,
     ) -> EBMDatasetBuildResult:
         self._validate_identity(dataset_id, version)
         if snapshot_set.tenant_id != actor.tenant_id:

@@ -1,6 +1,4 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import Any, Protocol
 
 from src.domain.datasets.ebm import EBMDatasetMetadata
 from src.domain.datasets.ebm_builder import (
@@ -11,10 +9,6 @@ from src.domain.datasets.ebm_builder import (
 from src.domain.datasets.models import DatasetVersion
 from src.domain.ingestion.models import RawSnapshot
 from src.domain.ml import Actor
-
-if TYPE_CHECKING:
-    import numpy as np
-    from numpy.typing import NDArray
 
 
 class DatasetCatalog(Protocol):
@@ -32,7 +26,7 @@ class RawSnapshotReader(Protocol):
 class EBMDatasetTransformer(Protocol):
     def build(
         self, snapshot_set: EBMRawSnapshotSet, config: EBMDatasetBuilderConfig
-    ) -> tuple[EBMDatasetMetadata, NDArray[np.float32]]: ...
+    ) -> tuple[EBMDatasetMetadata, Any]: ...
 
 
 class EBMDatasetPublisher(Protocol):
@@ -44,5 +38,5 @@ class EBMDatasetPublisher(Protocol):
         snapshot_set: EBMRawSnapshotSet,
         config: EBMDatasetBuilderConfig,
         metadata: EBMDatasetMetadata,
-        spectrograms: NDArray[np.float32],
+        spectrograms: Any,
     ) -> EBMDatasetBuildResult: ...
