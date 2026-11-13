@@ -5,10 +5,14 @@ services:
     volumes: ["${ML_ACCEPTANCE_VAR_DIR:?set isolated ML_ACCEPTANCE_VAR_DIR}:/app/var"]
   management:
     volumes: ["${ML_ACCEPTANCE_VAR_DIR:?}:/app/var"]
+    environment:
+      ML_EBM_QUALITY_POLICY_JSON: '{"policy_version":"engineering-test-only-v1","max_anchor_loss":1000000.0,"minimum_lot_correlation":-1.0,"minimum_lots":2}'
   relay:
     volumes: ["${ML_ACCEPTANCE_VAR_DIR:?}:/app/var"]
   supervisor:
     volumes: ["${ML_ACCEPTANCE_VAR_DIR:?}:/app/var"]
+    environment:
+      ML_EBM_QUALITY_POLICY_JSON: '{"policy_version":"engineering-test-only-v1","max_anchor_loss":1000000.0,"minimum_lot_correlation":-1.0,"minimum_lots":2}'
   control:
     volumes: ["${ML_ACCEPTANCE_VAR_DIR:?}:/app/var"]
   gateway:
@@ -22,6 +26,15 @@ services:
     security_opt: [no-new-privileges:true]
     volumes: ["${ML_ACCEPTANCE_VAR_DIR:?}:/app/var"]
     environment:
+      ML_DATABASE_URL: postgresql+psycopg://ml:${ML_DB_PASSWORD:?}@postgres:5432/ml
+      ML_TRACKER_BACKEND: mlflow
+      ML_TRACKING_URI: http://mlflow:5000
+      ML_ARTIFACT_ROOT: /app/var/artifacts
+      ML_DATASET_ROOT: /app/var/datasets
+      ML_EXECUTION_ROOT: /app/var/executions
+      ML_EBM_E2E_REPORT: /app/var/acceptance/ebm-e2e.json
+      ML_E2E_SOURCE_COMMIT: ${ML_E2E_SOURCE_COMMIT:-unqualified}
+      ML_EBM_QUALITY_POLICY_JSON: '{"policy_version":"engineering-test-only-v1","max_anchor_loss":1000000.0,"minimum_lot_correlation":-1.0,"minimum_lots":2}'
       ML_TEST_DATABASE_URL: postgresql+psycopg://ml:${ML_DB_PASSWORD:?}@postgres:5432/ml
       ML_TEST_AMQP_URL: amqp://ml:${ML_MQ_PASSWORD:?}@rabbitmq:5672/
       ML_TEST_REDIS_URL: redis://redis:6379/1

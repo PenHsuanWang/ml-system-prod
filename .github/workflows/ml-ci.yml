@@ -197,6 +197,7 @@ jobs:
     timeout-minutes: 30
     env:
       ML_ACCEPTANCE_VAR_DIR: ${{ github.workspace }}/var/acceptance-stack-data
+      ML_E2E_SOURCE_COMMIT: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -222,6 +223,8 @@ jobs:
           path: |
             var/acceptance-stack-data/acceptance/result.json
             var/acceptance-stack-data/acceptance/junit.xml
+            var/acceptance-stack-data/acceptance/ebm-e2e.json
+            var/acceptance-stack-data/acceptance/ebm-junit.xml
             var/acceptance-stack-data/acceptance/*.log
       - name: Remove only this disposable stack
         if: always()

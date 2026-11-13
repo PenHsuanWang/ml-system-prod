@@ -32,6 +32,7 @@ TARGETS = [
     "src/plugins/training/ebm_losses_v1.py",
     "src/plugins/training/grouped_rank_sampler.py",
     "bootstrap/dataset_builder_cli.py",
+    "bootstrap/ebm_e2e.py",
     "bootstrap/ebm_cli.py",
 ]
 
