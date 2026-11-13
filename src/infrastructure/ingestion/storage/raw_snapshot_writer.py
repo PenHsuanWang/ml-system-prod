@@ -36,7 +36,7 @@ from src.domain.ingestion.models import (
     sha256,
 )
 from src.domain.ml import canonical_json, digest
-from src.infrastructure.ingestion.storage.jsonl import bounded_lines
+from src.infrastructure.ingestion.storage.jsonl import bounded_lines, object_record
 
 _MAX_BYTES = 128 * 1024 * 1024
 _MANIFEST_LIMIT = 32768
@@ -452,6 +452,47 @@ class LocalRawSnapshotStore:
         if actual is None or actual != snapshot:
             raise SnapshotInvalid("Raw snapshot metadata does not match the immutable artifact")
         return actual
+
+    def read_records(self, snapshot: RawSnapshot) -> tuple[dict[str, Any], ...]:
+        """Return verified JSONL records from this store's immutable snapshot namespace."""
+
+        snapshot = self.verify(snapshot)
+        path = self._final(snapshot.tenant_id, snapshot.snapshot_id)
+        limits = ExtractionLimits(
+            max_bytes=_MAX_BYTES,
+            max_records=1_000_000,
+            max_line_bytes=4 * 1024 * 1024,
+        )
+        try:
+            with relative_file_fd(path, _PART_NAME) as descriptor:
+                before = os.fstat(descriptor)
+                if not 0 < before.st_size <= limits.max_bytes:
+                    raise SnapshotInvalid("Raw snapshot payload exceeds its size limit")
+                checksum = hashlib.sha256()
+                total = 0
+                records: list[dict[str, Any]] = []
+                for line in bounded_lines(
+                    _chunks(descriptor, min(65536, limits.max_line_bytes)), limits
+                ):
+                    checksum.update(line)
+                    total += len(line)
+                    records.append(object_record(line))
+                after = os.fstat(descriptor)
+                if _file_identity(before) != _file_identity(after) or total != before.st_size:
+                    raise SnapshotInvalid("Raw snapshot payload changed while being read")
+                if (
+                    checksum.hexdigest(),
+                    total,
+                    len(records),
+                ) != (
+                    snapshot.content_digest,
+                    snapshot.size_bytes,
+                    snapshot.record_count,
+                ):
+                    raise SnapshotInvalid("Immutable raw snapshot payload digest mismatch")
+                return tuple(records)
+        except OSError as error:
+            raise SnapshotInvalid("Immutable raw snapshot cannot be read") from error
 
     def publish(self, intent: PublicationIntent) -> RawSnapshot:
         # The exact intent is persisted by the application before this side effect.

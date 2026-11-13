@@ -47,8 +47,9 @@ the user's external services. All production acceptance flags remain false.
 
 ## Explicitly unfinished follow-up scope
 
-Raw Snapshots and ML DatasetVersions remain separate. The automatic
-Raw-to-Feature/Dataset Builder is not implemented. Databricks Remote Executor,
+Raw Snapshots and ML DatasetVersions remain separate. An explicit operator-only EBM
+Raw-to-Feature/DatasetBuilder is implemented, but automatic ingestion-to-build orchestration is
+not. Databricks Remote Executor,
 CalibrationSnapshot, calibrated Energy/RUL, Batch Analysis/Report Store and
 as-of/rolling-origin qualification are also separate, unfinished work packages.
 GPU, DDP, HPO and multi-host/Kubernetes deployment are outside the CPU MVP.
