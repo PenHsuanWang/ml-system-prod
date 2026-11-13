@@ -58,6 +58,9 @@ Epoch Checkpoint 可透過 `bootstrap.ebm_cli train --resume` 在相同設定下
 
 ### RawSnapshot DatasetBuilder
 
+RawSnapshot 到真實 Worker／MLflow／Controller／HTTP Gateway 的可重跑工程驗證與報告，見
+[EBM E2E verification](ebm-e2e-verification.md)。合成資料驗證不代表真實資料資格通過。
+
 `ebm-dataset-builder@1.0.0` 以明確 operator 動作，將同一 tenant 下已持久化為
 `PUBLISHED` 的 RawSnapshots 建成既有 EBM DatasetVersion。每個輸入都必須指定確切的
 `snapshot_id` 與 `manifest_digest`；Builder 重新驗證 immutable manifest、JSONL payload

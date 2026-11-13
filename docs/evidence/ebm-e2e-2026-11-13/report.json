@@ -1,0 +1,353 @@
+{
+  "report_version": "ebm-e2e-verification-v1",
+  "source_commit_sha": "a91fc4eca64e646e9d9a6826968a5c69617c018f",
+  "data_kind": "synthetic-engineering-fixture",
+  "status": "ENGINEERING_E2E_PASSED",
+  "real_data_status": "EXTERNAL_QUALIFICATION_PENDING",
+  "external_requirements": [
+    "Approved de-identified enterprise ebm-raw-input-v1 snapshots",
+    "Model-owner-approved quality policy",
+    "Authorized human production approval"
+  ],
+  "test_execution": {
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  "inputs": [
+    {
+      "role": "fdc",
+      "snapshot_id": "3c3fe281-73f2-4f25-9de6-6502774a791d",
+      "manifest_digest": "5b9d84023751b16f438c9165c4dec567a4623cb8990cc634a592654dd57e66ef"
+    },
+    {
+      "role": "wafer",
+      "snapshot_id": "20f6c697-3a98-4013-8816-276d5090fd62",
+      "manifest_digest": "2348812499d34ec145e5281992869c55e53a0293f1fd805c807375f43382e8ec"
+    }
+  ],
+  "dataset": {
+    "id": "ebm-16144d1b65c0",
+    "version": "v1",
+    "content_digest": "136b8d16ad582822b46b29f24df6122c53713588faa2ab6780fb334ba79654c9",
+    "builder_receipt_digest": "ca5dfa1884d66f28d318a14eb4ace445d5312a20e7c37300138c952aa1f31522",
+    "builder_receipt": {
+      "builder": {
+        "id": "ebm-dataset-builder",
+        "version": "1.0.0"
+      },
+      "configuration": {
+        "alignment_policy": "common_interval_utc_1hz_linear_no_extrapolation_v1",
+        "feature_version": "fdc_spectrogram_v1",
+        "log1p": true,
+        "raw_input_schema": "ebm-raw-input-v1",
+        "recipe_id": "recipe-a",
+        "segment_id": 1,
+        "split_policy": "sha256_lot_approximately_60_20_20_v1",
+        "split_seed": 17
+      },
+      "dataset": {
+        "content_digest": "136b8d16ad582822b46b29f24df6122c53713588faa2ab6780fb334ba79654c9",
+        "id": "ebm-16144d1b65c0",
+        "version": "v1"
+      },
+      "inputs": [
+        {
+          "content_digest": "69c5884451fc546f5720cba62103fba19281c2f28aacb7d276eb43da846ba3dc",
+          "data_format": "jsonl",
+          "manifest_digest": "5b9d84023751b16f438c9165c4dec567a4623cb8990cc634a592654dd57e66ef",
+          "record_count": 280,
+          "role": "fdc",
+          "schema_version": "raw-json-object-v1",
+          "size_bytes": 101157,
+          "snapshot_id": "3c3fe281-73f2-4f25-9de6-6502774a791d",
+          "source_configuration_digest": "5e00a105fa8f90a1fcec73367f94a5f49968ac443b5f76c1a497d5ca6cccf9a3",
+          "source_id": "engineering-fdc-af2c85d4",
+          "source_revision": "sha256:69c5884451fc546f5720cba62103fba19281c2f28aacb7d276eb43da846ba3dc",
+          "source_version": "v1"
+        },
+        {
+          "content_digest": "35363a16049b98deb57e7c08df2e85d1953d143474c6d812099dcbf4062c0583",
+          "data_format": "jsonl",
+          "manifest_digest": "2348812499d34ec145e5281992869c55e53a0293f1fd805c807375f43382e8ec",
+          "record_count": 20,
+          "role": "wafer",
+          "schema_version": "raw-json-object-v1",
+          "size_bytes": 6055,
+          "snapshot_id": "20f6c697-3a98-4013-8816-276d5090fd62",
+          "source_configuration_digest": "797ccc929965033e623e01a6866ce4aab7922c89938c5c2fb6ab5c8516523e92",
+          "source_id": "engineering-wafer-78099df8",
+          "source_revision": "sha256:35363a16049b98deb57e7c08df2e85d1953d143474c6d812099dcbf4062c0583",
+          "source_version": "v1"
+        }
+      ],
+      "receipt_version": "ebm-dataset-build-receipt-v1",
+      "tenant_id": "ebm-e2e-5566a8435ccd"
+    }
+  },
+  "recipe": {
+    "id": "ebm_poc_replay_v1",
+    "version": "1.0.0"
+  },
+  "code_revision": "development",
+  "training": {
+    "job_id": "837529c1-dbca-48b0-adc5-8edbcbcd98be",
+    "state": "SUCCEEDED",
+    "attempt_id": "c557650c-daa7-44eb-b571-207d3316d86a",
+    "spec_digest": "16c213ae123b0b02900c6aa8d998d1661e605cdd6f3e9851eb066807930eba90"
+  },
+  "model": {
+    "binding_id": "56f0b5d3-b254-4aad-9988-31b7ed14aec1",
+    "run_id": "c93234c7cfa8486ba96a2528e593c23f",
+    "registered_name": "tenant-aa5fc1233141023b-nn",
+    "version": "1",
+    "manifest_digest": "77f543b54428d2555e5a50634821ec0ae4445a8136cc3eed50855d780c14ccd5",
+    "dataset_digest": "136b8d16ad582822b46b29f24df6122c53713588faa2ab6780fb334ba79654c9"
+  },
+  "evaluation": {
+    "evaluation_id": "6174b37d-1a45-4ea3-8f8b-a4678eb7500e",
+    "model_binding_id": "56f0b5d3-b254-4aad-9988-31b7ed14aec1",
+    "manifest_digest": "77f543b54428d2555e5a50634821ec0ae4445a8136cc3eed50855d780c14ccd5",
+    "dataset_digest": "136b8d16ad582822b46b29f24df6122c53713588faa2ab6780fb334ba79654c9",
+    "policy_version": "engineering-test-only-v1",
+    "evaluator_version": "ebm-neural-v1",
+    "decision": "APPROVED_BY_POLICY",
+    "metrics_json": "{\"cdf_anchor_smooth_l1\":1.3846804690512933,\"lot_mean_raw_score_cdf_pearson\":0.9999999999999999,\"lots\":2,\"quality_policy_configured\":true,\"samples\":4}",
+    "report_digest": "7486857e10d4612bc3e947d4bc4029b3907306c97fbd45bb57709a7479182eb6"
+  },
+  "approval": {
+    "approval_id": "b31f9d43-93d8-4215-b68b-e82ea6c5ab91",
+    "kind": "authorized-engineering-test-reviewer"
+  },
+  "deployment": {
+    "deployment_id": "9f891b4b-03a1-40cb-8212-d050ac2e02ef",
+    "endpoint_id": "ebm-390838a6c1ca",
+    "generation": 1,
+    "state": "ACTIVE",
+    "desired_state": "ACTIVE",
+    "observed_state": "ACTIVE",
+    "model_binding_id": "56f0b5d3-b254-4aad-9988-31b7ed14aec1",
+    "approval_id": "b31f9d43-93d8-4215-b68b-e82ea6c5ab91",
+    "route_revision": 1,
+    "route_deployment_id": "9f891b4b-03a1-40cb-8212-d050ac2e02ef"
+  },
+  "prediction": {
+    "schema": "ebm-neural-output-v1",
+    "provenance": {
+      "endpoint_id": "ebm-390838a6c1ca",
+      "deployment_id": "9f891b4b-03a1-40cb-8212-d050ac2e02ef",
+      "generation": 1,
+      "registered_model": "tenant-aa5fc1233141023b-nn",
+      "model_version": "1",
+      "input_schema_version": "ebm-spectrogram-input-v1"
+    },
+    "output": {
+      "mu": -0.05811134725809097,
+      "sigma": 0.1813282072544098,
+      "latent": [
+        -0.23925583064556122,
+        -0.24065981805324554,
+        -0.24065981805324554,
+        -0.24627304077148438,
+        -0.23925583064556122,
+        -0.24065981805324554,
+        -0.24065981805324554,
+        -0.24627304077148438,
+        -0.23925574123859406,
+        -0.2406597137451172,
+        -0.2406597137451172,
+        -0.2462729811668396,
+        -0.23925574123859406,
+        -0.2406597137451172,
+        -0.2406597137451172,
+        -0.2462729811668396,
+        0.11779728531837463,
+        0.11322768777608871,
+        0.11322768777608871,
+        0.1004621684551239,
+        0.11779728531837463,
+        0.11322768777608871,
+        0.11322768777608871,
+        0.1004621759057045,
+        0.11779728531837463,
+        0.11322768777608871,
+        0.11322768777608871,
+        0.1004621759057045,
+        0.11779728531837463,
+        0.11322768777608871,
+        0.11322768777608871,
+        0.1004621759057045,
+        -0.2920486032962799,
+        -0.29409152269363403,
+        -0.29409152269363403,
+        -0.32193776965141296,
+        -0.2920486032962799,
+        -0.29409152269363403,
+        -0.29409152269363403,
+        -0.32193776965141296,
+        -0.2920486032962799,
+        -0.29409152269363403,
+        -0.29409152269363403,
+        -0.32193776965141296,
+        -0.2920486032962799,
+        -0.29409152269363403,
+        -0.29409152269363403,
+        -0.32193776965141296,
+        0.22967727482318878,
+        0.2311834692955017,
+        0.2311834692955017,
+        0.21816152334213257,
+        0.22967727482318878,
+        0.2311834692955017,
+        0.2311834692955017,
+        0.21816152334213257,
+        0.22967730462551117,
+        0.2311834692955017,
+        0.2311834692955017,
+        0.21816150844097137,
+        0.22967727482318878,
+        0.2311834692955017,
+        0.2311834692955017,
+        0.21816150844097137,
+        -0.1223631426692009,
+        -0.12123923748731613,
+        -0.12123923748731613,
+        -0.12268439680337906,
+        -0.1223631203174591,
+        -0.12123921513557434,
+        -0.12123921513557434,
+        -0.12268438935279846,
+        -0.1223631203174591,
+        -0.12123922258615494,
+        -0.12123922258615494,
+        -0.12268437445163727,
+        -0.1223631277680397,
+        -0.12123922258615494,
+        -0.12123922258615494,
+        -0.12268438935279846,
+        -0.1577485203742981,
+        -0.15639816224575043,
+        -0.15639816224575043,
+        -0.11262982338666916,
+        -0.1577485203742981,
+        -0.15639816224575043,
+        -0.15639816224575043,
+        -0.11262980848550797,
+        -0.1577485203742981,
+        -0.15639816224575043,
+        -0.15639816224575043,
+        -0.11262982338666916,
+        -0.1577485203742981,
+        -0.15639816224575043,
+        -0.15639816224575043,
+        -0.11262982338666916,
+        0.06052306666970253,
+        0.0604386068880558,
+        0.0604386068880558,
+        0.07627971470355988,
+        0.06052305921912193,
+        0.0604386068880558,
+        0.0604386068880558,
+        0.07627970725297928,
+        0.06052305921912193,
+        0.0604386068880558,
+        0.0604386068880558,
+        0.07627972215414047,
+        0.06052306666970253,
+        0.0604386068880558,
+        0.0604386068880558,
+        0.07627971470355988
+      ],
+      "raw_nn_score": 0.2401735484600067,
+      "score_kind": "uncalibrated_latent_mean_plus_std"
+    }
+  },
+  "backend_acceptance": {
+    "status": "FUNCTIONAL_BACKEND_ACCEPTED",
+    "local_checks_passed": true,
+    "functional_backend_accepted": true,
+    "production_accepted": false,
+    "python": "3.12.16",
+    "torch": "2.6.0+cpu",
+    "pytest": {
+      "tests": 1004,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 1004
+    },
+    "checks": [
+      {
+        "name": "boundaries",
+        "exit_code": 0,
+        "passed": true,
+        "elapsed_seconds": 0.466,
+        "log": "boundaries.log"
+      },
+      {
+        "name": "core-typing",
+        "exit_code": 0,
+        "passed": true,
+        "elapsed_seconds": 1.268,
+        "log": "core-typing.log"
+      },
+      {
+        "name": "ebm-typing",
+        "exit_code": 0,
+        "passed": true,
+        "elapsed_seconds": 2.471,
+        "log": "ebm-typing.log"
+      },
+      {
+        "name": "deployment",
+        "exit_code": 0,
+        "passed": true,
+        "elapsed_seconds": 0.967,
+        "log": "deployment.log"
+      },
+      {
+        "name": "unused-imports",
+        "exit_code": 0,
+        "passed": true,
+        "elapsed_seconds": 1.218,
+        "log": "unused-imports.log"
+      },
+      {
+        "name": "compile",
+        "exit_code": 0,
+        "passed": true,
+        "elapsed_seconds": 0.517,
+        "log": "compile.log"
+      },
+      {
+        "name": "pytest",
+        "exit_code": 0,
+        "passed": true,
+        "elapsed_seconds": 232.378,
+        "log": "pytest.log"
+      },
+      {
+        "name": "ebm-live-e2e",
+        "exit_code": 0,
+        "passed": true,
+        "elapsed_seconds": 22.984,
+        "log": "ebm-live-e2e.log"
+      }
+    ],
+    "acceptance_blockers": [],
+    "separate_qualifications": {
+      "tests/ml/ingestion/test_databricks_live.py": "Protected databricks-live job requires an approved external Warehouse fixture",
+      "tests/ml/ingestion/test_ingestion_deployment.py": "Contracts jobs run Compose model checks on the Docker-enabled host"
+    },
+    "production_gates": [
+      "Qualified immutable images/dependency locks and security evidence",
+      "Approved capacity/SLO/retention/restore objectives and executed qualification"
+    ]
+  },
+  "published_equivalent_source": {
+    "commit_sha": "14a938672284d04498d1c2c6d5a4b814d87ce528",
+    "tree_sha": "18a0439cfecee7117d5de425fd85e14fbe14f63b",
+    "explanation": "GitHub connector created equivalent commits; the tested local commit and published implementation have identical Git trees."
+  },
+  "execution_environment": "Disposable Compose services with cached Python 3.12/Torch 2.6 CPU test images and read-only current source mounts; no identity or external-service doubles."
+}

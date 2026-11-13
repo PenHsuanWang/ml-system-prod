@@ -29,6 +29,11 @@ SEPARATE_QUALIFICATIONS = {
         "Contracts jobs run Compose model checks on the Docker-enabled host",
 }
 
+EBM_LIVE_CASE = (
+    "tests/ml/ebm/test_realdata_e2e.py::"
+    "test_raw_snapshots_to_real_worker_mlflow_controller_and_http_gateway"
+)
+
 
 def pytest_command(output: Path, *, require_stack: bool) -> list[str]:
     command = [sys.executable, "-m", "pytest", "tests/ml", "tests/test_boundaries.py", "-q",
@@ -36,6 +41,9 @@ def pytest_command(output: Path, *, require_stack: bool) -> list[str]:
                "--junitxml="+str(output/"junit.xml")]
     if require_stack:
         command.extend("--ignore="+path for path in SEPARATE_QUALIFICATIONS)
+        # The CPU profile has two physical Serving slots. Run EBM after the
+        # MLP rollout/rollback suite has retired its superseded generations.
+        command.extend(["--deselect", EBM_LIVE_CASE])
     return command
 
 
@@ -48,6 +56,7 @@ def main() -> int:
     output = args.output_dir.resolve()
     output.mkdir(parents=True, exist_ok=True)
     (output/"junit.xml").unlink(missing_ok=True)
+    (output/"ebm-junit.xml").unlink(missing_ok=True)
     environment = dict(os.environ)
     environment["PYTEST_DISABLE_PLUGIN_AUTOLOAD"] = "1"
     environment["MYPY_CACHE_DIR"] = str(output/"mypy-cache")
@@ -95,6 +104,10 @@ def main() -> int:
                 ("compile", [sys.executable, "-m", "compileall", "-q",
                              "bootstrap", "src", "migrations", "scripts", "tests/ml"]),
                 ("pytest", pytest)]
+    if args.require_stack:
+        commands.append(("ebm-live-e2e", [sys.executable, "-m", "pytest", EBM_LIVE_CASE,
+            "-q", "-p", "pytest_asyncio.plugin", "-p", "no:cacheprovider",
+            "--junitxml="+str(output/"ebm-junit.xml")]))
     checks = []
     for name, command in commands:
         started = time.monotonic()
@@ -109,16 +122,24 @@ def main() -> int:
                        "elapsed_seconds": round(time.monotonic()-started, 3), "log": name+".log"})
         print(name+": "+("PASS" if code == 0 else "FAIL"), flush=True)
     counts = {name: 0 for name in ("tests", "failures", "errors", "skipped")}
-    if (output/"junit.xml").exists():
-        root = ET.parse(output/"junit.xml").getroot()
+    result_files = [output/"junit.xml"]
+    if args.require_stack:
+        result_files.append(output/"ebm-junit.xml")
+    for result_file in result_files:
+        if not result_file.exists():
+            continue
+        root = ET.parse(result_file).getroot()
         suites = [root] if root.tag == "testsuite" else list(root)
-        counts = {name: sum(int(suite.get(name, "0")) for suite in suites) for name in counts}
+        counts = {name: counts[name] + sum(int(suite.get(name, "0")) for suite in suites)
+                  for name in counts}
     counts["passed"] = counts["tests"]-counts["failures"]-counts["errors"]-counts["skipped"]
     try:
         torch = importlib.metadata.version("torch")
     except importlib.metadata.PackageNotFoundError:
         torch = None
     blockers = []
+    if any(not path.exists() for path in result_files):
+        blockers.append("Required suite did not produce its execution report")
     if sys.version_info[:2] != (3, 12):
         blockers.append("Target Python 3.12 was not used")
     if torch is None or torch.split("+")[0] != "2.6.0":
