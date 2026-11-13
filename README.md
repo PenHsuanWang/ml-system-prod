@@ -23,7 +23,9 @@ Start with the Day-1 runbook when MLflow and Databricks are already supplied by 
 
 The [2026-11-10 deployment delivery record](docs/reviews/day1-deployment-2026-11-10.md) separates the new profile's implementation and isolated qualification from site-specific production gates. The earlier qualified-source CI above does not claim this new profile or your external services have passed production acceptance.
 
-Raw acquisition publishes an immutable **Raw Snapshot**. Training consumes a separately approved **DatasetVersion**; this release has no automatic Raw-to-Feature / Dataset Builder.
+Raw acquisition publishes an immutable **Raw Snapshot**. Training consumes a separately approved
+**DatasetVersion**. The EBM path includes an explicit operator-only RawSnapshot-to-DatasetBuilder;
+ingestion does not trigger it automatically.
 
 ## Real local training
 
@@ -59,7 +61,7 @@ python -m pip install -e '.[dev,training,ebm]'
 python -m bootstrap.ml_cli demo-ebm
 ```
 
-The synthetic development demo registers an EBM dataset and trains in a supervised child. Without an explicitly configured quality policy, training can succeed but evaluation rejects approval. See [EBM usage and implementation status](docs/ebm-implementation-status.md) for dataset import, API contracts, policy configuration and the independent bundle smoke. [Databricks batch ingestion](docs/databricks-ingestion-runbook.md) is a separate implemented Raw Snapshot capability; the Dataset Builder, calibrated Energy/RUL and batch reports remain separate work packages.
+The synthetic development demo registers an EBM dataset and trains in a supervised child. Without an explicitly configured quality policy, training can succeed but evaluation rejects approval. See [EBM usage and implementation status](docs/ebm-implementation-status.md) for the explicit DatasetBuilder, dataset import, API contracts, policy configuration and the independent bundle smoke. [Databricks batch ingestion](docs/databricks-ingestion-runbook.md) remains a separate Raw Snapshot capability; automatic ingestion-to-build orchestration, calibrated Energy/RUL and batch reports remain separate work packages.
 
 ## Reference development stack
 
@@ -152,7 +154,7 @@ Use the [Day-1 runbook](docs/deployment/day1-deployment-runbook.md) for installa
 
 - [HLD](docs/pytorch-ml-system-hld.md), [LLD v1.3](docs/pytorch-ml-system-lld.md), [ADR-014](docs/adr/014-implementation-baseline.md).
 - [Feature spec](specs/001-durable-training-jobs/spec.md), [implementation plan](specs/001-durable-training-jobs/plan.md).
-- [EBM Notebook fit–gap review](docs/EBM_PoC_ML_System_Fit_Gap_2026-10-29.md), [EBM integration plan](docs/ebm-integration-plan.md), [current EBM implementation](docs/ebm-implementation-status.md): neural training/serving and separate Databricks Raw Snapshot acquisition are implemented; calibration/RUL, the Dataset Builder, live Warehouse and production qualification remain pending.
+- [EBM Notebook fit–gap review](docs/EBM_PoC_ML_System_Fit_Gap_2026-10-29.md), [EBM integration plan](docs/ebm-integration-plan.md), [current EBM implementation](docs/ebm-implementation-status.md): neural training/serving, separate Databricks Raw Snapshot acquisition and the explicit operator DatasetBuilder are implemented; automatic orchestration, calibration/RUL, live Warehouse qualification and production qualification remain pending.
 - [Initial review](docs/architecture-review-2026-10-29.md), [v1.2 follow-up](docs/architecture-review-2026-10-29-v1.2.md).
 - [Upstream commit](docs/template-baseline.txt). Root v1.0 architecture files are explicitly superseded.
 - The original documentation manifest is retained in `docs/archive/FILE-MANIFEST-v1.1.json`; the root manifest describes the current source bundle.
