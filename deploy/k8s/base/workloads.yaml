@@ -106,9 +106,11 @@ spec:
           requests:
             cpu: 50m
             memory: 128Mi
+            ephemeral-storage: 256Mi
           limits:
             cpu: '1'
             memory: 512Mi
+            ephemeral-storage: 2Gi
         volumeMounts:
         - name: runtime
           mountPath: /app/var
@@ -117,6 +119,8 @@ spec:
           readOnly: true
         - name: tmp
           mountPath: /tmp
+        - name: artifact-cache
+          mountPath: /app/var/artifacts
         ports:
         - name: http
           containerPort: 8000
@@ -162,6 +166,9 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: 2Mi
+      - name: artifact-cache
+        emptyDir:
+          sizeLimit: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -265,9 +272,11 @@ spec:
           requests:
             cpu: 50m
             memory: 128Mi
+            ephemeral-storage: 256Mi
           limits:
             cpu: '1'
             memory: 512Mi
+            ephemeral-storage: 2Gi
         volumeMounts:
         - name: runtime
           mountPath: /app/var
@@ -276,6 +285,8 @@ spec:
           readOnly: true
         - name: tmp
           mountPath: /tmp
+        - name: artifact-cache
+          mountPath: /app/var/artifacts
       volumes:
       - name: runtime
         persistentVolumeClaim:
@@ -299,6 +310,9 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: 2Mi
+      - name: artifact-cache
+        emptyDir:
+          sizeLimit: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -409,9 +423,11 @@ spec:
           requests:
             cpu: 100m
             memory: 384Mi
+            ephemeral-storage: 256Mi
           limits:
             cpu: '1'
             memory: 1536Mi
+            ephemeral-storage: 2Gi
         volumeMounts:
         - name: runtime
           mountPath: /app/var
@@ -420,6 +436,8 @@ spec:
           readOnly: true
         - name: tmp
           mountPath: /tmp
+        - name: artifact-cache
+          mountPath: /app/var/artifacts
       volumes:
       - name: runtime
         persistentVolumeClaim:
@@ -443,6 +461,9 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: 2Mi
+      - name: artifact-cache
+        emptyDir:
+          sizeLimit: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -590,9 +611,11 @@ spec:
           requests:
             cpu: 100m
             memory: 384Mi
+            ephemeral-storage: 256Mi
           limits:
             cpu: '1'
             memory: 1536Mi
+            ephemeral-storage: 2Gi
         volumeMounts:
         - name: runtime
           mountPath: /app/var
@@ -601,6 +624,8 @@ spec:
           readOnly: true
         - name: tmp
           mountPath: /tmp
+        - name: artifact-cache
+          mountPath: /app/var/artifacts
       - name: gateway
         image: ml-system-runtime:unconfigured
         imagePullPolicy: IfNotPresent
@@ -634,9 +659,11 @@ spec:
           requests:
             cpu: 50m
             memory: 128Mi
+            ephemeral-storage: 256Mi
           limits:
             cpu: '1'
             memory: 512Mi
+            ephemeral-storage: 2Gi
         volumeMounts:
         - name: runtime
           mountPath: /app/var
@@ -645,6 +672,8 @@ spec:
           readOnly: true
         - name: tmp
           mountPath: /tmp
+        - name: artifact-cache
+          mountPath: /app/var/artifacts
         ports:
         - name: http
           containerPort: 8001
@@ -698,6 +727,9 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: 2Mi
+      - name: artifact-cache
+        emptyDir:
+          sizeLimit: 1Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -801,9 +833,11 @@ spec:
           requests:
             cpu: 50m
             memory: 128Mi
+            ephemeral-storage: 256Mi
           limits:
             cpu: '1'
             memory: 512Mi
+            ephemeral-storage: 2Gi
         volumeMounts:
         - name: runtime
           mountPath: /app/var
@@ -812,6 +846,8 @@ spec:
           readOnly: true
         - name: tmp
           mountPath: /tmp
+        - name: artifact-cache
+          mountPath: /app/var/artifacts
       volumes:
       - name: runtime
         persistentVolumeClaim:
@@ -835,3 +871,6 @@ spec:
         emptyDir:
           medium: Memory
           sizeLimit: 2Mi
+      - name: artifact-cache
+        emptyDir:
+          sizeLimit: 1Gi
