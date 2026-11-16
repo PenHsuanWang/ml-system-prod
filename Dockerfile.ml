@@ -35,6 +35,7 @@ FROM training AS acceptance
 USER root
 COPY tests ./tests
 COPY scripts ./scripts
+COPY deploy/k8s ./deploy/k8s
 RUN pip install --no-cache-dir '.[dev,training,ebm,observability]'
 USER mlapp
 CMD ["python", "scripts/verify_ml_acceptance.py", "--require-stack", "--output-dir", "/app/var/acceptance"]

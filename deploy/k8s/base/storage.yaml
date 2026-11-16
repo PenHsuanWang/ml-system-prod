@@ -1,0 +1,11 @@
+# Git-managed declaration; credentials are supplied outside Git.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ml-runtime
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 8Gi

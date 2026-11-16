@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- postgres.yaml
+- rabbitmq.yaml
+- redis.yaml
+- mongodb.yaml
+- minio.yaml
+- mlflow.yaml
+- minio-init-job.yaml
+configMapGenerator:
+- name: mlflow-proxy
+  files:
+  - nginx.conf=files/nginx.conf
+- name: postgres-init
+  files:
+  - 01-mlflow.sql=files/01-mlflow.sql
+generatorOptions:
+  disableNameSuffixHash: true

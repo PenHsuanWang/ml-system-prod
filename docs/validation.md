@@ -99,3 +99,10 @@ Docker 驗證另新增獨立 Compose、測試 fixture 與可重跑 runner；修�
 先前依 SVG 實際搬移 package／module，拆分 API／技術 service／application 責任，新增明確 plugin 契約驗證與中性支援入口，並更新 setuptools、Dockerfile、CI、logger roots 與文件。既有 IAM／jobs／Mongo／exports／kernel 行為保留；正式業務 initializer 與演算法仍為空，沒有新增預設產品場景。
 
 這份紀錄描述已完成的驗證，不代表所有部署環境或未來依賴版本都具有相同行為。
+# Kubernetes Foundation validation (2026-11-17)
+
+The [foundation validation record](reviews/k8s-foundation-2026-11-17.md) documents
+110 passing scoped regressions and a clean Minikube startup with Secret/CA and
+local MLflow authorization smoke. Serving/training recovery, real CSI, HA and
+production qualification remain pending under the six-PR plan in
+[ADR-017](adr/017-kubernetes-runtime-boundaries.md).

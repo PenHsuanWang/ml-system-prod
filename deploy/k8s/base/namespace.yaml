@@ -1,0 +1,9 @@
+# Git-managed declaration; credentials are supplied outside Git.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ml-k8s-foundation
+  labels:
+    pod-security.kubernetes.io/enforce: baseline
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted

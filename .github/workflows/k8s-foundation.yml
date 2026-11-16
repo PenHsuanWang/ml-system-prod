@@ -1,0 +1,32 @@
+name: Kubernetes foundation contracts
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  foundation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install contract tools
+        run: python -m pip install -e '.[dev]' 'PyYAML>=6,<7'
+      - name: Install checksum-verified kubectl
+        run: |
+          curl --fail --location --silent --show-error --output kubectl https://dl.k8s.io/release/v1.37.2/bin/linux/amd64/kubectl
+          curl --fail --location --silent --show-error --output kubectl.sha256 https://dl.k8s.io/release/v1.37.2/bin/linux/amd64/kubectl.sha256
+          echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+          chmod +x kubectl
+          mkdir -p "$RUNNER_TEMP/k8s-bin"
+          mv kubectl "$RUNNER_TEMP/k8s-bin/"
+          echo "$RUNNER_TEMP/k8s-bin" >> "$GITHUB_PATH"
+      - name: Render and enforce foundation boundaries
+        run: python scripts/check_k8s.py
+      - name: Verify secret adaptation and unchanged bootstrap
+        run: python -m pytest tests/ml/k8s tests/ml/test_deployment_entrypoint.py --noconftest -q
+      - name: Lint scoped foundation code
+        run: python -m ruff check scripts/check_k8s.py scripts/k8s_foundation.py scripts/k8s_mlflow_smoke.py deploy/k8s/base/files/prepare_runtime.py tests/ml/k8s

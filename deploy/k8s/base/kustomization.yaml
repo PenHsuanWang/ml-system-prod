@@ -1,0 +1,17 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- namespace.yaml
+- configmap.yaml
+- serviceaccounts.yaml
+- networkpolicies.yaml
+- storage.yaml
+- services.yaml
+- migration-job.yaml
+- workloads.yaml
+configMapGenerator:
+- name: ml-foundation-files
+  files:
+  - prepare_runtime.py=files/prepare_runtime.py
+generatorOptions:
+  disableNameSuffixHash: true

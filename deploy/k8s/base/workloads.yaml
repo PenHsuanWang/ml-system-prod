@@ -1,0 +1,837 @@
+# Git-managed declaration; credentials are supplied outside Git.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-management
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ml-management
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ml-management
+        app.kubernetes.io/part-of: ml-system
+        ml-system/stage: runtime
+    spec:
+      serviceAccountName: ml-management
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 360
+      initContainers:
+      - name: prepare-management
+        image: ml-system-runtime:unconfigured
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - /foundation/prepare_runtime.py
+        args: []
+        envFrom:
+        - configMapRef:
+            name: ml-runtime
+        env:
+        - name: ML_RUNTIME_ROLE
+          value: management
+        - name: ML_WAIT_FOR_SCHEMA
+          value: 'true'
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        volumeMounts:
+        - name: runtime
+          mountPath: /app/var
+        - name: foundation
+          mountPath: /foundation
+          readOnly: true
+        - name: management-source
+          mountPath: /projected/role
+          readOnly: true
+        - name: ca-source
+          mountPath: /projected/ca
+          readOnly: true
+        - name: management-private
+          mountPath: /run/private
+        - name: tmp
+          mountPath: /tmp
+      containers:
+      - name: management
+        image: ml-system-runtime:unconfigured
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - -m
+        - bootstrap.deployment_entrypoint
+        args:
+        - uvicorn
+        - bootstrap.ml_api:create_app
+        - --factory
+        - --host
+        - 0.0.0.0
+        - --port
+        - '8000'
+        - --limit-concurrency
+        - '64'
+        envFrom:
+        - configMapRef:
+            name: ml-runtime
+        env:
+        - name: ML_RUNTIME_ROLE
+          value: management
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        volumeMounts:
+        - name: runtime
+          mountPath: /app/var
+        - name: management-private
+          mountPath: /run/private
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+        ports:
+        - name: http
+          containerPort: 8000
+        startupProbe:
+          httpGet:
+            path: /health/live
+            port: 8000
+          periodSeconds: 3
+          failureThreshold: 60
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8000
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8000
+          periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 3
+      volumes:
+      - name: runtime
+        persistentVolumeClaim:
+          claimName: ml-runtime
+      - name: tmp
+        emptyDir:
+          sizeLimit: 256Mi
+      - name: foundation
+        configMap:
+          name: ml-foundation-files
+          defaultMode: 292
+      - name: ca-source
+        configMap:
+          name: mlflow-ca
+          defaultMode: 292
+      - name: management-source
+        secret:
+          secretName: ml-runtime-management
+          defaultMode: 292
+      - name: management-private
+        emptyDir:
+          medium: Memory
+          sizeLimit: 2Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-relay
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ml-relay
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ml-relay
+        app.kubernetes.io/part-of: ml-system
+        ml-system/stage: runtime
+    spec:
+      serviceAccountName: ml-relay
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 360
+      initContainers:
+      - name: prepare-relay
+        image: ml-system-runtime:unconfigured
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - /foundation/prepare_runtime.py
+        args: []
+        envFrom:
+        - configMapRef:
+            name: ml-runtime
+        env:
+        - name: ML_RUNTIME_ROLE
+          value: relay
+        - name: ML_WAIT_FOR_SCHEMA
+          value: 'true'
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        volumeMounts:
+        - name: runtime
+          mountPath: /app/var
+        - name: foundation
+          mountPath: /foundation
+          readOnly: true
+        - name: relay-source
+          mountPath: /projected/role
+          readOnly: true
+        - name: ca-source
+          mountPath: /projected/ca
+          readOnly: true
+        - name: relay-private
+          mountPath: /run/private
+        - name: tmp
+          mountPath: /tmp
+      containers:
+      - name: relay
+        image: ml-system-runtime:unconfigured
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - -m
+        - bootstrap.deployment_entrypoint
+        args:
+        - python
+        - -m
+        - bootstrap.ml_cli
+        - relay
+        envFrom:
+        - configMapRef:
+            name: ml-runtime
+        env:
+        - name: ML_RUNTIME_ROLE
+          value: relay
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        volumeMounts:
+        - name: runtime
+          mountPath: /app/var
+        - name: relay-private
+          mountPath: /run/private
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: runtime
+        persistentVolumeClaim:
+          claimName: ml-runtime
+      - name: tmp
+        emptyDir:
+          sizeLimit: 256Mi
+      - name: foundation
+        configMap:
+          name: ml-foundation-files
+          defaultMode: 292
+      - name: ca-source
+        configMap:
+          name: mlflow-ca
+          defaultMode: 292
+      - name: relay-source
+        secret:
+          secretName: ml-runtime-relay
+          defaultMode: 292
+      - name: relay-private
+        emptyDir:
+          medium: Memory
+          sizeLimit: 2Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-supervisor
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ml-supervisor
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ml-supervisor
+        app.kubernetes.io/part-of: ml-system
+        ml-system/stage: runtime
+    spec:
+      serviceAccountName: ml-supervisor
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 360
+      initContainers:
+      - name: prepare-supervisor
+        image: ml-system-runtime:unconfigured
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - /foundation/prepare_runtime.py
+        args: []
+        envFrom:
+        - configMapRef:
+            name: ml-runtime
+        env:
+        - name: ML_RUNTIME_ROLE
+          value: supervisor
+        - name: ML_WAIT_FOR_SCHEMA
+          value: 'true'
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 100m
+            memory: 384Mi
+          limits:
+            cpu: '1'
+            memory: 1536Mi
+        volumeMounts:
+        - name: runtime
+          mountPath: /app/var
+        - name: foundation
+          mountPath: /foundation
+          readOnly: true
+        - name: supervisor-source
+          mountPath: /projected/role
+          readOnly: true
+        - name: ca-source
+          mountPath: /projected/ca
+          readOnly: true
+        - name: supervisor-private
+          mountPath: /run/private
+        - name: tmp
+          mountPath: /tmp
+      containers:
+      - name: supervisor
+        image: ml-system-runtime:unconfigured
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - -m
+        - bootstrap.deployment_entrypoint
+        args:
+        - taskiq
+        - worker
+        - bootstrap.ml_worker:broker
+        - --workers
+        - '1'
+        - --max-async-tasks
+        - '1'
+        - --ack-type
+        - manual
+        - --wait-tasks-timeout
+        - '330'
+        envFrom:
+        - configMapRef:
+            name: ml-runtime
+        env:
+        - name: ML_RUNTIME_ROLE
+          value: supervisor
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 100m
+            memory: 384Mi
+          limits:
+            cpu: '1'
+            memory: 1536Mi
+        volumeMounts:
+        - name: runtime
+          mountPath: /app/var
+        - name: supervisor-private
+          mountPath: /run/private
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: runtime
+        persistentVolumeClaim:
+          claimName: ml-runtime
+      - name: tmp
+        emptyDir:
+          sizeLimit: 256Mi
+      - name: foundation
+        configMap:
+          name: ml-foundation-files
+          defaultMode: 292
+      - name: ca-source
+        configMap:
+          name: mlflow-ca
+          defaultMode: 292
+      - name: supervisor-source
+        secret:
+          secretName: ml-runtime-supervisor
+          defaultMode: 292
+      - name: supervisor-private
+        emptyDir:
+          medium: Memory
+          sizeLimit: 2Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-control
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ml-control
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ml-control
+        app.kubernetes.io/part-of: ml-system
+        ml-system/stage: runtime
+    spec:
+      serviceAccountName: ml-control
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 360
+      initContainers:
+      - name: prepare-control
+        image: ml-system-runtime:unconfigured
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - /foundation/prepare_runtime.py
+        args: []
+        envFrom:
+        - configMapRef:
+            name: ml-runtime
+        env:
+        - name: ML_RUNTIME_ROLE
+          value: control
+        - name: ML_WAIT_FOR_SCHEMA
+          value: 'true'
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 100m
+            memory: 384Mi
+          limits:
+            cpu: '1'
+            memory: 1536Mi
+        volumeMounts:
+        - name: runtime
+          mountPath: /app/var
+        - name: foundation
+          mountPath: /foundation
+          readOnly: true
+        - name: control-source
+          mountPath: /projected/role
+          readOnly: true
+        - name: ca-source
+          mountPath: /projected/ca
+          readOnly: true
+        - name: control-private
+          mountPath: /run/private
+        - name: tmp
+          mountPath: /tmp
+      - name: prepare-gateway
+        image: ml-system-runtime:unconfigured
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - /foundation/prepare_runtime.py
+        args: []
+        envFrom:
+        - configMapRef:
+            name: ml-runtime
+        env:
+        - name: ML_RUNTIME_ROLE
+          value: gateway
+        - name: ML_WAIT_FOR_SCHEMA
+          value: 'true'
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        volumeMounts:
+        - name: runtime
+          mountPath: /app/var
+        - name: foundation
+          mountPath: /foundation
+          readOnly: true
+        - name: gateway-source
+          mountPath: /projected/role
+          readOnly: true
+        - name: ca-source
+          mountPath: /projected/ca
+          readOnly: true
+        - name: gateway-private
+          mountPath: /run/private
+        - name: tmp
+          mountPath: /tmp
+      containers:
+      - name: control
+        image: ml-system-runtime:unconfigured
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - -m
+        - bootstrap.deployment_entrypoint
+        args:
+        - python
+        - -m
+        - bootstrap.ml_cli
+        - control
+        envFrom:
+        - configMapRef:
+            name: ml-runtime
+        env:
+        - name: ML_RUNTIME_ROLE
+          value: control
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 100m
+            memory: 384Mi
+          limits:
+            cpu: '1'
+            memory: 1536Mi
+        volumeMounts:
+        - name: runtime
+          mountPath: /app/var
+        - name: control-private
+          mountPath: /run/private
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+      - name: gateway
+        image: ml-system-runtime:unconfigured
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - -m
+        - bootstrap.deployment_entrypoint
+        args:
+        - uvicorn
+        - bootstrap.ml_gateway:create_app
+        - --factory
+        - --host
+        - 0.0.0.0
+        - --port
+        - '8001'
+        - --limit-concurrency
+        - '32'
+        envFrom:
+        - configMapRef:
+            name: ml-runtime
+        env:
+        - name: ML_RUNTIME_ROLE
+          value: gateway
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        volumeMounts:
+        - name: runtime
+          mountPath: /app/var
+        - name: gateway-private
+          mountPath: /run/private
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+        ports:
+        - name: http
+          containerPort: 8001
+        startupProbe:
+          httpGet:
+            path: /health/live
+            port: 8001
+          periodSeconds: 3
+          failureThreshold: 60
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 8001
+          periodSeconds: 10
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health/live
+            port: 8001
+          periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 3
+      volumes:
+      - name: runtime
+        persistentVolumeClaim:
+          claimName: ml-runtime
+      - name: tmp
+        emptyDir:
+          sizeLimit: 256Mi
+      - name: foundation
+        configMap:
+          name: ml-foundation-files
+          defaultMode: 292
+      - name: ca-source
+        configMap:
+          name: mlflow-ca
+          defaultMode: 292
+      - name: control-source
+        secret:
+          secretName: ml-runtime-control
+          defaultMode: 292
+      - name: control-private
+        emptyDir:
+          medium: Memory
+          sizeLimit: 2Mi
+      - name: gateway-source
+        secret:
+          secretName: ml-runtime-gateway
+          defaultMode: 292
+      - name: gateway-private
+        emptyDir:
+          medium: Memory
+          sizeLimit: 2Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-ingestion-worker
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ml-ingestion-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ml-ingestion-worker
+        app.kubernetes.io/part-of: ml-system
+        ml-system/stage: runtime
+    spec:
+      serviceAccountName: ml-ingestion-worker
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 360
+      initContainers:
+      - name: prepare-ingestion-worker
+        image: ml-system-runtime:unconfigured
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - /foundation/prepare_runtime.py
+        args: []
+        envFrom:
+        - configMapRef:
+            name: ml-runtime
+        env:
+        - name: ML_RUNTIME_ROLE
+          value: ingestion-worker
+        - name: ML_WAIT_FOR_SCHEMA
+          value: 'true'
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        volumeMounts:
+        - name: runtime
+          mountPath: /app/var
+        - name: foundation
+          mountPath: /foundation
+          readOnly: true
+        - name: ingestion-worker-source
+          mountPath: /projected/role
+          readOnly: true
+        - name: ca-source
+          mountPath: /projected/ca
+          readOnly: true
+        - name: ingestion-worker-private
+          mountPath: /run/private
+        - name: tmp
+          mountPath: /tmp
+      containers:
+      - name: ingestion-worker
+        image: ml-system-runtime:unconfigured
+        imagePullPolicy: IfNotPresent
+        command:
+        - python
+        - -m
+        - bootstrap.deployment_entrypoint
+        args:
+        - python
+        - -m
+        - bootstrap.ingestion_cli
+        - work
+        envFrom:
+        - configMapRef:
+            name: ml-runtime
+        env:
+        - name: ML_RUNTIME_ROLE
+          value: ingestion-worker
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 512Mi
+        volumeMounts:
+        - name: runtime
+          mountPath: /app/var
+        - name: ingestion-worker-private
+          mountPath: /run/private
+          readOnly: true
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: runtime
+        persistentVolumeClaim:
+          claimName: ml-runtime
+      - name: tmp
+        emptyDir:
+          sizeLimit: 256Mi
+      - name: foundation
+        configMap:
+          name: ml-foundation-files
+          defaultMode: 292
+      - name: ca-source
+        configMap:
+          name: mlflow-ca
+          defaultMode: 292
+      - name: ingestion-worker-source
+        secret:
+          secretName: ml-runtime-ingestion-worker
+          defaultMode: 292
+      - name: ingestion-worker-private
+        emptyDir:
+          medium: Memory
+          sizeLimit: 2Mi

@@ -1,0 +1,62 @@
+{
+  "status": "FOUNDATION_SMOKE_PASSED",
+  "management_ready": true,
+  "gateway_ready": true,
+  "mlflow_tls_verified": true,
+  "untrusted_ca_rejected": true,
+  "unauthenticated_rejected": true,
+  "reader_read_allowed": true,
+  "reader_experiment_write_denied": true,
+  "retained_experiment_id": "3",
+  "production_qualified": false,
+  "bootstrap_roles_validated": [
+    "control",
+    "gateway",
+    "ingestion-worker",
+    "management",
+    "migrate",
+    "relay",
+    "supervisor"
+  ],
+  "runtime_roles_ready": [
+    "control",
+    "gateway",
+    "ingestion-worker",
+    "management",
+    "relay",
+    "supervisor"
+  ],
+  "baseline_commit": "ce81327fd8bf2908dc0d3dec2c0efb67e04b1612",
+  "review_date": "2026-11-17",
+  "context": "minikube",
+  "namespace": "ml-k8s-foundation",
+  "kubernetes_version": "v1.37.0",
+  "minikube_version": "v1.39.0",
+  "contract_regressions": {
+    "passed": 110,
+    "failed": 0
+  },
+  "public_manifest_resources": 40,
+  "fresh_install_without_manual_correction": true,
+  "image_lock": {
+    "ml-system-runtime:unconfigured": "docker.io/library/ml-k8s-foundation@sha256:e74a0220c5a84f301b264bd92c41dac9bc7a6de021eb35e591599536c2c566e4",
+    "ml-system-mlflow:unconfigured": "docker.io/library/ml-k8s-mlflow@sha256:b09838695fdc328e887c19183aa37246bb7a6ab18851565c1d23257686438fa9",
+    "ml-system-minio:unconfigured": "docker.io/library/ml-system-minio-source@sha256:576c4452cb8e80f3c8a2b828308ccf8c6676ce00a30e02ad4ecee99ce8a2b5ad",
+    "ml-system-mc:unconfigured": "docker.io/library/ml-system-mc-source@sha256:0ad4627f19e1f257d8ed145328f9be211c5c6d9967b684ce850815714b92019e",
+    "postgres:17": "docker.io/library/postgres@sha256:a0a2412fa2c8100db5f91257baa99f5ae981ca680f1f37ef099e18725af1e2b9",
+    "rabbitmq:4.4-management": "docker.io/library/rabbitmq@sha256:c047095525ddf7873f59032c0dbafe728f2b782123d1a2977d9731d2a2354e24",
+    "redis:7": "docker.io/library/redis@sha256:6fa5da50a7050ba8442ba85b130320c564a0e3c32384b9b2f0e254665f0b6ccb",
+    "mongo:7": "docker.io/library/mongo@sha256:78e6ecf09a5c47be0f72825bb9de829cf67c60db551cce04350ffe21cab39084",
+    "nginx:1.28-alpine": "docker.io/library/nginx@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a171451b335cecc87d236"
+  },
+  "unqualified": [
+    "CSI and cross-node storage",
+    "ACTIVE serving recovery",
+    "cross-Pod training recovery",
+    "network policy enforcement",
+    "HA and backup restore",
+    "enterprise least privilege",
+    "formal MLflow artifact qualification",
+    "Databricks live qualification"
+  ]
+}
