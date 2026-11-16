@@ -56,10 +56,17 @@ def check(documents: list[dict]) -> None:
             assert container["securityContext"]["allowPrivilegeEscalation"] is False
             assert container["securityContext"]["capabilities"]["drop"] == ["ALL"]
             assert {"requests", "limits"} <= container["resources"].keys()
+            if kind == "Deployment":
+                assert "ephemeral-storage" in container["resources"]["requests"]
+                assert "ephemeral-storage" in container["resources"]["limits"]
             assert not any("secretKeyRef" in item.get("valueFrom", {}) for item in container["env"])
             mounts = {mount["name"]: mount for mount in container["volumeMounts"]}
             assert mounts[role + "-private"]["readOnly"] is True
             assert role + "-source" not in mounts and "ca-source" not in mounts
+            if kind == "Deployment":
+                assert mounts["runtime"]["mountPath"] == "/app/var"
+                assert mounts["artifact-cache"]["mountPath"] == "/app/var/artifacts"
+                assert volumes["artifact-cache"]["emptyDir"]["sizeLimit"] == "1Gi"
             assert volumes[role + "-private"]["emptyDir"]["medium"] == "Memory"
             assert any(init["name"] == "prepare-" + role for init in pod["initContainers"])
         if name == "ml-control":
