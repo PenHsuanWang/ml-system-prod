@@ -106,3 +106,11 @@ The [foundation validation record](reviews/k8s-foundation-2026-11-17.md) documen
 local MLflow authorization smoke. Serving/training recovery, real CSI, HA and
 production qualification remain pending under the six-PR plan in
 [ADR-017](adr/017-kubernetes-runtime-boundaries.md).
+
+## Storage Contracts validation (2026-11-17)
+
+The [storage validation record](reviews/k8s-storage-contracts-2026-11-17.md)
+documents 140 passing packaged regressions and 23 contract checks on an isolated
+Minikube PVC, including process death, Pod recreation, read-only verification
+and identical checkpoint resume. Real CSI, cross-node and power-loss durability
+remain unqualified; see [ADR-018](adr/018-kubernetes-storage-contracts.md).
