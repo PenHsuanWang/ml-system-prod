@@ -1,0 +1,88 @@
+# Git-managed declaration; credentials are supplied outside Git.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: redis
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+spec:
+  selector:
+    app.kubernetes.io/name: redis
+  ports:
+  - name: tcp
+    port: 6379
+    targetPort: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: redis
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: redis
+        ml-system/stage: infrastructure
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 45
+      containers:
+      - name: redis
+        image: redis:7
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 6379
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 768Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        args:
+        - redis-server
+        - /config/redis.conf
+        volumeMounts:
+        - name: redis
+          mountPath: /data
+        - name: redis-config
+          mountPath: /config
+          readOnly: true
+        readinessProbe:
+          tcpSocket:
+            port: 6379
+          periodSeconds: 5
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 999
+        runAsGroup: 999
+        runAsNonRoot: true
+        fsGroup: 999
+      volumes:
+      - name: redis
+        persistentVolumeClaim:
+          claimName: redis
+      - name: redis-config
+        secret:
+          secretName: ml-redis

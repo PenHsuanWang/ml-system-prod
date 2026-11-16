@@ -1,0 +1,91 @@
+# Git-managed declaration; credentials are supplied outside Git.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: minio
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+spec:
+  selector:
+    app.kubernetes.io/name: minio
+  ports:
+  - name: tcp
+    port: 9000
+    targetPort: 9000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: minio
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: minio
+        ml-system/stage: infrastructure
+    spec:
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 45
+      containers:
+      - name: minio
+        image: ml-system-minio:unconfigured
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 9000
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            cpu: '1'
+            memory: 768Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+        env:
+        - name: MINIO_ROOT_USER
+          value: ml-artifacts
+        - name: MINIO_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: ml-infra
+              key: MINIO_ROOT_PASSWORD
+        args:
+        - server
+        - /data
+        volumeMounts:
+        - name: minio
+          mountPath: /data
+        readinessProbe:
+          httpGet:
+            path: /minio/health/ready
+            port: 9000
+          periodSeconds: 5
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+        runAsUser: 10001
+        runAsGroup: 10001
+        runAsNonRoot: true
+        fsGroup: 10001
+      volumes:
+      - name: minio
+        persistentVolumeClaim:
+          claimName: minio

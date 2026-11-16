@@ -1,0 +1,3 @@
+{
+  "ML_DATABASE_URL": "postgresql+psycopg://ROLE:REPLACE@postgres:5432/ml"
+}

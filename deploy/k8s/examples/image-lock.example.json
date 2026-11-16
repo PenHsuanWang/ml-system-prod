@@ -1,0 +1,11 @@
+{
+  "ml-system-runtime:unconfigured": "docker.io/library/ml-k8s-foundation@sha256:REPLACE_WITH_CRI_MANIFEST_DIGEST",
+  "ml-system-mlflow:unconfigured": "docker.io/library/ml-k8s-mlflow@sha256:REPLACE_WITH_CRI_MANIFEST_DIGEST",
+  "ml-system-minio:unconfigured": "docker.io/library/ml-k8s-minio@sha256:REPLACE_WITH_CRI_MANIFEST_DIGEST",
+  "ml-system-mc:unconfigured": "docker.io/library/ml-k8s-mc@sha256:REPLACE_WITH_CRI_MANIFEST_DIGEST",
+  "postgres:17": "docker.io/library/postgres@sha256:REPLACE_WITH_CRI_MANIFEST_DIGEST",
+  "rabbitmq:4.4-management": "docker.io/library/rabbitmq@sha256:REPLACE_WITH_CRI_MANIFEST_DIGEST",
+  "redis:7": "docker.io/library/redis@sha256:REPLACE_WITH_CRI_MANIFEST_DIGEST",
+  "mongo:7": "docker.io/library/mongo@sha256:REPLACE_WITH_CRI_MANIFEST_DIGEST",
+  "nginx:1.28-alpine": "docker.io/library/nginx@sha256:REPLACE_WITH_CRI_MANIFEST_DIGEST"
+}
