@@ -121,6 +121,14 @@ class EBMFileDatasetSource:
         self._no_symlinks(self.root)
 
     @staticmethod
+    def _sync_directory(path: Path) -> None:
+        descriptor = os.open(path, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+
+    @staticmethod
     def _no_symlinks(path: Path) -> None:
         for component in (path, *path.parents):
             if component.is_symlink():
@@ -212,6 +220,7 @@ class EBMFileDatasetSource:
         self.root.mkdir(parents=True, exist_ok=True)
         if destination.exists():
             self.load(reference)
+            self._sync_directory(self.root)
             return reference
         with tempfile.TemporaryDirectory(prefix=".ebm-publish-", dir=self.root) as staging_name:
             staging = Path(staging_name)
@@ -220,10 +229,12 @@ class EBMFileDatasetSource:
                     handle.write(data)
                     handle.flush()
                     os.fsync(handle.fileno())
+            self._sync_directory(staging)
             try:
                 staging.rename(destination)
             except OSError:
                 if not destination.exists():
                     raise
                 self.load(reference)
+            self._sync_directory(self.root)
         return reference

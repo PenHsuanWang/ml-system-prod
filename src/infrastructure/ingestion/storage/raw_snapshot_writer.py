@@ -517,6 +517,13 @@ class LocalRawSnapshotStore:
             raise SnapshotInvalid("Raw publication intent identity or staging evidence mismatch")
         existing = self.lookup(intent.tenant_id, intent.snapshot_id, intent.manifest_digest)
         if existing is not None:
+            try:
+                with directory_fd(path.parent) as parent:
+                    os.fsync(parent)
+            except OSError as error:
+                raise PublicationUncertain(
+                    "Raw publication durability requires reconciliation"
+                ) from error
             return existing
         source = self._validate_stage(
             staged,
@@ -565,6 +572,7 @@ class LocalRawSnapshotStore:
                         raise PublicationUncertain(
                             "Raw publication result requires reconciliation"
                         ) from None
+                    os.fsync(parent)
                     return existing
                 os.fsync(parent)
             result = self.lookup(intent.tenant_id, intent.snapshot_id, intent.manifest_digest)

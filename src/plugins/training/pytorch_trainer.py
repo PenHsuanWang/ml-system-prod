@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import math
+import os
 import random
 from collections.abc import Callable
 from pathlib import Path
@@ -21,14 +22,24 @@ def fixture() -> tuple[list[list[float]], list[int]]:
     return values, labels
 
 
+def durable_replace(temporary: Path, destination: Path) -> None:
+    """Sync file contents and its replacement directory entry before reporting success."""
+    with temporary.open("rb") as stream:
+        os.fsync(stream.fileno())
+    temporary.replace(destination)
+    descriptor = os.open(destination.parent, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
 def atomic_json(path: Path, value: object) -> None:
     temporary = path.with_suffix(path.suffix+".tmp")
     with temporary.open("w", encoding="utf-8") as stream:
         stream.write(canonical_json(value))
         stream.flush()
-        import os
-        os.fsync(stream.fileno())
-    temporary.replace(path)
+    durable_replace(temporary, path)
 
 
 class PyTorchTrainer:
@@ -98,7 +109,7 @@ class PyTorchTrainer:
                         "epoch": epoch, "rng": torch.get_rng_state(),
                         "metric_history": metrics,
                         "spec_digest": spec_digest}, temporary)
-            temporary.replace(checkpoint_path)
+            durable_replace(temporary, checkpoint_path)
         bundle = directory / "bundle"
         bundle.mkdir(exist_ok=True)
         model.eval()
