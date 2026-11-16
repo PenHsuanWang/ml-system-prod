@@ -161,3 +161,10 @@ Use the [Day-1 runbook](docs/deployment/day1-deployment-runbook.md) for installa
 
 Databricks access token 可透過 `.env` 的 `DATABRICKS_TOKEN` 設定；連線 JSON 與 Compose 用法見
 [Databricks 操作手冊](docs/databricks-ingestion-runbook.md#access-tokenenv)。
+
+## Kubernetes migration
+
+The local Kubernetes foundation and its six-PR acceptance boundaries are documented
+in the [Minikube runbook](docs/deployment/kubernetes-staging-runbook.md) and
+[ADR-017](docs/adr/017-kubernetes-runtime-boundaries.md). This foundation does not
+qualify serving/training recovery or production operation.

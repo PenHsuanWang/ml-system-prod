@@ -1,5 +1,8 @@
 # 架構決策紀錄
 
+Kubernetes migration: [ADR-017 — Foundation and runtime boundaries](017-kubernetes-runtime-boundaries.md)
+records the six-PR plan and separates local startup evidence from production acceptance.
+
 本文件記錄設計取捨與取代關係。「採用」表示本專案的程式與文件基線，不表示組織已完成生產核准。ADR-001～009 為 2026-10-23 的歷史決策；ADR-010 於 2026-10-24 確立通用藍圖政策；ADR-011～013 補充 v1.3 工程基線。實際驗證以 [驗證紀錄](../validation.md) 為準。
 
 **現行規範優先序：** ADR-010 取代舊決策中任何可被解讀為預設產品領域、設定階層或流程的描述。下方舊決策保留原始因果與來源名稱作歷史追溯；原始設計與歷史敘述不是新增功能的必備需求。保留的通用工程決策與 package 基線繼續有效。
