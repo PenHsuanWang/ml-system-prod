@@ -63,6 +63,22 @@ no finalizers were removed and no uncertain training was force-declared stopped.
 The final fresh namespace is retained for inspection. The helper remains a
 fresh-install workflow and refuses existing namespaces; it performs no cleanup.
 
+## CI acceptance-image correction
+
+The first full Backend CI run exposed a packaging omission: `Dockerfile.ml`'s
+`acceptance` target copied tests and scripts but omitted `deploy/k8s`. Four
+private-file adaptation cases failed with `FileNotFoundError`; the remaining
+1,052 tests and the separate EBM end-to-end case passed. The standalone
+foundation job had the full checkout and therefore did not expose the omission.
+
+The fix copies the public K8s declarations into the acceptance target only and
+requires migration-ordering tests to find their mandatory manifest fixtures.
+The rebuilt image, with a read-only root and no source bind mount, passed all
+110 Foundation/entrypoint/qualification regressions. Scoped lint, dependency
+boundaries and manifest contracts also passed. Foundation cases remain in the
+full Backend suite with zero-skip acceptance; production targets, application
+behavior and test exclusions are unchanged.
+
 ## Remaining gates
 
 Real CSI and cross-node storage contracts, ACTIVE-serving rebuilding and route

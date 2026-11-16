@@ -125,6 +125,10 @@ def test_application_apply_requires_completed_migration(tmp_path, monkeypatch, m
             if path.name == "kustomization.yaml":
                 continue
             documents.extend(yaml.safe_load_all(path.read_text()))
+    identities = {(document["kind"], document["metadata"]["name"]) for document in documents}
+    assert {("Job", "ml-migrate"), ("Deployment", "ml-control")} <= identities, (
+        "The acceptance image must contain the Kubernetes manifest fixtures"
+    )
     for document in documents:
         if document["kind"] != "Namespace":
             document["metadata"]["namespace"] = NAMESPACE
