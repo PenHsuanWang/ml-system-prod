@@ -9,6 +9,9 @@ FILES = [
     "src/infrastructure/deployment/kubernetes_serving.py",
     "bootstrap/ml_serving_wiring.py",
     "tests/ml/test_serving_runtime.py",
+    "scripts/check_serving_runtime.py",
+    "scripts/k8s_serving_fixture.py",
+    "scripts/verify_k8s_serving.py",
 ]
 
 

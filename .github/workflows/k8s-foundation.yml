@@ -26,6 +26,8 @@ jobs:
           echo "$RUNNER_TEMP/k8s-bin" >> "$GITHUB_PATH"
       - name: Render and enforce foundation boundaries
         run: python scripts/check_k8s.py
+      - name: Render opt-in native Serving profile
+        run: kubectl kustomize deploy/k8s/overlays/minikube-serving > "$RUNNER_TEMP/serving-profile.yaml"
       - name: Verify secret adaptation and unchanged bootstrap
         run: python -m pytest tests/ml/k8s/test_foundation.py tests/ml/k8s/test_storage_configuration.py tests/ml/test_deployment_entrypoint.py --noconftest -q
       - name: Lint scoped foundation code
