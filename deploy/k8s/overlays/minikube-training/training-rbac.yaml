@@ -1,0 +1,42 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ml-training-observer
+rules:
+- apiGroups:
+  - ''
+  resources:
+  - pods
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ml-training-observer
+subjects:
+- kind: ServiceAccount
+  name: ml-control
+- kind: ServiceAccount
+  name: ml-supervisor
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ml-training-observer
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: training-supervisor-api
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: ml-supervisor
+  policyTypes:
+  - Egress
+  egress:
+  - ports:
+    - protocol: TCP
+      port: 443
+    - protocol: TCP
+      port: 8443

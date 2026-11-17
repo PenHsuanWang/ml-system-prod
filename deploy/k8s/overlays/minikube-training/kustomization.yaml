@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- ../minikube-serving
+- training-rbac.yaml
+patches:
+- path: training-runtime.yaml
+configMapGenerator:
+- name: ml-runtime
+  behavior: merge
+  literals:
+  - ML_TRAINING_BACKEND=pod
+  - ML_TRAINING_NAMESPACE=ml-k8s-foundation
+generatorOptions:
+  disableNameSuffixHash: true

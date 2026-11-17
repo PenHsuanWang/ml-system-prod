@@ -202,3 +202,32 @@ def test_native_serving_profile_scopes_secrets_and_control_token(tmp_path, monke
     patch = yaml.safe_load((root / "control-api.yaml").read_text())
     containers = patch["spec"]["template"]["spec"]["containers"]
     assert [c["name"] for c in containers] == ["control"]
+
+
+def test_pod_training_profile_preserves_scoped_identity_and_manual_ack(tmp_path, monkeypatch):
+    monkeypatch.setattr("scripts.k8s_foundation.ROOT", tmp_path)
+    directory = tmp_path / "var/training"
+    images = {name: "example.test/ml@sha256:" + "a" * 64 for name in IMAGES}
+    prepare(directory, "b" * 40, images, training_runtime=True, namespace="ml-k8s-training-runtime")
+    config = yaml.safe_load((directory / "kustomization.yaml").read_text())
+    assert "minikube-training" in config["resources"][0]
+    assert (
+        "ML_TRAINING_NAMESPACE=ml-k8s-training-runtime"
+        in config["configMapGenerator"][1]["literals"]
+    )
+    assert (directory / "serving.json").is_file()
+    root = ROOT / "deploy/k8s/overlays/minikube-training"
+    role = next(
+        r
+        for r in yaml.safe_load_all((root / "training-rbac.yaml").read_text())
+        if r["kind"] == "Role"
+    )
+    assert role["rules"] == [{"apiGroups": [""], "resources": ["pods"], "verbs": ["get"]}]
+    patches = list(yaml.safe_load_all((root / "training-runtime.yaml").read_text()))
+    for patch in patches:
+        containers = patch["spec"]["template"]["spec"]["containers"]
+        assert all(c["name"] in {"supervisor", "control"} for c in containers)
+        names = {e["name"] for c in containers for e in c["env"]}
+        assert {"ML_TRAINING_POD_UID", "ML_TRAINING_POD_NAME", "ML_TRAINING_CONTAINER"} <= names
+    supervisor = patches[0]["spec"]["template"]["spec"]["containers"][0]
+    assert supervisor["args"][supervisor["args"].index("--ack-type") + 1] == "manual"

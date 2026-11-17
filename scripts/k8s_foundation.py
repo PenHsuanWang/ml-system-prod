@@ -117,9 +117,12 @@ def prepare(
     *,
     serving_runtime: bool = False,
     namespace: str = NAMESPACE,
+    training_runtime: bool = False,
 ) -> None:
-    if namespace not in {NAMESPACE, "ml-k8s-serving-runtime"}:
+    if namespace not in {NAMESPACE, "ml-k8s-serving-runtime", "ml-k8s-training-runtime"}:
         raise ValueError("Only isolated Minikube namespaces are allowed")
+    if training_runtime:
+        serving_runtime = True
     if namespace != NAMESPACE and not serving_runtime:
         raise ValueError("The alternate namespace requires the Serving Runtime profile")
     if not re.fullmatch(r"[a-f0-9]{40}", revision) or revision == "0" * 40:
@@ -285,7 +288,13 @@ def prepare(
             os.path.relpath(
                 ROOT
                 / "deploy/k8s/overlays"
-                / ("minikube-serving" if serving_runtime else "minikube"),
+                / (
+                    "minikube-training"
+                    if training_runtime
+                    else "minikube-serving"
+                    if serving_runtime
+                    else "minikube"
+                ),
                 directory,
             )
         ],
@@ -318,13 +327,15 @@ def prepare(
         config["configMapGenerator"][1]["literals"].append(
             "ML_SERVING_IMAGE_REPOSITORY=" + images["ml-system-runtime:unconfigured"].split("@")[0]
         )
+    if training_runtime:
+        config["configMapGenerator"][1]["literals"].append("ML_TRAINING_NAMESPACE=" + namespace)
     private_write(directory / "kustomization.yaml", yaml.safe_dump(config, sort_keys=False))
     private_write(directory / "image-lock.json", json.dumps(images, indent=2) + "\n")
     print("Private Minikube overlay prepared (credentials omitted)")
 
 
 def deploy(directory: Path, namespace: str = NAMESPACE) -> None:
-    if namespace not in {NAMESPACE, "ml-k8s-serving-runtime"}:
+    if namespace not in {NAMESPACE, "ml-k8s-serving-runtime", "ml-k8s-training-runtime"}:
         raise ValueError("Only isolated Minikube namespaces are allowed")
     kubectl = ["kubectl", "--context=minikube", "--namespace=" + namespace]
     # Refuse to overlay an existing environment: initialization is a fresh-install
@@ -464,6 +475,7 @@ def main() -> None:
     prepare_parser.add_argument("--image-lock", type=Path, required=True)
     prepare_parser.add_argument("--revision", required=True)
     prepare_parser.add_argument("--serving-runtime", action="store_true")
+    prepare_parser.add_argument("--training-runtime", action="store_true")
     prepare_parser.add_argument("--directory", type=Path, default=ROOT / "var/k8s-foundation")
     deploy_parser = commands.add_parser("deploy")
     deploy_parser.add_argument("--directory", type=Path, default=ROOT / "var/k8s-foundation")
@@ -471,7 +483,9 @@ def main() -> None:
     verify_parser.add_argument("--directory", type=Path, default=ROOT / "var/k8s-foundation")
     for command in (prepare_parser, deploy_parser, verify_parser):
         command.add_argument(
-            "--namespace", choices=[NAMESPACE, "ml-k8s-serving-runtime"], default=NAMESPACE
+            "--namespace",
+            choices=[NAMESPACE, "ml-k8s-serving-runtime", "ml-k8s-training-runtime"],
+            default=NAMESPACE,
         )
     args = parser.parse_args()
     if args.operation == "lock-images":
@@ -491,6 +505,7 @@ def main() -> None:
             args.revision,
             json.loads(args.image_lock.read_text()),
             serving_runtime=args.serving_runtime,
+            training_runtime=args.training_runtime,
             namespace=args.namespace,
         )
     elif args.operation == "verify":

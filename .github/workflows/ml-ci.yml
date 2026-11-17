@@ -47,6 +47,8 @@ jobs:
         run: python scripts/check_deployment.py
       - name: Serving Runtime adapter boundaries
         run: python scripts/check_serving_runtime.py
+      - name: Training Runtime adapter boundaries
+        run: python scripts/check_training_runtime.py
       - run: python scripts/check_ebm_typing.py
       - run: python -m pytest tests/ml tests/test_boundaries.py -q --junitxml=ml-results.xml
         env:
