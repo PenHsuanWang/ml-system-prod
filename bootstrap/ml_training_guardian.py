@@ -63,7 +63,10 @@ def supervise(root: Path, *, grace: float, runner: list[str]) -> int:
                 reason = "CAPACITY_UNCERTAIN"
                 return 1
             publish(root.parent / "active-training.json", identity)
-        if time.time() >= deadline or (root / "stop-request.json").exists():
+        if time.time() >= deadline:
+            reason = "DEADLINE"
+            return 1
+        if (root / "stop-request.json").exists():
             reason = "STOPPED_BEFORE_LAUNCH"
             return 1
         child = subprocess.Popen(runner, stdin=subprocess.DEVNULL, start_new_session=True)

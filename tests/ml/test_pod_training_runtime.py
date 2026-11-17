@@ -430,3 +430,13 @@ def test_tracker_startup_reconciles_only_named_experiment_collision(monkeypatch,
         with pytest.raises(MlflowException):
             MLflowExperimentTracker("https://tracking.example")
         assert reads == ["ml-training"]
+
+
+def test_expired_launch_records_deadline_without_starting_compute(native):
+    execution = handle(native, time.time() - 1)
+    process = guardian(native, execution, "raise AssertionError('expired compute')")
+    process.wait(timeout=8)
+    value = observer(native).inspect(execution)
+    assert value.state == "STOPPED" and value.reason == "DEADLINE"
+    assert not (Path(execution.directory) / "compute-start.json").exists()
+    assert native.capacity_available()
