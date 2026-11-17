@@ -77,6 +77,8 @@ def main():
     native = json.loads(run("get", "deployment/ml-control", "-o", "json"))
     pod = copy.deepcopy(native["spec"]["template"]["spec"])
     pod["serviceAccountName"] = "ml-serving"
+    pod["restartPolicy"] = "Never"
+    pod["activeDeadlineSeconds"] = 7200
     pod["initContainers"] = [c for c in pod["initContainers"] if c["name"] == "prepare-control"]
     container = next(c for c in pod["containers"] if c["name"] == "control")
     container["name"] = "operator"

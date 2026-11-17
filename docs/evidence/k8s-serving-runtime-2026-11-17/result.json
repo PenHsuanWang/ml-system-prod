@@ -268,5 +268,9 @@
     "skipped": 0,
     "source_mount": false,
     "root_filesystem": "read-only"
+  },
+  "qualification_operator": {
+    "uid": "4b3a0cd0-41e6-4c5f-ab0d-a9f47f11fd5f",
+    "active_deadline_seconds": 7200
   }
 }
