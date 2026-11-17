@@ -4,6 +4,7 @@ import json
 import time
 from dataclasses import asdict
 from typing import Protocol
+from collections.abc import Callable
 from uuid import uuid4
 
 from src.application.model_registry.ports import ExperimentTracker, RegistryRepository
@@ -23,7 +24,8 @@ class TrainingSupervisor:
     def __init__(self, repository: TrainingRepository, executor: TrainingExecutor,
                  registry: RegistryRepository, tracker: ExperimentTracker,
                  evaluator: Evaluator, *, timeout: int = 300, heartbeat: int = 2,
-                 runtime_code: str | None = None, runtime_image: str | None = None) -> None:
+                 runtime_code: str | None = None, runtime_image: str | None = None,
+                 draining: Callable[[], bool] | None = None) -> None:
         self.repository = repository
         self.executor = executor
         self.registry = registry
@@ -33,8 +35,11 @@ class TrainingSupervisor:
         self.heartbeat = heartbeat
         self.runtime_code = runtime_code
         self.runtime_image = runtime_image
+        self.draining = draining or (lambda: False)
 
     def execute(self, command: TrainingCommand) -> None:
+        if self.draining():
+            raise Unavailable("Worker is draining; delivery remains unacknowledged")
         claim = self.repository.claim(command)
         if claim.already_complete:
             return
@@ -46,7 +51,8 @@ class TrainingSupervisor:
             return
         envelope = {"spec": spec,
                     "training_spec_digest": claim.job.spec_digest,
-                    "producer": {"job_id": claim.job.job_id, "attempt_id": claim.job.attempt_id}}
+                    "producer": {"job_id": claim.job.job_id, "attempt_id": claim.job.attempt_id},
+                    "deadline": claim.job.deadline}
         handle = self.executor.prepare(canonical_json(envelope), claim.job.attempt_id,
                                        claim.owner_token)
         # The stable launch key is durable BEFORE spawning, including the crash window.
@@ -54,7 +60,10 @@ class TrainingSupervisor:
         try:
             self.executor.launch(handle)
         except OSError:
-            self.repository.stop(claim, "LAUNCH_FAILED", confirmed=True)
+            confirmed = self.executor.stop(handle)
+            self.repository.stop(claim, "LAUNCH_FAILED", confirmed=confirmed)
+            if not confirmed:
+                raise Unavailable("Launch failure requires physical reconciliation") from None
             return
         self.monitor(claim, handle)
 
@@ -72,9 +81,10 @@ class TrainingSupervisor:
                 if observation.state == "RUNNING" and not observed_running:
                     self.repository.execution_started(claim, canonical_json(asdict(handle)))
                     observed_running = True
-                if job.cancel_requested or now-started > self.timeout or time.time() > job.deadline:
+                if self.draining() or job.cancel_requested or now-started > self.timeout or time.time() > job.deadline:
                     confirmed = self.executor.stop(handle)
-                    self.repository.stop(claim, "CANCELLED" if job.cancel_requested else "TRAINING_DEADLINE",
+                    self.repository.stop(claim, "CANCELLED" if job.cancel_requested else
+                                         "SUPERVISOR_DRAIN" if self.draining() else "TRAINING_DEADLINE",
                                          confirmed=confirmed)
                     if not confirmed:
                         raise Unavailable("Execution requires reconciliation")
@@ -85,6 +95,9 @@ class TrainingSupervisor:
                 raise Unavailable("Execution requires reconciliation")
             time.sleep(0.05)
         job = self.repository.heartbeat(claim)
+        if self.draining() or observation.reason == "DEADLINE":
+            self.repository.stop(claim, "SUPERVISOR_DRAIN" if self.draining() else "TRAINING_DEADLINE", confirmed=True)
+            return
         if job.cancel_requested:
             self.repository.stop(claim, "CANCELLED", confirmed=True)
             return
@@ -96,6 +109,31 @@ class TrainingSupervisor:
             self.repository.stop(claim, "TRAINING_FAILED", confirmed=True)
             return
         self.finalize(claim, result)
+
+    def reconcile_once(self, claim: Claim, handle: ExecutionHandle) -> bool:
+        """One Control observation; never launch or hold the Serving loop for a fit."""
+        job = self.repository.heartbeat(claim)
+        observation = self.executor.inspect(handle)
+        if job.cancel_requested or time.time() > job.deadline or observation.reason == "DEADLINE":
+            confirmed = observation.state == "STOPPED" or self.executor.stop(handle)
+            code = "CANCELLED" if job.cancel_requested else "TRAINING_DEADLINE"
+            if confirmed or job.state != "NEEDS_RECONCILIATION" or job.error_code != code:
+                self.repository.stop(claim, code, confirmed=confirmed)
+            return confirmed
+        if observation.state == "UNKNOWN":
+            if job.state != "NEEDS_RECONCILIATION" or job.error_code != "EXECUTION_UNCERTAIN":
+                self.repository.stop(claim, "EXECUTION_UNCERTAIN", confirmed=False)
+            return False
+        if observation.state == "RUNNING":
+            if job.phase == "STARTING":
+                self.repository.execution_started(claim, canonical_json(asdict(handle)))
+            return False
+        result = self.executor.result(handle)
+        if observation.exit_code != 0 or result is None:
+            self.repository.stop(claim, "TRAINING_FAILED", confirmed=True)
+        else:
+            self.finalize(claim, result)
+        return True
 
     def finalize(self, claim: Claim, result: TrainingOutput) -> None:
         # A transient external failure leaves recoverable phase evidence; no second fit.

@@ -173,6 +173,20 @@ class SQLTrainingRepository:
                 state="RUNNING", phase="STARTING", revision=jobs.c.revision+1))
             return Claim(job_from_row(self._job(c, row["id"])), owner)
 
+    def validate_delivery(self, command: TrainingCommand) -> Job:
+        """ACK requires the exact SQL intent, even for a terminal redelivery."""
+        with self.db.transaction() as c:
+            row = self._job(c, command.job_id)
+            intent = c.execute(select(outbox).where(outbox.c.id == command.command_id)).mappings().first()
+            if (not intent or command.schema_version != "1"
+                    or row["current_attempt_id"] != command.attempt_id
+                    or row["spec_digest"] != command.spec_digest
+                    or intent["job_id"] != command.job_id
+                    or intent["attempt_id"] != command.attempt_id
+                    or intent["spec_digest"] != command.spec_digest):
+                raise Conflict("Delivery does not match durable intent")
+            return job_from_row(row)
+
     def _owned(self, c: Connection, claim: Claim) -> Mapping[str, Any]:
         row = self._job(c, claim.job.job_id)
         attempt = c.execute(select(attempts).where(attempts.c.id == row["current_attempt_id"]))

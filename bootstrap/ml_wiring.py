@@ -14,7 +14,7 @@ from src.application.training.supervisor import TrainingSupervisor
 from src.infrastructure.datasets.ml_recipes import ApprovedRecipeResolver
 from src.infrastructure.datasets.snapshots import FileDatasetSource
 from src.infrastructure.datasets.ebm_snapshots import EBMFileDatasetSource
-from src.infrastructure.execution.local_process import LocalProcessExecutor
+from bootstrap.ml_training_wiring import training_executor
 from src.infrastructure.mlflow.tracking import LocalExperimentTracker, MLflowExperimentTracker
 from src.infrastructure.persistence.ml_database import Database
 from src.infrastructure.persistence.ml_datasets import SQLDatasetCatalog
@@ -39,7 +39,7 @@ class Components:
     deployments: SQLDeploymentRepository
     services: MLServices
 
-    def supervisor(self) -> TrainingSupervisor:
+    def supervisor(self, *, draining=None) -> TrainingSupervisor:
         tracker = (LocalExperimentTracker(self.settings.artifact_root)
                    if self.settings.tracker_backend == "local" else
                    MLflowExperimentTracker(self.settings.tracking_uri))
@@ -50,11 +50,11 @@ class Components:
             expected_code_digest=self.settings.code_revision), EBMFileDatasetSource(self.settings.dataset_root),
             evaluate_neural_outputs, lambda config, metrics: EBMQualityPolicy.from_dict(config).decide(metrics))
         evaluator = WorkloadBundleEvaluator(classifier, ebm)
-        executor = LocalProcessExecutor(self.settings.execution_root, timeout=self.settings.training_timeout,
-                                        grace=self.settings.cancel_grace, dataset_root=self.settings.dataset_root)
+        executor = training_executor(self.settings)
         supervisor = TrainingSupervisor(self.training, executor, self.registry, tracker, evaluator,
                                         timeout=self.settings.training_timeout, heartbeat=self.settings.heartbeat_seconds,
-                                        runtime_code=self.settings.code_revision, runtime_image=self.settings.image_digest)
+                                        runtime_code=self.settings.code_revision, runtime_image=self.settings.image_digest,
+                                        draining=draining)
         return supervisor
 
 
