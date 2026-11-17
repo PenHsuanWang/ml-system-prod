@@ -13,6 +13,9 @@ FILES = [
     "src/application/training/reconciliation.py",
     "tests/ml/test_pod_training_runtime.py",
     "scripts/check_training_runtime.py",
+    "scripts/k8s_training_fixture.py",
+    "scripts/k8s_training_fault.py",
+    "scripts/verify_k8s_training.py",
 ]
 
 
