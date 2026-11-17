@@ -36,7 +36,7 @@ class DeploymentController:
         state = deployment.state
         if state == "ACTIVE":
             route = self.repository.route(deployment.tenant_id, deployment.endpoint_id)
-            if (route.deployment_id, route.generation) == (deployment.deployment_id, deployment.generation):
+            if not deployment.resources_released and (route.deployment_id, route.generation) == (deployment.deployment_id, deployment.generation):
                 # Restore the approved physical instance without another activation/CAS.
                 # A stale ACTIVE snapshot must never recreate a superseded deployment.
                 self.executor.prepare(deployment)
@@ -54,7 +54,7 @@ class DeploymentController:
         if state == "VALIDATING":
             self.repository.transition(deployment.deployment_id, "VALIDATING", "STARTING")
             state = "STARTING"
-        if state in {"STARTING", "WARMING"}:
+        if state in {"STARTING", "WARMING", "READY", "ACTIVATING", "RECONCILING"}:
             self.executor.prepare(deployment)
         if not self.executor.ready(deployment):
             return

@@ -275,6 +275,12 @@ class KubernetesServingExecutor:
 
     def prepare(self, deployment: Deployment) -> None:
         resources = self.resources(deployment)
+        # A removed API object is not proof that its old physical instance stopped.
+        # Wait for lingering Pods instead of creating a second incarnation.
+        if self.api.request(
+            "GET", self.path("deployments", resource_name(deployment))
+        ) is None and self.pods(deployment):
+            raise Unavailable("Previous Serving incarnation still requires reconciliation")
         native = self.ensure("deployments", resources["deployments"])
         owner = {
             "apiVersion": "apps/v1",

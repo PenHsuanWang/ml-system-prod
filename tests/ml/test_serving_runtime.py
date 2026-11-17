@@ -360,3 +360,11 @@ def test_failed_candidate_has_bounded_native_progress_deadline(executor, deploym
     }
     with pytest.raises(Conflict, match="deadline"):
         executor.ready(replace(deployment, state="STARTING"))
+
+
+def test_missing_native_deployment_does_not_duplicate_lingering_pod(executor, deployment):
+    executor.api.pod_items = [{"metadata": {"uid": "lingering-pod"}}]
+    with pytest.raises(Unavailable, match="incarnation"):
+        executor.prepare(deployment)
+    assert not executor.api.objects
+    assert not [call for call in executor.api.calls if call[0] == "POST"]
