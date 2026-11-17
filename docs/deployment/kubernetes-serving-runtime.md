@@ -46,7 +46,10 @@ python scripts/verify_k8s_serving.py --output var/k8s-serving-runtime/serving-re
 
 This command is restricted to `--context=minikube` and namespace
 `ml-k8s-serving-runtime`. It pauses Relay, Supervisor and Control while preparing
-three real synthetic model fixtures in a dedicated operator Pod. It uses the
+three real synthetic model fixtures in a dedicated operator Pod. Paused fixture
+roles request graceful SIGINT and use normal 15-second grace deletion with confirmed
+Pod disappearance. This handles the existing Python PID 1 shutdown default without
+changing application shutdown policy or using force deletion. It uses the
 existing Training supervisor, independent bundle evaluator, Model Registry and
 explicit approvals. The EBM fixture uses a named engineering-only quality policy
 for a synthetic dataset. It does not claim product quality or Notebook parity.
@@ -62,6 +65,10 @@ password/tokens never enter receipts or logs. A sanitized receipt records checks
 source/image pins and route identities. Model payloads, role files and CA keys stay
 in the private environment. Retain failed receipts and inspect that environment
 before retrying; the harness refuses to overwrite an existing receipt.
+If fixture seeding and the first MLP activation completed, `--resume-fixtures` can
+retry against that retained fixture with a new output path. It verifies the
+retained route still refers to that first fixture; later rollout stages require
+inspection rather than blind replay.
 
 The final EBM runtime, namespace/PVCs and operator are retained for inspection.
 Relay and Supervisor stay scaled to zero: this is an isolated Serving qualification

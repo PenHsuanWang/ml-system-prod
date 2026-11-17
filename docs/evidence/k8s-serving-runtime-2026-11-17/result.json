@@ -1,0 +1,272 @@
+{
+  "status": "SERVING_RUNTIME_PASSED",
+  "namespace": "ml-k8s-serving-runtime",
+  "production_qualified": false,
+  "training_executor_qualified": false,
+  "checks": [
+    "approved_mlp_via_gateway",
+    "pod_recreated_without_sql_activation",
+    "active_deployment_resource_reconstructed",
+    "controller_gateway_restart_preserves_active_route",
+    "approved_update_retires_previous_pods_before_release",
+    "rollback_is_new_generation",
+    "approved_ebm_via_same_native_runtime_contract"
+  ],
+  "fixtures": {
+    "retained": true
+  },
+  "source_revision": "d6cf9ac59ba5100d44152955e1a9ab0214aa045b",
+  "runtime_image_digest": "sha256:925f4513276257a8aff0571ac972411a8257ac2d89d9b3b903a7a42c2ac36aed",
+  "recovered_route": {
+    "tenant_id": "serving-3178a5ed2a92",
+    "endpoint_id": "quality",
+    "revision": 1,
+    "deployment_id": "8f51b5b8-028c-49f9-abc1-c40dec82681e",
+    "generation": 1
+  },
+  "final_route": {
+    "tenant_id": "serving-3178a5ed2a92",
+    "endpoint_id": "quality",
+    "revision": 4,
+    "deployment_id": "c6701f1d-86b6-4afd-9964-3b7c66d63f32",
+    "generation": 4
+  },
+  "platform_deployments": [
+    {
+      "id": "8f51b5b8-028c-49f9-abc1-c40dec82681e",
+      "generation": 1,
+      "state": "RETIRED",
+      "approval_id": "dfc7efdd-bbab-4ca0-a122-776febf307da",
+      "spec_digest": "c8ced2c4dc25c102a76adbbe24b83aeb43e126c82c7641c27e70c084c286ff4a",
+      "resources_released": true
+    },
+    {
+      "id": "f5fb99cb-9e32-465a-a5ad-351024628978",
+      "generation": 2,
+      "state": "RETIRED",
+      "approval_id": "cfd72ce2-6ad9-4fd6-98c4-81248a19e054",
+      "spec_digest": "e4ba6d6cfabd023492ad041bd05c7d37a2fe27f087ce481a0d517e8e76a7675e",
+      "resources_released": true
+    },
+    {
+      "id": "09641038-eb32-4e0c-abc5-0a015f5b0436",
+      "generation": 3,
+      "state": "RETIRED",
+      "approval_id": "dfc7efdd-bbab-4ca0-a122-776febf307da",
+      "spec_digest": "4b8e39d5c2f478cd03e07f868f5dbb91defc126812ed0c6f4ed274edaae6d012",
+      "resources_released": true
+    },
+    {
+      "id": "c6701f1d-86b6-4afd-9964-3b7c66d63f32",
+      "generation": 4,
+      "state": "ACTIVE",
+      "approval_id": "55156c75-c97d-4331-93d1-5e5629313d57",
+      "spec_digest": "aa3af5a1254438fa3df6461318f66413839fd6321b09dc1b24bbe1ab526bfde9",
+      "resources_released": false
+    }
+  ],
+  "runtime_pods": [
+    {
+      "uid": "3fafdd25-aaa1-4939-a967-6fe9ea4996af",
+      "node": "minikube",
+      "images": [
+        "docker.io/library/ml-k8s-serving@sha256:925f4513276257a8aff0571ac972411a8257ac2d89d9b3b903a7a42c2ac36aed"
+      ],
+      "automount_service_account_token": false
+    }
+  ],
+  "runtime_events": [
+    {
+      "kind": "Pod",
+      "name": "ml-serve-09641038eb324e0cabc50a015f5b0436-668797bd9-zqrsw",
+      "uid": "aaf0333a-3297-4af9-8a99-334669d00316",
+      "reason": "Scheduled"
+    },
+    {
+      "kind": "Pod",
+      "name": "ml-serve-09641038eb324e0cabc50a015f5b0436-668797bd9-zqrsw",
+      "uid": "aaf0333a-3297-4af9-8a99-334669d00316",
+      "reason": "Killing"
+    },
+    {
+      "kind": "ReplicaSet",
+      "name": "ml-serve-09641038eb324e0cabc50a015f5b0436-668797bd9",
+      "uid": "b3082ba8-81fb-4aea-b13a-c4dd9e3cb327",
+      "reason": "SuccessfulCreate"
+    },
+    {
+      "kind": "Deployment",
+      "name": "ml-serve-09641038eb324e0cabc50a015f5b0436",
+      "uid": "5bb0ff48-b5ed-4690-86f1-bdc7edbe407f",
+      "reason": "ScalingReplicaSet"
+    },
+    {
+      "kind": "Pod",
+      "name": "ml-serve-8f51b5b8028c49f9abc1c40dec82681e-5b656d845-6krfn",
+      "uid": "e83e0564-fff6-473c-afc5-500e828f6eaa",
+      "reason": "Scheduled"
+    },
+    {
+      "kind": "Pod",
+      "name": "ml-serve-8f51b5b8028c49f9abc1c40dec82681e-5b656d845-6krfn",
+      "uid": "e83e0564-fff6-473c-afc5-500e828f6eaa",
+      "reason": "Killing"
+    },
+    {
+      "kind": "Pod",
+      "name": "ml-serve-8f51b5b8028c49f9abc1c40dec82681e-5b656d845-6sjxh",
+      "uid": "2a0c6ca2-1a16-4e81-abbd-baed20ed6e3f",
+      "reason": "Scheduled"
+    },
+    {
+      "kind": "Pod",
+      "name": "ml-serve-8f51b5b8028c49f9abc1c40dec82681e-5b656d845-6sjxh",
+      "uid": "2a0c6ca2-1a16-4e81-abbd-baed20ed6e3f",
+      "reason": "Killing"
+    },
+    {
+      "kind": "Pod",
+      "name": "ml-serve-8f51b5b8028c49f9abc1c40dec82681e-5b656d845-lfcvx",
+      "uid": "9b28929f-03fc-4acb-a497-d68676f07d9d",
+      "reason": "Scheduled"
+    },
+    {
+      "kind": "Pod",
+      "name": "ml-serve-8f51b5b8028c49f9abc1c40dec82681e-5b656d845-lfcvx",
+      "uid": "9b28929f-03fc-4acb-a497-d68676f07d9d",
+      "reason": "Killing"
+    },
+    {
+      "kind": "ReplicaSet",
+      "name": "ml-serve-8f51b5b8028c49f9abc1c40dec82681e-5b656d845",
+      "uid": "aaeb2e98-2f19-4bd0-a239-86e57c629986",
+      "reason": "SuccessfulCreate"
+    },
+    {
+      "kind": "ReplicaSet",
+      "name": "ml-serve-8f51b5b8028c49f9abc1c40dec82681e-5b656d845",
+      "uid": "aaeb2e98-2f19-4bd0-a239-86e57c629986",
+      "reason": "SuccessfulCreate"
+    },
+    {
+      "kind": "ReplicaSet",
+      "name": "ml-serve-8f51b5b8028c49f9abc1c40dec82681e-5b656d845",
+      "uid": "450c8224-448c-40ff-9c98-e09437c20065",
+      "reason": "SuccessfulCreate"
+    },
+    {
+      "kind": "Deployment",
+      "name": "ml-serve-8f51b5b8028c49f9abc1c40dec82681e",
+      "uid": "be74fd34-c5c2-442e-8925-3b4b60a01230",
+      "reason": "ScalingReplicaSet"
+    },
+    {
+      "kind": "Deployment",
+      "name": "ml-serve-8f51b5b8028c49f9abc1c40dec82681e",
+      "uid": "68dd4b9f-457b-4a2f-a598-734ac6c2a88d",
+      "reason": "ScalingReplicaSet"
+    },
+    {
+      "kind": "Pod",
+      "name": "ml-serve-c6701f1d86b64afd99643b7c66d63f32-799fb9cf78-mlhd9",
+      "uid": "3fafdd25-aaa1-4939-a967-6fe9ea4996af",
+      "reason": "Scheduled"
+    },
+    {
+      "kind": "ReplicaSet",
+      "name": "ml-serve-c6701f1d86b64afd99643b7c66d63f32-799fb9cf78",
+      "uid": "e3e3e373-92bd-45da-96ae-619d97371660",
+      "reason": "SuccessfulCreate"
+    },
+    {
+      "kind": "Deployment",
+      "name": "ml-serve-c6701f1d86b64afd99643b7c66d63f32",
+      "uid": "c67e1d14-8896-41de-89e8-e7d92027ef8d",
+      "reason": "ScalingReplicaSet"
+    },
+    {
+      "kind": "Pod",
+      "name": "ml-serve-f5fb99cb9e32465aa5ad351024628978-c7578cc7-4ngjn",
+      "uid": "4f41150c-f2ba-4560-91fa-28c96ea640a8",
+      "reason": "Scheduled"
+    },
+    {
+      "kind": "Pod",
+      "name": "ml-serve-f5fb99cb9e32465aa5ad351024628978-c7578cc7-4ngjn",
+      "uid": "4f41150c-f2ba-4560-91fa-28c96ea640a8",
+      "reason": "Killing"
+    },
+    {
+      "kind": "ReplicaSet",
+      "name": "ml-serve-f5fb99cb9e32465aa5ad351024628978-c7578cc7",
+      "uid": "b79b2566-43f5-4fe7-8add-e7a4121cbb7f",
+      "reason": "SuccessfulCreate"
+    },
+    {
+      "kind": "Deployment",
+      "name": "ml-serve-f5fb99cb9e32465aa5ad351024628978",
+      "uid": "49dccb75-8ac7-4fe8-9cb7-4cdd04f2db12",
+      "reason": "ScalingReplicaSet"
+    }
+  ],
+  "foundation_smoke": {
+    "status": "FOUNDATION_SMOKE_PASSED",
+    "management_ready": true,
+    "gateway_ready": true,
+    "mlflow_tls_verified": true,
+    "untrusted_ca_rejected": true,
+    "unauthenticated_rejected": true,
+    "reader_read_allowed": true,
+    "reader_experiment_write_denied": true,
+    "retained_experiment_id": "3",
+    "production_qualified": false,
+    "bootstrap_roles_validated": [
+      "control",
+      "gateway",
+      "ingestion-worker",
+      "management",
+      "migrate",
+      "relay",
+      "supervisor"
+    ],
+    "runtime_roles_ready": [
+      "control",
+      "gateway",
+      "ingestion-worker",
+      "management",
+      "relay",
+      "supervisor"
+    ]
+  },
+  "namespace_uid": "887482c3-b73f-419e-84fa-ab8e8c3aaa76",
+  "kubernetes_version": "v1.37.0",
+  "fixture_models_qualified": 3,
+  "qualification_notes": [
+    "Retained qualified fixtures after correcting the harness Gateway Service name.",
+    "Fixture-only graceful SIGINT handles existing Python PID 1 termination; no force deletion or SQL edits.",
+    "Runtime source is pinned to the published commit; later commits change qualification tooling/docs only."
+  ],
+  "security": {
+    "control_token_explicitly_mounted": true,
+    "gateway_api_token_mounted": false,
+    "serving_api_token_mounted": false,
+    "controller_secret_read_allowed": false,
+    "readonly_mlflow_principal_verified": true
+  },
+  "cross_node_qualified": false,
+  "node_partition_qualified": false,
+  "ci_validation": {
+    "commit": "dad8a45478c6362f5fdaf5256ba592e0418c6340",
+    "ml_workflow_run": 44008036334,
+    "foundation_workflow_run": 44008036433,
+    "backend_passed": 1115,
+    "backend_skipped": 0,
+    "acceptance_blockers": []
+  },
+  "local_packaged_validation": {
+    "focused_passed": 115,
+    "skipped": 0,
+    "source_mount": false,
+    "root_filesystem": "read-only"
+  }
+}

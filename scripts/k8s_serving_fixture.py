@@ -142,7 +142,52 @@ def main():
         actor = Actor(
             value["tenant"], "qualification-reviewer", frozenset({"ml:deploy", "ml:predict"})
         )
-        if mode == "create":
+        if mode == "history":
+            from sqlalchemy import select
+
+            from src.infrastructure.persistence.ml_database import deployments
+
+            with components.database.transaction() as connection:
+                rows = (
+                    connection.execute(
+                        select(deployments)
+                        .where(
+                            deployments.c.tenant_id == actor.tenant_id,
+                            deployments.c.endpoint_id == "quality",
+                        )
+                        .order_by(deployments.c.generation)
+                    )
+                    .mappings()
+                    .all()
+                )
+            print(
+                json.dumps(
+                    [
+                        {
+                            key: row[key]
+                            for key in (
+                                "id",
+                                "generation",
+                                "state",
+                                "approval_id",
+                                "spec_digest",
+                                "resources_released",
+                            )
+                        }
+                        for row in rows
+                    ]
+                )
+            )
+        elif mode == "current":
+            route = components.deployments.route(actor.tenant_id, "quality")
+            if route.deployment_id:
+                active = components.deployments.get(actor, route.deployment_id)
+                if active.model_binding_id != value["models"][0]["binding_id"]:
+                    raise ValueError("Fixture retry requires the first MLP deployment")
+            print(
+                json.dumps({"deployment_id": route.deployment_id, "generation": route.generation})
+            )
+        elif mode == "create":
             model = value["models"][int(sys.argv[2])]
             deployment = components.services.deployments.create(
                 actor, "quality", model["binding_id"], model["approval_id"]
@@ -203,7 +248,7 @@ def main():
                 )
                 login.raise_for_status()
                 response = client.post(
-                    "http://ml-control:8001/api/v1/prediction/predict",
+                    "http://ml-gateway:8001/api/v1/prediction/predict",
                     json=body,
                     headers={"Authorization": "Bearer " + login.json()["access_token"]},
                 )

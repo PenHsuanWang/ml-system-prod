@@ -31,6 +31,7 @@ def wait_for(check, *, timeout=240):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--resume-fixtures", action="store_true")
     args = parser.parse_args()
     if args.output.exists():
         raise FileExistsError("Retain the existing qualification receipt")
@@ -40,17 +41,39 @@ def main():
         or settings.get("ML_SERVING_BACKEND") != "kubernetes"
     ):
         raise ValueError("An isolated native Serving profile is required")
+
     # Training execution migration is the next PR. Prepare real governed fixtures
     # in one explicit operator Pod while the queue consumers/controller are paused.
-    for name in ("relay", "supervisor", "control"):
+    def pause_runtime(name):
+        selector = "app.kubernetes.io/name=ml-" + name
+        pods = json.loads(run("get", "pods", "-l", selector, "-o", "json"))["items"]
         run("scale", "deployment/ml-" + name, "--replicas=0")
-        wait_for(
-            lambda name=name: (
-                not json.loads(
-                    run("get", "pods", "-l", "app.kubernetes.io/name=ml-" + name, "-o", "json")
-                )["items"]
-            )
-        )
+        # Only these disposable fixture roles have no training in flight. Python
+        # PID 1 may ignore default SIGTERM; request its registered graceful SIGINT
+        # handler instead. Still require actual Pod disappearance before proceeding.
+        for item in pods:
+            for container in item["spec"]["containers"]:
+                subprocess.run(
+                    [
+                        *KUBECTL,
+                        "exec",
+                        "pod/" + item["metadata"]["name"],
+                        "-c",
+                        container["name"],
+                        "--",
+                        "python",
+                        "-c",
+                        "import os,signal; os.kill(1, signal.SIGINT)",
+                    ],
+                    check=False,
+                    capture_output=True,
+                    timeout=20,
+                )
+        run("delete", "pods", "-l", selector, "--grace-period=15", "--wait=true", "--timeout=120s")
+        wait_for(lambda: not json.loads(run("get", "pods", "-l", selector, "-o", "json"))["items"])
+
+    for name in ("relay", "supervisor", "control"):
+        pause_runtime(name)
     native = json.loads(run("get", "deployment/ml-control", "-o", "json"))
     pod = copy.deepcopy(native["spec"]["template"]["spec"])
     pod["serviceAccountName"] = "ml-serving"
@@ -76,7 +99,8 @@ def main():
         },
         "spec": pod,
     }
-    run("create", "-f", "-", input=json.dumps(manifest))
+    if not args.resume_fixtures:
+        run("create", "-f", "-", input=json.dumps(manifest))
     run("wait", "--for=condition=Ready", "pod/serving-qualification-operator", "--timeout=240s")
 
     def operator(mode, *values):
@@ -106,7 +130,7 @@ def main():
         "checks": [],
     }
     try:
-        report["fixtures"] = operator("seed")
+        report["fixtures"] = {"retained": True} if args.resume_fixtures else operator("seed")
         run("scale", "deployment/ml-control", "--replicas=1")
         run("rollout", "status", "deployment/ml-control", "--timeout=240s")
 
@@ -132,7 +156,8 @@ def main():
             assert value["provenance"]["generation"] == deployment["generation"]
             return value["provenance"]
 
-        first = operator("create", "0")
+        current = operator("current") if args.resume_fixtures else {}
+        first = current if current.get("deployment_id") else operator("create", "0")
         before = active(first)
         initial = predict(first)
         report["checks"].append("approved_mlp_via_gateway")
@@ -151,7 +176,8 @@ def main():
         assert restored["pod_uid"] != recovered["pod_uid"]
         assert status(first) == before
         report["checks"].append("active_deployment_resource_reconstructed")
-        run("rollout", "restart", "deployment/ml-control")
+        pause_runtime("control")
+        run("scale", "deployment/ml-control", "--replicas=1")
         run("rollout", "status", "deployment/ml-control", "--timeout=240s")
         assert predict(first)["pod_uid"] == restored["pod_uid"]
         assert status(first) == before
@@ -172,6 +198,18 @@ def main():
         predict(ebm, "ebm")
         wait_for(lambda: status(rollback)["state"] == "RETIRED" and status(rollback)["released"])
         report["checks"].append("approved_ebm_via_same_native_runtime_contract")
+        report["platform_deployments"] = operator("history")
+        pods = json.loads(run("get", "pods", "-l", "ml-system/stage=serving", "-o", "json"))[
+            "items"
+        ]
+        report["runtime_pods"] = [
+            {
+                "uid": item["metadata"]["uid"],
+                "node": item["spec"]["nodeName"],
+                "images": [c["imageID"] for c in item["status"]["containerStatuses"]],
+            }
+            for item in pods
+        ]
         report.update(
             status="SERVING_RUNTIME_PASSED",
             source_revision=settings["ML_CODE_REVISION"],
@@ -180,6 +218,8 @@ def main():
             final_route=status(ebm)["route"],
         )
     finally:
+        if report["status"] != "SERVING_RUNTIME_PASSED":
+            report["status"] = "INCOMPLETE"
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps({"status": report["status"], "checks": report["checks"]}))
