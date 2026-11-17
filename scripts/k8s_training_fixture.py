@@ -149,6 +149,8 @@ def main():
                         "pod_uid": identity["pod_uid"] if identity else None,
                         "receipt": receipt,
                         "revision": job.revision,
+                        "code_revision": json.loads(job.spec_json)["code_revision"],
+                        "image_digest": json.loads(job.spec_json)["training_image_digest"],
                     }
                 )
             )
@@ -156,6 +158,7 @@ def main():
             database.close()
         return
     if mode == "transport":
+        from ipaddress import ip_address
         from urllib.parse import urlsplit
 
         import httpx
@@ -166,8 +169,12 @@ def main():
         environment = os.environ
         uri = urlsplit(environment["ML_RABBITMQ_URL"])
         with httpx.Client(timeout=5, trust_env=False) as client:
+            address = ip_address(sys.argv[2])
+            if not address.is_private:
+                raise ValueError("Only the test broker Pod address is allowed")
+            host = "[" + str(address) + "]" if address.version == 6 else str(address)
             response = client.get(
-                "http://rabbitmq:15672/api/queues/%2F/" + settings.queue_name,
+                "http://" + host + ":15672/api/queues/%2F/" + settings.queue_name,
                 auth=(uri.username, uri.password),
             )
             response.raise_for_status()

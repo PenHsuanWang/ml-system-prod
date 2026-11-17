@@ -56,6 +56,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--configure", type=Path)
     parser.add_argument("--output", type=Path)
+    parser.add_argument("--reuse-fixtures", action="store_true")
     args = parser.parse_args()
     if args.configure:
         configure(args.configure)
@@ -85,23 +86,27 @@ def main():
         m["name"] for c in pod["containers"] + pod["initContainers"] for m in c["volumeMounts"]
     }
     pod["volumes"] = [v for v in pod["volumes"] if v["name"] in mounts]
-    run(
-        "create",
-        "-f",
-        "-",
-        input=json.dumps(
-            {
-                "apiVersion": "v1",
-                "kind": "Pod",
-                "metadata": {
-                    "name": "training-qualification-operator",
-                    "namespace": NAMESPACE,
-                    "labels": {"app.kubernetes.io/part-of": "ml-system"},
-                },
-                "spec": pod,
-            }
-        ),
-    )
+    existing_operator = run(
+        "get", "pod/training-qualification-operator", "--ignore-not-found", "-o", "name"
+    ).strip()
+    if not existing_operator:
+        run(
+            "create",
+            "-f",
+            "-",
+            input=json.dumps(
+                {
+                    "apiVersion": "v1",
+                    "kind": "Pod",
+                    "metadata": {
+                        "name": "training-qualification-operator",
+                        "namespace": NAMESPACE,
+                        "labels": {"app.kubernetes.io/part-of": "ml-system"},
+                    },
+                    "spec": pod,
+                }
+            ),
+        )
     run("wait", "--for=condition=Ready", "pod/training-qualification-operator", "--timeout=180s")
     source = (ROOT / "scripts/k8s_training_fixture.py").read_text()
     fault_source = (ROOT / "scripts/k8s_training_fault.py").read_text()
@@ -137,6 +142,10 @@ def main():
         )
 
     def transport():
+        broker = json.loads(
+            run("get", "pods", "-l", "app.kubernetes.io/name=rabbitmq", "-o", "json")
+        )["items"][0]
+        address = broker["status"]["podIP"]
         output = run(
             "exec",
             "-i",
@@ -147,6 +156,7 @@ def main():
             "python",
             "-",
             "transport",
+            address,
             input=source,
         )
         return json.loads(output.strip().splitlines()[-1])
@@ -229,7 +239,8 @@ def main():
         "jobs": [],
     }
     try:
-        operator("init")
+        if not args.reuse_fixtures:
+            operator("init")
         mlp = operator("submit", "mlp")
         report["jobs"].append(terminal(mlp, "SUCCEEDED"))
         wait_for(lambda: acked(mlp))

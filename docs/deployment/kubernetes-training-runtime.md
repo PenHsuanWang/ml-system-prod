@@ -59,7 +59,10 @@ The receipt contains allowlisted job/attempt/execution/Pod identities, matching
 stop confirmations, terminal error codes and Redis/queue counts. It excludes
 passwords, tokens, owner tokens, source rows and private connection strings.
 Retain failed receipts; the runner refuses to overwrite them. Inspect partial
-runs before another attempt rather than replaying a paused or uncertain fit.
+runs before another attempt rather than replaying a paused or uncertain fit. With
+a new output path, `--reuse-fixtures` reuses only the test account/dataset inputs;
+it submits fresh jobs for each case and never rewrites SQL state or refits an old
+attempt. Do not use it to bypass an uncertain active execution.
 
 The namespace, PVCs, role services, scoped account, completed artifacts and bounded
 operator remain for inspection. There is no automatic namespace/PVC deletion.
