@@ -399,3 +399,34 @@ def test_durable_training_slot_never_admits_a_second_fit(native):
         if process.poll() is None:
             process.kill()
         process.wait(timeout=5)
+
+
+@pytest.mark.parametrize("collision", [True, False])
+def test_tracker_startup_reconciles_only_named_experiment_collision(monkeypatch, collision):
+    import mlflow
+    from mlflow.exceptions import MlflowException
+    from mlflow.protos.databricks_pb2 import PERMISSION_DENIED, RESOURCE_ALREADY_EXISTS
+
+    from src.infrastructure.mlflow.tracking import MLflowExperimentTracker
+
+    reads = []
+
+    def get(name):
+        reads.append(name)
+        return None if len(reads) == 1 else SimpleNamespace(experiment_id="winner")
+
+    def create(name):
+        raise MlflowException(
+            "safe test failure",
+            error_code=(RESOURCE_ALREADY_EXISTS if collision else PERMISSION_DENIED),
+        )
+
+    client = SimpleNamespace(get_experiment_by_name=get, create_experiment=create)
+    monkeypatch.setattr(mlflow, "MlflowClient", lambda **kwargs: client)
+    if collision:
+        assert MLflowExperimentTracker("https://tracking.example").experiment_id == "winner"
+        assert reads == ["ml-training", "ml-training"]
+    else:
+        with pytest.raises(MlflowException):
+            MLflowExperimentTracker("https://tracking.example")
+        assert reads == ["ml-training"]

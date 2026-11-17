@@ -48,8 +48,21 @@ class MLflowExperimentTracker:
         from mlflow import MlflowClient
         self.client = MlflowClient(tracking_uri=tracking_uri, registry_uri=tracking_uri)
         experiment = self.client.get_experiment_by_name(experiment_name)
-        self.experiment_id = experiment.experiment_id if experiment else self.client.create_experiment(
-            experiment_name)
+        if experiment:
+            self.experiment_id = experiment.experiment_id
+        else:
+            from mlflow.exceptions import MlflowException
+            try:
+                self.experiment_id = self.client.create_experiment(experiment_name)
+            except MlflowException as error:
+                if error.error_code != "RESOURCE_ALREADY_EXISTS":
+                    raise
+                # Worker and Control may initialize concurrently. Reuse only the
+                # exact named winner; auth/transport failures still fail closed.
+                winner = self.client.get_experiment_by_name(experiment_name)
+                if winner is None:
+                    raise
+                self.experiment_id = winner.experiment_id
 
     def start(self, attempt_id: str, tags: dict[str, str]) -> str:
         runs = self.client.search_runs([self.experiment_id],
