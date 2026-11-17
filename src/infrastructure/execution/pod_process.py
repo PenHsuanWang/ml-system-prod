@@ -174,6 +174,25 @@ class PodProcessExecutor(LocalProcessExecutor):
                 ):
                     return ExecutionObservation("STOPPED", value["exit_code"], value.get("reason"))
                 return ExecutionObservation("UNKNOWN")
+            marker = read(Path(handle.directory) / "guardian-start.json")
+            if not matches(marker, identity):
+                return ExecutionObservation("UNKNOWN")
+            if (
+                self.worker
+                and identity["pod_uid"] == self.pod_uid
+                and identity["supervisor_instance"] == self.instance
+            ):
+                saved = marker["guardian"]
+                actual = process_identity(saved["pid"])
+                if (
+                    actual is None
+                    or actual.get("state") == "Z"
+                    or any(
+                        actual.get(k) != saved.get(k) for k in ("boot_id", "start_ticks", "host")
+                    )
+                ):
+                    return ExecutionObservation("UNKNOWN")
+                return ExecutionObservation("RUNNING")
             pod = self.api.request("GET", self.pod_path(identity["pod_name"]))
             if not pod or pod["metadata"]["uid"] != identity["pod_uid"]:
                 return ExecutionObservation("UNKNOWN")
@@ -193,20 +212,6 @@ class PodProcessExecutor(LocalProcessExecutor):
                 or "running" not in status.get("state", {})
             ):
                 return ExecutionObservation("UNKNOWN")
-            marker = read(Path(handle.directory) / "guardian-start.json")
-            if not matches(marker, identity):
-                return ExecutionObservation("UNKNOWN")
-            if identity["pod_uid"] == self.pod_uid:
-                saved = marker["guardian"]
-                actual = process_identity(saved["pid"])
-                if (
-                    actual is None
-                    or actual.get("state") == "Z"
-                    or any(
-                        actual.get(k) != saved.get(k) for k in ("boot_id", "start_ticks", "host")
-                    )
-                ):
-                    return ExecutionObservation("UNKNOWN")
             # Remote RUNNING means the original container still exists, not that
             # Control may touch its PID or infer a physical stop from a SQL lease.
             return ExecutionObservation("RUNNING")

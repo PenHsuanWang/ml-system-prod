@@ -40,7 +40,9 @@ qualification; single-node Minikube is not storage or node-fencing certification
 ## Worker and Control ownership
 
 Worker alone claims new commands and launches compute. It heartbeats its SQL claim
-and monitors its own execution. Only Control recovers stale claims in the Pod
+and monitors its own original guardian in the same PID namespace without polling
+the API on every process observation. Postprocessing renews the SQL lease while
+tracking/artifact/evaluation I/O runs. Only Control recovers stale claims in the Pod
 profile. Existing SQL recovery rotates the owner token; the old owner cannot
 commit business transitions. Control retains that claim across bounded observations
 instead of repeatedly consuming the recovery budget. It may observe/finalize the
@@ -48,7 +50,7 @@ same fit, request cancellation or enforce its deadline; it cannot relaunch it.
 
 Control reconciliation is incremental, so a remote fit does not hold the Serving
 loop for its whole training duration. External postprocessing errors retain the
-same execution/evidence for recovery. Missing identity, unavailable API, missing
+same execution/evidence for recovery. Missing identity, unavailable remote API, missing
 receipt or an exhausted recovery budget remains reconciliation work, never an
 implicit success, confirmed failure or automatic refit.
 

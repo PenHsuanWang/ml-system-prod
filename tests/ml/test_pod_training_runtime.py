@@ -440,3 +440,63 @@ def test_expired_launch_records_deadline_without_starting_compute(native):
     assert value.state == "STOPPED" and value.reason == "DEADLINE"
     assert not (Path(execution.directory) / "compute-start.json").exists()
     assert native.capacity_available()
+
+
+def test_slow_postprocessing_renews_ownership_without_another_fit(
+    components, actor, intent, monkeypatch
+):
+    import threading
+    from concurrent.futures import ThreadPoolExecutor
+
+    clock = [1000.0]
+    monkeypatch.setattr("src.infrastructure.persistence.ml_training.time.time", lambda: clock[0])
+    job = components.services.training.submit(actor, "postprocess-lease", intent)
+    command = SQLOutboxRepository(components.database).lease(1)[0].command
+    claim = components.training.claim(command)
+    service = components.supervisor()
+    service.heartbeat = 0.05
+    entered, release, renewed = threading.Event(), threading.Event(), threading.Event()
+    original_heartbeat = components.training.heartbeat
+
+    def heartbeat(claim):
+        value = original_heartbeat(claim)
+        if clock[0] >= 1002 and threading.current_thread().name == "training-finalization-lease":
+            renewed.set()
+        return value
+
+    monkeypatch.setattr(components.training, "heartbeat", heartbeat)
+
+    def postprocess(claim, result):
+        entered.set()
+        assert release.wait(8)
+
+    service._finalize = postprocess
+    with ThreadPoolExecutor(max_workers=1) as pool:
+        task = pool.submit(service.finalize, claim, None)
+        assert entered.wait(3)
+        clock[0] += 2
+        try:
+            assert renewed.wait(3)
+            assert components.training.recoverable(1) == ()
+            assert components.training.attempts(job.job_id)[0].owner_token == claim.owner_token
+        finally:
+            release.set()
+        task.result(timeout=5)
+
+
+def test_own_guardian_observation_does_not_poll_api_or_depend_on_api_outage(native):
+    execution = handle(native)
+    process = guardian(native, execution, "import time; time.sleep(30)")
+    try:
+        wait_for(lambda: (Path(execution.directory) / "compute-start.json").exists())
+        before = len(native.api.calls)
+        native.api.unavailable = True
+        assert native.inspect(execution).state == "RUNNING"
+        assert len(native.api.calls) == before
+        assert observer(native).inspect(execution).state == "UNKNOWN"
+        assert native.stop(execution) is True
+        process.wait(timeout=5)
+    finally:
+        if process.poll() is None:
+            process.kill()
+        process.wait(timeout=5)

@@ -2,6 +2,7 @@
 
 import json
 import time
+import threading
 from dataclasses import asdict
 from typing import Protocol
 from collections.abc import Callable
@@ -9,7 +10,7 @@ from uuid import uuid4
 
 from src.application.model_registry.ports import ExperimentTracker, RegistryRepository
 from src.application.training.ports import TrainingExecutor, TrainingRepository
-from src.domain.ml import canonical_json, digest, Unavailable
+from src.domain.ml import canonical_json, digest, Conflict, Unavailable
 from src.domain.model_registry.models import Evaluation, ModelBinding
 from src.domain.training.execution import ExecutionHandle, TrainingOutput
 from src.domain.training.models import Claim, TrainingCommand
@@ -136,6 +137,30 @@ class TrainingSupervisor:
         return True
 
     def finalize(self, claim: Claim, result: TrainingOutput) -> None:
+        # Tracking/artifact I/O and evaluation may exceed one ownership lease.
+        # Renew throughout postprocessing; stale owners still fail every SQL fence.
+        self.repository.heartbeat(claim)
+        finished = threading.Event()
+
+        def renew() -> None:
+            while not finished.wait(self.heartbeat):
+                try:
+                    self.repository.heartbeat(claim)
+                except Conflict:
+                    return
+                except Exception:
+                    import logging
+                    logging.getLogger(__name__).warning("Finalization heartbeat pending job=%s", claim.job.job_id)
+
+        renewal = threading.Thread(target=renew, name="training-finalization-lease", daemon=True)
+        renewal.start()
+        try:
+            self._finalize(claim, result)
+        finally:
+            finished.set()
+            renewal.join(timeout=1)
+
+    def _finalize(self, claim: Claim, result: TrainingOutput) -> None:
         # A transient external failure leaves recoverable phase evidence; no second fit.
         self.repository.checkpoint_phase(claim, "REGISTER", canonical_json(asdict(result)))
         spec = json.loads(claim.job.spec_json)
@@ -175,5 +200,10 @@ class TrainingSupervisor:
                                                      workload.evaluator_version, "ERROR", canonical_json(metrics), digest(report)))
             raise
         evaluation = self.registry.save_evaluation(evaluation)
+        current = self.repository.heartbeat(claim)
+        if self.draining() or time.time() > current.deadline:
+            self.repository.stop(claim, "SUPERVISOR_DRAIN" if self.draining() else "FINALIZATION_DEADLINE",
+                                 confirmed=True)
+            return
         self.repository.finish(claim, binding.binding_id, evaluation.evaluation_id)
         self.tracker.finish(run_id, "FINISHED")
