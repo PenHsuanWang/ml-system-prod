@@ -29,6 +29,9 @@ class MLSettings:
     ack_timeout_ms: int = 1800000
     image_digest: str = "unqualified-development"
     code_revision: str = "development"
+    serving_backend: str = "local"
+    serving_namespace: str = ""
+    serving_image_repository: str = ""
     ebm_quality_policy_json: str = field(default="", repr=False)
 
     @classmethod
@@ -44,7 +47,10 @@ class MLSettings:
                  "retention_seconds": "ML_IDEMPOTENCY_RETENTION_SECONDS",
                  "max_pending": "ML_MAX_PENDING_JOBS_PER_TENANT", "ack_timeout_ms": "ML_ACK_TIMEOUT_MS",
                  "image_digest": "ML_IMAGE_DIGEST", "code_revision": "ML_CODE_REVISION",
-                 "ebm_quality_policy_json": "ML_EBM_QUALITY_POLICY_JSON"}
+                 "ebm_quality_policy_json": "ML_EBM_QUALITY_POLICY_JSON",
+                 "serving_backend": "ML_SERVING_BACKEND",
+                 "serving_namespace": "ML_SERVING_NAMESPACE",
+                 "serving_image_repository": "ML_SERVING_IMAGE_REPOSITORY"}
         defaults = cls()
         for name, variable in names.items():
             if variable not in os.environ:
@@ -58,6 +64,13 @@ class MLSettings:
         return result
 
     def validate(self) -> None:
+        if self.serving_backend not in {"local", "kubernetes"}:
+            raise ValueError("Unknown Serving backend")
+        if self.serving_backend == "kubernetes" and (
+            re.fullmatch(r"[a-z0-9](?:[-a-z0-9]{0,61}[a-z0-9])?", self.serving_namespace) is None
+            or re.fullmatch(r"[a-zA-Z0-9._:/-]+", self.serving_image_repository) is None
+        ):
+            raise ValueError("Kubernetes Serving requires an explicit namespace and image repository")
         if self.role not in {"management", "relay", "supervisor", "runner", "control", "serving", "gateway"}:
             raise ValueError("Unknown ML deployment role")
         if self.environment not in {"dev", "staging", "prod"}:

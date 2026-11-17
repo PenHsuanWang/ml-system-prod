@@ -1,4 +1,4 @@
-"""Reference local/VM ingress: route reads reflect the authoritative fenced revision."""
+"""Ingress validates the authoritative SQL route and fixed-model response identity."""
 
 import asyncio
 import os
@@ -14,12 +14,13 @@ from src.infrastructure.ml_tracing import MLTraceMiddleware, capture_context
 from src.api.ml_http import install_errors
 from src.api.ml_schemas import PredictionRequest
 from src.api.ebm_schemas import EBMPredictionRequest
-from src.infrastructure.deployment.local_serving import LocalServingExecutor
+from bootstrap.ml_serving_wiring import endpoint_resolver
+from src.domain.deployments.identity import matches_identity
 from src.infrastructure.ml_identity import MongoActorResolver
-from src.domain.ml import Unavailable
+from src.domain.ml import Conflict, Unavailable
 
 
-def create_app() -> FastAPI:
+def create_app(*, components=None, identity=None, resolver=None, transport=None) -> FastAPI:
     from contextlib import asynccontextmanager
     state = {}
 
@@ -27,19 +28,22 @@ def create_app() -> FastAPI:
     async def lifespan(app: FastAPI):
         settings = MLSettings.from_env()
         configure_telemetry("gateway")
-        components = build_components(settings)
-        executor = LocalServingExecutor(settings.execution_root/"serving")
-        identity = MongoActorResolver(os.environ["APP_MONGO_URI"],
+        runtime = components or build_components(settings)
+        endpoints = resolver or endpoint_resolver(settings)
+        provider = identity or MongoActorResolver(os.environ["APP_MONGO_URI"],
                                       os.environ.get("APP_MONGO_DATABASE",
                                                      "backend"), os.environ["APP_JWT_SECRET"],
                                       os.environ.get("APP_JWT_ISSUER", "backend"), os.environ.get("APP_JWT_AUDIENCE", "backend-api"))
-        async with httpx.AsyncClient(timeout=10, limits=httpx.Limits(max_connections=32)) as client:
-            state.update(components=components, executor=executor, identity=identity, client=client)
+        async with httpx.AsyncClient(timeout=10, limits=httpx.Limits(max_connections=32),
+                                     transport=transport, follow_redirects=False, trust_env=False) as client:
+            state.update(components=runtime, resolver=endpoints, identity=provider, client=client)
             try:
                 yield
             finally:
-                identity.close()
-                components.database.close()
+                if identity is None:
+                    provider.close()
+                if components is None:
+                    runtime.database.close()
 
     app = FastAPI(title="ML prediction ingress", lifespan=lifespan)
     install_errors(app, maximum_body_bytes=8 * 1024 * 1024)
@@ -72,11 +76,31 @@ def create_app() -> FastAPI:
             raise Unavailable("No active model")
         # Address is controller-owned, never taken from request input.
         try:
-            address = state["executor"].address(route.deployment_id)
+            deployment = await asyncio.to_thread(state["components"].deployments.get,
+                                                  actor, route.deployment_id)
+            if deployment.generation != route.generation or deployment.resources_released:
+                raise Unavailable("Serving route identity mismatch")
+            address = state["resolver"].resolve(deployment)
+            health = await state["client"].get(address+"/health/ready")
+            actual = health.json()
+            if (health.status_code != 200 or not isinstance(actual, dict)
+                    or actual.get("ready") is not True
+                    or actual.get("tenant_id") != actor.tenant_id
+                    or not matches_identity(deployment, actual)):
+                raise Unavailable("Serving route identity mismatch")
             response = await state["client"].post(address+"/api/v1/prediction/predict",
                                                   json=body.model_dump(), headers={"Authorization": authorization, **capture_context()})
-            return JSONResponse(response.json(), status_code=response.status_code)
-        except (httpx.HTTPError, OSError, ValueError):
+            value = response.json()
+            if response.is_success and (not isinstance(value, dict)
+                    or not matches_identity(deployment, value.get("provenance"))
+                    or value["provenance"].get("pod_uid", "") != actual.get("pod_uid", "")):
+                raise Unavailable("Serving response identity mismatch")
+            current = await asyncio.to_thread(state["components"].deployments.route,
+                                              actor.tenant_id, body.endpoint_id)
+            if current != route or response.is_redirect:
+                raise Unavailable("Serving route changed during prediction")
+            return JSONResponse(value, status_code=response.status_code)
+        except (httpx.HTTPError, OSError, ValueError, KeyError, Conflict):
             raise Unavailable("Serving generation is unavailable") from None
 
     return app

@@ -21,6 +21,7 @@ ROLES = {
     "gateway": "gateway",
     "ingestion-worker": "management",
     "operator": "management",
+    "serving": "serving",
 }
 CONNECTION_KEYS = frozenset(
     {
@@ -55,6 +56,7 @@ REQUIRED = {
     "gateway": {"ML_DATABASE_URL", "APP_MONGO_URI", "APP_JWT_SECRET"},
     "ingestion-worker": {"ML_DATABASE_URL"},
     "operator": {"ML_DATABASE_URL", "APP_MONGO_URI", "APP_JWT_SECRET"},
+    "serving": {"APP_MONGO_URI", "APP_JWT_SECRET"},
 }
 
 
@@ -124,7 +126,7 @@ def load_runtime_environment(environ: Mapping[str, str]) -> dict[str, str]:
     private = _read_configuration(Path(environment.get("ML_RUNTIME_CONFIG_FILE", "")))
     allowed = set(REQUIRED[role])
     writer = role in {"supervisor", "control", "operator"}
-    reader = role in {"control", "operator"}
+    reader = role in {"control", "operator", "serving"}
     if writer:
         allowed.update(WRITER_KEYS)
     if reader:
@@ -135,6 +137,8 @@ def load_runtime_environment(environ: Mapping[str, str]) -> dict[str, str]:
         writer_identity = _credential_identity(private, "MLFLOW_TRACKING_")
         if reader and writer_identity == _credential_identity(private, "ML_SERVING_MLFLOW_"):
             raise ValueError("Writer and serving identities must be distinct")
+    elif reader:
+        _credential_identity(private, "ML_SERVING_MLFLOW_")
     for key, schemes in (
         ("ML_DATABASE_URL", {"postgresql+psycopg"}),
         ("ML_RABBITMQ_URL", {"amqp", "amqps"}),
@@ -173,6 +177,11 @@ def load_runtime_environment(environ: Mapping[str, str]) -> dict[str, str]:
         raise ValueError("Approved MLflow CA bundle is required")
     ssl.create_default_context(cafile=str(certificate))
     environment.update(private)
+    if role == "serving":
+        for suffix in ("USERNAME", "PASSWORD", "TOKEN"):
+            key = "ML_SERVING_MLFLOW_" + suffix
+            if key in private:
+                environment["MLFLOW_TRACKING_" + suffix] = private[key]
     environment["ML_DEPLOYMENT_ROLE"] = ROLES[role]
     return environment
 
