@@ -149,6 +149,9 @@ def main():
                         "pod_uid": identity["pod_uid"] if identity else None,
                         "receipt": receipt,
                         "revision": job.revision,
+                        "owner_changed": bool(
+                            identity and attempt.owner_token != identity["owner_token"]
+                        ),
                         "code_revision": json.loads(job.spec_json)["code_revision"],
                         "image_digest": json.loads(job.spec_json)["training_image_digest"],
                     }
