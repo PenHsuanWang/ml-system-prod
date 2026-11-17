@@ -1,0 +1,442 @@
+{
+  "status": "POD_TRAINING_RUNTIME_PASSED",
+  "namespace": "ml-k8s-training-runtime",
+  "production_qualified": false,
+  "cross_node_qualified": false,
+  "qualification_scope": "all",
+  "checks": [
+    "real_mlp_management_outbox_worker_and_manual_ack",
+    "real_ebm_same_pod_runtime_contract",
+    "cancel_confirms_compute_group_stop_before_ack",
+    "guardian_wall_deadline_terminates_paused_compute",
+    "worker_crash_control_recovers_same_fit_and_redelivery_ack",
+    "redis_outage_preserves_terminal_sql_and_unacked_delivery",
+    "normal_supervisor_pod_drain_confirms_stop_and_new_pod_identity"
+  ],
+  "jobs": [
+    {
+      "job_id": "05ebaa6e-db04-4582-9fd6-253a23fcf510",
+      "state": "SUCCEEDED",
+      "phase": "COMPLETED",
+      "error_code": null,
+      "binding_id": "80c90dba-8636-4837-a626-3c609016df4b",
+      "attempt_id": "d6007015-98da-4976-b193-bf92cedecb9b",
+      "attempt_count": 1,
+      "execution_id": "eddfa65b-9d6f-41cd-aabc-28f3df10902d",
+      "directory": "/app/var/executions/eddfa65b-9d6f-41cd-aabc-28f3df10902d",
+      "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+      "receipt": {
+        "confirmed": true,
+        "exit_code": 0,
+        "reason": "COMPLETED",
+        "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+        "container_id": "containerd://c4e3a11a35510385f963b54c4cdd28f6434a25d657735ebc99e42f716c93f982"
+      },
+      "revision": 6,
+      "owner_changed": false,
+      "code_revision": "9c422b7fa89c8571da928ca9deb914c86d0b5cda",
+      "image_digest": "sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766"
+    },
+    {
+      "job_id": "07dfc289-c5b7-4566-89d8-921f3b40c29d",
+      "state": "SUCCEEDED",
+      "phase": "COMPLETED",
+      "error_code": null,
+      "binding_id": "0a7d4df6-f33f-4080-b85e-de956f7907d9",
+      "attempt_id": "b3546378-e7ce-48bc-8516-59430604514d",
+      "attempt_count": 1,
+      "execution_id": "9ff0a50d-0980-441b-a732-eef56bdaf138",
+      "directory": "/app/var/executions/9ff0a50d-0980-441b-a732-eef56bdaf138",
+      "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+      "receipt": {
+        "confirmed": true,
+        "exit_code": 0,
+        "reason": "COMPLETED",
+        "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+        "container_id": "containerd://c4e3a11a35510385f963b54c4cdd28f6434a25d657735ebc99e42f716c93f982"
+      },
+      "revision": 6,
+      "owner_changed": false,
+      "code_revision": "9c422b7fa89c8571da928ca9deb914c86d0b5cda",
+      "image_digest": "sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766"
+    },
+    {
+      "job_id": "44a741e6-1684-4d05-b5a8-58d1c59da3a3",
+      "state": "CANCELLED",
+      "phase": "FIT",
+      "error_code": "CANCELLED",
+      "binding_id": null,
+      "attempt_id": "f659c64d-31ca-4624-858c-1c332fdb5b83",
+      "attempt_count": 1,
+      "execution_id": "756f1f0f-6f37-42df-af5e-5655c873d753",
+      "directory": "/app/var/executions/756f1f0f-6f37-42df-af5e-5655c873d753",
+      "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+      "receipt": {
+        "confirmed": true,
+        "exit_code": -9,
+        "reason": "STOP_REQUESTED",
+        "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+        "container_id": "containerd://c4e3a11a35510385f963b54c4cdd28f6434a25d657735ebc99e42f716c93f982"
+      },
+      "revision": 5,
+      "owner_changed": false,
+      "code_revision": "9c422b7fa89c8571da928ca9deb914c86d0b5cda",
+      "image_digest": "sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766"
+    },
+    {
+      "job_id": "8215457e-20cb-4a41-8f86-610b0f5b1fd3",
+      "state": "FAILED",
+      "phase": "FIT",
+      "error_code": "TRAINING_DEADLINE",
+      "binding_id": null,
+      "attempt_id": "029323cc-eefa-48d0-b1fa-a589fa42b3be",
+      "attempt_count": 1,
+      "execution_id": "9fa2c1bb-8c81-45d6-99cf-f950d4a5390d",
+      "directory": "/app/var/executions/9fa2c1bb-8c81-45d6-99cf-f950d4a5390d",
+      "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+      "receipt": {
+        "confirmed": true,
+        "exit_code": -9,
+        "reason": "DEADLINE",
+        "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+        "container_id": "containerd://c4e3a11a35510385f963b54c4cdd28f6434a25d657735ebc99e42f716c93f982"
+      },
+      "revision": 4,
+      "owner_changed": false,
+      "code_revision": "9c422b7fa89c8571da928ca9deb914c86d0b5cda",
+      "image_digest": "sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766"
+    },
+    {
+      "job_id": "99166c1f-5db5-4d3a-a35c-a50d8db7d8de",
+      "state": "SUCCEEDED",
+      "phase": "COMPLETED",
+      "error_code": null,
+      "binding_id": "f1ec1507-c26a-4d41-a01f-cbabbd7c729a",
+      "attempt_id": "e8ed2b2f-bde6-486e-8df1-14bd8d61f564",
+      "attempt_count": 1,
+      "execution_id": "407a35d1-bc0b-4f87-bca2-66939292746d",
+      "directory": "/app/var/executions/407a35d1-bc0b-4f87-bca2-66939292746d",
+      "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+      "receipt": {
+        "confirmed": true,
+        "exit_code": 0,
+        "reason": "COMPLETED",
+        "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+        "container_id": "containerd://c4e3a11a35510385f963b54c4cdd28f6434a25d657735ebc99e42f716c93f982"
+      },
+      "revision": 7,
+      "owner_changed": true,
+      "code_revision": "9c422b7fa89c8571da928ca9deb914c86d0b5cda",
+      "image_digest": "sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766"
+    },
+    {
+      "job_id": "9a2e895a-ada3-4e19-a78c-1a725ee75529",
+      "state": "SUCCEEDED",
+      "phase": "COMPLETED",
+      "error_code": null,
+      "binding_id": "deae9a14-6095-4379-8c1a-39beb79e6908",
+      "attempt_id": "bc045095-fb91-4a71-983f-d6f0f02b6241",
+      "attempt_count": 1,
+      "execution_id": "f62fa3fb-f05e-4652-bc07-a68d0feb94c7",
+      "directory": "/app/var/executions/f62fa3fb-f05e-4652-bc07-a68d0feb94c7",
+      "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+      "receipt": {
+        "confirmed": true,
+        "exit_code": 0,
+        "reason": "COMPLETED",
+        "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+        "container_id": "containerd://c4e3a11a35510385f963b54c4cdd28f6434a25d657735ebc99e42f716c93f982"
+      },
+      "revision": 6,
+      "owner_changed": false,
+      "code_revision": "9c422b7fa89c8571da928ca9deb914c86d0b5cda",
+      "image_digest": "sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766"
+    },
+    {
+      "job_id": "8193d3f9-5fff-40da-a149-07c9b9e96a37",
+      "state": "FAILED",
+      "phase": "FIT",
+      "error_code": "SUPERVISOR_DRAIN",
+      "binding_id": null,
+      "attempt_id": "94ede48c-3a08-4c78-aedb-c5e9e8d967d0",
+      "attempt_count": 1,
+      "execution_id": "1e46266c-7cb4-44b1-96d1-eddc6e1f4fb6",
+      "directory": "/app/var/executions/1e46266c-7cb4-44b1-96d1-eddc6e1f4fb6",
+      "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+      "receipt": {
+        "confirmed": true,
+        "exit_code": -9,
+        "reason": "STOP_REQUESTED",
+        "pod_uid": "f430efc5-e7bf-46f2-8c6e-afbd10e9a9ea",
+        "container_id": "containerd://c4e3a11a35510385f963b54c4cdd28f6434a25d657735ebc99e42f716c93f982"
+      },
+      "revision": 4,
+      "owner_changed": false,
+      "code_revision": "9c422b7fa89c8571da928ca9deb914c86d0b5cda",
+      "image_digest": "sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766"
+    }
+  ],
+  "source_revision": "9c422b7fa89c8571da928ca9deb914c86d0b5cda",
+  "runtime_image_digest": "sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766",
+  "transport": {
+    "ready": 0,
+    "unacked": 0,
+    "snapshots": [
+      {
+        "command_id": "36e38619-5780-4a3e-9edf-875da664e035",
+        "job_id": "1d42217c-a3b2-4ba9-af37-9fa84bb09661",
+        "attempt_id": "60c7cb99-d671-4385-9296-4c8653910912",
+        "spec_digest": "cf87df829531021dc25f4626e2f584693f332ddc01aaa1645f8f1f752ee04978",
+        "state": "SUCCEEDED",
+        "revision": 7
+      },
+      {
+        "command_id": "d2dd1458-da52-4dcf-be58-23eaf15c4a25",
+        "job_id": "99166c1f-5db5-4d3a-a35c-a50d8db7d8de",
+        "attempt_id": "e8ed2b2f-bde6-486e-8df1-14bd8d61f564",
+        "spec_digest": "32a377bb040f25e2d0c8e8b77c6af020c4f19b723ecd457e875e6b8862085576",
+        "state": "SUCCEEDED",
+        "revision": 7
+      },
+      {
+        "command_id": "ccacd374-a531-4a69-b0c0-e7b16590c61c",
+        "job_id": "6bdf68a8-1926-4031-bbb3-215f321ecc37",
+        "attempt_id": "e9448470-ee1d-42df-872e-fbbd78d8af3b",
+        "spec_digest": "cf87df829531021dc25f4626e2f584693f332ddc01aaa1645f8f1f752ee04978",
+        "state": "SUCCEEDED",
+        "revision": 8
+      },
+      {
+        "command_id": "1fa6b001-3ac6-422e-9b94-aa9f40d974a1",
+        "job_id": "761ea6f6-a15a-44c3-abe7-b7bd2f3afe89",
+        "attempt_id": "b7fe9c16-d7e1-4ce4-adbc-851845e3e1be",
+        "spec_digest": "cf87df829531021dc25f4626e2f584693f332ddc01aaa1645f8f1f752ee04978",
+        "state": "FAILED",
+        "revision": 4
+      },
+      {
+        "command_id": "b66ea126-b72a-41a9-9294-9d146db8b0d2",
+        "job_id": "5fae7672-3cda-4dad-82a8-915f3d4fdc92",
+        "attempt_id": "94f285a6-ecd3-4c97-a2d1-c655eab3000a",
+        "spec_digest": "cf87df829531021dc25f4626e2f584693f332ddc01aaa1645f8f1f752ee04978",
+        "state": "SUCCEEDED",
+        "revision": 9
+      },
+      {
+        "command_id": "f3e4ac20-ac67-44ce-bf13-024830accb8e",
+        "job_id": "eb114c02-5eee-4ab6-b9f1-e7dead6b5125",
+        "attempt_id": "f9727325-1095-42cd-bb38-0de2093d6210",
+        "spec_digest": "cf87df829531021dc25f4626e2f584693f332ddc01aaa1645f8f1f752ee04978",
+        "state": "CANCELLED",
+        "revision": 5
+      },
+      {
+        "command_id": "425cec9e-2afa-420d-ae53-4c23bd631068",
+        "job_id": "05ebaa6e-db04-4582-9fd6-253a23fcf510",
+        "attempt_id": "d6007015-98da-4976-b193-bf92cedecb9b",
+        "spec_digest": "32a377bb040f25e2d0c8e8b77c6af020c4f19b723ecd457e875e6b8862085576",
+        "state": "SUCCEEDED",
+        "revision": 6
+      },
+      {
+        "command_id": "d92d3a55-67bc-4c18-8480-65404161b196",
+        "job_id": "32f626bf-72c8-41a3-9b88-1f2bd44971af",
+        "attempt_id": "f54ba22e-d39a-41fa-9b4a-30bb456437c4",
+        "spec_digest": "8d80a28839a12e3810bc9bb65a54cc769f089ac31982e73f747878113613cba5",
+        "state": "SUCCEEDED",
+        "revision": 6
+      },
+      {
+        "command_id": "d0b5b6b8-6aca-417e-84d2-9556bf6bb4e2",
+        "job_id": "8215457e-20cb-4a41-8f86-610b0f5b1fd3",
+        "attempt_id": "029323cc-eefa-48d0-b1fa-a589fa42b3be",
+        "spec_digest": "32a377bb040f25e2d0c8e8b77c6af020c4f19b723ecd457e875e6b8862085576",
+        "state": "FAILED",
+        "revision": 4
+      },
+      {
+        "command_id": "1cd63306-a88d-46ac-a74e-b086beb3302b",
+        "job_id": "8193d3f9-5fff-40da-a149-07c9b9e96a37",
+        "attempt_id": "94ede48c-3a08-4c78-aedb-c5e9e8d967d0",
+        "spec_digest": "32a377bb040f25e2d0c8e8b77c6af020c4f19b723ecd457e875e6b8862085576",
+        "state": "FAILED",
+        "revision": 4
+      },
+      {
+        "command_id": "f0de0ac1-301a-4285-b9ef-87b8561f49e7",
+        "job_id": "44a741e6-1684-4d05-b5a8-58d1c59da3a3",
+        "attempt_id": "f659c64d-31ca-4624-858c-1c332fdb5b83",
+        "spec_digest": "32a377bb040f25e2d0c8e8b77c6af020c4f19b723ecd457e875e6b8862085576",
+        "state": "CANCELLED",
+        "revision": 5
+      },
+      {
+        "command_id": "8e93d1ed-aac1-4728-b063-4500f16d6df5",
+        "job_id": "a417b183-df04-48ad-a641-985fed7f735b",
+        "attempt_id": "1b4ca3f9-ae8b-471d-9c72-c94442f805b6",
+        "spec_digest": "cf87df829531021dc25f4626e2f584693f332ddc01aaa1645f8f1f752ee04978",
+        "state": "FAILED",
+        "revision": 3
+      },
+      {
+        "command_id": "6dc42ba0-324e-4bd3-bb55-945cee6992e7",
+        "job_id": "98b16f9e-15a0-486a-99d9-38b24b379601",
+        "attempt_id": "ccb90ba6-3d73-45a3-93ac-173e536b455c",
+        "spec_digest": "cf87df829531021dc25f4626e2f584693f332ddc01aaa1645f8f1f752ee04978",
+        "state": "FAILED",
+        "revision": 5
+      },
+      {
+        "command_id": "e2fa7cbc-c9ab-44a8-a607-57ca6d12e431",
+        "job_id": "07dfc289-c5b7-4566-89d8-921f3b40c29d",
+        "attempt_id": "b3546378-e7ce-48bc-8516-59430604514d",
+        "spec_digest": "4243754d5f1559639f25fda35a24c421754515134c0a95bf1bbe1daf538f995a",
+        "state": "SUCCEEDED",
+        "revision": 6
+      },
+      {
+        "command_id": "e0162992-7471-4834-8038-431ad7519eff",
+        "job_id": "9a2e895a-ada3-4e19-a78c-1a725ee75529",
+        "attempt_id": "bc045095-fb91-4a71-983f-d6f0f02b6241",
+        "spec_digest": "32a377bb040f25e2d0c8e8b77c6af020c4f19b723ecd457e875e6b8862085576",
+        "state": "SUCCEEDED",
+        "revision": 6
+      },
+      {
+        "command_id": "e3700566-f759-4c53-891f-ad8a0b535c69",
+        "job_id": "b2a014d8-0419-4bba-b2bd-cb9a660099f7",
+        "attempt_id": "e2241fbe-2de6-4297-9a22-91b3c28126a6",
+        "spec_digest": "cf87df829531021dc25f4626e2f584693f332ddc01aaa1645f8f1f752ee04978",
+        "state": "SUCCEEDED",
+        "revision": 9
+      }
+    ]
+  },
+  "runtime_roles": [
+    {
+      "name": "ml-control",
+      "pod_uid": "2cc7676f-2d68-4f5f-a566-b5487ab51e12",
+      "node": "minikube",
+      "containers": [
+        {
+          "name": "control",
+          "image_id": "docker.io/library/ml-k8s-training@sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766",
+          "restart_count": 0,
+          "ready": true
+        },
+        {
+          "name": "gateway",
+          "image_id": "docker.io/library/ml-k8s-training@sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766",
+          "restart_count": 0,
+          "ready": true
+        }
+      ]
+    },
+    {
+      "name": "ml-ingestion-worker",
+      "pod_uid": "e4f504c5-e0cb-4af3-81ba-a516fa336f02",
+      "node": "minikube",
+      "containers": [
+        {
+          "name": "ingestion-worker",
+          "image_id": "docker.io/library/ml-k8s-training@sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766",
+          "restart_count": 0,
+          "ready": true
+        }
+      ]
+    },
+    {
+      "name": "ml-management",
+      "pod_uid": "fc68fd6c-6524-45ab-a45f-05c4d0308898",
+      "node": "minikube",
+      "containers": [
+        {
+          "name": "management",
+          "image_id": "docker.io/library/ml-k8s-training@sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766",
+          "restart_count": 0,
+          "ready": true
+        }
+      ]
+    },
+    {
+      "name": "ml-migrate",
+      "pod_uid": "686839b8-1e05-474a-a6cb-5bdda6f537cc",
+      "node": "minikube",
+      "containers": [
+        {
+          "name": "migrate",
+          "image_id": "docker.io/library/ml-k8s-training@sha256:d4cba3eb014c149ffe9ae864c6297e71aeb09eb3aeb901147cabc43a846f4daa",
+          "restart_count": 0,
+          "ready": false
+        }
+      ]
+    },
+    {
+      "name": "ml-relay",
+      "pod_uid": "460f80df-536d-4c3e-b568-d668b25317ed",
+      "node": "minikube",
+      "containers": [
+        {
+          "name": "relay",
+          "image_id": "docker.io/library/ml-k8s-training@sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766",
+          "restart_count": 0,
+          "ready": true
+        }
+      ]
+    },
+    {
+      "name": "ml-supervisor",
+      "pod_uid": "fd43963b-12df-41c3-aae3-36d9bd4cde7c",
+      "node": "minikube",
+      "containers": [
+        {
+          "name": "supervisor",
+          "image_id": "docker.io/library/ml-k8s-training@sha256:e5bb2a9934cfce4f69c679696d3e841e9f22ff3ed3500aef7a9c671626bd7766",
+          "restart_count": 0,
+          "ready": true
+        }
+      ]
+    }
+  ],
+  "namespace_uid": "36de6188-beca-4e37-a035-0e06f81833fa",
+  "kubernetes_version": "v1.37.0",
+  "node_partition_qualified": false,
+  "production_csi_qualified": false,
+  "security": {
+    "gateway_api_token_mounted": false,
+    "observer_permissions": {
+      "ml-supervisor": {
+        "get pods": true,
+        "get secrets": false,
+        "create pods/exec": false,
+        "delete pods": false
+      },
+      "ml-control": {
+        "get pods": true,
+        "get secrets": false,
+        "create pods/exec": false,
+        "delete pods": false
+      }
+    }
+  },
+  "local_packaged_validation": {
+    "passed": 85,
+    "skipped": 0,
+    "source_mount": false,
+    "root_filesystem": "read-only"
+  },
+  "ci_validation": {
+    "commit": "9c422b7fa89c8571da928ca9deb914c86d0b5cda",
+    "ml_run": 44137008682,
+    "foundation_run": 44137008364,
+    "backend_passed": 1146,
+    "backend_skipped": 0,
+    "acceptance_blockers": []
+  },
+  "qualification_notes": [
+    "Normal image updates in the isolated lab preserved infrastructure, credentials, PVCs and schema.",
+    "Earlier failed/partial probe receipts are retained privately; the tracked receipt is a complete seven-case run on one final source/image.",
+    "All training used real Management HTTP, Outbox Relay and Taskiq; no direct trainer invocation or SQL state/owner edits.",
+    "EBM evaluation remained governed by the existing unqualified policy; no Model Approval or product-quality acceptance was granted."
+  ]
+}

@@ -236,6 +236,7 @@ def main():
         "namespace": NAMESPACE,
         "production_qualified": False,
         "cross_node_qualified": False,
+        "qualification_scope": args.resume_at,
         "checks": [],
         "jobs": [],
     }
@@ -244,11 +245,15 @@ def main():
             operator("init")
         if args.resume_at == "all":
             mlp = operator("submit", "mlp")
-            report["jobs"].append(terminal(mlp, "SUCCEEDED"))
+            value = terminal(mlp, "SUCCEEDED")
+            assert value["owner_changed"] is False
+            report["jobs"].append(value)
             wait_for(lambda: acked(mlp))
             report["checks"].append("real_mlp_management_outbox_worker_and_manual_ack")
             ebm = operator("submit", "ebm")
-            report["jobs"].append(terminal(ebm, "SUCCEEDED"))
+            value = terminal(ebm, "SUCCEEDED")
+            assert value["owner_changed"] is False
+            report["jobs"].append(value)
             wait_for(lambda: acked(ebm))
             report["checks"].append("real_ebm_same_pod_runtime_contract")
             cancelled = paused_job()
@@ -308,8 +313,13 @@ def main():
         report["checks"].append("normal_supervisor_pod_drain_confirms_stop_and_new_pod_identity")
         final = transport()
         assert final["ready"] == 0 and final["unacked"] == 0
+        assert len(report["checks"]) == (7 if args.resume_at == "all" else 3)
         report.update(
-            status="POD_TRAINING_RUNTIME_PASSED",
+            status=(
+                "POD_TRAINING_RUNTIME_PASSED"
+                if args.resume_at == "all"
+                else "POD_TRAINING_RECOVERY_PASSED"
+            ),
             source_revision=settings["ML_CODE_REVISION"],
             runtime_image_digest=settings["ML_IMAGE_DIGEST"],
             transport=final,
