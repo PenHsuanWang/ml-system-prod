@@ -74,12 +74,12 @@ class LocalEBMDatasetPublisher:
                         dst_dir_fd=descriptor,
                         follow_symlinks=False,
                     )
-                    os.fsync(descriptor)
                 except FileExistsError:
                     with relative_file_fd(self.receipt_root, final_name) as existing:
                         with os.fdopen(os.dup(existing), "rb") as stream:
                             if stream.read(_MAX_RECEIPT_BYTES + 1) != data:
                                 raise MLError("Existing EBM build receipt is corrupt") from None
+                os.fsync(descriptor)
             finally:
                 os.close(temporary)
                 try:

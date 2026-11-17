@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import os
 import pickle
 import random
 import re
@@ -32,7 +31,7 @@ from src.plugins.training.ebm_losses_v1 import (
     wafer_count_rank_loss,
 )
 from src.plugins.training.grouped_rank_sampler import grouped_rank_batches
-from src.plugins.training.pytorch_trainer import atomic_json
+from src.plugins.training.pytorch_trainer import atomic_json, durable_replace
 
 
 class EBMTrainingDataset(Protocol):
@@ -230,9 +229,7 @@ class EBMTrainerV1:
                 "torch_rng": torch.get_rng_state(), "pair_rng": pair_generator.get_state(),
                 "numpy_rng_json": json.dumps(rng.bit_generator.state), "python_rng": random.getstate(),
                 "metric_history": history}, temporary)
-            with temporary.open("rb") as stream:
-                os.fsync(stream.fileno())
-            temporary.replace(directory / "checkpoint.pt")
+            durable_replace(temporary, directory / "checkpoint.pt")
             # Progress happens after durable checkpointing, so callback interruption can resume.
             progress(epoch, values)
         bundle = self._export(model, raw, metadata, normalizer, resolved_model, resolved_feature,

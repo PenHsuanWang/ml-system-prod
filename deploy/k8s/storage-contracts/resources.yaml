@@ -1,0 +1,264 @@
+# Synthetic qualification only; use the staged runner, not apply-all.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ml-k8s-storage-contracts
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: storage-contracts
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: storage-contracts
+automountServiceAccountToken: false
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: storage-isolation
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+  - Egress
+  ingress: []
+  egress: []
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: storage-writer
+  labels:
+    app.kubernetes.io/name: storage-contracts
+    storage-contracts/phase: writer
+spec:
+  restartPolicy: Never
+  automountServiceAccountToken: false
+  serviceAccountName: storage-contracts
+  terminationGracePeriodSeconds: 1
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: contract
+    image: ml-storage-contracts:unconfigured
+    command:
+    - python
+    - scripts/storage_contracts.py
+    args:
+    - write
+    - --root
+    - /app/var/qualification
+    - --cache
+    - /app/var/artifacts
+    env:
+    - name: PYTHONDONTWRITEBYTECODE
+      value: '1'
+    - name: OMP_NUM_THREADS
+      value: '1'
+    - name: MKL_NUM_THREADS
+      value: '1'
+    - name: OPENBLAS_NUM_THREADS
+      value: '1'
+    securityContext:
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      requests:
+        cpu: 100m
+        memory: 384Mi
+        ephemeral-storage: 256Mi
+      limits:
+        cpu: '1'
+        memory: 1536Mi
+        ephemeral-storage: 2Gi
+    volumeMounts:
+    - name: data
+      mountPath: /app/var
+      readOnly: false
+    - name: cache
+      mountPath: /app/var/artifacts
+    - name: tmp
+      mountPath: /tmp
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: storage-contracts
+      readOnly: false
+  - name: cache
+    emptyDir:
+      sizeLimit: 1Gi
+  - name: tmp
+    emptyDir:
+      sizeLimit: 256Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: storage-recovery
+  labels:
+    app.kubernetes.io/name: storage-contracts
+    storage-contracts/phase: recovery
+spec:
+  restartPolicy: Never
+  automountServiceAccountToken: false
+  serviceAccountName: storage-contracts
+  terminationGracePeriodSeconds: 1
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: contract
+    image: ml-storage-contracts:unconfigured
+    command:
+    - python
+    - scripts/storage_contracts.py
+    args:
+    - recover
+    - --root
+    - /app/var/qualification
+    - --cache
+    - /app/var/artifacts
+    env:
+    - name: PYTHONDONTWRITEBYTECODE
+      value: '1'
+    - name: OMP_NUM_THREADS
+      value: '1'
+    - name: MKL_NUM_THREADS
+      value: '1'
+    - name: OPENBLAS_NUM_THREADS
+      value: '1'
+    securityContext:
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      requests:
+        cpu: 100m
+        memory: 384Mi
+        ephemeral-storage: 256Mi
+      limits:
+        cpu: '1'
+        memory: 1536Mi
+        ephemeral-storage: 2Gi
+    volumeMounts:
+    - name: data
+      mountPath: /app/var
+      readOnly: false
+    - name: cache
+      mountPath: /app/var/artifacts
+    - name: tmp
+      mountPath: /tmp
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: storage-contracts
+      readOnly: false
+  - name: cache
+    emptyDir:
+      sizeLimit: 1Gi
+  - name: tmp
+    emptyDir:
+      sizeLimit: 256Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: storage-reader
+  labels:
+    app.kubernetes.io/name: storage-contracts
+    storage-contracts/phase: reader
+spec:
+  restartPolicy: Never
+  automountServiceAccountToken: false
+  serviceAccountName: storage-contracts
+  terminationGracePeriodSeconds: 1
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+  - name: contract
+    image: ml-storage-contracts:unconfigured
+    command:
+    - python
+    - scripts/storage_contracts.py
+    args:
+    - verify
+    - --root
+    - /app/var/qualification
+    - --cache
+    - /app/var/artifacts
+    env:
+    - name: PYTHONDONTWRITEBYTECODE
+      value: '1'
+    - name: OMP_NUM_THREADS
+      value: '1'
+    - name: MKL_NUM_THREADS
+      value: '1'
+    - name: OPENBLAS_NUM_THREADS
+      value: '1'
+    securityContext:
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+        - ALL
+    resources:
+      requests:
+        cpu: 100m
+        memory: 384Mi
+        ephemeral-storage: 256Mi
+      limits:
+        cpu: '1'
+        memory: 1536Mi
+        ephemeral-storage: 2Gi
+    volumeMounts:
+    - name: data
+      mountPath: /app/var
+      readOnly: true
+    - name: cache
+      mountPath: /app/var/artifacts
+    - name: tmp
+      mountPath: /tmp
+  volumes:
+  - name: data
+    persistentVolumeClaim:
+      claimName: storage-contracts
+      readOnly: true
+  - name: cache
+    emptyDir:
+      sizeLimit: 1Gi
+  - name: tmp
+    emptyDir:
+      sizeLimit: 256Mi
