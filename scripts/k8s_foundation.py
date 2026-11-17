@@ -110,7 +110,18 @@ def lock_images(directory: Path, local_images: dict[str, str]) -> None:
     print("Containerd manifest image lock recorded")
 
 
-def prepare(directory: Path, revision: str, images: dict[str, str]) -> None:
+def prepare(
+    directory: Path,
+    revision: str,
+    images: dict[str, str],
+    *,
+    serving_runtime: bool = False,
+    namespace: str = NAMESPACE,
+) -> None:
+    if namespace not in {NAMESPACE, "ml-k8s-serving-runtime"}:
+        raise ValueError("Only isolated Minikube namespaces are allowed")
+    if namespace != NAMESPACE and not serving_runtime:
+        raise ValueError("The alternate namespace requires the Serving Runtime profile")
     if not re.fullmatch(r"[a-f0-9]{40}", revision) or revision == "0" * 40:
         raise ValueError("A complete release Git commit is required")
     overrides = image_overrides(images)
@@ -170,6 +181,14 @@ def prepare(directory: Path, revision: str, images: dict[str, str]) -> None:
         generators.append(
             {"name": "ml-runtime-" + role, "files": ["runtime.json=" + role + ".json"]}
         )
+    if serving_runtime:
+        serving = {key: connection[key] for key in ("APP_MONGO_URI", "APP_JWT_SECRET")}
+        serving.update(
+            ML_SERVING_MLFLOW_USERNAME="foundation-reader",
+            ML_SERVING_MLFLOW_PASSWORD=values["reader"],
+        )
+        private_write(directory / "serving.json", json.dumps(serving))
+        generators.append({"name": "ml-runtime-serving", "files": ["runtime.json=serving.json"]})
     private_write(
         directory / "infra.env",
         "\n".join(
@@ -239,7 +258,7 @@ def prepare(directory: Path, revision: str, images: dict[str, str]) -> None:
     )
     private_write(
         directory / "tls.ext",
-        f"subjectAltName=DNS:mlflow,DNS:mlflow.{NAMESPACE}.svc,DNS:mlflow.{NAMESPACE}.svc.cluster.local\nextendedKeyUsage=serverAuth\n",
+        f"subjectAltName=DNS:mlflow,DNS:mlflow.{namespace}.svc,DNS:mlflow.{namespace}.svc.cluster.local\nextendedKeyUsage=serverAuth\n",
     )
     openssl(
         "x509",
@@ -261,8 +280,15 @@ def prepare(directory: Path, revision: str, images: dict[str, str]) -> None:
     config = {
         "apiVersion": "kustomize.config.k8s.io/v1beta1",
         "kind": "Kustomization",
-        "namespace": NAMESPACE,
-        "resources": [os.path.relpath(ROOT / "deploy/k8s/overlays/minikube", directory)],
+        "namespace": namespace,
+        "resources": [
+            os.path.relpath(
+                ROOT
+                / "deploy/k8s/overlays"
+                / ("minikube-serving" if serving_runtime else "minikube"),
+                directory,
+            )
+        ],
         "images": overrides,
         "generatorOptions": {"disableNameSuffixHash": True},
         "secretGenerator": generators,
@@ -278,17 +304,33 @@ def prepare(directory: Path, revision: str, images: dict[str, str]) -> None:
             },
         ],
     }
+    if namespace != NAMESPACE:
+        config["patches"] = [
+            {
+                "target": {"kind": "Namespace", "name": NAMESPACE},
+                "patch": json.dumps(
+                    [{"op": "replace", "path": "/metadata/name", "value": namespace}]
+                ),
+            }
+        ]
+    if serving_runtime:
+        config["configMapGenerator"][1]["literals"].append("ML_SERVING_NAMESPACE=" + namespace)
+        config["configMapGenerator"][1]["literals"].append(
+            "ML_SERVING_IMAGE_REPOSITORY=" + images["ml-system-runtime:unconfigured"].split("@")[0]
+        )
     private_write(directory / "kustomization.yaml", yaml.safe_dump(config, sort_keys=False))
     private_write(directory / "image-lock.json", json.dumps(images, indent=2) + "\n")
     print("Private Minikube overlay prepared (credentials omitted)")
 
 
-def deploy(directory: Path) -> None:
-    kubectl = ["kubectl", "--context=minikube", "--namespace=" + NAMESPACE]
+def deploy(directory: Path, namespace: str = NAMESPACE) -> None:
+    if namespace not in {NAMESPACE, "ml-k8s-serving-runtime"}:
+        raise ValueError("Only isolated Minikube namespaces are allowed")
+    kubectl = ["kubectl", "--context=minikube", "--namespace=" + namespace]
     # Refuse to overlay an existing environment: initialization is a fresh-install
     # workflow, not an upgrade/secret-rotation or database recovery mechanism.
     existing = subprocess.run(
-        [*kubectl, "get", "namespace", NAMESPACE, "--ignore-not-found", "-o", "name"],
+        [*kubectl, "get", "namespace", namespace, "--ignore-not-found", "-o", "name"],
         capture_output=True,
         text=True,
         check=True,
@@ -301,11 +343,11 @@ def deploy(directory: Path) -> None:
     rendered = run(["kubectl", "kustomize", str(directory)], capture_output=True, text=True).stdout
     resources = list(yaml.safe_load_all(rendered))
     for document in resources:
-        if document["kind"] == "Namespace" and document["metadata"]["name"] != NAMESPACE:
+        if document["kind"] == "Namespace" and document["metadata"]["name"] != namespace:
             raise ValueError("Rendered namespace escaped the foundation boundary")
         if (
             document.get("kind") != "Namespace"
-            and document["metadata"].get("namespace") != NAMESPACE
+            and document["metadata"].get("namespace") != namespace
         ):
             raise ValueError("Rendered resource escaped the foundation namespace")
         if document["kind"] in {"Deployment", "Job"}:
@@ -349,7 +391,7 @@ def deploy(directory: Path) -> None:
     print("FOUNDATION_STARTED: initialization only; recovery and production remain unqualified")
 
 
-def verify(directory: Path) -> None:
+def verify(directory: Path, namespace: str = NAMESPACE) -> None:
     if (directory / "smoke.json").exists():
         raise FileExistsError("Retain the previous smoke receipt before another attempt")
     pods = json.loads(
@@ -357,7 +399,7 @@ def verify(directory: Path) -> None:
             [
                 "kubectl",
                 "--context=minikube",
-                "--namespace=" + NAMESPACE,
+                "--namespace=" + namespace,
                 "get",
                 "pods",
                 "-o",
@@ -387,7 +429,7 @@ def verify(directory: Path) -> None:
         [
             "kubectl",
             "--context=minikube",
-            "--namespace=" + NAMESPACE,
+            "--namespace=" + namespace,
             "exec",
             "-i",
             "deployment/ml-control",
@@ -421,11 +463,16 @@ def main() -> None:
     prepare_parser = commands.add_parser("prepare")
     prepare_parser.add_argument("--image-lock", type=Path, required=True)
     prepare_parser.add_argument("--revision", required=True)
+    prepare_parser.add_argument("--serving-runtime", action="store_true")
     prepare_parser.add_argument("--directory", type=Path, default=ROOT / "var/k8s-foundation")
     deploy_parser = commands.add_parser("deploy")
     deploy_parser.add_argument("--directory", type=Path, default=ROOT / "var/k8s-foundation")
     verify_parser = commands.add_parser("verify")
     verify_parser.add_argument("--directory", type=Path, default=ROOT / "var/k8s-foundation")
+    for command in (prepare_parser, deploy_parser, verify_parser):
+        command.add_argument(
+            "--namespace", choices=[NAMESPACE, "ml-k8s-serving-runtime"], default=NAMESPACE
+        )
     args = parser.parse_args()
     if args.operation == "lock-images":
         lock_images(
@@ -439,11 +486,17 @@ def main() -> None:
             ),
         )
     elif args.operation == "prepare":
-        prepare(args.directory, args.revision, json.loads(args.image_lock.read_text()))
+        prepare(
+            args.directory,
+            args.revision,
+            json.loads(args.image_lock.read_text()),
+            serving_runtime=args.serving_runtime,
+            namespace=args.namespace,
+        )
     elif args.operation == "verify":
-        verify(args.directory.absolute())
+        verify(args.directory.absolute(), args.namespace)
     else:
-        deploy(args.directory.absolute())
+        deploy(args.directory.absolute(), args.namespace)
 
 
 if __name__ == "__main__":
