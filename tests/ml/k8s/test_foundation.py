@@ -174,3 +174,31 @@ def test_existing_namespace_refuses_reinitialization(tmp_path, monkeypatch):
     with pytest.raises(ValueError, match="already exists"):
         deploy(tmp_path)
     assert not list(tmp_path.iterdir())
+
+
+def test_native_serving_profile_scopes_secrets_and_control_token(tmp_path, monkeypatch):
+    monkeypatch.setattr("scripts.k8s_foundation.ROOT", tmp_path)
+    directory = tmp_path / "var/serving"
+    images = {name: "example.test/ml@sha256:" + "a" * 64 for name in IMAGES}
+    prepare(directory, "b" * 40, images, serving_runtime=True, namespace="ml-k8s-serving-runtime")
+    value = json.loads((directory / "serving.json").read_text())
+    assert set(value) == {
+        "APP_MONGO_URI",
+        "APP_JWT_SECRET",
+        "ML_SERVING_MLFLOW_USERNAME",
+        "ML_SERVING_MLFLOW_PASSWORD",
+    }
+    config = yaml.safe_load((directory / "kustomization.yaml").read_text())
+    assert config["namespace"] == "ml-k8s-serving-runtime"
+    assert "minikube-serving" in config["resources"][0]
+    literals = config["configMapGenerator"][1]["literals"]
+    assert "ML_SERVING_NAMESPACE=ml-k8s-serving-runtime" in literals
+    root = ROOT / "deploy/k8s/overlays/minikube-serving"
+    role = next(
+        r for r in yaml.safe_load_all((root / "rbac.yaml").read_text()) if r["kind"] == "Role"
+    )
+    assert all("secrets" not in rule["resources"] for rule in role["rules"])
+    assert all("*" not in rule["verbs"] for rule in role["rules"])
+    patch = yaml.safe_load((root / "control-api.yaml").read_text())
+    containers = patch["spec"]["template"]["spec"]["containers"]
+    assert [c["name"] for c in containers] == ["control"]

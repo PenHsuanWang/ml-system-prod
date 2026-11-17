@@ -45,6 +45,8 @@ def create_app(*, spec_path: Path | None = None, expected_digest: str | None = N
         spec = json.loads(data)
         if spec["runtime_image_digest"] != settings.image_digest:
             raise ValueError("Running image does not match deployment qualification")
+        if spec.get("runtime_code_revision", settings.code_revision) != settings.code_revision:
+            raise ValueError("Running source does not match deployment qualification")
         provider = identity or MongoActorResolver(os.environ["APP_MONGO_URI"],
                                                   os.environ.get(
                                                       "APP_MONGO_DATABASE", "backend"), os.environ["APP_JWT_SECRET"],
@@ -90,7 +92,12 @@ def create_app(*, spec_path: Path | None = None, expected_digest: str | None = N
     def ready() -> dict[str, object]:
         return {"ready": bool(state), "deployment_id": state["spec"]["deployment_id"],
                 "generation": state["spec"]["generation"],
-                "manifest_digest": state["spec"]["manifest_digest"]}
+                "manifest_digest": state["spec"]["manifest_digest"],
+                "spec_digest": trusted_digest, "tenant_id": state["spec"]["tenant_id"],
+                "endpoint_id": state["spec"]["endpoint_id"],
+                "registered_model": state["spec"]["registered_name"],
+                "model_version": state["spec"]["model_version"],
+                "pod_uid": os.environ.get("ML_SERVING_POD_UID", "")}
 
     @app.post("/api/v1/prediction/predict")
     def predict(body: PredictionRequest | EBMPredictionRequest,
@@ -105,6 +112,9 @@ def create_app(*, spec_path: Path | None = None, expected_digest: str | None = N
         result["request_id"] = request.state.request_id
         result["provenance"].pop("tenant_id")
         result["provenance"]["input_schema_version"] = state["input_schema_version"]
+        result["provenance"].update(spec_digest=trusted_digest,
+                                    manifest_digest=state["spec"]["manifest_digest"],
+                                    pod_uid=os.environ.get("ML_SERVING_POD_UID", ""))
         return result
 
     return app

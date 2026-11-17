@@ -65,7 +65,8 @@ def build_components(settings: MLSettings) -> Components:
                                      max_pending=settings.max_pending, queue_timeout=settings.queue_timeout,
                                      training_timeout=settings.training_timeout)
     registry = SQLRegistryRepository(database)
-    deployments = SQLDeploymentRepository(database, serving_image=settings.image_digest)
+    deployments = SQLDeploymentRepository(database, serving_image=settings.image_digest,
+                                           serving_code=settings.code_revision)
     catalog = SQLDatasetCatalog(database, settings.dataset_root)
     policy = None
     if settings.ebm_quality_policy_json:

@@ -224,3 +224,30 @@ def test_entrypoint_exec_preserves_command_and_only_resolves_approved_configurat
     assert command == "python" and args == sys.argv[1:]
     assert env["ML_IMAGE_DIGEST"] == deployment_environment["ML_IMAGE_DIGEST"]
     assert env["ML_SERVING_MLFLOW_TOKEN"] == "private-read-only-token"
+
+
+def test_serving_role_accepts_only_identity_and_readonly_tracking(deployment_environment):
+    environment = dict(deployment_environment, ML_RUNTIME_ROLE="serving")
+    path = Path(environment["ML_RUNTIME_CONFIG_FILE"])
+    private = json.loads(path.read_text())
+    scoped = {
+        key: value
+        for key, value in private.items()
+        if key in entrypoint.REQUIRED["serving"] | entrypoint.READER_KEYS
+    }
+    path.write_text(json.dumps(scoped))
+    result = entrypoint.load_runtime_environment(environment)
+    assert result["ML_DEPLOYMENT_ROLE"] == "serving"
+    assert result["MLFLOW_TRACKING_TOKEN"] == "private-read-only-token"
+    assert not set(entrypoint.CONNECTION_KEYS - {"APP_MONGO_URI", "APP_JWT_SECRET"}) & result.keys()
+    for key in ("ML_DATABASE_URL", "MLFLOW_TRACKING_USERNAME", "ML_REDIS_URL"):
+        path.write_text(json.dumps({**scoped, key: private.get(key, "forbidden")}))
+        with pytest.raises(ValueError, match="overprivileged"):
+            entrypoint.load_runtime_environment(environment)
+    path.write_text(
+        json.dumps(
+            {key: value for key, value in scoped.items() if key not in entrypoint.READER_KEYS}
+        )
+    )
+    with pytest.raises(ValueError, match="credential"):
+        entrypoint.load_runtime_environment(environment)

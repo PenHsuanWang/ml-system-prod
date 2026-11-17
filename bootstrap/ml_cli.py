@@ -12,9 +12,9 @@ from bootstrap.ml_telemetry import configure_telemetry
 from src.infrastructure.ml_tracing import operation
 from src.application.deployments.service import DeploymentController
 from src.application.training.outbox import OutboxRelay
-from src.domain.ml import Actor, canonical_json, Conflict
+from src.domain.ml import Actor, canonical_json, Conflict, Unavailable
 from src.domain.training.execution import ExecutionHandle
-from src.infrastructure.deployment.local_serving import LocalServingExecutor
+from bootstrap.ml_serving_wiring import serving_executor
 from src.infrastructure.messaging.ml_rabbitmq import RabbitMQCommandPublisher
 from src.infrastructure.persistence.ml_database import deployments
 from src.infrastructure.persistence.ml_deployments import deployment_from_row
@@ -52,7 +52,7 @@ async def relay(settings: MLSettings, once: bool) -> None:
 def control(settings: MLSettings, once: bool) -> None:
     from sqlalchemy import or_, select
     components = build_components(settings)
-    executor = LocalServingExecutor(settings.execution_root/"serving")
+    executor = serving_executor(settings)
     controller = DeploymentController(components.deployments, executor)
     supervisor = components.supervisor()
     try:
@@ -67,7 +67,7 @@ def control(settings: MLSettings, once: bool) -> None:
                         "Job reconciliation pending job=%s", claim.job.job_id)
             with components.database.transaction() as connection:
                 rows = connection.execute(select(deployments).where(deployments.c.state.not_in(
-                    ["RETIRED", "ACTIVE"]), or_(deployments.c.state != "FAILED",
+                    ["RETIRED"]), or_(deployments.c.state != "FAILED",
                                                 deployments.c.resources_released.is_(False)))).mappings().all()
             for row in rows:
                 deployment = deployment_from_row(row)
@@ -77,9 +77,13 @@ def control(settings: MLSettings, once: bool) -> None:
                     }):
                         controller.reconcile(deployment)
                 except Conflict:
-                    if components.deployments.fence(deployment):
+                    if deployment.state != "ACTIVE" and components.deployments.fence(deployment):
                         if executor.retire(deployment):
                             components.deployments.release(deployment)
+                except Unavailable:
+                    import logging
+                    logging.getLogger(__name__).warning(
+                        "Serving reconciliation pending deployment=%s", deployment.deployment_id)
             if once:
                 return
             time.sleep(1)

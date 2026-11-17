@@ -20,9 +20,11 @@ def deployment_from_row(row: Mapping[str, Any]) -> Deployment:
 
 
 class SQLDeploymentRepository:
-    def __init__(self, database: Database, *, serving_image: str = "development") -> None:
+    def __init__(self, database: Database, *, serving_image: str = "development",
+                 serving_code: str = "development") -> None:
         self.db = database
         self.serving_image = serving_image
+        self.serving_code = serving_code
 
     def create(self, actor: Actor, endpoint: str, binding_id: str,
                approval_id: str, environment: str) -> Deployment:
@@ -74,7 +76,8 @@ class SQLDeploymentRepository:
                     "model_binding_id": binding_id, "manifest_digest": binding["manifest_digest"],
                     "artifact_ref": binding["artifact_ref"], "model_version": binding["version"],
                     "registered_name": binding["registered_name"],
-                    "runtime_image_digest": self.serving_image}
+                    "runtime_image_digest": self.serving_image,
+                    "runtime_code_revision": self.serving_code}
             value = Deployment(deployment_id, actor.tenant_id, endpoint, generation,
                                binding_id, approval_id, "REQUESTED", revision, canonical_json(spec), digest(spec))
             values = asdict(value)

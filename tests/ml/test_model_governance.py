@@ -140,3 +140,32 @@ def test_failed_runtime_holds_capacity_until_stopped(components, actor, intent):
     assert components.deployments.get(actor, candidate.deployment_id).resources_released
     assert components.services.deployments.create(
         actor, "third", binding.binding_id, approval.approval_id).state == "REQUESTED"
+
+
+def test_active_runtime_recovery_preserves_sql_route_and_approval(components, actor, intent):
+    from src.application.deployments.service import DeploymentController
+    binding, _, approval = evidence(components, actor, intent)
+    candidate = components.services.deployments.create(
+        actor, "quality", binding.binding_id, approval.approval_id)
+    ready(components, candidate)
+    before = components.deployments.activate(candidate)
+    active = components.deployments.get(actor, candidate.deployment_id)
+    recovered = []
+
+    class RecoveringExecutor:
+        def prepare(self, deployment):
+            recovered.append(deployment.spec_digest)
+
+        def ready(self, deployment):
+            return True
+
+        def retire(self, deployment):
+            raise AssertionError("An ACTIVE recovery must not retire the routed model")
+
+    controller = DeploymentController(components.deployments, RecoveringExecutor())
+    controller.reconcile(active)
+    controller.reconcile(active)
+    assert recovered == [active.spec_digest, active.spec_digest]
+    assert components.deployments.route(actor.tenant_id, "quality") == before
+    assert components.deployments.get(actor, candidate.deployment_id) == active
+    assert active.approval_id == approval.approval_id
