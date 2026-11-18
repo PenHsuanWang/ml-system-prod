@@ -1,0 +1,37 @@
+{
+  "base_revision": "336615e5f1273a1050d9c1658a750eea925e1b73",
+  "implementation_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+  "scope": "synthetic single-node Minikube engineering acceptance",
+  "production_accepted": false,
+  "fresh_full_run": true,
+  "kubernetes": {
+    "workflow_run_id": 44231292649,
+    "workflow_url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/44231292649",
+    "artifact_id": 14396706480,
+    "artifact_zip_digest": "sha256:1db975b1075c9ee5a4206f5effe94faa514eb81134075e1859ece5c5195f0d63",
+    "artifact_zip_digest_verified": true,
+    "ordered_checks": 12,
+    "training_faults": 7,
+    "receipt": "kubernetes.json"
+  },
+  "compose": {
+    "workflow_run_id": 44231292637,
+    "workflow_url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/44231292637",
+    "artifact_id": 14396195824,
+    "artifact_zip_digest": "sha256:f2541ca4110a4821417e861a1fc0638d977dbcb4c99f64460272afb2b7433fd3",
+    "artifact_zip_digest_verified": true,
+    "receipt": "compose.json"
+  },
+  "foundation_workflow_url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/44231292529",
+  "local_packaged_validation": {
+    "source_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+    "read_only_root": true,
+    "source_bind_mount": false,
+    "passed": 122,
+    "skipped": 0
+  },
+  "local_boundary_validation": {
+    "passed": 62
+  },
+  "local_incomplete_runs": "Retained privately; not substituted for the fresh CI run"
+}

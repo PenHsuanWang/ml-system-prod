@@ -57,6 +57,14 @@ USER mlapp
 ENTRYPOINT ["python", "-m", "bootstrap.deployment_entrypoint"]
 CMD ["uvicorn", "bootstrap.ml_api:create_app", "--factory", "--host", "0.0.0.0", "--port", "8000", "--limit-concurrency", "64"]
 
+FROM production AS k8s-acceptance
+USER root
+COPY tests ./tests
+COPY scripts ./scripts
+COPY deploy/k8s ./deploy/k8s
+RUN pip install --no-cache-dir '.[dev]' 'PyYAML>=6,<7'
+USER mlapp
+
 FROM python:3.12-slim AS serving
 WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1

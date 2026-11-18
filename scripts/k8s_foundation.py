@@ -14,6 +14,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = "ml-k8s-foundation"
+NAMESPACES = (NAMESPACE, "ml-k8s-serving-runtime", "ml-k8s-training-runtime", "ml-k8s-acceptance")
 ROLES = ("migrate", "management", "relay", "supervisor", "control", "gateway", "ingestion-worker")
 IMAGES = (
     "ml-system-runtime:unconfigured",
@@ -118,9 +119,14 @@ def prepare(
     serving_runtime: bool = False,
     namespace: str = NAMESPACE,
     training_runtime: bool = False,
+    acceptance: bool = False,
 ) -> None:
-    if namespace not in {NAMESPACE, "ml-k8s-serving-runtime", "ml-k8s-training-runtime"}:
+    if namespace not in NAMESPACES:
         raise ValueError("Only isolated Minikube namespaces are allowed")
+    if acceptance != (namespace == "ml-k8s-acceptance"):
+        raise ValueError("Acceptance requires its dedicated namespace and explicit profile")
+    if acceptance:
+        training_runtime = True
     if training_runtime:
         serving_runtime = True
     if namespace != NAMESPACE and not serving_runtime:
@@ -289,7 +295,9 @@ def prepare(
                 ROOT
                 / "deploy/k8s/overlays"
                 / (
-                    "minikube-training"
+                    "minikube-acceptance"
+                    if acceptance
+                    else "minikube-training"
                     if training_runtime
                     else "minikube-serving"
                     if serving_runtime
@@ -335,7 +343,7 @@ def prepare(
 
 
 def deploy(directory: Path, namespace: str = NAMESPACE) -> None:
-    if namespace not in {NAMESPACE, "ml-k8s-serving-runtime", "ml-k8s-training-runtime"}:
+    if namespace not in NAMESPACES:
         raise ValueError("Only isolated Minikube namespaces are allowed")
     kubectl = ["kubectl", "--context=minikube", "--namespace=" + namespace]
     # Refuse to overlay an existing environment: initialization is a fresh-install
@@ -476,6 +484,7 @@ def main() -> None:
     prepare_parser.add_argument("--revision", required=True)
     prepare_parser.add_argument("--serving-runtime", action="store_true")
     prepare_parser.add_argument("--training-runtime", action="store_true")
+    prepare_parser.add_argument("--acceptance", action="store_true")
     prepare_parser.add_argument("--directory", type=Path, default=ROOT / "var/k8s-foundation")
     deploy_parser = commands.add_parser("deploy")
     deploy_parser.add_argument("--directory", type=Path, default=ROOT / "var/k8s-foundation")
@@ -484,7 +493,7 @@ def main() -> None:
     for command in (prepare_parser, deploy_parser, verify_parser):
         command.add_argument(
             "--namespace",
-            choices=[NAMESPACE, "ml-k8s-serving-runtime", "ml-k8s-training-runtime"],
+            choices=NAMESPACES,
             default=NAMESPACE,
         )
     args = parser.parse_args()
@@ -506,6 +515,7 @@ def main() -> None:
             json.loads(args.image_lock.read_text()),
             serving_runtime=args.serving_runtime,
             training_runtime=args.training_runtime,
+            acceptance=args.acceptance,
             namespace=args.namespace,
         )
     elif args.operation == "verify":

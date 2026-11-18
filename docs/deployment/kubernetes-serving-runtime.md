@@ -32,7 +32,7 @@ python scripts/k8s_foundation.py verify \
 As in Foundation, build/load the other approved images first. Public manifests
 contain placeholders and external Secret references; do not apply them directly.
 The helper refuses an existing namespace or output directory. Namespace selection
-is restricted to the two explicit Minikube qualification namespaces. Do not use it
+is restricted to the explicit Minikube qualification namespaces. Do not use it
 as an upgrade, Secret rotation or migration tool for a running installation.
 The original Foundation profile remains local and retains its existing 40 resources;
 the opt-in Serving profile renders 44, adding an SA, Role, RoleBinding and API-egress
@@ -114,5 +114,6 @@ python -m pytest tests/ml/test_serving_runtime.py tests/ml/test_model_governance
 
 Minikube does not qualify cross-node rescheduling, node partition/force deletion,
 production CSI, registry loss, arbitrary credential rotation, HA controllers,
-Autoscaling, mTLS/CNI enforcement or production rollout operations. Training Runtime,
-observability and Production Operations remain the subsequent engineering PRs.
+Autoscaling, mTLS/CNI enforcement or production rollout operations. See the [Pod Training Runtime](kubernetes-training-runtime.md) and
+[governed Acceptance](kubernetes-acceptance.md) runbooks for the subsequent
+qualification layers. Production Operations must qualify the actual company environment.

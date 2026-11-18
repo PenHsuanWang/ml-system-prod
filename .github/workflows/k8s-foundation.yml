@@ -30,7 +30,11 @@ jobs:
         run: kubectl kustomize deploy/k8s/overlays/minikube-serving > "$RUNNER_TEMP/serving-profile.yaml"
       - name: Render opt-in Pod Training profile
         run: kubectl kustomize deploy/k8s/overlays/minikube-training > "$RUNNER_TEMP/training-profile.yaml"
+      - name: Render isolated governed Acceptance profile
+        run: kubectl kustomize deploy/k8s/overlays/minikube-acceptance > "$RUNNER_TEMP/acceptance-profile.yaml"
+      - name: Check acceptance evidence and operator boundaries
+        run: python scripts/check_k8s_acceptance.py
       - name: Verify secret adaptation and unchanged bootstrap
-        run: python -m pytest tests/ml/k8s/test_foundation.py tests/ml/k8s/test_storage_configuration.py tests/ml/test_deployment_entrypoint.py --noconftest -q
+        run: python -m pytest tests/ml/k8s/test_foundation.py tests/ml/k8s/test_storage_configuration.py tests/ml/k8s/test_acceptance.py tests/ml/test_deployment_entrypoint.py --noconftest -q
       - name: Lint scoped foundation code
         run: python -m ruff check scripts/check_k8s.py scripts/k8s_foundation.py scripts/k8s_mlflow_smoke.py scripts/storage_contracts.py scripts/verify_k8s_storage.py deploy/k8s/base/files/prepare_runtime.py tests/ml/k8s

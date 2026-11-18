@@ -1,0 +1,628 @@
+{
+  "status": "K8S_ENGINEERING_ACCEPTANCE_PASSED",
+  "namespace": "ml-k8s-acceptance",
+  "source_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+  "runtime_image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39",
+  "tools_image": "docker.io/library/ml-k8s-acceptance-tools@sha256:03bf33041f22182a12989750435dc43c4166f5c309f1043b76b7f837218bd72a",
+  "qualification_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+  "production_accepted": false,
+  "cross_node_qualified": false,
+  "checks": [
+    "synthetic_raw_snapshots_and_verified_dataset_builder",
+    "http_idempotency_outbox_real_pod_fit_evaluation",
+    "tenant_permission_and_explicit_approval_fences",
+    "explicit_http_approval_native_activation_gateway_prediction",
+    "serving_pod_and_active_resource_recovery_without_reactivation",
+    "control_gateway_restart_preserves_durable_route",
+    "real_quality_rejection_cannot_be_approved",
+    "candidate_auth_failure_fenced_retired_active_route_preserved",
+    "approved_update_and_rollback_with_confirmed_retirement",
+    "ebm_raw_builder_worker_mlflow_evaluation_approval_native_inference",
+    "two_global_serving_reservations_remain_enforced",
+    "same_stack_training_faults_do_not_change_active_serving"
+  ],
+  "jobs": [
+    {
+      "job_id": "93016390-24c8-4ce7-bf83-f5f229eb8323",
+      "state": "SUCCEEDED",
+      "binding_id": "665438f0-9c56-4517-802a-500996886fd5",
+      "attempt_id": "78085959-32b6-4b76-9fce-fe2d9549cea1",
+      "attempt_count": 1,
+      "code_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+      "image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39",
+      "execution_id": "d94093e9-2658-4889-a30f-d139536aa989",
+      "stop_confirmed": true,
+      "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+      "container_id": "containerd://5c72eede0a5f58099ad67dea79d4738875dc9099c30d9e007cc489e38ab19c6f"
+    },
+    {
+      "job_id": "49a8dc15-be7d-4f13-9060-7101c78c03ac",
+      "state": "SUCCEEDED",
+      "binding_id": "d0aa6596-361b-440a-b184-6f65fd0fc5cc",
+      "attempt_id": "42cccf90-c1d7-4aa7-92a6-7a74e6f26a9f",
+      "attempt_count": 1,
+      "code_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+      "image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39",
+      "execution_id": "d6f8e01b-a51b-45bd-a068-cf575554d786",
+      "stop_confirmed": true,
+      "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+      "container_id": "containerd://5c72eede0a5f58099ad67dea79d4738875dc9099c30d9e007cc489e38ab19c6f"
+    },
+    {
+      "job_id": "20c875af-9533-4d77-baa0-ac0390d5834f",
+      "state": "SUCCEEDED",
+      "binding_id": "deb5cef0-eb72-4bba-a325-7ccbdbd4d4c0",
+      "attempt_id": "114fc4a0-3900-4bf0-9b43-318143cfe5a8",
+      "attempt_count": 1,
+      "code_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+      "image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39",
+      "execution_id": "c223e7fe-03b4-4c31-90eb-ae2848d57cf3",
+      "stop_confirmed": true,
+      "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+      "container_id": "containerd://5c72eede0a5f58099ad67dea79d4738875dc9099c30d9e007cc489e38ab19c6f"
+    },
+    {
+      "job_id": "369bbf65-2853-4b65-9e3b-1b545dbccd0c",
+      "state": "SUCCEEDED",
+      "binding_id": "2cf21372-c233-4f9f-81b7-04e142e99f4d",
+      "attempt_id": "bba9db1e-41fe-47a4-abe7-ec6e5fbfa42f",
+      "attempt_count": 1,
+      "code_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+      "image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39",
+      "execution_id": "291e2f05-58e2-4bf1-9657-3f914d273000",
+      "stop_confirmed": true,
+      "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+      "container_id": "containerd://5c72eede0a5f58099ad67dea79d4738875dc9099c30d9e007cc489e38ab19c6f"
+    }
+  ],
+  "deployments": [
+    {
+      "deployment_id": "3664e170-d2b6-488f-9682-093c9a2170b0",
+      "generation": 1,
+      "state": "REQUESTED"
+    },
+    {
+      "deployment_id": "8d0a6225-e53f-4c74-872e-000d1b7134ac",
+      "generation": 2,
+      "state": "REQUESTED"
+    },
+    {
+      "deployment_id": "96de5755-7a39-4c0a-b567-b177c574783e",
+      "generation": 3,
+      "state": "REQUESTED"
+    },
+    {
+      "deployment_id": "52b04b71-69ca-44d4-a008-7c437b7e84c2",
+      "generation": 4,
+      "state": "REQUESTED"
+    },
+    {
+      "deployment_id": "8d77c53d-45b9-44fc-a885-f57c6c586bd9",
+      "generation": 1,
+      "state": "REQUESTED"
+    }
+  ],
+  "fixture": {
+    "fixture_ready": true,
+    "dataset": {
+      "content_digest": "209be7a139b3c4a9edc23cc12fe3afd233e7dd3dc4bfd1336867ff4e0f3deefd",
+      "builder_receipt_digest": "dc00dc4f2fe04c02349f08d3e24413c2a91fe3c48167784145e8e3a0fd91d1e8",
+      "raw_inputs": [
+        {
+          "role": "fdc",
+          "snapshot_id": "0db5065e-98ee-492c-bc3a-eca92772a32e",
+          "manifest_digest": "1a4895ea94ba3ff501f67531d24342807c8616dc763dc108d1b0a7075be68400"
+        },
+        {
+          "role": "wafer",
+          "snapshot_id": "f91a49b4-74f0-4866-8f6c-6fdb2809fba6",
+          "manifest_digest": "6639072d00f555cf1695b71c4c11f233d0c76e11ac9ca6e6e6027be796b188a8"
+        }
+      ]
+    }
+  },
+  "active_recovery": {
+    "before": {
+      "endpoint_id": "quality",
+      "deployment_id": "3664e170-d2b6-488f-9682-093c9a2170b0",
+      "generation": 1,
+      "registered_model": "tenant-0544c1222cb764de-nn",
+      "model_version": "1",
+      "input_schema_version": "1",
+      "spec_digest": "6966afca604a90c6fa5649cb32bc2d848c95c91fe97fabeb2921690aa8e6c9a5",
+      "manifest_digest": "0b6ddb73acff32df60d333c2ca6f322464c8357338eed16988dbd54b70d498ff",
+      "pod_uid": "bb095d76-4fd7-44a8-aa59-83c676f0d54b"
+    },
+    "after": {
+      "endpoint_id": "quality",
+      "deployment_id": "3664e170-d2b6-488f-9682-093c9a2170b0",
+      "generation": 1,
+      "registered_model": "tenant-0544c1222cb764de-nn",
+      "model_version": "1",
+      "input_schema_version": "1",
+      "spec_digest": "6966afca604a90c6fa5649cb32bc2d848c95c91fe97fabeb2921690aa8e6c9a5",
+      "manifest_digest": "0b6ddb73acff32df60d333c2ca6f322464c8357338eed16988dbd54b70d498ff",
+      "pod_uid": "2bb818e9-cbe5-41c2-89ea-9beb623e4a7c"
+    },
+    "route": {
+      "state": "ACTIVE",
+      "released": false,
+      "spec_digest": "6966afca604a90c6fa5649cb32bc2d848c95c91fe97fabeb2921690aa8e6c9a5",
+      "approval_id": "7e23d477-64d3-4343-b9de-8c976358c5de",
+      "route": {
+        "tenant_id": "acceptance-c0372ac42c33",
+        "endpoint_id": "quality",
+        "revision": 1,
+        "deployment_id": "3664e170-d2b6-488f-9682-093c9a2170b0",
+        "generation": 1
+      }
+    }
+  },
+  "control_gateway_restart": {
+    "before_uid": "a9cc8151-2e80-494b-b227-a2d0493f997d",
+    "after_uid": "7aefa465-ca4e-4646-8b22-2127346ce11b"
+  },
+  "rejected_evaluation": {
+    "evaluation_id": "d42d2197-b0da-4410-9b1e-130d2950aa68",
+    "model_binding_id": "d0aa6596-361b-440a-b184-6f65fd0fc5cc",
+    "manifest_digest": "589d0542820db9f2ba53f43de0aa7d2436f98464424cfdc184370cfcc1317757",
+    "dataset_digest": "01e0c6236d7ab1d5c8f8f201625bb107e9f87b134f8dc8192117d6176a92ab85",
+    "policy_version": "demo-accuracy-v1",
+    "evaluator_version": "classifier-v1",
+    "decision": "REJECTED_BY_POLICY",
+    "metrics_json": "{\"accuracy\":0,\"samples\":64}",
+    "report_digest": "1989d4f23e1c76ea2d2db9917c526391d536b8cd5b3a1180d12124819f256084"
+  },
+  "failed_candidate": {
+    "deployment": {
+      "deployment_id": "8d0a6225-e53f-4c74-872e-000d1b7134ac",
+      "generation": 2,
+      "state": "REQUESTED"
+    },
+    "terminal": {
+      "state": "FAILED",
+      "released": true,
+      "spec_digest": "f8766ffe8c699e6c3e0c6c45c5e48af3634cd30b722d625296efa4b976563b9c",
+      "approval_id": "fc20ce2b-cb57-4107-8edb-aa3bff39158c",
+      "route": {
+        "tenant_id": "acceptance-c0372ac42c33",
+        "endpoint_id": "quality",
+        "revision": 2,
+        "deployment_id": "3664e170-d2b6-488f-9682-093c9a2170b0",
+        "generation": 1
+      }
+    },
+    "active": {
+      "state": "ACTIVE",
+      "released": false,
+      "spec_digest": "6966afca604a90c6fa5649cb32bc2d848c95c91fe97fabeb2921690aa8e6c9a5",
+      "approval_id": "7e23d477-64d3-4343-b9de-8c976358c5de",
+      "route": {
+        "tenant_id": "acceptance-c0372ac42c33",
+        "endpoint_id": "quality",
+        "revision": 2,
+        "deployment_id": "3664e170-d2b6-488f-9682-093c9a2170b0",
+        "generation": 1
+      }
+    }
+  },
+  "ebm_lineage": {
+    "binding_id": "2cf21372-c233-4f9f-81b7-04e142e99f4d",
+    "run_id": "7770e1fd22b342c38102f107f6771e66",
+    "version": "4",
+    "manifest_digest": "c13cedb41048eaba2a6d5eba2c8aab7eaba37783ffcd71d953ea2d84ee5cf564",
+    "producer_job_id": "369bbf65-2853-4b65-9e3b-1b545dbccd0c",
+    "dataset": {
+      "content_digest": "209be7a139b3c4a9edc23cc12fe3afd233e7dd3dc4bfd1336867ff4e0f3deefd",
+      "builder_receipt_digest": "dc00dc4f2fe04c02349f08d3e24413c2a91fe3c48167784145e8e3a0fd91d1e8",
+      "raw_inputs": [
+        {
+          "role": "fdc",
+          "snapshot_id": "0db5065e-98ee-492c-bc3a-eca92772a32e",
+          "manifest_digest": "1a4895ea94ba3ff501f67531d24342807c8616dc763dc108d1b0a7075be68400"
+        },
+        {
+          "role": "wafer",
+          "snapshot_id": "f91a49b4-74f0-4866-8f6c-6fdb2809fba6",
+          "manifest_digest": "6639072d00f555cf1695b71c4c11f233d0c76e11ac9ca6e6e6027be796b188a8"
+        }
+      ]
+    }
+  },
+  "ebm_prediction": {
+    "endpoint_id": "ebm-quality",
+    "deployment_id": "8d77c53d-45b9-44fc-a885-f57c6c586bd9",
+    "generation": 1,
+    "registered_model": "tenant-0544c1222cb764de-nn",
+    "model_version": "4",
+    "input_schema_version": "ebm-spectrogram-input-v1",
+    "spec_digest": "8beca4f5bfd2249762b6a428270aaa0cf75004231cfd417b3327c3a43d982fd0",
+    "manifest_digest": "c13cedb41048eaba2a6d5eba2c8aab7eaba37783ffcd71d953ea2d84ee5cf564",
+    "pod_uid": "02d8d037-9335-467f-a158-4a4a83f6d623"
+  },
+  "training_faults": {
+    "status": "POD_TRAINING_RUNTIME_PASSED",
+    "namespace": "ml-k8s-acceptance",
+    "production_qualified": false,
+    "cross_node_qualified": false,
+    "qualification_scope": "all",
+    "checks": [
+      "real_mlp_management_outbox_worker_and_manual_ack",
+      "real_ebm_same_pod_runtime_contract",
+      "cancel_confirms_compute_group_stop_before_ack",
+      "guardian_wall_deadline_terminates_paused_compute",
+      "worker_crash_control_recovers_same_fit_and_redelivery_ack",
+      "redis_outage_preserves_terminal_sql_and_unacked_delivery",
+      "normal_supervisor_pod_drain_confirms_stop_and_new_pod_identity"
+    ],
+    "jobs": [
+      {
+        "job_id": "64894349-bc26-42b7-9971-1f9321da2343",
+        "state": "SUCCEEDED",
+        "phase": "COMPLETED",
+        "error_code": null,
+        "binding_id": "bcff6791-a649-4dd4-bb49-aeec59e29eb5",
+        "attempt_id": "237edb5e-8347-40cd-b738-8cdf8ac31161",
+        "attempt_count": 1,
+        "execution_id": "5e0f2ace-a3e4-45ec-a9b6-0c936670b52e",
+        "directory": "/app/var/executions/5e0f2ace-a3e4-45ec-a9b6-0c936670b52e",
+        "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+        "receipt": {
+          "confirmed": true,
+          "exit_code": 0,
+          "reason": "COMPLETED",
+          "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+          "container_id": "containerd://5c72eede0a5f58099ad67dea79d4738875dc9099c30d9e007cc489e38ab19c6f"
+        },
+        "revision": 6,
+        "owner_changed": false,
+        "code_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+        "image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      },
+      {
+        "job_id": "8916ac81-6446-45c3-88a9-14fc58467857",
+        "state": "SUCCEEDED",
+        "phase": "COMPLETED",
+        "error_code": null,
+        "binding_id": "7b955f84-c437-40c2-8241-b8f99e42950c",
+        "attempt_id": "7be6a404-a567-4329-bfe6-2dbc7f85318c",
+        "attempt_count": 1,
+        "execution_id": "02d93a86-61b2-44fb-990e-94e5a0b44c30",
+        "directory": "/app/var/executions/02d93a86-61b2-44fb-990e-94e5a0b44c30",
+        "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+        "receipt": {
+          "confirmed": true,
+          "exit_code": 0,
+          "reason": "COMPLETED",
+          "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+          "container_id": "containerd://5c72eede0a5f58099ad67dea79d4738875dc9099c30d9e007cc489e38ab19c6f"
+        },
+        "revision": 6,
+        "owner_changed": false,
+        "code_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+        "image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      },
+      {
+        "job_id": "7241b5d2-b605-4214-b8f9-253f3141fb8d",
+        "state": "CANCELLED",
+        "phase": "FIT",
+        "error_code": "CANCELLED",
+        "binding_id": null,
+        "attempt_id": "0bb69745-d5e4-4b91-89a2-b80cb1ac01c2",
+        "attempt_count": 1,
+        "execution_id": "7494451c-b355-4beb-9a2c-62af280f1035",
+        "directory": "/app/var/executions/7494451c-b355-4beb-9a2c-62af280f1035",
+        "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+        "receipt": {
+          "confirmed": true,
+          "exit_code": -9,
+          "reason": "STOP_REQUESTED",
+          "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+          "container_id": "containerd://5c72eede0a5f58099ad67dea79d4738875dc9099c30d9e007cc489e38ab19c6f"
+        },
+        "revision": 5,
+        "owner_changed": false,
+        "code_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+        "image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      },
+      {
+        "job_id": "38265e6a-b71d-4977-9cac-4d70eff41e91",
+        "state": "FAILED",
+        "phase": "FIT",
+        "error_code": "TRAINING_DEADLINE",
+        "binding_id": null,
+        "attempt_id": "5a09ff74-26bb-4e68-9bb0-2fa88b9d4a01",
+        "attempt_count": 1,
+        "execution_id": "22fdf326-1d93-4005-86a7-2813baf3b6fb",
+        "directory": "/app/var/executions/22fdf326-1d93-4005-86a7-2813baf3b6fb",
+        "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+        "receipt": {
+          "confirmed": true,
+          "exit_code": -9,
+          "reason": "DEADLINE",
+          "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+          "container_id": "containerd://5c72eede0a5f58099ad67dea79d4738875dc9099c30d9e007cc489e38ab19c6f"
+        },
+        "revision": 4,
+        "owner_changed": false,
+        "code_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+        "image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      },
+      {
+        "job_id": "6bb9c1b2-6d53-4f29-b5e6-83a3d93a96d5",
+        "state": "SUCCEEDED",
+        "phase": "COMPLETED",
+        "error_code": null,
+        "binding_id": "1d82be8d-57d7-4c30-96f2-54d6891a6374",
+        "attempt_id": "b08597fa-f761-4701-b7ea-82e474403ae4",
+        "attempt_count": 1,
+        "execution_id": "c0dda58e-8ca5-4b8f-945d-69fff52a1fcc",
+        "directory": "/app/var/executions/c0dda58e-8ca5-4b8f-945d-69fff52a1fcc",
+        "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+        "receipt": {
+          "confirmed": true,
+          "exit_code": 0,
+          "reason": "COMPLETED",
+          "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+          "container_id": "containerd://5c72eede0a5f58099ad67dea79d4738875dc9099c30d9e007cc489e38ab19c6f"
+        },
+        "revision": 7,
+        "owner_changed": true,
+        "code_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+        "image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      },
+      {
+        "job_id": "bd01a267-c5d7-4895-ad50-591b9afae4ad",
+        "state": "SUCCEEDED",
+        "phase": "COMPLETED",
+        "error_code": null,
+        "binding_id": "895a60ee-9258-4b62-bf07-abcb1f656fd3",
+        "attempt_id": "56652848-ff32-44ef-828d-7083fcf35b41",
+        "attempt_count": 1,
+        "execution_id": "9c901fb9-4555-428b-9085-5760e9c8f9f7",
+        "directory": "/app/var/executions/9c901fb9-4555-428b-9085-5760e9c8f9f7",
+        "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+        "receipt": {
+          "confirmed": true,
+          "exit_code": 0,
+          "reason": "COMPLETED",
+          "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+          "container_id": "containerd://5c72eede0a5f58099ad67dea79d4738875dc9099c30d9e007cc489e38ab19c6f"
+        },
+        "revision": 6,
+        "owner_changed": false,
+        "code_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+        "image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      },
+      {
+        "job_id": "b952480a-fadf-4c41-b097-d15accc19052",
+        "state": "FAILED",
+        "phase": "FIT",
+        "error_code": "SUPERVISOR_DRAIN",
+        "binding_id": null,
+        "attempt_id": "ac39bf4d-9c7e-49cc-af41-fb529ee71cf0",
+        "attempt_count": 1,
+        "execution_id": "cca62ef0-4654-495f-9b02-2664b0c3e1e8",
+        "directory": "/app/var/executions/cca62ef0-4654-495f-9b02-2664b0c3e1e8",
+        "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+        "receipt": {
+          "confirmed": true,
+          "exit_code": -9,
+          "reason": "STOP_REQUESTED",
+          "pod_uid": "3adf2b82-26e8-46f9-a95f-368329dadc13",
+          "container_id": "containerd://5c72eede0a5f58099ad67dea79d4738875dc9099c30d9e007cc489e38ab19c6f"
+        },
+        "revision": 4,
+        "owner_changed": false,
+        "code_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+        "image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      }
+    ],
+    "source_revision": "fe10413ba4b14735d7b6d4b07a9c98df1f068a62",
+    "runtime_image_digest": "sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39",
+    "transport": {
+      "ready": 0,
+      "unacked": 0,
+      "snapshots": [
+        {
+          "command_id": "e72b3e95-aa8a-42b7-afd0-fb4111dbd3cb",
+          "job_id": "6bb9c1b2-6d53-4f29-b5e6-83a3d93a96d5",
+          "attempt_id": "b08597fa-f761-4701-b7ea-82e474403ae4",
+          "spec_digest": "fa7ab668da67e54fde6c5d5e3c6ebce443c3b229a025a45bdb9e850e648a4602",
+          "state": "SUCCEEDED",
+          "revision": 7
+        },
+        {
+          "command_id": "ade06cc5-ac35-477c-8e4e-7f1c0194aed1",
+          "job_id": "369bbf65-2853-4b65-9e3b-1b545dbccd0c",
+          "attempt_id": "bba9db1e-41fe-47a4-abe7-ec6e5fbfa42f",
+          "spec_digest": "df509fe8b8c76fc1b81df94d5f36aaaef831ec08093bcf9306c1d77cde7683df",
+          "state": "SUCCEEDED",
+          "revision": 6
+        },
+        {
+          "command_id": "2f62cbe8-9b6c-4914-9ccf-aa1ae5498d59",
+          "job_id": "bd01a267-c5d7-4895-ad50-591b9afae4ad",
+          "attempt_id": "56652848-ff32-44ef-828d-7083fcf35b41",
+          "spec_digest": "fa7ab668da67e54fde6c5d5e3c6ebce443c3b229a025a45bdb9e850e648a4602",
+          "state": "SUCCEEDED",
+          "revision": 6
+        },
+        {
+          "command_id": "6a4d24c5-6110-453b-9568-ec0708fb2922",
+          "job_id": "20c875af-9533-4d77-baa0-ac0390d5834f",
+          "attempt_id": "114fc4a0-3900-4bf0-9b43-318143cfe5a8",
+          "spec_digest": "0652604aa9079079102d23954b877aa287960ff51062df7f13a01051947eaebb",
+          "state": "SUCCEEDED",
+          "revision": 6
+        },
+        {
+          "command_id": "fb408f50-a5b8-4b6b-8d8b-5a599650208d",
+          "job_id": "64894349-bc26-42b7-9971-1f9321da2343",
+          "attempt_id": "237edb5e-8347-40cd-b738-8cdf8ac31161",
+          "spec_digest": "fa7ab668da67e54fde6c5d5e3c6ebce443c3b229a025a45bdb9e850e648a4602",
+          "state": "SUCCEEDED",
+          "revision": 6
+        },
+        {
+          "command_id": "7c58cfb7-fedc-487b-b4c4-e06f235325d9",
+          "job_id": "93016390-24c8-4ce7-bf83-f5f229eb8323",
+          "attempt_id": "78085959-32b6-4b76-9fce-fe2d9549cea1",
+          "spec_digest": "fa7ab668da67e54fde6c5d5e3c6ebce443c3b229a025a45bdb9e850e648a4602",
+          "state": "SUCCEEDED",
+          "revision": 6
+        },
+        {
+          "command_id": "e922215e-1eea-48a0-be93-f7e8ca4036b1",
+          "job_id": "49a8dc15-be7d-4f13-9060-7101c78c03ac",
+          "attempt_id": "42cccf90-c1d7-4aa7-92a6-7a74e6f26a9f",
+          "spec_digest": "ae5b5b0c2e9a4d0c873f435a57604f343118c31c6e9f4566333d8a02d83f8f4c",
+          "state": "SUCCEEDED",
+          "revision": 6
+        },
+        {
+          "command_id": "dabbd23c-aa95-472e-bc91-ebfe7103eaeb",
+          "job_id": "7241b5d2-b605-4214-b8f9-253f3141fb8d",
+          "attempt_id": "0bb69745-d5e4-4b91-89a2-b80cb1ac01c2",
+          "spec_digest": "fa7ab668da67e54fde6c5d5e3c6ebce443c3b229a025a45bdb9e850e648a4602",
+          "state": "CANCELLED",
+          "revision": 5
+        },
+        {
+          "command_id": "4904d125-4ea6-468a-9cc0-13718acba653",
+          "job_id": "8916ac81-6446-45c3-88a9-14fc58467857",
+          "attempt_id": "7be6a404-a567-4329-bfe6-2dbc7f85318c",
+          "spec_digest": "c950f12de322827115dfcaeb3ce3c6622775bccfc5fc87aaa92cf24afb735a3c",
+          "state": "SUCCEEDED",
+          "revision": 6
+        },
+        {
+          "command_id": "9b92ac4e-3629-4c44-a015-23d76cd87805",
+          "job_id": "38265e6a-b71d-4977-9cac-4d70eff41e91",
+          "attempt_id": "5a09ff74-26bb-4e68-9bb0-2fa88b9d4a01",
+          "spec_digest": "fa7ab668da67e54fde6c5d5e3c6ebce443c3b229a025a45bdb9e850e648a4602",
+          "state": "FAILED",
+          "revision": 4
+        },
+        {
+          "command_id": "3217c94e-cf43-4790-8f2a-e847a51ae00b",
+          "job_id": "b952480a-fadf-4c41-b097-d15accc19052",
+          "attempt_id": "ac39bf4d-9c7e-49cc-af41-fb529ee71cf0",
+          "spec_digest": "fa7ab668da67e54fde6c5d5e3c6ebce443c3b229a025a45bdb9e850e648a4602",
+          "state": "FAILED",
+          "revision": 4
+        }
+      ]
+    }
+  },
+  "namespace_uid": "b6df01c9-f279-49cd-93c2-065ef8b1f098",
+  "runtime_pods": [
+    {
+      "name": "governed-acceptance-operator",
+      "uid": "0952a853-ee00-4cb1-bda3-e0a3d48726dd",
+      "images": [
+        "docker.io/library/ml-k8s-acceptance-tools@sha256:03bf33041f22182a12989750435dc43c4166f5c309f1043b76b7f837218bd72a"
+      ]
+    },
+    {
+      "name": "minio-7d68dcc9d4-4t5n9",
+      "uid": "9a63f525-7af2-4faa-a0bc-e05a03542290",
+      "images": [
+        "docker.io/library/ml-k8s-minio@sha256:3edf41d14aa84fe9deab61218f97ca5b59cc1c08479d3627134e4139c28baaed"
+      ]
+    },
+    {
+      "name": "ml-control-74d8dbb84-ftbs7",
+      "uid": "7aefa465-ca4e-4646-8b22-2127346ce11b",
+      "images": [
+        "docker.io/library/ml-k8s-acceptance@sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39",
+        "docker.io/library/ml-k8s-acceptance@sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      ]
+    },
+    {
+      "name": "ml-ingestion-worker-7f4ff574b9-f6clj",
+      "uid": "c4a41fe2-c08d-4cc6-88c4-34770ac8067d",
+      "images": [
+        "docker.io/library/ml-k8s-acceptance@sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      ]
+    },
+    {
+      "name": "ml-management-7d44884f89-8ggf9",
+      "uid": "bbf999f8-eb90-4016-a512-4e4fed49e0d6",
+      "images": [
+        "docker.io/library/ml-k8s-acceptance@sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      ]
+    },
+    {
+      "name": "ml-relay-677bd5bfc4-8pfl9",
+      "uid": "3cbba032-029b-47e2-8c96-19908b90f465",
+      "images": [
+        "docker.io/library/ml-k8s-acceptance@sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      ]
+    },
+    {
+      "name": "ml-serve-52b04b7169ca44d4a0087c437b7e84c2-75878cfb6b-fj6rw",
+      "uid": "c32082b5-0bc1-400a-b363-fa279cb1b495",
+      "images": [
+        "docker.io/library/ml-k8s-acceptance@sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      ]
+    },
+    {
+      "name": "ml-serve-8d77c53d45b944fca885f57c6c586bd9-78b4586d48-q4ldp",
+      "uid": "02d8d037-9335-467f-a158-4a4a83f6d623",
+      "images": [
+        "docker.io/library/ml-k8s-acceptance@sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      ]
+    },
+    {
+      "name": "ml-supervisor-7f65f447ff-ft5mr",
+      "uid": "3804f25c-69b6-4f52-95dc-505e31815c68",
+      "images": [
+        "docker.io/library/ml-k8s-acceptance@sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      ]
+    },
+    {
+      "name": "mlflow-5957b7c4f9-bx9p4",
+      "uid": "134c1622-a10f-4cd5-98c8-cc2b3523c3c8",
+      "images": [
+        "docker.io/library/ml-k8s-mlflow@sha256:fedc904453c3b6750b825dd85270535ff54378c8b1cac86ed423fbded050fdce",
+        "docker.io/library/nginx@sha256:83aba57d7357e59844144aae161aacb939e42bfafd10f62e91a2f8021415f7a9"
+      ]
+    },
+    {
+      "name": "mongodb-55f4b45d5d-94c9k",
+      "uid": "54726fdc-fddf-4e6e-884f-4cebb99955c9",
+      "images": [
+        "docker.io/library/mongo@sha256:c469914b06585845eaca1b0593bad9249b6be1e51ae2c53e7509669a215f8274"
+      ]
+    },
+    {
+      "name": "postgres-559965b7d6-8r2w2",
+      "uid": "440c8374-46b6-485a-946e-009c9caf30fb",
+      "images": [
+        "docker.io/library/postgres@sha256:9e71a5d2205aeba47873be6addbdf3c66340a1f8ec1c9e80c51c1dfb45a161f0"
+      ]
+    },
+    {
+      "name": "rabbitmq-9d557f88d-ccnkx",
+      "uid": "b5507fbd-b32e-43b4-8887-5fedffb6ea44",
+      "images": [
+        "docker.io/library/rabbitmq@sha256:8ca98c5fcdbd0c3b8a235872a02dd548ad7d3c908bf1b4fa73265808ed8333dd"
+      ]
+    },
+    {
+      "name": "redis-6bd5655f7f-gqk28",
+      "uid": "57e936c9-18ab-46d9-8a59-5b8e0e38ac4c",
+      "images": [
+        "docker.io/library/redis@sha256:1068e670862f46c1db34394eef8436614bd34c1b255e0fecda5631b372e66b3b"
+      ]
+    },
+    {
+      "name": "training-qualification-operator",
+      "uid": "1d47939c-4886-4ba0-a0bd-dc70c1702f62",
+      "images": [
+        "docker.io/library/ml-k8s-acceptance@sha256:88827421040bd52c218b3c65132738e82b41e41bf105c3e649ba6f0894656c39"
+      ]
+    }
+  ]
+}

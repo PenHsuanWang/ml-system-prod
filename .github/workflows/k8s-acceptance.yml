@@ -1,0 +1,71 @@
+name: Kubernetes governed acceptance
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  governed-lifecycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    env:
+      ML_K8S_SOURCE_REVISION: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.ML_K8S_SOURCE_REVISION }}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Install checksum-verified qualification tools
+        run: |
+          python -m pip install 'PyYAML>=6,<7'
+          mkdir -p "$RUNNER_TEMP/k8s-bin"
+          cd "$RUNNER_TEMP/k8s-bin"
+          curl --fail --location --silent --show-error -o minikube https://github.com/kubernetes/minikube/releases/download/v1.39.0/minikube-linux-amd64
+          curl --fail --location --silent --show-error -o minikube.sha256 https://github.com/kubernetes/minikube/releases/download/v1.39.0/minikube-linux-amd64.sha256
+          echo "$(cat minikube.sha256)  minikube" | sha256sum --check
+          curl --fail --location --silent --show-error -o kubectl https://dl.k8s.io/release/v1.37.2/bin/linux/amd64/kubectl
+          curl --fail --location --silent --show-error -o kubectl.sha256 https://dl.k8s.io/release/v1.37.2/bin/linux/amd64/kubectl.sha256
+          echo "$(cat kubectl.sha256)  kubectl" | sha256sum --check
+          chmod +x minikube kubectl
+          echo "$RUNNER_TEMP/k8s-bin" >> "$GITHUB_PATH"
+      - name: Build actual runtime, bounded operator and source-pinned infrastructure
+        run: |
+          docker build -f Dockerfile.ml --target production --build-arg "ML_RELEASE_CODE_REVISION=$ML_K8S_SOURCE_REVISION" -t ml-k8s-acceptance:ci .
+          docker build -f Dockerfile.ml --target k8s-acceptance --build-arg "ML_RELEASE_CODE_REVISION=$ML_K8S_SOURCE_REVISION" -t ml-k8s-acceptance-tools:ci .
+          docker build -f Dockerfile.mlflow -t ml-k8s-mlflow:ci .
+          docker build -f Dockerfile.minio --target server -t ml-k8s-minio:ci .
+          docker build -f Dockerfile.minio --target client -t ml-k8s-mc:ci .
+      - name: Start a disposable single-node cluster and load exact images
+        run: |
+          minikube -p minikube start --driver=docker --container-runtime=containerd --kubernetes-version=v1.37.2 --cpus=2 --memory=6144
+          for image in ml-k8s-acceptance:ci ml-k8s-acceptance-tools:ci ml-k8s-mlflow:ci ml-k8s-minio:ci ml-k8s-mc:ci postgres:17 rabbitmq:4.4-management redis:7 mongo:7 nginx:1.28-alpine; do
+            docker image inspect "$image" >/dev/null 2>&1 || docker pull "$image"
+            minikube -p minikube image load "$image"
+          done
+      - name: Prepare private namespace and immutable manifest locks
+        run: |
+          python scripts/k8s_foundation.py lock-images --runtime-image ml-k8s-acceptance:ci --mlflow-image ml-k8s-mlflow:ci --minio-image ml-k8s-minio:ci --mc-image ml-k8s-mc:ci --output var/k8s-acceptance-images.json
+          python scripts/verify_k8s_storage.py lock-image --local-tag ml-k8s-acceptance-tools:ci --output var/k8s-acceptance-tools.txt
+          python scripts/k8s_foundation.py prepare --acceptance --namespace ml-k8s-acceptance --directory var/k8s-acceptance --image-lock var/k8s-acceptance-images.json --revision "$ML_K8S_SOURCE_REVISION"
+          python scripts/k8s_foundation.py deploy --namespace ml-k8s-acceptance --directory var/k8s-acceptance
+          python scripts/k8s_foundation.py verify --namespace ml-k8s-acceptance --directory var/k8s-acceptance
+      - name: Require the real governed lifecycle and all fault cases
+        run: python -m scripts.verify_k8s_acceptance --tools-image "$(cat var/k8s-acceptance-tools.txt)" --output var/k8s-acceptance-evidence
+      - name: Preserve bounded public diagnostics
+        if: always()
+        run: |
+          mkdir -p var/k8s-acceptance-evidence
+          kubectl --context=minikube --namespace=ml-k8s-acceptance get pods -o wide > var/k8s-acceptance-evidence/pods.txt 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: k8s-engineering-acceptance
+          path: |
+            var/k8s-acceptance-evidence/result.json
+            var/k8s-acceptance-evidence/training.json
+            var/k8s-acceptance-evidence/pods.txt
+            var/k8s-acceptance/smoke.json
+            var/k8s-acceptance-images.json
+            var/k8s-acceptance-tools.txt
+          if-no-files-found: warn
