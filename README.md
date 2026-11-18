@@ -2,7 +2,7 @@
 
 A Python ML system with durable jobs, isolated PyTorch CPU training, immutable inference bundles, exact-bundle evaluation, manual approval, fixed-version serving, and fenced rollout/rollback.
 
-The code extends the pinned backend template in place. Domain and application layers exchange immutable DTOs through narrow Protocol ports. `bootstrap/ml_*` assembles role-specific implementations; generic `server.py` defaults remain unchanged. GPU, DDP, HPO and Kubernetes are outside this CPU MVP.
+The code extends the pinned backend template in place. Domain and application layers exchange immutable DTOs through narrow Protocol ports. `bootstrap/ml_*` assembles role-specific implementations; generic `server.py` defaults remain unchanged. GPU, DDP and HPO remain outside this CPU MVP. Kubernetes engineering qualification is documented below.
 
 Implementation and target-environment qualification are tracked separately in [implementation status](docs/implementation-status.md).
 
@@ -165,13 +165,15 @@ Databricks access token 可透過 `.env` 的 `DATABRICKS_TOKEN` 設定；連線 
 ## Kubernetes migration
 
 The six-work-package roadmap is defined in [ADR-017](docs/adr/017-kubernetes-runtime-boundaries.md).
-Foundation, Storage Contracts, Serving Runtime and Pod Training Runtime now have
-local Minikube qualification. Their operating instructions and explicit limits are:
+Foundation, Storage Contracts, Serving Runtime and Pod Training Runtime have
+local Minikube qualification. Governed Kubernetes Acceptance combines their runtime
+contracts with the full ML lifecycle and fault suite. Their operating instructions and explicit limits are:
 
 - [Foundation](docs/deployment/kubernetes-staging-runbook.md)
 - [Storage Contracts](docs/deployment/kubernetes-storage-contracts.md)
 - [Serving Runtime](docs/deployment/kubernetes-serving-runtime.md)
 - [Pod Training Runtime](docs/deployment/kubernetes-training-runtime.md)
+- [Governed Kubernetes Acceptance](docs/deployment/kubernetes-acceptance.md)
 
-Full governed K8s Acceptance and actual company-environment Production Operations
-remain separate work packages. Local qualification is not production approval.
+The independent Compose Backend regression remains required. Actual company-environment
+Production Operations is the final work package. Local qualification is not production approval.

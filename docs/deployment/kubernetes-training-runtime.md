@@ -103,7 +103,7 @@ required; no skips or quality checks are disabled to accept this runtime.
 
 Single-node Minikube cannot qualify node partition/force deletion, cross-node
 storage/locks, production CSI, enterprise MLflow authorization, HA, arbitrary
-workloads, production capacity/SLO/restore or network-policy enforcement. The next
-PR performs full governed K8s acceptance/fault coverage; Production Operations
+workloads, production capacity/SLO/restore or network-policy enforcement. The [governed K8s Acceptance gate](kubernetes-acceptance.md) combines these
+contracts with the complete ML lifecycle/fault coverage; Production Operations
 then qualifies the actual company environment. Serving's approvals, platform
 Generation, route fencing and two global Serving reservations remain unchanged.
