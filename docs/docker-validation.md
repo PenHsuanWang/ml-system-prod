@@ -105,4 +105,3 @@ docker compose --env-file <該次secrets.env的路徑> \
 此程序驗證單一 Docker Engine 上的映像、程序分工、真實 RabbitMQ 任務路徑、共享狀態及基本認證授權。它不驗證跨主機 HA、RabbitMQ／Redis／MongoDB 叢集故障切換、備份還原、DR、網路分割或資料持久化服務的重啟恢復。
 
 本架構不承諾 exactly-once 執行；單次成功、queue 排空與 terminal snapshot 防重複處理，不能取代外部副作用的冪等設計。32 項短時間測試任務也不能作為吞吐量、延遲 SLO、長時間穩定性或生產容量的證明。產品導入仍需依實際拓撲、資料與 workload 另行執行效能、故障恢復及部署驗收。
-

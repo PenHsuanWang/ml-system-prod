@@ -8,7 +8,7 @@
 
 > 日期：2026-10-29  
 > 修訂：依目前程式補正；整合實作仍待完成。  
-> 分析基礎：本地原始 Notebook `EBM_final_forline.ipynb`（未納入 Git）（14 個 Cells）、[HLD v1.1](pytorch-ml-system-hld.md)、[LLD v1.3](pytorch-ml-system-lld.md)、[ADR-014](adr/014-implementation-baseline.md) 與目前程式碼。根目錄 HLD/LLD 為歷史副本。  
+> 分析基礎：本地原始 Notebook `EBM_final_forline.ipynb`（未納入 Git）（14 個 Cells）、[HLD v1.1](pytorch-ml-system-hld.md)、[LLD v1.3](pytorch-ml-system-lld.md)、[ADR-014](adr/014-implementation-baseline.md) 與目前程式碼。根目錄 HLD/LLD 為歷史副本。
 > 程式基準：`a88f6ff6d1c19987c7cbf4b1f90280d19f83786a`；Notebook SHA-256：`6559bcd463a79b4b9697a7d3916e110851d02a05ea3bbbb8e96d4d9f0448fba9`。  
 > 方法：Notebook JSON / Python AST 靜態檢視、既有儲存輸出摘要、與目前程式及設計契約對照。**未執行** Spark SQL、PyTorch 訓練、MLflow 整合、模型載入、效能測試或 E2E；既有驗收記錄不代表本次重跑。  
 > 文件性質：架構相容性審查；本報告不代表 PoC 模型已通過正式驗收或已具備線上推論能力。

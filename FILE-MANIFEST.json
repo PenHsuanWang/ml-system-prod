@@ -434,8 +434,8 @@
     },
     {
       "path": "docs/EBM_PoC_ML_System_Fit_Gap_2026-10-29.md",
-      "bytes": 31401,
-      "sha256": "2c03196839f0340ace2421d9075662309e08a961b10bec29b5030752d02870df"
+      "bytes": 31399,
+      "sha256": "b193cc3e75887eac514b4d5bd3a7dacc529487962f1f0c7b395620c8506a5003"
     },
     {
       "path": "docs/README.md",
@@ -614,8 +614,8 @@
     },
     {
       "path": "docs/docker-validation.md",
-      "bytes": 8807,
-      "sha256": "c6e2954764b397496407b0bf205cac892ec41c92ce50bf421f05e8d6bbab480a"
+      "bytes": 8806,
+      "sha256": "dbb92b337d40e4459526c452ad80019e4fa24a263b77cc06ba3065ee6d429990"
     },
     {
       "path": "docs/ebm-e2e-verification.md",
