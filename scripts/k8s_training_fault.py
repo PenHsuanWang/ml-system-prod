@@ -12,7 +12,10 @@ from src.infrastructure.execution.training_records import read
 
 
 def main():
-    if os.environ.get("ML_TRAINING_NAMESPACE") != "ml-k8s-training-runtime":
+    if os.environ.get("ML_TRAINING_NAMESPACE") not in {
+        "ml-k8s-training-runtime",
+        "ml-k8s-acceptance",
+    }:
         raise ValueError("Fault injection is restricted to the disposable namespace")
     root = Path(os.environ["ML_EXECUTION_ROOT"])
     if sys.argv[1] == "freeze-next":

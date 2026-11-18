@@ -14,7 +14,10 @@ from src.infrastructure.persistence.ml_training import SQLTrainingRepository
 
 
 def main():
-    if os.environ.get("ML_TRAINING_NAMESPACE") != "ml-k8s-training-runtime":
+    if os.environ.get("ML_TRAINING_NAMESPACE") not in {
+        "ml-k8s-training-runtime",
+        "ml-k8s-acceptance",
+    }:
         raise ValueError("Training fixture is restricted to its disposable namespace")
     mode = sys.argv[1]
     if mode == "transport":

@@ -13,9 +13,10 @@ manufacture physical-stop evidence or release reservations by deleting records.
 
 Provision only synthetic datasets and scoped dev reviewer/viewer/foreign-tenant
 accounts as fixtures. The acceptance overlay explicitly selects a named
-`engineering-test-only` EBM policy and the dev model environment. Those settings
+`engineering-test-only` EBM policy while retaining the strict production entrypoint
+and model environment. Its namespace alone is the disposable test boundary. Those settings
 must never enter the reusable production base or other qualification profiles.
-An engineering approval exercises the existing approval contract; it is not
+An engineering approval exercises the existing approval contract in the isolated namespace; it is not
 enterprise-data, model-quality or production approval.
 
 Exercise MLP training/evaluation/approval/inference, idempotent admission,

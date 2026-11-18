@@ -53,12 +53,16 @@ def configure(directory):
 
 
 def main():
+    global NAMESPACE, KUBECTL
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--namespace", choices=[NAMESPACE, "ml-k8s-acceptance"], default=NAMESPACE)
     parser.add_argument("--configure", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--reuse-fixtures", action="store_true")
     parser.add_argument("--resume-at", choices=["all", "recovery"], default="all")
     args = parser.parse_args()
+    NAMESPACE = args.namespace
+    KUBECTL = ["kubectl", "--context=minikube", "--namespace=" + NAMESPACE]
     if args.configure:
         configure(args.configure)
         return
