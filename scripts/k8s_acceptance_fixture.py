@@ -191,7 +191,14 @@ def main():
                 tracking_uri=settings.tracking_uri, registry_uri=settings.tracking_uri
             )
             run = client.get_run(binding.run_id)
-            version = client.get_model_version(binding.registered_name, binding.version)
+            # MLflow 3.6 with psycopg's typed parameters cannot compare its
+            # integer version column with GetModelVersion's string parameter.
+            # Match the exact immutable version from the supported search API.
+            (version,) = [
+                item
+                for item in client.search_model_versions(f"name = '{binding.registered_name}'")
+                if str(item.version) == binding.version
+            ]
             bundle = BundleMaterializer(settings.artifact_root, settings.tracking_uri).materialize(
                 binding.artifact_ref, binding.manifest_digest
             )
