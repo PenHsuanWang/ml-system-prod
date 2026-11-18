@@ -3,6 +3,10 @@
 > 本文件保留設計契約與目標；已交付能力及目前驗收以
 > [實作狀態](implementation-status.md) 和 [後續 ADR](adr/README.md) 為準。
 
+現行設定、API 權限／錯誤與 runtime 限制見 [設定參考](configuration-reference.md)
+及 [ML 維運手冊](ml-runbook.md)。以下示意鍵、狀態圖、SQL 與目標 SLO 不應取代
+實作契約或部署命令；K8s 已交付部分以 ADR-017～021 及其 runbooks 為準。
+
 > **文件編號**：ML-LLD-001  
 > **版本**：1.3（Implementation Baseline — Draft；不代表 Production 核准）
 > **修訂日期**：2026-10-29（第二輪架構審查提案，尚待核准）  

@@ -24,8 +24,8 @@
     },
     {
       "path": ".github/workflows/documentation.yml",
-      "bytes": 694,
-      "sha256": "37c2a7c64adef64750f3057681576b720014238f65b8b76b9a2e7ece32a53dd2"
+      "bytes": 717,
+      "sha256": "53925065deefdaf2ae8021de3dc8e08b8af68382e758d88f98b2641a16e741ba"
     },
     {
       "path": ".github/workflows/k8s-acceptance.yml",
@@ -74,8 +74,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 13475,
-      "sha256": "3bef14fd57861f9c1b3a2af10a037006c858f4b215994b0891cffa1836878aa1"
+      "bytes": 14162,
+      "sha256": "6e82775df339a376aabad715b6063d8d6518839133bffb424d16f0065d4dbc17"
     },
     {
       "path": "REVIEW-P1-P2-REMEDIATION.md",
@@ -269,8 +269,8 @@
     },
     {
       "path": "deploy/k8s/README.md",
-      "bytes": 1246,
-      "sha256": "4323c94b0b7eb138c5eed38081e82dadfc8f380e7f286732d3933da1af452781"
+      "bytes": 2575,
+      "sha256": "1d126faa8decbcc993e73a1c724b1d59e34e5f2d4b4f728140baf73fda896395"
     },
     {
       "path": "deploy/k8s/base/configmap.yaml",
@@ -439,8 +439,8 @@
     },
     {
       "path": "docs/README.md",
-      "bytes": 4350,
-      "sha256": "94943d67cf53439d94615bdb79da6bd2a772e7393f368763db74d8f37e332cf7"
+      "bytes": 4936,
+      "sha256": "7b177b8db0c079aec44781c5a008ff0e53b91cc7fcb2af3b4c3fc0f323f210a3"
     },
     {
       "path": "docs/adr/014-implementation-baseline.md",
@@ -488,6 +488,11 @@
       "sha256": "3db202fa91bc8db14a87eac17f4203d633989ef14760154c5714c57eda01e9f2"
     },
     {
+      "path": "docs/configuration-reference.md",
+      "bytes": 10848,
+      "sha256": "01c35395f246a5920f7ad9ea5cdbb38d2cbbabaa70d978800d5d01f6034f75e0"
+    },
+    {
       "path": "docs/data-ingress-implementation.md",
       "bytes": 24410,
       "sha256": "863bc23557fb53b9946075f8ac7f9952d5cbf396bfc080d17ff219308195d5b0"
@@ -499,8 +504,8 @@
     },
     {
       "path": "docs/deployment/day1-deployment-runbook.md",
-      "bytes": 25883,
-      "sha256": "754ddb4578b3c8c0eff2b82e2294ee25300d563adc83af0eddfebfbc43dba386"
+      "bytes": 27301,
+      "sha256": "d7c5bab523e90ecd0eca0b8ee045ae81c10bdf431ba6f5ef3960057e918a0437"
     },
     {
       "path": "docs/deployment/kubernetes-acceptance.md",
@@ -514,8 +519,8 @@
     },
     {
       "path": "docs/deployment/kubernetes-staging-runbook.md",
-      "bytes": 8364,
-      "sha256": "330a9f4a0e3d3f8932735ecd176e63837dfe57023eb7ff7c924fe25c329c7392"
+      "bytes": 9121,
+      "sha256": "6a4f68b93bb5516755e7a0154dbe8871eaf2ae67a17e34f9c32f1a8a49e3cc5b"
     },
     {
       "path": "docs/deployment/kubernetes-storage-contracts.md",
@@ -829,8 +834,8 @@
     },
     {
       "path": "docs/ml-runbook.md",
-      "bytes": 6753,
-      "sha256": "5ffa77f07ab73bbed5c52d2cc556ef9b6cb508b9c597c3e7c4a157ee1e9e6d01"
+      "bytes": 11684,
+      "sha256": "a5d6520d4acaa965aede278f75f1c395c7c4691841bc9a8a51f7ac7104b8fcf1"
     },
     {
       "path": "docs/ml-runtime-compatibility.md",
@@ -844,13 +849,13 @@
     },
     {
       "path": "docs/pytorch-ml-system-hld.md",
-      "bytes": 37173,
-      "sha256": "9acd8a6031cf73abaf3b1b9ebccb3426f5dc85d547e1aca928111392fe340725"
+      "bytes": 37418,
+      "sha256": "a3c70c39fc00902a847e5110d3a1b9065c6ec46a9e6885a9af2a9e25ece01c7b"
     },
     {
       "path": "docs/pytorch-ml-system-lld.md",
-      "bytes": 103188,
-      "sha256": "637ed57127ff52dbd6afd018a2dfb9eb51a438610b49e7b653ad36de5be848da"
+      "bytes": 103481,
+      "sha256": "30f975f28ffcade098218a628617a4e30ae93c6a86bf8d4f152fe4532a690883"
     },
     {
       "path": "docs/references/README.md",
@@ -871,6 +876,11 @@
       "path": "docs/reviews/day1-deployment-2026-11-10.md",
       "bytes": 8116,
       "sha256": "38ba8fa2c80f38fb10b3d50e7e1223f3772e2baf054e778a1242a7ec68e490e7"
+    },
+    {
+      "path": "docs/reviews/documentation-code-audit-2026-11-19.md",
+      "bytes": 8134,
+      "sha256": "041a8a93868affa2a2122187c3051b7b84378828b951861b1d4c68d7fb631dff"
     },
     {
       "path": "docs/reviews/k8s-acceptance-2026-11-18.md",
@@ -1034,8 +1044,8 @@
     },
     {
       "path": "scripts/check_docs.py",
-      "bytes": 3122,
-      "sha256": "754338258943ef97d7aed3834600c391b9e94a9822ce7af92346cbfea81bbc39"
+      "bytes": 3225,
+      "sha256": "254b4bb9c9de9dfb2bd7a6eb524d2df0eb9e1cc7ec7750860b5042081c88cd18"
     },
     {
       "path": "scripts/check_ebm_typing.py",

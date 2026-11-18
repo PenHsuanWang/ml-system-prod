@@ -4,6 +4,7 @@ on:
     paths:
       - docs/**
       - README.md
+      - deploy/**/*.md
       - FILE-MANIFEST.json
       - scripts/check_docs.py
       - scripts/update_manifest.py

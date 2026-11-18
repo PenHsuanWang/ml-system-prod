@@ -15,6 +15,7 @@ PR #11 的最終 source `43b6606` 已通過完整 K8s engineering acceptance 與
 | Local algorithm development | `bootstrap.ml_cli demo` / `demo-ebm` below | SQLite, a development tracker and synthetic data |
 | Reference development stack | `compose.ml.yaml` below | Project-owned infrastructure, MLflow and MinIO; `dev` settings |
 | Reference stack with batch ingestion | Add Ingestion / Databricks overlays below | The separate Ingestion Worker plus approved source configuration |
+| One-node Kubernetes engineering qualification | [K8s profile index](deploy/k8s/README.md) and [Acceptance runbook](docs/deployment/kubernetes-acceptance.md) | Pinned production image, private role Secrets/CA, native Serving and Pod-aware Training in isolated Minikube |
 | A release using existing external services | [Day-1 deployment runbook](docs/deployment/day1-deployment-runbook.md) | Pinned release image/source, production settings, existing MLflow and approved infrastructure / secrets |
 
 Start with the Day-1 runbook when MLflow and Databricks are already supplied by another team. It gives the preflight, migration, dependency qualification, complete role startup, operator source registration, smoke tests and Go/No-Go evidence in one order. The reference development command is not the production deployment command.
@@ -24,6 +25,11 @@ The [2026-11-10 deployment delivery record](docs/reviews/day1-deployment-2026-11
 Raw acquisition publishes an immutable **Raw Snapshot**. Training consumes a separately approved
 **DatasetVersion**. The EBM path includes an explicit operator-only RawSnapshot-to-DatasetBuilder;
 ingestion does not trigger it automatically.
+
+Use the [configuration reference](docs/configuration-reference.md) for actual defaults,
+role configuration and timeout constraints, and the [ML operations contract](docs/ml-runbook.md#api-與-client-契約)
+for permissions, idempotency, cancellation and errors. The [documentation/code audit](docs/reviews/documentation-code-audit-2026-11-19.md)
+maps the important implementation areas to their maintained guides.
 
 ## Real local training
 

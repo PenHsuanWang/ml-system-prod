@@ -64,9 +64,15 @@ def link_errors(path, tracked):
 def main():
     names = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).decode().split("\0")
     tracked = {name for name in names if name and (ROOT / name).is_file()}
-    documents = [ROOT / name for name in sorted(tracked) if name.startswith("docs/")]
+    documents = [
+        ROOT / name
+        for name in sorted(tracked)
+        if name.startswith("docs/")
+        or name == "README.md"
+        or (name.startswith("deploy/") and name.endswith(".md"))
+    ]
     errors = []
-    for path in [ROOT / "README.md", *documents]:
+    for path in documents:
         try:
             if path.suffix == ".md":
                 errors.extend(link_errors(path, tracked))

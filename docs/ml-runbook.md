@@ -6,6 +6,55 @@ Run from the repository root. Apply `python -m bootstrap.ml_cli migrate` before 
 
 In the production profile, execute approved maintenance through its secret-loading role entrypoint (`docker compose ... run --rm --no-deps ...`); a bare `exec` does not reload private role configuration. Preserve the Controller's host/process identity and shared execution/network assumptions when deciding whether a maintenance command may reconcile a live generation.
 
+Actual defaults, environment keys and profile overrides are in the
+[configuration reference](configuration-reference.md). Lifecycle JSON examples start in
+the [README](../README.md); EBM schemas/policy and Ingestion have their own linked guides.
+
+## API 與 client 契約
+
+Management／Gateway／Serving 使用目前 Identity session 的 Bearer token。帳號不會在
+啟動時自動建立；`manage.py create-admin` 的 dot permissions 對映為以下 colon scopes。
+權限不授予跨 tenant 存取；API 不接受 caller 自選 actor／tenant／import path。
+
+| 操作 | 實際授權／結果 |
+| --- | --- |
+| Training submit | `ml:train`；202；必填 `Idempotency-Key`，1–128 visible ASCII characters |
+| Job／attempt 查詢 | 同 tenant 的 owner，或 `ml:jobs:read_all`；不符合時 404 |
+| Training cancel | 上述可見性加 `ml:cancel`；202；已終態為 409 |
+| Dataset metadata | `ml:train` 或 `ml:dataset:read`；版本格式 `dataset_id@version` |
+| Model／versions／evaluation 查詢 | `ml:model:read` |
+| 以 binding ID 人工 Approval | `ml:model:approve`；201；必須有同 binding／manifest 的 `APPROVED_BY_POLICY` evaluation |
+| 以 name/version 人工 Approval | 上述 approve 加 `ml:model:read`（會先列出版本） |
+| Deployment create／read／rollback | `ml:deploy`；create／rollback 為 202，須輪詢 observed state |
+| Gateway／Serving prediction | `ml:predict`；model input schema、endpoint 與 route identity 都須相符 |
+| Management metrics | `ml:operate`；200 text exposition |
+
+Training 冪等 scope 為 tenant + actor + `training.submit.v1` + key。有效期內相同
+normalized intent 返回同一 Job，不同 intent 為 `IDEMPOTENCY_CONFLICT`。預設有效期
+86400 秒；過期後相同 key 可以建立新 Job。Ingestion 使用獨立 durable replay 契約，
+詳見 [Ingestion API](data-ingress-implementation.md#5-http-使用與授權)。
+明確重試使用新 key 與 top-level `retry_of_job_id`，只接受可見的終態原 Job；
+不能把 broker redelivery 當作重試 API。
+
+公開 Job states 為 ACCEPTED、QUEUED、RUNNING、RETRY_WAIT、CANCEL_REQUESTED、
+NEEDS_RECONCILIATION、SUCCEEDED、FAILED、CANCELLED，僅最後三者為終態。
+`phase`、`revision`、`attempt_id`、`error_code` 是對帳線索。未 dispatch 的取消可直接
+CANCELLED；已啟動者必須先確認實體停止，202 不代表已停止。HTTP Deployment 的
+`desired_state=ACTIVE` 是意圖欄位，不能取代 observed ACTIVE、SQL route 與 runtime
+identity 檢查；K8s Pod Ready 也不代表獲准切流。
+
+ML domain errors 使用 flat `code`、`message`、`request_id`、`retryable`；422 schema
+拒絕不回顯輸入。401／403／404 分別處理身份、權限與不可見資源，409 表示 intent／
+狀態衝突，429 `CAPACITY_EXCEEDED`，503 `DEPENDENCY_UNAVAILABLE`，Serving timeout
+為 504 `PREDICTION_DEADLINE`。Transport authentication／body-limit 回應可能不同：
+Management 的 missing Bearer 為標準 HTTP `detail`，413 `PAYLOAD_TOO_LARGE` 沒有
+`request_id`；client 不應假設所有錯誤都有同一 JSON shape。
+
+Management body 上限 64 KiB，Gateway／Serving 8 MiB；MLP 每次 1–128 筆兩維
+features，EBM 每次 1–16 筆 `[7,4,9,31]` precomputed spectrogram，固定 signal／Pad
+順序。Serving 實體計算容量為 2，timeout 後計算仍占 slot 直到結束。429／503／504
+不保證立即重送成功；先查狀態，Training 以原 key 在有效期內對帳，避免重複意圖。
+
 ## Ownership and recovery
 
 Management readiness checks App DB and Mongo Identity. Serving requires a trusted DeploymentSpec, runtime/code match, complete artifact verification and golden inference. A loaded model does not query MLflow per prediction; current authorization still applies.
@@ -33,6 +82,26 @@ The reference pool reserves two serving slots, including ACTIVE, pending and unc
 ## Observability
 
 Use `X-Request-ID` and W3C `traceparent` for correlation. The SQL Outbox persists only allowlisted trace headers and the validated request ID. Trace spans cover HTTP, publication, worker execution, prediction and rollout reconciliation; payloads, credentials, baggage and exception text are excluded. Configure an OTLP HTTP collector with `OTEL_EXPORTER_OTLP_ENDPOINT` and the observability extra. Collector delivery, trace sampling and alert thresholds need target-environment validation.
+
+Management `/metrics` requires a Bearer actor with `ml:operate`; it returns aggregate
+SQL gauges across tenants, with no tenant/job/source labels. Restrict the scraper's
+account and access accordingly. These are current-state counts, not event counters:
+
+| Metric | Meaning |
+| --- | --- |
+| `ml_training_jobs{state}` | Number of stored Training jobs per present state; zero states may be absent |
+| `ml_outbox_pending` | All Outbox rows whose state is not PUBLISHED, including DEAD |
+| `ml_ingestion_jobs{state}`, `ml_ingestion_attempts{state}` | Ingestion state counts, only when Management enables Ingestion |
+| `ml_ingestion_reconciliation_exhausted` | NEEDS_RECONCILIATION jobs with exhausted automatic budget |
+| `ml_ingestion_oldest_pending_age_seconds` | Age since creation of the oldest nonterminal Ingestion job; zero if none |
+
+Management readiness checks SQL schema and Mongo; Gateway readiness checks SQL and
+Mongo, not every model. Serving readiness confirms its loaded immutable identity,
+but does not re-probe Mongo/MLflow on each readiness request. Ingestion CLI health
+checks local configuration/storage/schema, not remote Warehouse credentials.
+There is no exported Training duration, Outbox-age or prediction latency histogram
+in the current ML SQL reader. Alert rules, expiry checks, dashboards and SLO
+measurement remain Production Operations work; do not infer them from design tables.
 
 ## Backup and restore
 
