@@ -1,15 +1,17 @@
 # Implementation status
 
-Updated: 2026-11-10. This page describes the implemented CPU ML and batch
+Updated: 2026-11-16 (PR #5 documentation alignment; existing qualification evidence remains dated 2026-11-10). This page describes the implemented CPU ML and batch
 ingestion baseline. Repository integration, target-environment qualification and
 the remaining EBM work packages are separate decisions.
 
+See the [current subsystem and storage-ownership inventory](system-component-inventory.md) for the source-grounded role, data, broker and deployment topology.
+
 ## Current implementation and evidence
 
-The current PR implements the CPU MLP/EBM training and fixed-version Serving
+The merged baseline implements the CPU MLP/EBM training and fixed-version Serving
 paths, the provider-neutral Data Ingress framework, File Batch acquisition and
 the Databricks SQL Warehouse batch adapter. No unfinished concrete runtime
-stub or missing integration was found in the source-completion review.
+stub or missing integration was found in the 2026-11-10 source-completion review. PR #5 was subsequently merged on 2026-11-14: its static approved WorkloadContract → trusted Training Handler dispatch is documented in [Workload Extension Contract](workload-extension-contract.md). Its scoped review reported 41 focused tests and 880 ML tests with 16 environment-dependent skips; this does not replace the separately pinned 2026-11-10 acceptance evidence.
 See the [merge assessment](reviews/merge-readiness-2026-11-10.md) for scope and
 the explicitly deferred work.
 

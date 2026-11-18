@@ -294,7 +294,9 @@ Kafka 不實作成一次性的 `FileBatchAdapter.acquire()`。後續使用獨立
 
 Kafka broker offsets 只是來源進度，不代替 Raw Snapshot／SQL 業務成果。批次發布與 checkpoint 的不確定結果仍需 stable batch identity、fencing 及 reconciliation，不宣稱跨 Kafka／SQL／storage exactly once。
 
-### Dataset Builder：版本化邊界，未實作
+### Dataset Builder：EBM operator bridge 已實作；自動串接與其他 Builder 仍未實作
+
+目前已實作 [EBM RawSnapshotSet Resolver 與 Dataset Preparation Service](../src/application/datasets/builder.py)，由具權限 operator 明確提供已發布的 FDC 與 Wafer RawSnapshot IDs／manifest digests，產出可供訓練的 DatasetVersion；**Data Ingestion 不會自動觸發 Builder 或 Training**。相關操作方式、資料格式與未完成範圍見 [EBM 實作狀態](ebm-implementation-status.md) 與 [系統子系統總覽](system-component-inventory.md)。其他來源與自動串接的目標契約如下。
 
 未來 Builder 只接收已發布 `raw_snapshot_id + manifest_digest`、固定 `builder_id + version` 與受控 feature config，輸出另一份不可變 Dataset／FeatureSnapshot。它透過 Raw Reader Port 驗證輸入，不 import Databricks／Kafka SDK。EBM resampling／Spectrogram／CDF、sequence windowing、tabular typing 及 image decoding 應分別有自己的 Builder 版本與 Golden tests；成功後才登錄既有 Dataset Catalog，後續 Training 照原契約使用 Dataset ID／Version。
 
