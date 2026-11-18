@@ -3,6 +3,7 @@
 import argparse
 import base64
 import copy
+import hashlib
 import json
 import os
 import re
@@ -12,7 +13,7 @@ import time
 from pathlib import Path
 from uuid import uuid4
 
-from scripts.k8s_acceptance_contract import validate
+from scripts.k8s_acceptance_contract import CHECKS, validate
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = "ml-k8s-acceptance"
@@ -82,6 +83,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tools-image", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--resume-after-recovery", type=Path)
     args = parser.parse_args()
     output = args.output.absolute()
     require(
@@ -113,6 +115,29 @@ def main():
         "jobs": [],
         "deployments": [],
     }
+
+    if args.resume_after_recovery:
+        prior = args.resume_after_recovery.absolute()
+        require(
+            ROOT / "var" in prior.parents
+            and not any(p.is_symlink() for p in (prior, *prior.parents)),
+            "PRIVATE_RESUME_RECEIPT_REQUIRED",
+        )
+        saved = prior.read_bytes()
+        previous = json.loads(saved)
+        require(
+            previous.get("status") == "INCOMPLETE"
+            and previous.get("checks") == list(CHECKS[:5])
+            and previous.get("source_revision") == report["source_revision"]
+            and previous.get("runtime_image_digest") == report["runtime_image_digest"]
+            and previous.get("tools_image") == args.tools_image
+            and len(previous.get("jobs", [])) == 1
+            and len(previous.get("deployments", [])) == 1,
+            "ONLY_THE_VERIFIED_EARLY_RECOVERY_CHECKPOINT_CAN_RESUME",
+        )
+        previous["resumed_from_sha256"] = hashlib.sha256(saved).hexdigest()
+        previous["continuation_revision"] = report["qualification_revision"]
+        report = previous
 
     def record(name):
         report["checks"].append(name)
@@ -271,60 +296,102 @@ def main():
         run("rollout", "status", "deployment/ml-" + role, "--timeout=180s")
 
     try:
-        native = json.loads(run("get", "deployment/ml-control", "-o", "json"))
-        run("create", "-f", "-", input=json.dumps(create_operator(native, args.tools_image)))
-        run("wait", "--for=condition=Ready", "pod/governed-acceptance-operator", "--timeout=240s")
-        report["fixture"] = operator("init")
-        record("synthetic_raw_snapshots_and_verified_dataset_builder")
-        first_job = job("mlp")
-        record("http_idempotency_outbox_real_pod_fit_evaluation")
-        binding_path = "/api/v1/model_registry/bindings/" + first_job["binding_id"]
-        request(
-            "GET", "/api/v1/training/jobs/" + first_job["job_id"], expected=404, account="foreign"
-        )
-        request("GET", binding_path, expected=404, account="foreign")
-        request(
-            "POST",
-            binding_path + "/approvals",
-            {
-                "evaluation_id": evaluation(first_job)["evaluation_id"],
-                "environment": settings["ML_MODEL_ENVIRONMENT"],
-            },
-            expected=403,
-            account="viewer",
-        )
-        request(
-            "POST",
-            "/api/v1/deployments",
-            {
-                "endpoint_id": "quality",
-                "model_binding_id": first_job["binding_id"],
-                "approval_id": "missing",
-            },
-            expected=404,
-        )
-        record("tenant_permission_and_explicit_approval_fences")
-        model = approval(first_job)
-        first = create(model)
-        before = active(first)
-        initial = predict(first)
-        record("explicit_http_approval_native_activation_gateway_prediction")
+        if args.resume_after_recovery:
+            existing = json.loads(run("get", "pod/governed-acceptance-operator", "-o", "json"))[
+                "spec"
+            ]
+            require(
+                existing["containers"][0]["image"] == args.tools_image
+                and existing.get("automountServiceAccountToken") is False,
+                "RETAINED_OPERATOR_IDENTITY_CHANGED",
+            )
+            first_job, first = report["jobs"][0], report["deployments"][0]
+            before = report["active_recovery"]["route"]
+            require(
+                operator("status", first_job["job_id"]) == first_job and status(first) == before,
+                "RETAINED_BUSINESS_IDENTITIES_CHANGED",
+            )
+            model = {"binding_id": first_job["binding_id"], "approval_id": before["approval_id"]}
+            predict(first)
+        else:
+            native = json.loads(run("get", "deployment/ml-control", "-o", "json"))
+            run("create", "-f", "-", input=json.dumps(create_operator(native, args.tools_image)))
+            run(
+                "wait",
+                "--for=condition=Ready",
+                "pod/governed-acceptance-operator",
+                "--timeout=240s",
+            )
+            report["fixture"] = operator("init")
+            record("synthetic_raw_snapshots_and_verified_dataset_builder")
+            first_job = job("mlp")
+            record("http_idempotency_outbox_real_pod_fit_evaluation")
+            binding_path = "/api/v1/model_registry/bindings/" + first_job["binding_id"]
+            request(
+                "GET",
+                "/api/v1/training/jobs/" + first_job["job_id"],
+                expected=404,
+                account="foreign",
+            )
+            request("GET", binding_path, expected=404, account="foreign")
+            request(
+                "POST",
+                binding_path + "/approvals",
+                {
+                    "evaluation_id": evaluation(first_job)["evaluation_id"],
+                    "environment": settings["ML_MODEL_ENVIRONMENT"],
+                },
+                expected=403,
+                account="viewer",
+            )
+            request(
+                "POST",
+                "/api/v1/deployments",
+                {
+                    "endpoint_id": "quality",
+                    "model_binding_id": first_job["binding_id"],
+                    "approval_id": "missing",
+                },
+                expected=404,
+            )
+            record("tenant_permission_and_explicit_approval_fences")
+            model = approval(first_job)
+            first = create(model)
+            before = active(first)
+            initial = predict(first)
+            record("explicit_http_approval_native_activation_gateway_prediction")
 
-        pods = json.loads(
-            run("get", "pods", "-l", "ml-system/serving-id=" + native_name(first), "-o", "json")
-        )["items"]
-        run("delete", "pod/" + pods[0]["metadata"]["name"], "--wait=true")
+            pods = json.loads(
+                run("get", "pods", "-l", "ml-system/serving-id=" + native_name(first), "-o", "json")
+            )["items"]
+            run("delete", "pod/" + pods[0]["metadata"]["name"], "--wait=true")
+            require(
+                predict(first)["pod_uid"] != initial["pod_uid"] and status(first) == before,
+                "POD_RECOVERY_CHANGED_BUSINESS_IDENTITY",
+            )
+            run("delete", "deployment/" + native_name(first), "--cascade=foreground", "--wait=true")
+            reconstructed = predict(first)
+            require(status(first) == before, "ACTIVE_RECONSTRUCTION_CHANGED_ROUTE")
+            report["active_recovery"] = {"before": initial, "after": reconstructed, "route": before}
+            record("serving_pod_and_active_resource_recovery_without_reactivation")
+        # Gateway is the second container of the Control Deployment.
+        old_control = json.loads(
+            run("get", "pods", "-l", "app.kubernetes.io/name=ml-control", "-o", "json")
+        )["items"][0]
+        restart("control")
+        new_control = json.loads(
+            run("get", "pods", "-l", "app.kubernetes.io/name=ml-control", "-o", "json")
+        )["items"][0]
         require(
-            predict(first)["pod_uid"] != initial["pod_uid"] and status(first) == before,
-            "POD_RECOVERY_CHANGED_BUSINESS_IDENTITY",
+            old_control["metadata"]["uid"] != new_control["metadata"]["uid"]
+            and {c["name"] for c in new_control["status"]["containerStatuses"] if c["ready"]}
+            == {"control", "gateway"},
+            "CONTROL_GATEWAY_POD_REPLACEMENT_REQUIRED",
         )
-        run("delete", "deployment/" + native_name(first), "--cascade=foreground", "--wait=true")
-        reconstructed = predict(first)
-        require(status(first) == before, "ACTIVE_RECONSTRUCTION_CHANGED_ROUTE")
-        report["active_recovery"] = {"before": initial, "after": reconstructed, "route": before}
-        record("serving_pod_and_active_resource_recovery_without_reactivation")
-        for role in ("control", "gateway"):
-            restart(role)
+        report["control_gateway_restart"] = {
+            "before_uid": old_control["metadata"]["uid"],
+            "after_uid": new_control["metadata"]["uid"],
+        }
         predict(first)
         require(status(first) == before, "ROLE_RESTART_CHANGED_ROUTE")
         record("control_gateway_restart_preserves_durable_route")
@@ -490,8 +557,12 @@ def main():
         ]
         report["status"] = "K8S_ENGINEERING_ACCEPTANCE_PASSED"
         validate(report)
-    except Exception:
+    except Exception as error:
         report["status"] = "INCOMPLETE"
+        if isinstance(error, subprocess.CalledProcessError):
+            (output / "private-operation-error.log").write_text(
+                (error.stderr or "") + (error.stdout or "")
+            )
         raise
     finally:
         path = output / "result.json"
