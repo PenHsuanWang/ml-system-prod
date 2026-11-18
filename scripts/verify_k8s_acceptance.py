@@ -13,7 +13,7 @@ import time
 from pathlib import Path
 from uuid import uuid4
 
-from scripts.k8s_acceptance_contract import CHECKS, validate
+from scripts.k8s_acceptance_contract import validate, validate_checkpoint
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = "ml-k8s-acceptance"
@@ -125,16 +125,7 @@ def main():
         )
         saved = prior.read_bytes()
         previous = json.loads(saved)
-        require(
-            previous.get("status") == "INCOMPLETE"
-            and previous.get("checks") == list(CHECKS[:5])
-            and previous.get("source_revision") == report["source_revision"]
-            and previous.get("runtime_image_digest") == report["runtime_image_digest"]
-            and previous.get("tools_image") == args.tools_image
-            and len(previous.get("jobs", [])) == 1
-            and len(previous.get("deployments", [])) == 1,
-            "ONLY_THE_VERIFIED_EARLY_RECOVERY_CHECKPOINT_CAN_RESUME",
-        )
+        validate_checkpoint(previous, report)
         previous["resumed_from_sha256"] = hashlib.sha256(saved).hexdigest()
         previous["continuation_revision"] = report["qualification_revision"]
         report = previous

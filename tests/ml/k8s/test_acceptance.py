@@ -6,7 +6,7 @@ import json
 import pytest
 import yaml
 
-from scripts.k8s_acceptance_contract import CHECKS, validate
+from scripts.k8s_acceptance_contract import CHECKS, TRAINING_CHECKS, validate, validate_checkpoint
 from scripts.k8s_foundation import IMAGES, ROOT, prepare
 from scripts.verify_k8s_acceptance import create_operator
 
@@ -22,10 +22,29 @@ def complete_report():
         "runtime_image_digest": image,
         "training_faults": {
             "status": "POD_TRAINING_RUNTIME_PASSED",
-            "checks": list(range(7)),
+            "checks": list(TRAINING_CHECKS),
             "source_revision": source,
             "runtime_image_digest": image,
-            "transport": {"ready": 0, "unacked": 0},
+            "transport": {
+                "ready": 0,
+                "unacked": 0,
+                "snapshots": [{"job_id": str(i)} for i in range(7)],
+            },
+            "jobs": [
+                {
+                    "job_id": str(i),
+                    "code_revision": source,
+                    "image_digest": image,
+                    "attempt_count": 1,
+                    "receipt": {"confirmed": True, "pod_uid": "pod"},
+                    "execution_id": str(i),
+                    "pod_uid": "pod",
+                    "owner_changed": i == 4,
+                    "state": {2: "CANCELLED", 3: "FAILED", 6: "FAILED"}.get(i, "SUCCEEDED"),
+                    "error_code": {3: "TRAINING_DEADLINE", 6: "SUPERVISOR_DRAIN"}.get(i),
+                }
+                for i in range(7)
+            ],
         },
         "jobs": [
             {
@@ -120,3 +139,50 @@ def test_operator_is_bounded_token_free_and_does_not_mutate_runtime_declaration(
     assert spec["containers"][0]["image"] == "example.test/tools@sha256:" + "a" * 64
     with pytest.raises(ValueError):
         create_operator(native, "tools:latest")
+
+
+@pytest.mark.parametrize("fault", ["late", "source", "image", "tools", "namespace", "extra_fit"])
+def test_resume_rejects_later_or_different_runtime_checkpoints(fault):
+    current = complete_report()
+    previous = copy.deepcopy(current)
+    previous.update(
+        status="INCOMPLETE",
+        checks=list(CHECKS[:5]),
+        jobs=current["jobs"][:1],
+        deployments=[{"deployment_id": "first"}],
+    )
+    validate_checkpoint(previous, current)
+    if fault == "late":
+        previous["checks"].append(CHECKS[5])
+    elif fault == "extra_fit":
+        previous["jobs"] = current["jobs"][:2]
+    else:
+        key = {
+            "source": "source_revision",
+            "image": "runtime_image_digest",
+            "tools": "tools_image",
+            "namespace": "namespace",
+        }[fault]
+        previous[key] = "different"
+    with pytest.raises(ValueError):
+        validate_checkpoint(previous, current)
+
+
+@pytest.mark.parametrize(
+    "fault", ["duplicate_case", "mixed_source", "missing_stop", "owner", "missing_ack"]
+)
+def test_nested_training_fault_evidence_is_required_for_every_case(fault):
+    report = complete_report()
+    training = report["training_faults"]
+    if fault == "duplicate_case":
+        training["checks"][-1] = training["checks"][0]
+    elif fault == "mixed_source":
+        training["jobs"][0]["code_revision"] = "wrong"
+    elif fault == "missing_stop":
+        training["jobs"][0]["receipt"]["confirmed"] = False
+    elif fault == "owner":
+        training["jobs"][4]["owner_changed"] = False
+    else:
+        training["transport"]["snapshots"].pop()
+    with pytest.raises(ValueError):
+        validate(report)
