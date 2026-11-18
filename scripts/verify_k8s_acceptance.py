@@ -104,6 +104,9 @@ def main():
         "source_revision": settings["ML_CODE_REVISION"],
         "runtime_image_digest": settings["ML_IMAGE_DIGEST"],
         "tools_image": args.tools_image,
+        "qualification_revision": subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
+        ).strip(),
         "production_accepted": False,
         "cross_node_qualified": False,
         "checks": [],
@@ -123,6 +126,9 @@ def main():
             "-c",
             "operator",
             "--",
+            "python",
+            "-m",
+            "bootstrap.deployment_entrypoint",
             "python",
             "scripts/k8s_acceptance_fixture.py",
             *arguments,
