@@ -139,7 +139,7 @@ def main():
             account["tenant_id"], "evidence-reader", frozenset({"ml:deploy", "ml:model:read"})
         )
         if mode == "status":
-            from src.infrastructure.execution.training_records import read
+            from src.infrastructure.execution.training_records import matches, read
 
             job = components.training.get(arguments[0])
             attempts = components.training.attempts(job.job_id)
@@ -149,6 +149,7 @@ def main():
             )
             stopped = Path(handle["directory"]) / "stopped.json" if handle else None
             receipt = read(stopped) if stopped and stopped.exists() else {}
+            identity = json.loads(handle["identity_json"]) if handle else {}
             report = {
                 "job_id": job.job_id,
                 "state": job.state,
@@ -158,7 +159,9 @@ def main():
                 "code_revision": json.loads(job.spec_json)["code_revision"],
                 "image_digest": json.loads(job.spec_json)["training_image_digest"],
                 "execution_id": handle["execution_id"] if handle else None,
-                "stop_confirmed": receipt.get("confirmed", False),
+                "stop_confirmed": receipt.get("confirmed") is True and matches(receipt, identity),
+                "pod_uid": identity.get("pod_uid"),
+                "container_id": identity.get("container_id"),
             }
             # Execution details are not part of the public Management job DTO.
             print(json.dumps(report))
