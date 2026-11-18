@@ -130,7 +130,8 @@ def main():
             "-m",
             "bootstrap.deployment_entrypoint",
             "python",
-            "scripts/k8s_acceptance_fixture.py",
+            "-m",
+            "scripts.k8s_acceptance_fixture",
             *arguments,
         )
         return json.loads(result.strip().splitlines()[-1])
