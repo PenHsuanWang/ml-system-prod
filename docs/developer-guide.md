@@ -1,16 +1,19 @@
-# 業務團隊開發手冊：在平台上新增應用能力
+# 通用 Backend 能力開發教學
 
 | 項目 | 內容 |
 | --- | --- |
 | 文件版本／日期 | DG-001 v1.1／2026-10-26 |
 | 適用對象 | 在本平台上開發業務功能的各業務團隊 Backend 工程師、Reviewer |
-| 對應基線 | [軟體架構設計規格](software-design.md) v1.3、[模組功能規範](module-spec.md)、[術語](glossary.md) |
+| 教學來源基線 | [軟體架構設計規格](software-design.md) v1.3、[模組功能規範](module-spec.md)、[術語](glossary.md) |
 | 審核狀態 | 已完成內容核對及隔離範例驗證；v1.0 歷史證據見第 11 節；現行重跑指令及交付見第 12 節 |
 | 文件定位 | **操作手冊**。規範性條文以 module-spec 與 `scripts/check_boundaries.py` 為準；兩者衝突時以程式與規範為準並回報平台團隊 |
 
 本平台是通用 Python Backend 藍圖，**不預載產品專屬模型與流程**；identity/jobs/exports/kernels 仍提供共用平台模型與政策。各業務團隊以「應用能力（capability）」為單位加入功能：同一個 capability 名稱橫跨數個分層 package，最後在 `bootstrap/` 明確組裝。本手冊用中性範例 `items` 示範完整流程，請將 `items` 換成你的能力名稱。
 
 ---
+
+> 本文保留底層 Backend 的通用能力教學。ML 的現行入口為
+> [架構導讀](architecture.md) 與 [Workload Contract](workload-extension-contract.md)。
 
 ## 1. 五分鐘總覽
 
@@ -98,7 +101,7 @@ checker 不驗證 capability ownership、facade 公開範圍、查詢的 tenant�
 
 優先使用 Protocol 與組合，避免以 `BaseService`／`BaseRepository` 包辦無關責任。繼承本身並非禁止：例外階層或具明確替換契約的合理繼承仍可使用；審查重點是責任、耦合與可替換性。`dataclass(frozen=True, slots=True)` 是本手冊的模型示範，並非 AST checker 強制的所有模型形式。
 
-本手冊的 items 範例將 Repository 放 Domain，是既有示範的選擇，並非要求所有 workflow interface 都放 Domain。新 Application Port 可由消費它的 capability 擁有；Adapter 不繼承／import Application Protocol，bootstrap 以 structural typing 組裝，行為另用共用 contract tests 驗證。ML 特定落點依 [v0.2 Port Ownership](ml-system-design.md#55-正式-port-ownership)；本段不更動下方可執行範例。
+本手冊的 items 範例將 Repository 放 Domain，是既有示範的選擇，並非要求所有 workflow interface 都放 Domain。新 Application Port 可由消費它的 capability 擁有；Adapter 不繼承／import Application Protocol，bootstrap 以 structural typing 組裝，行為另用共用 contract tests 驗證。ML 特定落點依 [v0.2 Port Ownership](pytorch-ml-system-lld.md)；本段不更動下方可執行範例。
 
 以下做法不符合目前的平台契約：
 
@@ -907,7 +910,7 @@ python -m taskiq worker worker:broker --workers 2 --max-async-tasks 8 \
   --ack-type when_saved --wait-tasks-timeout 10
 ```
 
-上式沿用已有環境設定與秘密；API 與 worker 的資料庫、queue、能力開關及 namespace 必須一致。調整 API 多程序前另依 [部署規範](product-platform.md) 檢查 `APP_WORKERS` 與 distributed 設定；不要合用多 worker 與 reload。
+上式沿用已有環境設定與秘密；API 與 worker 的資料庫、queue、能力開關及 namespace 必須一致。調整 API 多程序前另依 [部署規範](deployment/day1-deployment-runbook.md) 檢查 `APP_WORKERS` 與 distributed 設定；不要合用多 worker 與 reload。
 
 
 ---
@@ -1135,85 +1138,34 @@ async def test_routes_map_domain_errors() -> None:
 
 ## 10. 相關文件
 
-- [ML System 開發方向與架構設計](ml-system-design.md)：以本平台實作訓練、MLflow、核准、部署與推論的目標設計及分階段驗收
+- [ML System 開發方向與架構設計](pytorch-ml-system-lld.md)：以本平台實作訓練、MLflow、核准、部署與推論的目標設計及分階段驗收
 - [模組功能規範](module-spec.md)：各層與 `ModuleDefinition`／`ModuleExports` 的規範性定義
 - [微服務契約設計與演進指南](microservice-contracts.md)：跨 process／deployment 的 HTTP、command、event、資料與相容性治理
 - [軟體架構設計規格](software-design.md)：生命週期、並行、任務、失敗語意
 - [術語](glossary.md)：Application Factory、Capability、Tenant 等定義
-- [產品與部署說明](product-platform.md)：環境變數、部署與權限
+- [產品與部署說明](deployment/day1-deployment-runbook.md)：環境變數、部署與權限
 - [ADRs](adr/README.md)：架構決策與待決事項（OD-01～OD-05 與新應用直接相關）
 
 
-## 11. v1.0 歷史交付審核與範例驗證紀錄
+## 11. 範例與驗證範圍
 
-本手冊 v1.0 於 2026-10-24 對照當時 PBP-SAD-001 v1.2 工作樹完成審核。以下為當時結果，原始證據保持不變。`items` 僅在隔離副本由文件程式碼區塊原樣提取，沒有加入正式 application 註冊清單；不以文件中的測試宣告替代實際執行證據。
+本手冊的 22 個 Python 區塊是通用 `items` 能力教學，不是 ML Training／Serving
+或已安裝的業務功能。原始測試 fixtures 與歷史執行證據保留於
+[範例證據](evidence/developer-guide-2026-10-24/README.md)。歷史通過不代表新 source 通過。
 
-| 驗證版本 | 依賴邊界／Ruff／格式 | strict Mypy | 文件內測試 | 額外審查測試 |
-| --- | --- | --- | --- | --- |
-| 同步 HTTP 範例（①～⑧） | 通過 | 118 個來源檔通過 | 4 passed | 14 passed |
-| 選用背景讀取（含⑨） | 通過 | 121 個來源檔通過 | 4 passed | 25 passed |
-
-兩版測試數各自計算，包含共用案例，不代表相加後有 47 個獨立平台測試。額外案例涵蓋 tenant／owner／read_all、缺權／無效輸入／儲存錯誤、Mongo query 條件、API 錯誤內容、ModuleCatalog 的 API／worker 組裝、提交前拒絕不入隊、owned metadata、worker 重新解析／撤權／停用、唯讀重送及 HTTP 202／Location。
-
-選用 kernel 另以真實 `PluginBinding`／loader 與 memory coordinator 驗證 binding、有效執行、無效 schema 拒絕，以及通用 KernelService 的例外包裝行為，4 項檢查通過。這些契約檢查另列，不計入上表 pytest 數字。
-
-Compose 5.1.2 的 `config --quiet` 及 JSON 設定檢查通過：API 與 worker 都收到 `ITEMS_ENABLED=true`、`APP_EXPOSE_JOB_API=true`，既有 identity／Mongo／distributed 設定維持有效。檢查使用暫時的隨機 dummy 值，未啟動容器、未在此輪實跑新應用的真 MongoDB／RabbitMQ 端到端流程，也沒有重跑整套平台 pytest。真正整合與目標部署仍由能力團隊依自己的契約驗收。先前平台 Docker 實跑紀錄見 [平台驗證](validation.md)。
-
-文件測試的 service／HTTP 使用 fake repository 與 dependency override；額外 adapter／組裝測試使用明確替身，不宣稱已證明真實資料庫效能、JWT 登入端到端、跨主機 HA 或正式環境容量。文件中的部署指令可用於接入，但不得將設定解析通過當成容器實跑通過。
-
-完整 [審核證據](evidence/developer-guide-2026-10-24/README.md) 保存命令、結果、提取 mapping、驗證時文件 SHA-256 及交付版 code-fence 雜湊；交付版只追加文字審核結果與修正文義，Python／YAML 區塊與通過驗證版本相同。
-
-
-## 12. 現行基線重跑與新專案採用
-
-DG-001 v1.1 對應 PBP-SAD-001 v1.3，保留本手冊 22 個 Python 程式碼區塊；新增工程驗證與停用背景工作規範。歷史證據不自動代表新基線通過，實際本輪結果見 [validation](validation.md) 與 [handover](handover.md)。
-
-在已安裝鎖定開發環境的專案根目錄執行：
-
-```bash
-python scripts/verify_guide.py
+```sh
+python scripts/verify_guide.py --materialize-only --output-dir var/guide-validation
 ```
 
-腳本建立兩份新的隔離副本，依明確對應原樣提取同步與背景範例，僅修改該副本的能力檔案及 wiring；執行邊界、Ruff、格式、Mypy、文件內測試與已保存的授權／背景回歸案例。程式碼區塊數量或對應不符會拒絕執行，結果保存在 work/guide-validation/<run-id>/，不將教學能力加入正式專案。此指令不啟動外部服務；真容器新能力驗收另見交付證據。
+此指令在隔離副本核對區塊映射與組裝；需要重跑教學完整 lint／typing／tests 時，
+使用同一腳本不帶 `--materialize-only`，並獨立判讀結果。當前 ML CI 的實際品質
+scope 與完整服務回歸見 [驗證入口](implementation-status.md#驗證入口)，不要以
+教學範例的 fake repository／identity 取代實際服務驗收。
 
-純同步能力可選 APP_TASK_BACKEND=disabled；此時 context.jobs 為 None，不能匯出 tasks 或開啟 job 查詢。步驟⑨使用背景工作，必須選 memory（僅開發單程序）或 distributed（共享工作）；步驟⑨-C 已示範拒絕缺少 job service。背景 worker 只接受 distributed。
+## 12. 現有 ML 與 Data Ingress 擴充
 
-建立新產品時，保留目前分層與 bootstrap 註冊方式，依序完成：乾淨環境安裝 → 驗證空白基線 → 新增能力各層 → 明確 wiring → 契約／授權測試 → wheel／image 建置 → 實際依賴整合。新增能力允許修改明確註冊及必要依賴／部署設定；不應為單一能力修改共通 runtime 行為。使用第三方 SDK、持久副作用或既有 schema 時，依 [CONTRIBUTING](../CONTRIBUTING.md) 提供依賴、冪等及 migration 證據。
-
-## 13. 可選 Data Ingress capability（2026-10-31）
-
-2026-11-08：已增加 `databricks-sql@1` Adapter 與穩定化修復；部署方式、Source
-template digest、OAuth secret-file 及真實驗收步驟見 [Databricks runbook](databricks-ingestion-runbook.md)。
-本節首版中 Databricks 尚未實作的敘述是歷史狀態；Kafka 與 Dataset Builder 仍未實作。
-`scripts/check_ingestion.py` 現已交付，依舊保留 strict typing 與原有 CI gates。
-
-File Batch Ingestion 已沿本手冊的九層結構加入。這個章節補充新的實作接點，不替換前述 `items` 教學、不改變既有 Python 程式碼區塊，也不聲稱原本的背景任務／匯出介面就是通用 Ingress。詳盡可執行操作見 [Data Ingress 實作指南](data-ingress-implementation.md)，實際驗收證據見 [本輪報告](reviews/data-ingress-implementation-report.md)。
-
-### 13.1 先選對擴充邊界
-
-如果需求是從核准來源取得原始資料，使用 `src/application/ingestion/ports.py` 的 Batch Port／Registry；如果需求是 resampling、Spectrogram、target／split construction，應另做版本化 Dataset Builder。Raw Snapshot 成功不會自動建立 EBM FeatureSnapshot。`ModuleExports.datasets`／`ExportSource` 是輸出下載，不要拿它包裝 Databricks 或 Kafka 擷取。
-
-File v1 的 Source 配置由 operator 管理，只有已註冊的 Source ID／Version 可以被 HTTP 選取。Adapter type／version、Source instance／version、Job／Attempt identity 分開管理；來源 SDK 的 credentials／client 不出現在 Domain／Application DTO 或公開 metadata。
-
-### 13.2 部署與操作順序
-
-1. 準備核准的 read-only File root 與 Raw Snapshot storage；設定 server-side `ML_INGESTION_FILE_ROOTS_JSON`、`ML_RAW_SNAPSHOT_ROOT` 與 `ML_DATABASE_URL`。
-2. 以 `python -m bootstrap.ml_cli migrate` 明確套用 migration；API startup 不建表。
-3. 用完整 SourceDefinition JSON 執行 `python -m bootstrap.ingestion_cli register-source --definition-path ... --tenant-id ...`。相同 ID／version 不可換內容；停用／恢復用 `disable-source`／`enable-source`。
-4. Management 選入 `ML_INGESTION_ENABLED=true`，透過既有身份權限明確賦予 `ml:ingest`、read／cancel／operate 或 `ml:source:manage`。各權限不互相隱含，不允許跨 tenant。
-5. 提交 `POST /api/v1/ingestion/jobs`，只傳 Source ID／version 與可縮小的預算，並提供 `Idempotency-Key`；HTTP 回覆 202 不表示資料已取得。
-6. 啟動獨立 `python -m bootstrap.ingestion_cli work` 或 `work --once`。本輪是 durable SQL polling queue，沒有新增 ingestion broker ACK。
-7. 查詢 Job／result metadata；只有 SQL 終態 `PUBLISHED` 才可交給 downstream Raw Reader。清理用明確 `cleanup`，保留所有非終態工作／不確定發布證據。
-
-完整 Source JSON、API body、環境變數及檔案格式細節集中於操作指南，避免在這裡複製另一份不一致的 schema。File v1 只接受有界 UTF-8 JSON object records；不對資料做模型特徵轉換。
-
-### 13.3 團隊新增來源時的交付要求
-
-- 以窄 `BatchSourceAdapter.acquire()` 及 Source validator 實作新 Adapter，利用 injected stager 串流 bytes；不引入共用 `fetch(*args, **kwargs)` 或不必要繼承樹。
-- 只在 Bootstrap explicit allowlist 註冊 `(AdapterDescriptor, adapter, validator)`；HTTP 不接受 import path、任意 SQL、endpoint 或 filesystem path。
-- 新增版本只宣告實際可支援的 capabilities；未知或未支援的操作須 fail closed。
-- 跑相同 Adapter Contract Suite，再跑 Service、tenant／grant、fault／recovery、HTTP 與既有 MLP／EBM 回歸。現有測試用 File／Memory／Generated 三種獨立來源示範 OCP 行為。
-- 對任何 side effect 說明 owner fencing、期限／取消、來源 revision、idempotency 及不確定結果。不要把 `PUBLISHED`、來源已回應、Broker ACK 或 Training 成功當成同一種完成條件。
-- 使用 `python scripts/check_ingestion.py`、既有 boundary／Ruff／Mypy／Pytest gates，並如實記錄 baseline failures、目標 Runtime 與外部服務的未驗證項目。
-
-Publication Intent 在可見發布前先存 SQL；之後取消會回 409，worker 只能完成或對帳同一候選。這個 crash-recovery 契約不能由 Adapter 覆寫。Kafka 需要另一個 ownership／bounded polling／offset checkpoint lifecycle；Databricks 需要釘選 Delta／export revision 與核准 query，兩者目前都沒有正式可運作的 Adapter。本輪也沒有採納整份 `docs/adr/015-approved-extensions-proposal.md` 本機提案（未納入本次提交）。
+新增模型使用 [Workload Contract v1](workload-extension-contract.md)，新增來源使用
+[Data Ingress 指南](data-ingress-implementation.md)；既有 File／Databricks batch 與
+EBM DatasetBuilder 已實作。Raw Snapshot、DatasetVersion、Training、Evaluation／
+Approval 與 Deployment 的完成條件各自獨立。Kafka、Remote Executor、Calibration／
+RUL 與自動 ingestion-to-build 仍是後續工作，見 [實作狀態](implementation-status.md)。

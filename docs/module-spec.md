@@ -1,5 +1,8 @@
 # Package、模組命名與功能規範
 
+ML workload 的靜態擴充契約另見 [Workload Contract v1](workload-extension-contract.md)；
+本頁保留共通 substrate 的分層、ModuleCatalog 與能力註冊契約。
+
 本規範定義通用 Python Backend 的實體分層與 package 命名，對應 [軟體架構設計規格](software-design.md) v1.3 與專案內更新版架構圖。`bootstrap/` 負責啟動組裝，`src/` 下的 `api`、`services`、`application`、`domain`、`plugins`、`infrastructure` 為同層 package；`config`、`utils`、`shared_models` 是按需使用的支援 package。新增應用沿這些層增加對應模組，不再建立 `backend/modules/<name>/` 或複製一套 feature module 目錄。
 
 規範中的 `<capability>`、`<task_name>` 等是待替換佔位名稱。範本提供身份、資料權限、任務、運算與匯出的共通契約；應用的模型、政策、流程與資料來源由新增能力明確定義。`create_app()` 使用軟體工程的 Application Factory Pattern，負責建立 FastAPI application；此處 factory 只指程式建構方式。術語定義見 [術語與範圍](glossary.md)。
@@ -136,7 +139,7 @@ SVG 的候選檔名不要求每個空白檔案都加入實作。需要時才建�
 
 ## 命名與依賴規則
 
-Port 依真正消費層決定 ownership：Domain 自己需要的業務抽象放 domain；Application workflow 的 executor、publisher、tracker、runtime 等 Protocol 可放 `application/<capability>/ports.py`。Infrastructure／Plugins 仍不得 import application，可依公開純 DTO 實作同形方法，再由 bootstrap 型別檢查 structural conformance。現有 identity/jobs 等 Domain Ports 保留，不要求為新設計遷移舊契約。ML 的正式對照見 [Port Ownership](ml-system-design.md#55-正式-port-ownership)。
+Port 依真正消費層決定 ownership：Domain 自己需要的業務抽象放 domain；Application workflow 的 executor、publisher、tracker、runtime 等 Protocol 可放 `application/<capability>/ports.py`。Infrastructure／Plugins 仍不得 import application，可依公開純 DTO 實作同形方法，再由 bootstrap 型別檢查 structural conformance。現有 identity/jobs 等 Domain Ports 保留，不要求為新設計遷移舊契約。ML 的正式對照見 [Port Ownership](pytorch-ml-system-lld.md)。
 
 - package／Python 模組使用 `snake_case`；class 使用 `PascalCase`；Protocol 依角色命名，不以 `Manager` 包辦無關責任。
 - 同一能力跨層採一致名稱，例如 `src/domain/<capability>/`、`src/application/<capability>/`、`src/api/<capability>/`。具體 outbound adapter 按技術分類至 infrastructure，策略按類型放 plugins。
@@ -238,13 +241,14 @@ kernel 執行由 application 進行動作授權、版本比對、輸入／輸出
 
 ```bash
 python scripts/check_boundaries.py
-ruff check .
-ruff format --check .
-mypy src bootstrap server.py worker.py manage.py
-pytest
+python scripts/check_ingestion.py
+python scripts/check_deployment.py
+python scripts/check_serving_runtime.py
+python scripts/check_training_runtime.py
+python scripts/check_k8s_acceptance.py
 ```
 
-以上是本地檢查入口；完整已執行證據與未執行項目以 [驗證紀錄](validation.md) 為準。部署驗收仍需真實 broker／DB、程序數、資源配額、故障恢復與新增應用的使用案例測試；單元測試通過不代表已取得生產核准。
+以上是本地檢查入口；完整已執行證據與未執行項目以 [驗證紀錄](implementation-status.md) 為準。部署驗收仍需真實 broker／DB、程序數、資源配額、故障恢復與新增應用的使用案例測試；單元測試通過不代表已取得生產核准。
 
 ## Data Ingress capability 實作補充（2026-10-31）
 
@@ -252,7 +256,7 @@ pytest
 核准 template validator 位於 Infrastructure；Bootstrap 僅在明確啟用時註冊。
 Service／Supervisor 沒有 provider-specific dispatch。Generic factory 新增預設為 true
 的 `include_default_readiness` 組裝選項，ML factory 可提供獨立 readiness，不修改
-共用 router 或其他 factory 的預設 Health contract。見 [本輪交付報告](reviews/ingestion-stabilization-databricks-2026-11-08.md)。
+共用 router 或其他 factory 的預設 Health contract。見 [本輪交付報告](implementation-status.md)。
 
 本補充在既有九層 package 中加入可選的 File Batch Ingestion capability，不另建 `ml_core`／`backend/modules` 架構，也不變更通用 Template 的預設啟動能力。完整操作與限制見 [Data Ingress 實作指南](data-ingress-implementation.md)。
 
@@ -268,4 +272,4 @@ Service／Supervisor 沒有 provider-specific dispatch。Generic factory 新增�
 
 File Batch Ingestion 使用獨立 durable SQL queue 與 migration `0006_ingestion`，不復用 Training 的模型 binding／evaluation finish 契約。Snapshot publication 前需先保存 owner-fenced exact intent；發布後 SQL commit 失敗必須保留同一候選對帳，不得盲目重新擷取來源。取消在 intent 前生效，intent 後回 409；沒有新增 ingestion AMQP ACK。
 
-新的 Source Adapter 應以 Bootstrap registration 及共用 Adapter Contract Tests 擴充，不修改穩定 Service／Job state machine。Streaming、Dataset Builder、多格式 Raw Snapshot 是不同契約的後續工作；本輪不建立非功能性的空 Adapter。這個實作補充不把 `docs/adr/015-approved-extensions-proposal.md` 本機提案（未納入本次提交）靜默標為 Accepted。
+新的 Source Adapter 應以 Bootstrap registration 及共用 Adapter Contract Tests 擴充，不修改穩定 Service／Job state machine。EBM DatasetBuilder 已實作，操作見 EBM 使用說明；Streaming、其他 Builder 與多格式 Raw Snapshot 仍各自需要版本化契約及驗收。

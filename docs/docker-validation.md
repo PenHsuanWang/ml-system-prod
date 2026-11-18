@@ -1,6 +1,10 @@
-# Docker／RabbitMQ 整合驗證操作手冊
+# 通用 Backend Docker／RabbitMQ 驗證
 
-本手冊提供可重現的驗證程序與結果判讀方式。本次實跑結果由 `docs/validation.md` 與 evidence JSON 補列；實際完成項目、執行時間、映像 ID、套件版本及限制，以[驗證紀錄](validation.md)與該次 `report.json` 為準。
+本手冊提供可重現的驗證程序與結果判讀方式。每次執行結果寫入獨立 report；目前 ML 系統的工程證據集中於 [實作狀態](implementation-status.md)，不得把此選用程序當作已執行的證明。
+
+> 這是底層 Backend 共通功能的選用檢查。ML 系統完整回歸以
+> [Compose 驗收](ml-runbook.md#完整-compose-回歸) 和
+> [K8s Acceptance](deployment/kubernetes-acceptance.md) 為準。
 
 ## 1. 驗證入口與執行條件
 
@@ -102,6 +106,3 @@ docker compose --env-file <該次secrets.env的路徑> \
 
 本架構不承諾 exactly-once 執行；單次成功、queue 排空與 terminal snapshot 防重複處理，不能取代外部副作用的冪等設計。32 項短時間測試任務也不能作為吞吐量、延遲 SLO、長時間穩定性或生產容量的證明。產品導入仍需依實際拓撲、資料與 workload 另行執行效能、故障恢復及部署驗收。
 
-## 2026-10-24 最終實跑
-
-以下為 2026-10-24 的歷史 run；最新 v1.3 結果見 [驗證紀錄](validation.md)。當時已依上述流程完整通過；[九類檢查與 image ID](evidence/docker-2026-10-24/report.json)、[406 passed／0 skipped](evidence/docker-2026-10-24/pytest.log) 與 [證據導讀](evidence/docker-2026-10-24/README.md) 已保存。動態 host port 在 container restart 後可能重新分配，runner 會重新查詢後再驗證狀態。先前兩次檢查腳本問題修正後，才以最後一次完整重跑列為通過。

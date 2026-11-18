@@ -1,5 +1,8 @@
 # Governed Kubernetes acceptance — 2026-11-18
 
+> Historical executed qualification record. PR #11 is now merged; current scope and
+> pending production gates: [implementation status](../implementation-status.md).
+
 Baseline: merged PR #10, master `336615e`.
 Feature: `feature/k8s-acceptance`, Draft PR #11.
 

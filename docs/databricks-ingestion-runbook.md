@@ -1,8 +1,8 @@
 # Databricks Batch Ingestion 操作手冊
 
-更新：2026-11-09。狀態：已實作，真實 Warehouse 驗收待執行；PR 必須維持 Draft。
-設計決策見 [ADR-016](adr/016-databricks-batch-ingestion.md)，驗收結果見
-[本輪交付報告](reviews/ingestion-stabilization-databricks-2026-11-08.md)。
+更新：2026-11-19。Batch adapter 已合併；真實 Warehouse 資格仍待執行。
+設計決策見 [ADR-016](adr/016-databricks-batch-ingestion.md)，目前工程驗收見
+[實作狀態](implementation-status.md)。
 
 若目標是使用已存在的外部 MLflow 與 Databricks 部署完整 ML System，先依
 [Day-1 部署手冊](deployment/day1-deployment-runbook.md) 執行；其中使用獨立 production

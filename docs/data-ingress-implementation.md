@@ -1,12 +1,9 @@
 # Data Ingress 實作與操作指南
 
-2026-11-08 更新：File 與 Databricks SQL Warehouse Batch Adapter 均已有程式實作。
-正式環境尚未核准；真實 Warehouse 驗收待執行。Databricks 的實際設定／型別／
-credentials／container 操作以 [Databricks runbook](databricks-ingestion-runbook.md)
-為準，修復與驗收結果見 [本輪交付報告](reviews/ingestion-stabilization-databricks-2026-11-08.md)。
-下方首版說明與歷史證據保留，不代表尚未實作的 Kafka／Dataset Builder 已完成。
-
-更新日期：2026-10-31。本指南描述已交付的 File Batch Ingestion vertical slice。既有 [Data Ingress 設計提案](data-ingress-adapter-design.md) 與 `docs/adr/015-approved-extensions-proposal.md`（本機提案，未納入本次提交）保持提案狀態；本輪實作沒有將整份提案靜默改為 Accepted。實際驗證結果與環境限制以 [實作報告](reviews/data-ingress-implementation-report.md) 為準。
+更新：2026-11-19。File 與 Databricks SQL Warehouse Batch Adapter 已實作；
+真實 Warehouse／企業環境資格仍待核准 fixture 與實測。Databricks 的配置與
+credentials 見 [專用手冊](databricks-ingestion-runbook.md)，當前進度與證據見
+[實作狀態](implementation-status.md)。本頁集中說明共用 batch／snapshot 契約。
 
 ## 1. 範圍與邊界
 
@@ -294,9 +291,13 @@ Kafka 不實作成一次性的 `FileBatchAdapter.acquire()`。後續使用獨立
 
 Kafka broker offsets 只是來源進度，不代替 Raw Snapshot／SQL 業務成果。批次發布與 checkpoint 的不確定結果仍需 stable batch identity、fencing 及 reconciliation，不宣稱跨 Kafka／SQL／storage exactly once。
 
-### Dataset Builder：版本化邊界，未實作
+### EBM DatasetBuilder：已實作的明確 operator 步驟
 
-未來 Builder 只接收已發布 `raw_snapshot_id + manifest_digest`、固定 `builder_id + version` 與受控 feature config，輸出另一份不可變 Dataset／FeatureSnapshot。它透過 Raw Reader Port 驗證輸入，不 import Databricks／Kafka SDK。EBM resampling／Spectrogram／CDF、sequence windowing、tabular typing 及 image decoding 應分別有自己的 Builder 版本與 Golden tests；成功後才登錄既有 Dataset Catalog，後續 Training 照原契約使用 Dataset ID／Version。
+Builder 只讀已發布的 Raw Snapshot ID／manifest digest，驗證版本化 raw contract，
+產生不可變 FeatureSnapshot、DatasetVersion 與 build receipt；不執行來源 SDK。
+實際 CLI、schema 與限制見 [EBM 使用說明](ebm-implementation-status.md)。
+目前沒有自動 ingestion-to-build orchestration；其他模型的 Builder、Kafka streaming
+與多格式 Raw Snapshot 需各自定義版本與驗收，不因 EBM Builder 存在而自動支援。
 
 ## 11. 驗證與操作交付
 
@@ -305,10 +306,8 @@ python scripts/check_boundaries.py
 python scripts/check_ingestion.py
 python -m pytest tests/ml/ingestion -q
 python -m pytest tests/ml tests/test_boundaries.py -q
-ruff check .
-ruff format --check .
 ```
 
-新增測試涵蓋 registry／DTO／permissions、real File FD／JSONL、原子發布與 collision、SQL ownership、失敗後恢復、獨立 worker subprocess／HTTP、三種 Adapter 的 OCP Contract。具體命令、版本、結果及 baseline failures 由實作報告記錄，不在本指南預先宣稱固定數量或所有 checks 已成功。
+新增測試涵蓋 registry／DTO／permissions、real File FD／JSONL、原子發布與 collision、SQL ownership、失敗後恢復、獨立 worker subprocess／HTTP、三種 Adapter 的 OCP Contract。實際命令、版本與結果集中於 [實作狀態](implementation-status.md)，不在本指南複製逐次測試數。
 
 PostgreSQL、RabbitMQ、Databricks、Kafka、真實 credentials、目標 image／filesystem 若不可用，須標示 NOT VERIFIED。本輪 SQL polling 不依賴 RabbitMQ；既有 Training broker 路徑的資格不因此自動提升。正式使用前仍需 retention／GC、resource profile、吞吐／延遲、migration／backup-restore、multi-host clock／lease 及故障注入的部署級驗證。

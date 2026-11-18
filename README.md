@@ -6,9 +6,7 @@ The code extends the pinned backend template in place. Domain and application la
 
 Implementation and target-environment qualification are tracked separately in [implementation status](docs/implementation-status.md).
 
-At qualified source `5ec1c6f` (2026-11-09), the [push](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/42551064847) and [PR](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/42551069725) workflows passed Contracts, Ingestion container and Backend acceptance. The complete local Backend run recorded **864 passed, zero failures, zero skipped** on Python 3.12 / Torch 2.6 CPU with real infrastructure services. See the [qualification and repair record](docs/reviews/actions-failure-fixes-2026-11-09.md); the older [2026-10-29 report](docs/backend-acceptance-2026-10-29.md) is historical evidence.
-
-Databricks batch acquisition is implemented. Its protected live Warehouse test still needs an approved external fixture and credentials. Passing Backend CI does not qualify that connection, production capacity, backup/restore or a production Go decision.
+PR #11 的最終 source `43b6606` 已通過完整 K8s engineering acceptance 與獨立 Compose Backend 驗收（1169 passed，零 failure／error／skip）。實際 source／image、原始證據及 production 限制集中於 [實作狀態](docs/implementation-status.md)；文件入口見 [docs 導讀](docs/README.md)。
 
 ## Choose a deployment path
 
@@ -134,7 +132,7 @@ Prediction input is `{"endpoint_id":"quality","instances":[{"features":{"sensor_
 
 ## Tests and operations
 
-Run the reproducible local acceptance checks with `python scripts/verify_ml_acceptance.py`. The [full-stack acceptance procedure](docs/backend-acceptance-2026-10-29.md#可重跑的驗收入口) uses a disposable Compose project, real services and `--require-stack`; missing endpoints, skipped required cases or runtime mismatch prevent acceptance. The source-qualified CI runs linked above executed this job. External Databricks and host-only Compose qualification have independent scopes; they are not silently counted as Backend acceptance.
+Run the reproducible local acceptance checks with `python scripts/verify_ml_acceptance.py`. The [full-stack acceptance procedure](docs/ml-runbook.md#完整-compose-回歸) uses a disposable Compose project, real services and `--require-stack`; missing endpoints, skipped required cases or runtime mismatch prevent acceptance. The source-qualified CI linked in implementation status executed this job. External Databricks and host-only Compose qualification have independent scopes; they are not silently counted as Backend acceptance.
 
 ```sh
 python scripts/check_boundaries.py
@@ -152,15 +150,8 @@ Use the [Day-1 runbook](docs/deployment/day1-deployment-runbook.md) for installa
 
 ## Design and provenance
 
-- [HLD](docs/pytorch-ml-system-hld.md), [LLD v1.3](docs/pytorch-ml-system-lld.md), [ADR-014](docs/adr/014-implementation-baseline.md).
-- [Feature spec](specs/001-durable-training-jobs/spec.md), [implementation plan](specs/001-durable-training-jobs/plan.md).
-- [EBM Notebook fit–gap review](docs/EBM_PoC_ML_System_Fit_Gap_2026-10-29.md), [EBM integration plan](docs/ebm-integration-plan.md), [current EBM implementation](docs/ebm-implementation-status.md): neural training/serving, separate Databricks Raw Snapshot acquisition and the explicit operator DatasetBuilder are implemented; automatic orchestration, calibration/RUL, live Warehouse qualification and production qualification remain pending.
-- [Initial review](docs/architecture-review-2026-10-29.md), [v1.2 follow-up](docs/architecture-review-2026-10-29-v1.2.md).
-- [Upstream commit](docs/template-baseline.txt). Root v1.0 architecture files are explicitly superseded.
-- The original documentation manifest is retained in `docs/archive/FILE-MANIFEST-v1.1.json`; the root manifest describes the current source bundle.
-
-Databricks access token 可透過 `.env` 的 `DATABRICKS_TOKEN` 設定；連線 JSON 與 Compose 用法見
-[Databricks 操作手冊](docs/databricks-ingestion-runbook.md#access-tokenenv)。
+See the [documentation index](docs/README.md) for architecture, operations,
+extension contracts, retained evidence and historical design references.
 
 ## Kubernetes migration
 

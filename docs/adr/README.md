@@ -1,12 +1,26 @@
 # 架構決策紀錄
 
-Kubernetes migration: [ADR-017 — Foundation and runtime boundaries](017-kubernetes-runtime-boundaries.md)
-records the six-PR plan and separates local startup evidence from production acceptance.
+## 現行 ML／K8s 決策
 
-[ADR-018 — Kubernetes storage contracts](018-kubernetes-storage-contracts.md)
-defines persistent paths, disposable caches and the synthetic PVC qualification.
+| ADR | 已合併的技術範圍 |
+| --- | --- |
+| [014](014-implementation-baseline.md) | CPU ML、精確 Bundle 評估、Approval 與路由 fencing |
+| [016](016-databricks-batch-ingestion.md) | 已實作 Databricks batch；外部資格仍待驗收 |
+| [017](017-kubernetes-runtime-boundaries.md) | Foundation／Secret／CA 與六個工作包 |
+| [018](018-kubernetes-storage-contracts.md) | 掛載、持久性與 Storage Contracts |
+| [019](019-kubernetes-serving-runtime.md) | 原生 Serving、ACTIVE 恢復與路由 |
+| [020](020-pod-training-runtime.md) | Pod-aware Training、ownership、停止確認與 ACK |
+| [021](021-kubernetes-acceptance.md) | 完整 K8s 工程驗收與獨立 Compose 回歸 |
 
-本文件記錄設計取捨與取代關係。「採用」表示本專案的程式與文件基線，不表示組織已完成生產核准。ADR-001～009 為 2026-10-23 的歷史決策；ADR-010 於 2026-10-24 確立通用藍圖政策；ADR-011～013 補充 v1.3 工程基線。實際驗證以 [驗證紀錄](../validation.md) 為準。
+目前五個 K8s 工作包皆已合併；Production Operations 仍未完成。
+ADR-015 是未納入 Git 的早期提案編號，不代表已採用的額外契約。
+
+## 共通 Backend 的歷史決策
+
+以下 ADR-001～013 保留 substrate 的決策來源，不是目前 ML 能力缺口或新的
+正式環境核准。當前能力與工程證據集中於 [實作狀態](../implementation-status.md)。
+
+本文件記錄設計取捨與取代關係。「採用」表示本專案的程式與文件基線，不表示組織已完成生產核准。ADR-001～009 為 2026-10-23 的歷史決策；ADR-010 於 2026-10-24 確立通用藍圖政策；ADR-011～013 補充 v1.3 工程基線。實際驗證以 [實作狀態](../implementation-status.md) 為準。
 
 **現行規範優先序：** ADR-010 取代舊決策中任何可被解讀為預設產品領域、設定階層或流程的描述。下方舊決策保留原始因果與來源名稱作歷史追溯；原始設計與歷史敘述不是新增功能的必備需求。保留的通用工程決策與 package 基線繼續有效。
 
@@ -87,7 +101,7 @@ CI 守門應依新分層攔截 domain 反向 import、application 選擇具體 a
 | ADR-012 | 採用 | 保留 pip，分 runtime／dev／build hash locks 與固定 resolver；增加實際 artifact 安裝、coverage、guide、安全及 image gates，保留 PR 真服務 integration。 | 詳見 engineering-baseline 與 validation；workflow 定義不等於遠端 required checks 或生產核准。 |
 | ADR-013 | 採用 | 以純 shared_models context 傳遞一般 request/job 關聯；訊息 schema_version=1，兼容舊格式，先驗證再入列；API／worker 共用安全 JSON logging。 | 對應 test_observability 與 distributed/memory 回歸；不宣告已提供 OTel tracing／metrics／worker heartbeat。 |
 
-完整採納與延後範圍見 [工程基線](../engineering-baseline.md) 與 [交付狀態](../handover.md)。
+完整採納與延後範圍見 [工程基線](../implementation-status.md) 與 [交付狀態](../implementation-status.md)。
 
 ## ADR-014：ML CPU implementation baseline（2026-10-29）
 

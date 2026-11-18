@@ -1,5 +1,8 @@
 # PyTorch ML System — Low-Level Design (LLD)
 
+> 本文件保留設計契約與目標；已交付能力及目前驗收以
+> [實作狀態](implementation-status.md) 和 [後續 ADR](adr/README.md) 為準。
+
 > **文件編號**：ML-LLD-001  
 > **版本**：1.3（Implementation Baseline — Draft；不代表 Production 核准）
 > **修訂日期**：2026-10-29（第二輪架構審查提案，尚待核准）  
@@ -11,7 +14,7 @@
 
 ---
 
-> **本版變更依據**：[初次審查](architecture-review-2026-10-29.md)、[v1.2 複查](architecture-review-2026-10-29-v1.2.md) 與 [ADR-014](adr/014-implementation-baseline.md)。使用者已要求開始 Python 實作；本版收斂必要的技術契約，產品留存／SLO 與正式驗收仍維持待核准。
+> **本版變更依據**：[初次審查](https://github.com/PenHsuanWang/ml-system-prod/blob/55dd2266395801b0dbeea40d34f4f92276fb6ac3/docs/architecture-review-2026-10-29.md)、[v1.2 複查](https://github.com/PenHsuanWang/ml-system-prod/blob/55dd2266395801b0dbeea40d34f4f92276fb6ac3/docs/architecture-review-2026-10-29-v1.2.md) 與 [ADR-014](adr/014-implementation-baseline.md)。使用者已要求開始 Python 實作；本版收斂必要的技術契約，產品留存／SLO 與正式驗收仍維持待核准。
 > **Source of Truth**：衍生 ML System 的候選文件位於 `docs/pytorch-ml-system-*.md`；根目錄 v1.0 為歷史副本。實作範圍及實測證據另見 [Implementation Status](implementation-status.md)，不得由設計文字推定已交付功能。
 
 ## 0. 文件契約與設計邊界

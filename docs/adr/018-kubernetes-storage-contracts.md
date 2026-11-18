@@ -2,7 +2,7 @@
 
 Date: 2026-11-17
 
-Status: Proposed for review; local qualification does not approve a production CSI.
+Status: Implemented and merged (PR #8); local qualification does not approve a production CSI.
 Baseline: master `f2040edd7151453a0fba547c455159f2657b07d0` after PR #7.
 
 ## Decision and preserved contracts

@@ -1,5 +1,8 @@
 # PyTorch ML System — High-Level Design (HLD)
 
+> 本文件保留設計契約與目標；已交付能力及目前驗收以
+> [實作狀態](implementation-status.md) 和 [後續 ADR](adr/README.md) 為準。
+
 > **文件編號**：ML-HLD-001  
 > **版本**：1.1（Architecture Proposal，跨文件一致性修訂）
 > **修訂日期**：2026-10-29  

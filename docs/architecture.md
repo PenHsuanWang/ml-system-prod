@@ -1,57 +1,67 @@
-# 通用 Python Backend 架構導讀
+# ML System 架構導讀
 
-本專案是通用 Python Backend Server 藍圖。範本提供啟動、HTTP、背景任務、身分與資料隔離、儲存介面及可插拔計算契約；產品的資料模型、流程、設定階層與策略選擇由後續應用自行定義。此文件及 [軟體設計規格](software-design.md) 描述現行基線；[原始參考](references/README.md) 保存設計來源，並非實作規範。
+本專案以既有 Python Backend substrate 承載受治理的 CPU MLP／EBM 生命週期。
+程式碼與 [實作狀態](implementation-status.md) 描述已存在能力；
+[HLD](pytorch-ml-system-hld.md)、[LLD](pytorch-ml-system-lld.md) 保留設計契約，
+後續 K8s 決策由 [ADR-017～021](adr/README.md) 補充。
 
-## 分層與組裝
-
-入口為根目錄 `server.py`／`worker.py`。`bootstrap/` 是外緣 composition root，負責載入設定、建構資源、選擇可信實作及注入依賴。九個頂層 package 的責任如下：
-
-| Package | 責任 |
-| --- | --- |
-| `src/api` | HTTP 路由、transport schema、身分解析及錯誤轉換。 |
-| `src/services` | lifespan、受控並行、容量協調、runtime health 與技術性 logging。 |
-| `src/application` | 使用案例、任務 handler 註冊及跨介面共用的應用流程。 |
-| `src/domain` | 純模型、政策、strategy 與 outbound ports。 |
-| `src/plugins` | 實作 domain 策略的可信插件；預設只有空 package。 |
-| `src/infrastructure` | 資料庫、訊息、鎖定、安全及下游介面的技術 adapter。 |
-| `src/config` | 設定模型、環境載入及常數。 |
-| `src/utils` | 不依賴應用狀態的純工具。 |
-| `src/shared_models` | 共用中性 DTO、schema 與型別。 |
+## 角色與流程
 
 ```mermaid
 flowchart LR
-    Server[server.py] -->|runtime| API[src/api]
-    Worker[worker.py] -->|runtime via task adapter| App[src/application]
-    API -->|delegate| App
-    App -->|import contracts| Domain[src/domain]
-    Plugins[src/plugins] -->|implement strategy| Domain
-    Infra[src/infrastructure] -->|implement ports| Domain
-    Root[bootstrap composition] -.-> API
-    Root -.-> App
-    Root -.-> Plugins
-    Root -.-> Infra
+  Client --> Management
+  Management --> SQL[(SQL: Job / Outbox / Governance)]
+  SQL --> Relay --> MQ[RabbitMQ]
+  MQ --> Supervisor[Worker / Supervisor]
+  Supervisor --> Compute[Training child / Pod guardian]
+  Compute --> Bundle[Immutable bundle]
+  Supervisor --> MLflow[MLflow / artifact store]
+  Supervisor --> SQL
+  Supervisor --> Redis[Technical snapshot before ACK]
+  SQL --> Control
+  Control --> Serving[Approved fixed-version Serving]
+  Client --> Gateway --> Serving
 ```
 
-圖中的 runtime／delegate 表示執行呼叫，import／implement 表示向 domain 的契約依賴或實作；這些關係不能當作同一種 import graph。application 在執行期透過已注入的契約呼叫策略及 adapter。虛線表示組裝關係，並非每次請求的呼叫鏈。`services` 提供技術性 runtime 支援；它不承載產品使用案例，也不強制所有請求經過它。
+Management 負責身份、意圖、授權與治理 API，不能執行 fit。Worker／Supervisor
+擁有新訓練 dispatch；Control 接管 stale ownership、對帳同一個 fit 並協調部署。
+Control／Gateway 共用 Pod／network，使用各自的 role 設定；K8s Serving 是獨立、
+固定 source／image／spec 的 runtime。預測不逐次向 MLflow 下載模型。
 
-## Application Factory 與程序生命週期
+## 資料與權威
 
-Application Factory 指 `server.create_app()`：依設定建立 FastAPI application，註冊路由與 lifespan。這裡的 factory 是軟體建構模式。`server.py` 控制啟動選項；每個 Uvicorn worker 在自身程序內執行 lifespan，沒有跨程序共用的 Python「主執行緒資源」。
+| 資料 | Owner／完成條件 |
+| --- | --- |
+| Source／Raw Snapshot | Ingestion；固定來源 revision、驗證 bytes／manifest 並完整發布 |
+| DatasetVersion | Dataset Catalog／明確 DatasetBuilder；不可變 snapshot、split 與 digest |
+| Training Job／Attempt／Outbox | SQL；原子 admission／idempotency、owner fencing、可對帳 execution |
+| Model／Evaluation／Approval | 固定 Bundle 與精確評估；明確核准綁定同一組 digest |
+| Deployment／Route | SQL generation 與 route revision；runtime readiness 不自行授權切流 |
+| Redis snapshot／RabbitMQ delivery | 技術證據與傳輸；不能替代 SQL 業務結果 |
 
-每個 API／背景 worker 程序各自持有 event loop、client pool、thread executor、facade 與插件實例。共享任務與容量使用 RabbitMQ／Redis，不靠全域 Python 物件；純 API 可選 disabled task backend，不建立背景工作，保留多 API 程序能力。async 適合 I/O；thread 適合可自行設定逾時的阻塞 SDK；純 Python CPU、GPU 或需要強制終止的工作應選擇獨立 process／remote adapter，現行範本不提供通用 process／GPU 執行器。
+訓練成功不等於品質通過。Serving 必須取得匹配的 Approval；rollback 建立新 generation。
+兩個全域 Serving reservations 包括 ACTIVE、pending 與未確認退役的資源。
+SQL lease 失效、缺少 Pod 或 PID 不明不能釋放實體 slot 或啟動第二個 fit。
 
-初始化依功能 `requires` 拓撲排序，失敗時回滾；關閉依序 drain dispatcher、取消 active kernel、排空實體 thread，再清理初始化資源。取消 await 不能殺死 thread。Redis lease 失效時取消 cooperative 工作並等待 cleanup；外部副作用仍須應用自行定義 fencing、冪等與復原契約。
+## 程式邊界與擴充
 
-## 擴充責任與目前狀態
+- `src/domain`／`src/application`：純 DTO、政策與窄 Protocol；不依賴 SDK／Torch／K8s。
+- `src/plugins`：核准的 feature／model／trainer／evaluation 計算實作。
+- `src/infrastructure`：SQL、來源、broker、MLflow、執行器與 Serving adapters。
+- `src/api`：驗證與 transport adaptation；`bootstrap` 明確組裝各角色。
+- `src/services`、`src/config`、`src/shared_models`、`src/utils`：沿用 substrate 支援能力。
 
-新增應用沿 `domain/<capability>`、`application/<capability>`、`api/<capability>` 與相應 plugins／infrastructure 協作，再由 `bootstrap/` 明確註冊。`application/hierarchy.py` 只有擴充位置；`registry.py` 依已註冊的任務名稱查找 handler；`orchestration.py` 接入現有 kernel 背景使用案例。它們沒有預設的設定合併、策略自動選擇或多步驟 pipeline。
+[模組規範](module-spec.md) 與 [boundary checker](../scripts/check_boundaries.py)
+約束 import；[Workload Contract](workload-extension-contract.md) 約束 Recipe／handler
+靜態註冊。通用 `ModuleCatalog`、kernel plugin 與 ML workload registry 是不同契約。
+DatasetBuilder、取得來源、模型計算、執行位置與 Serving 不互相承接對方治理生命週期。
 
-API schema 負責 HTTP 外層格式；queue adapter 解碼傳輸 envelope；TaskRegistry 只解析 handler 名稱。新增 handler 必須在 application 邊界驗證其專屬輸入 schema，並透過 domain 執行資料不變量與政策；不可把「訊息已解碼」視為應用資料已通過驗證。現行 kernel 使用通用 JSON payload，檢查名稱、版本、授權、JSON 大小與容量，尚無通用的逐 kernel 輸入／輸出 schema registry。
+## 部署與驗收
 
-身分與資料隔離是 permission／tenant／owner 基礎，並非完整 RBAC／ABAC 或逐 kernel entitlement。SOLID 透過責任分層、Protocol、明確 composition、窄介面及契約測試實踐；不要求所有能力共用繼承基底，靜態 checker／mypy 也不證明全部行為。
+local／Compose／外部服務 VM profile 保留既有執行方式。K8s profile 注入原生 Serving
+及 Pod-aware Training，保留同一套 SQL、品質與路由治理。各 profile 的啟動與故障
+驗收以 [部署索引](README.md#部署回歸與維運) 為準。
 
-將平台衍生為訓練與模型推論系統時，依 [ML System 設計](ml-system-design.md)新增持久工作、獨立執行器、MLflow、核准與部署契約。該文件描述目標應用架構，相關 ML 能力尚未加入通用基線。
-
-ML v0.2 的 workflow ports 由 Application 擁有，透過 structural typing 保留 Infrastructure 不 import Application 的政策；[C4 L1～L4](diagrams/ml-system-v0.2/README.md)與[指定 commit 符合性核對](ml-system-compliance-review.md)分別描述目標設計及已驗證的平台範圍。
-
-完整 [設計規格](software-design.md)、[模組功能規範](module-spec.md)、[開發手冊](developer-guide.md)、[微服務契約設計與演進指南](microservice-contracts.md)、[術語](glossary.md)、[搬移對照](package-migration.md)、[部署說明](product-platform.md)、[驗證紀錄](validation.md) 與 [決策](adr/README.md) 共同構成工程交付。
+底層 Backend 的通用契約另見 [substrate 設計](software-design.md)、
+[通用擴充教學](developer-guide.md) 與 [術語](glossary.md)。原始範本設計不再用來
+宣稱 ML／K8s 尚未實作；企業環境、模型品質與 production 核准仍須獨立證據。
