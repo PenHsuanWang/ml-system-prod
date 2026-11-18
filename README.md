@@ -164,7 +164,14 @@ Databricks access token 可透過 `.env` 的 `DATABRICKS_TOKEN` 設定；連線 
 
 ## Kubernetes migration
 
-The local Kubernetes foundation and its six-PR acceptance boundaries are documented
-in the [Minikube runbook](docs/deployment/kubernetes-staging-runbook.md) and
-[ADR-017](docs/adr/017-kubernetes-runtime-boundaries.md). This foundation does not
-qualify serving/training recovery or production operation.
+The six-work-package roadmap is defined in [ADR-017](docs/adr/017-kubernetes-runtime-boundaries.md).
+Foundation, Storage Contracts, Serving Runtime and Pod Training Runtime now have
+local Minikube qualification. Their operating instructions and explicit limits are:
+
+- [Foundation](docs/deployment/kubernetes-staging-runbook.md)
+- [Storage Contracts](docs/deployment/kubernetes-storage-contracts.md)
+- [Serving Runtime](docs/deployment/kubernetes-serving-runtime.md)
+- [Pod Training Runtime](docs/deployment/kubernetes-training-runtime.md)
+
+Full governed K8s Acceptance and actual company-environment Production Operations
+remain separate work packages. Local qualification is not production approval.

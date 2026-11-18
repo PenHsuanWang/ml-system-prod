@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-supervisor
+spec:
+  template:
+    spec:
+      containers:
+      - name: supervisor
+        env:
+        - name: ML_TRAINING_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ML_TRAINING_POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: ML_TRAINING_CONTAINER
+          value: supervisor
+        args:
+        - taskiq
+        - worker
+        - bootstrap.ml_worker:broker
+        - --workers
+        - '1'
+        - --max-async-tasks
+        - '1'
+        - --ack-type
+        - manual
+        - --wait-tasks-timeout
+        - '60'
+        - --shutdown-timeout
+        - '90'
+        volumeMounts:
+        - name: kubernetes-api
+          mountPath: /run/kubernetes
+          readOnly: true
+      volumes:
+      - name: kubernetes-api
+        projected:
+          defaultMode: 288
+          sources:
+          - serviceAccountToken:
+              path: token
+              expirationSeconds: 3600
+          - configMap:
+              name: kube-root-ca.crt
+              items:
+              - key: ca.crt
+                path: ca.crt
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-control
+spec:
+  template:
+    spec:
+      containers:
+      - name: control
+        env:
+        - name: ML_TRAINING_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: ML_TRAINING_POD_UID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.uid
+        - name: ML_TRAINING_CONTAINER
+          value: control

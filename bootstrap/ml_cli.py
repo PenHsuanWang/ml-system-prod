@@ -55,10 +55,15 @@ def control(settings: MLSettings, once: bool) -> None:
     executor = serving_executor(settings)
     controller = DeploymentController(components.deployments, executor)
     supervisor = components.supervisor()
+    from src.application.training.reconciliation import TrainingReconciler
+    reconciler = TrainingReconciler(components.training, supervisor, settings.stale_after)
     try:
         while True:
             components.training.expire_queued()
-            for claim, ref in components.training.recoverable(settings.stale_after):
+            if settings.training_backend == "pod":
+                reconciler.tick()
+            for claim, ref in (() if settings.training_backend == "pod" else
+                               components.training.recoverable(settings.stale_after)):
                 try:
                     supervisor.monitor(claim, ExecutionHandle(**json.loads(ref)))
                 except Exception:

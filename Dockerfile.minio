@@ -3,10 +3,12 @@
 # https://github.com/minio/minio/releases/tag/RELEASE.2025-10-15T17-29-55Z
 # https://github.com/minio/mc/releases/tag/RELEASE.2025-08-13T08-35-41Z
 FROM golang:1.26.10-alpine AS build
+RUN apk add --no-cache git ca-certificates
 ENV CGO_ENABLED=0 GOTOOLCHAIN=local
 ARG MINIO_COMMIT=9e49d5e7a648f00e26f2246f4dc28e6b07f8c84a
 ARG MC_COMMIT=7394ce0dd2a80935aded936b09fa12cbb3cb8096
-# Go resolves the immutable commits through its module proxy/checksum database.
+# Go resolves the immutable commits through its module proxy/checksum database;
+# Git is required when a cold proxy lookup falls back to the source repository.
 # Both binaries share the module cache; no unversioned source or vendor image.
 RUN go install -trimpath -ldflags="-s -w -X github.com/minio/minio/cmd.Version=2025-10-15T17:29:55Z -X github.com/minio/minio/cmd.ReleaseTag=RELEASE.2025-10-15T17-29-55Z -X github.com/minio/minio/cmd.CommitID=${MINIO_COMMIT} -X github.com/minio/minio/cmd.ShortCommitID=9e49d5e7a648 -X github.com/minio/minio/cmd.CopyrightYear=2025" "github.com/minio/minio@${MINIO_COMMIT}" \
     && mkdir -p /licenses/minio \

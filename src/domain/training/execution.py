@@ -12,6 +12,7 @@ class ExecutionHandle:
 class ExecutionObservation:
     state: str
     exit_code: int | None = None
+    reason: str | None = None
 
 
 @dataclass(frozen=True)

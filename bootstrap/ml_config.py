@@ -32,6 +32,11 @@ class MLSettings:
     serving_backend: str = "local"
     serving_namespace: str = ""
     serving_image_repository: str = ""
+    training_backend: str = "local"
+    training_namespace: str = ""
+    training_pod_name: str = ""
+    training_pod_uid: str = ""
+    training_container: str = ""
     ebm_quality_policy_json: str = field(default="", repr=False)
 
     @classmethod
@@ -50,7 +55,10 @@ class MLSettings:
                  "ebm_quality_policy_json": "ML_EBM_QUALITY_POLICY_JSON",
                  "serving_backend": "ML_SERVING_BACKEND",
                  "serving_namespace": "ML_SERVING_NAMESPACE",
-                 "serving_image_repository": "ML_SERVING_IMAGE_REPOSITORY"}
+                 "serving_image_repository": "ML_SERVING_IMAGE_REPOSITORY",
+                 "training_backend": "ML_TRAINING_BACKEND", "training_namespace": "ML_TRAINING_NAMESPACE",
+                 "training_pod_name": "ML_TRAINING_POD_NAME", "training_pod_uid": "ML_TRAINING_POD_UID",
+                 "training_container": "ML_TRAINING_CONTAINER"}
         defaults = cls()
         for name, variable in names.items():
             if variable not in os.environ:
@@ -64,6 +72,14 @@ class MLSettings:
         return result
 
     def validate(self) -> None:
+        if self.training_backend not in {"local", "pod"}:
+            raise ValueError("Unknown Training backend")
+        if self.training_backend == "pod" and self.role in {"supervisor", "control"}:
+            if (re.fullmatch(r"[a-z0-9][-a-z0-9]{0,62}", self.training_namespace) is None
+                    or re.fullmatch(r"[a-z0-9][-a-z0-9.]{0,252}", self.training_pod_name) is None
+                    or re.fullmatch(r"[a-f0-9-]{36}", self.training_pod_uid) is None
+                    or self.training_container not in {"supervisor", "control"}):
+                raise ValueError("Pod Training requires explicit downward identity")
         if self.serving_backend not in {"local", "kubernetes"}:
             raise ValueError("Unknown Serving backend")
         if self.serving_backend == "kubernetes" and (
