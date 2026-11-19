@@ -23,6 +23,7 @@
 
 | 場景 | 操作入口 |
 | --- | --- |
+| K8s 整體拓撲、C4 圖、Pod／Service／Volume／Network 與本地快照 | [Kubernetes 架構與 Minikube 現況](deployment/kubernetes-architecture.md) |
 | K8s overlay 選擇與適用範圍 | [部署宣告索引](../deploy/k8s/README.md) |
 | 外部基礎服務、單機／VM 部署 | [Day-1 與 Go／No-Go](deployment/day1-deployment-runbook.md) |
 | Ownership、故障對帳、完整 Compose 回歸、備份還原 | [ML 維運手冊](ml-runbook.md) |

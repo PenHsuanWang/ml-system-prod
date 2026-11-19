@@ -4,6 +4,10 @@ Foundation, Storage Contracts, Serving Runtime, Training Runtime and governed
 Acceptance are implemented. Start with [implementation and qualification status](../../docs/implementation-status.md)
 for the executed source/image evidence and the remaining Production Operations work.
 
+For the C4 container/deployment views, Pod and Service inventory, storage, network,
+RBAC and the dated local Minikube snapshot, read the
+[Kubernetes architecture guide](../../docs/deployment/kubernetes-architecture.md).
+
 | Declaration | Runtime / purpose | Procedure |
 | --- | --- | --- |
 | `base/`, `infrastructure/minikube/`, `overlays/minikube/` | Fresh one-node infrastructure, migration and idle application roles; local execution adapters | [Foundation](../../docs/deployment/kubernetes-staging-runbook.md) |

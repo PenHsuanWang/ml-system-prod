@@ -74,8 +74,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 14162,
-      "sha256": "6e82775df339a376aabad715b6063d8d6518839133bffb424d16f0065d4dbc17"
+      "bytes": 14605,
+      "sha256": "4ea0dd00b9bbba55ed07c9ee1dc4a4e64597c78d137aea1ad21f300f31989add"
     },
     {
       "path": "REVIEW-P1-P2-REMEDIATION.md",
@@ -269,8 +269,8 @@
     },
     {
       "path": "deploy/k8s/README.md",
-      "bytes": 2575,
-      "sha256": "1d126faa8decbcc993e73a1c724b1d59e34e5f2d4b4f728140baf73fda896395"
+      "bytes": 2796,
+      "sha256": "ecf7bf1a4911eff10f603b8b5ba9afaa5b22b0714c8ae0f885fd759caf863182"
     },
     {
       "path": "deploy/k8s/base/configmap.yaml",
@@ -439,8 +439,8 @@
     },
     {
       "path": "docs/README.md",
-      "bytes": 4936,
-      "sha256": "7b177b8db0c079aec44781c5a008ff0e53b91cc7fcb2af3b4c3fc0f323f210a3"
+      "bytes": 5097,
+      "sha256": "f333fa5e48eab304761b029c870292f7a235ba022c7bbef71883adf0c5f126b3"
     },
     {
       "path": "docs/adr/014-implementation-baseline.md",
@@ -484,8 +484,8 @@
     },
     {
       "path": "docs/architecture.md",
-      "bytes": 3686,
-      "sha256": "3db202fa91bc8db14a87eac17f4203d633989ef14760154c5714c57eda01e9f2"
+      "bytes": 3881,
+      "sha256": "c170af1ffd15a01a1b96d27228b24970a6c946f70d5bf0a12ef6e826c15f59eb"
     },
     {
       "path": "docs/configuration-reference.md",
@@ -509,8 +509,13 @@
     },
     {
       "path": "docs/deployment/kubernetes-acceptance.md",
-      "bytes": 6817,
-      "sha256": "188d2a24498ee16423fcd0fe9f16e0d5d089b086d979e3341c52089ed5d006d7"
+      "bytes": 7081,
+      "sha256": "11537bac27e2f191457710406221d27b42f4758d2463f23b5501056d425ac7dc"
+    },
+    {
+      "path": "docs/deployment/kubernetes-architecture.md",
+      "bytes": 25101,
+      "sha256": "fdae18558c54eb2f6120e8791ccd3e994d922bf8f5497ecf282ef5ab48ab1ae9"
     },
     {
       "path": "docs/deployment/kubernetes-serving-runtime.md",

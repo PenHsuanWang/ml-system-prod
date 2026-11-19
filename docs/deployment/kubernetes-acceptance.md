@@ -6,6 +6,10 @@ new `ml-k8s-acceptance` namespace. Earlier qualification namespaces and PVCs
 are retained. This is a synthetic-data engineering gate, not production approval. See the
 [executed review and immutable evidence](../reviews/k8s-acceptance-2026-11-18.md).
 
+For the combined C4 topology, role-to-Pod mapping, Services, PVCs, networking and
+the dated local cluster snapshot, start with the [Kubernetes architecture guide](kubernetes-architecture.md).
+That local snapshot is distinct from the fresh CI qualification below.
+
 ## Build and prepare
 
 Start the existing local `minikube` profile/context. Build from a committed,

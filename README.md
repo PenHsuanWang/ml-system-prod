@@ -161,6 +161,11 @@ extension contracts, retained evidence and historical design references.
 
 ## Kubernetes migration
 
+目前 K8s 採用分離的 Management、Relay、Pod-aware Training、Control／Gateway 共用
+Pod，以及獨立的固定版本 Serving。請先讀 [Kubernetes 架構與 Minikube 運行現況](docs/deployment/kubernetes-architecture.md)：
+內含 C4 Container／Deployment 圖、Pods／Services／DNS／NetworkPolicy、PVC／暫存空間、
+Secret／RBAC 與資源設定，並區分 PR #11 最終宣告和本地保留的驗收環境快照。
+
 The six-work-package roadmap is defined in [ADR-017](docs/adr/017-kubernetes-runtime-boundaries.md).
 Foundation, Storage Contracts, Serving Runtime and Pod Training Runtime have
 local Minikube qualification. Governed Kubernetes Acceptance combines their runtime

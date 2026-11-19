@@ -62,6 +62,9 @@ local／Compose／外部服務 VM profile 保留既有執行方式。K8s profile
 及 Pod-aware Training，保留同一套 SQL、品質與路由治理。各 profile 的啟動與故障
 驗收以 [部署索引](README.md#部署回歸與維運) 為準。
 
+K8s 的 C4 Container／Deployment 視圖、Pods／Services／Volumes／NetworkPolicy
+與有日期的 Minikube 運行快照見 [Kubernetes 架構導覽](deployment/kubernetes-architecture.md)。
+
 底層 Backend 的通用契約另見 [substrate 設計](software-design.md)、
 [通用擴充教學](developer-guide.md) 與 [術語](glossary.md)。原始範本設計不再用來
 宣稱 ML／K8s 尚未實作；企業環境、模型品質與 production 核准仍須獨立證據。
