@@ -2,20 +2,13 @@
 
 Date: 2026-11-08
 
-Status: **Implemented for the engineering baseline — formal acceptance and external qualification pending**
+Status: Implemented and merged as an engineering baseline; approved external
+Warehouse qualification and production acceptance remain pending.
 Scope: Data Ingress extension; existing Training, Serving and Dataset contracts remain separate.
 
-This ADR records the selected implementation for the current feature branch. It
-does not mark ADR-015 accepted, authorize production deployment or replace the
-final Tech Lead review.
-
-2026-11-10 integration update: the maintainer requested source-completion review
-and integration of the completed modules before site qualification. The current
-PR is therefore assessed for an engineering-baseline merge, with external
-qualification retained as an explicit uncompleted release requirement. This
-updates the earlier Draft-until-live-acceptance integration constraint; it does
-not mark DBX-09 executed, approve this ADR formally or authorize production use.
-See the [merge assessment](../reviews/merge-readiness-2026-11-10.md).
+This ADR records the selected implementation. Its technical integration does not
+mark DBX-09 executed or authorize production use. Current capabilities and
+qualification evidence are maintained in [implementation status](../implementation-status.md).
 
 ## Context
 

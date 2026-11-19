@@ -1,5 +1,8 @@
 # Pod Training Runtime qualification — 2026-11-18
 
+> Historical executed qualification record. PR #10 is now merged; current scope and
+> pending production gates: [implementation status](../implementation-status.md).
+
 Baseline: master `a5c3847` after merged PR #9.
 Feature: `feature/k8s-training-runtime`, Draft PR #10.
 

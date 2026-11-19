@@ -1,76 +1,70 @@
-# Implementation status
+# 實作與驗收狀態
 
-Updated: 2026-11-10. This page describes the implemented CPU ML and batch
-ingestion baseline. Repository integration, target-environment qualification and
-the remaining EBM work packages are separate decisions.
+更新：2026-11-19。基準為已合併 PR #11 的 master `55dd226`。
+本頁集中記錄現行能力與剩餘工作；設計文件、測試結果與正式環境核准分開判定。
 
-## Current implementation and evidence
+## 已交付與證據
 
-The current PR implements the CPU MLP/EBM training and fixed-version Serving
-paths, the provider-neutral Data Ingress framework, File Batch acquisition and
-the Databricks SQL Warehouse batch adapter. No unfinished concrete runtime
-stub or missing integration was found in the source-completion review.
-See the [merge assessment](reviews/merge-readiness-2026-11-10.md) for scope and
-the explicitly deferred work.
+- CPU MLP／EBM：不可變 Dataset、受控 Recipe／Workload Registry、子程序訓練、
+  checkpoint、精確 Bundle 評估、MLflow／S3、明確 Approval、固定版本部署與預測。
+- Data Ingress：File 與 Databricks SQL Warehouse batch adapter、核准來源與模板、
+  OAuth M2M、固定 Delta version、有界 JSONL、持久發布與故障對帳。
+  Raw Snapshot 不會自動變成訓練資料；EBM DatasetBuilder 是明確的 operator 步驟。
+- 治理與協調：SQL 是 Job／Attempt／Outbox／Evaluation／Approval／Route 的權威；
+  Redis 是 technical snapshot，RabbitMQ 是傳輸。取消、deadline、drain 與重送保留 fencing。
+- 部署：既有 local／Compose／外部服務 VM profile，以及 opt-in K8s 原生 Serving、
+  Pod-aware Training 與完整受治理生命週期驗收。
 
-At audited source `7a175ad0a2da02fcc70962d297b032a63a58db0d`, both the
-[push workflow](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/42742534571)
-and [PR workflow](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/42742540971)
-passed every required job. Each independent Backend report recorded
-**FUNCTIONAL_BACKEND_ACCEPTED: 963 passed, zero failures/errors/skips** on
-Python 3.12.16 / Torch 2.6 CPU. Each SQLite/PostgreSQL contract matrix recorded
-971 passed and two separate opt-in skips. The protected Databricks live job was
-not invoked; it is not included in Backend acceptance.
+PR #11 的最終 source `43b660626dd01cb365a9c5864a509487bb9a619f` 已完成：
 
-The actual unified image and private non-root entrypoint were built and
-verified. Real-service Backend CI covers PostgreSQL, MongoDB, RabbitMQ, Redis,
-MLflow/S3, training, evaluation, manual model approval, deployment, prediction,
-rollback and identity revocation. These are isolated test services, not the
-user's production endpoints.
+| 驗收 | 實際結果 |
+| --- | --- |
+| [K8s governed acceptance #7](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/44233983953) | 新叢集從零執行 12 項主檢查，含 7 項 Training 故障情境；無 checkpoint continuation |
+| [ML／Compose #96](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/44233983865) | `FUNCTIONAL_BACKEND_ACCEPTED`；1169 passed、零 failure／error／skip、無 blockers |
+| [Foundation #20](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/44233983780) | profile、Secret／CA bootstrap 與邊界通過 |
 
-| Area | Implemented | Remaining qualification / separate work |
+同一實作的 [Git 留存證據](evidence/k8s-acceptance-2026-11-18/qualification.json)
+固定 source `fe10413`、映像與原始 artifact 雜湊；其後的 README／文件／證據 commit
+另由上述最終 CI 完整重跑。這些是合成資料、隔離服務與單節點 Minikube 的工程證據。
+完整範圍與限制見 [Acceptance review](reviews/k8s-acceptance-2026-11-18.md)。
+
+## 六個 K8s 工作包
+
+| 工作包 | 狀態 | 規範／操作 |
 | --- | --- | --- |
-| Architecture | pinned template, role factories, immutable DTOs and narrow Protocol ports | source boundaries and strict typing pass; new architectural extensions need their own review |
-| Jobs | atomic SQL idempotency/admission/attempt/outbox, ownership fencing, cancellation and recovery | SQLite/PostgreSQL contracts pass; production load/capacity remains unqualified |
-| Transport | confirmed RabbitMQ publication, manual Taskiq Receiver and Redis ACK evidence | actual Receiver integration passes; site broker permissions/operations still require qualification |
-| Training/data | CPU MLP and EBM child processes, immutable tenant datasets, fixed splits, train-only transforms, metrics and safe epoch resume | representative PoC numerical parity/quality and production resource limits need approved data |
-| Registry/governance | immutable bundles, MLflow/local adapters, exact-bundle evaluation, durable ERROR/recovery, manual Approval binding | test MLflow/S3 roundtrips pass; the supplied external server needs its own TLS/permission/artifact qualification |
-| Serving/rollout | verified fixed-version runtimes, golden warm-up, bounded physical execution, provenance, fenced routes, generation rollback/drain | actual multi-role lifecycle passes; site ingress, SLOs and load/restore evidence remain open |
-| Raw ingress | Source Registry, File/Databricks adapters, OAuth M2M, fixed Delta SQL, bounded JSONL, private staging, durable publication/reconciliation and cleanup | live Databricks plus PostgreSQL gate DBX-09 has executable tests but no approved external fixture/result |
-| Deployment/operations | explicit migrations, six long-lived roles, one-shot operator, standalone external-service profile, private role secrets, CA/reader propagation, image preflight, metrics/tracing and runbooks | trusted Registry release digest/SBOM, approved environment, capacity, security, backup/restore and Go-Live sign-off |
+| Foundation | PR #7 已合併 | [Secret／CA 與初始化](deployment/kubernetes-staging-runbook.md) |
+| Storage Contracts | PR #8 已合併 | [掛載、完整性與故障](deployment/kubernetes-storage-contracts.md) |
+| Serving Runtime | PR #9 已合併 | [位址、ACTIVE 恢復與路由](deployment/kubernetes-serving-runtime.md) |
+| Training Runtime | PR #10 已合併 | [Pod identity、ownership、停止與 ACK](deployment/kubernetes-training-runtime.md) |
+| K8s Acceptance | PR #11 已合併 | [完整治理生命週期／故障、獨立 Compose 回歸](deployment/kubernetes-acceptance.md) |
+| Production Operations | 尚未完成 | 公司叢集與 CSI、多節點／partition fencing、最小權限、TLS／MLflow、備份還原、容量／告警／SLO |
 
-Use the [Day-1 runbook](deployment/day1-deployment-runbook.md) for deployment and
-the [current delivery evidence](reviews/day1-deployment-2026-11-10.md) for the
-implemented profile and local TLS/RBAC lab. That lab uses real MLflow,
-PostgreSQL and S3 with a test-only authorization gateway; it does not qualify
-the user's external services. All production acceptance flags remain false.
+## 尚未完成或需獨立核准
 
-## Explicitly unfinished follow-up scope
+- 真實 Databricks Warehouse／企業 MLflow 的身份、權限、TLS、資料與 artifact 資格。
+  protected `databricks-live` 依核准 fixture 選用；略過不算外部驗收成功。
+- 核准企業資料的 Notebook 數值 parity、代表性品質政策與人工模型品質核准。
+- 自動 ingestion-to-build orchestration、Databricks Remote Executor、Kafka streaming。
+- CalibrationSnapshot、Temporal／as-of 與 rolling-origin、calibrated Energy／RUL、
+  Batch Analysis／Report Store；見 [EBM 後續計畫](ebm-integration-plan.md)。
+- Production Operations 與正式 Go-Live；所有現有 `production_accepted` 旗標仍為 false。
+  GPU、DDP、HPO 不在目前 CPU 工作負載範圍。
 
-Raw Snapshots and ML DatasetVersions remain separate. An explicit operator-only EBM
-Raw-to-Feature/DatasetBuilder is implemented, but automatic ingestion-to-build orchestration is
-not. Databricks Remote Executor,
-CalibrationSnapshot, calibrated Energy/RUL, Batch Analysis/Report Store and
-as-of/rolling-origin qualification are also separate, unfinished work packages.
-GPU, DDP, HPO and multi-host/Kubernetes deployment are outside the CPU MVP.
+## 驗證入口
 
-The implemented EBM path serves neural outputs from precomputed Spectrograms.
-It does not implement the entire Notebook's calibrated decision pipeline.
-See [EBM implementation/usage](ebm-implementation-status.md) and the
-[full integration plan](ebm-integration-plan.md) for those boundaries.
+使用 Python 3.12／Torch 2.6 CPU 目標映像，從 repository root 執行。
+品質工具的實際 scope 與依賴以 [ML workflow](../.github/workflows/ml-ci.yml) 為準：
 
-## Historical evidence
+```sh
+python scripts/check_boundaries.py
+python scripts/check_ingestion.py
+python scripts/check_deployment.py
+python scripts/check_serving_runtime.py
+python scripts/check_training_runtime.py
+python scripts/check_k8s_acceptance.py
+python scripts/verify_ml_acceptance.py --output-dir var/acceptance/local
+```
 
-The [2026-10-29 Backend report](backend-acceptance-2026-10-29.md) records the
-earlier 217-pass/three-skip result. The
-[2026-10-31 EBM evidence](evidence/ebm-2026-10-31/result.json) records 468 passes
-and three skips on the legacy Python 3.10 / Torch 2.0.1 host with its selector
-workaround. Those dated host limitations and counts are historical; current
-CI uses the supported Python 3.12 / Torch 2.6 CPU image and ordinary event loop.
-
-The [2026-11-08 ingestion delivery](reviews/ingestion-stabilization-databricks-2026-11-08.md)
-and [2026-11-09 Actions repairs](reviews/actions-failure-fixes-2026-11-09.md)
-retain earlier findings and execution records. Their then-current Draft and
-environment status should not be read as the current source-completion verdict.
-Production sign-off, representative model quality, numeric SLOs, retention and
-RPO/RTO are still not inferred from engineering fixtures or green CI.
+本機檢查不等同完整服務驗收。完整 Compose 命令與判讀見
+[維運／回歸手冊](ml-runbook.md#完整-compose-回歸)，K8s 命令見
+[Acceptance 手冊](deployment/kubernetes-acceptance.md)。不得對 production 資料執行合成驗收。

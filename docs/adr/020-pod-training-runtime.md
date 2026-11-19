@@ -1,7 +1,7 @@
 # ADR-020: Pod-aware Training Runtime
 
 Date: 2026-11-18
-Status: Proposed for review; local runtime qualification is not production approval.
+Status: Implemented and merged (PR #10); local runtime qualification is not production approval.
 Baseline: master `a5c3847f06deba4c4822556e98b8151b82453dff`, after PR #9.
 
 ## Decision and preserved contracts

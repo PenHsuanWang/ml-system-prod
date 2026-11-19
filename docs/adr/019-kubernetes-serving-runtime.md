@@ -1,7 +1,7 @@
 # ADR-019: Kubernetes Serving Runtime
 
 Date: 2026-11-17
-Status: Proposed for review; Minikube qualification is not production approval.
+Status: Implemented and merged (PR #9); Minikube qualification is not production approval.
 Baseline: master `3150c041c7ec3f82036cbc9d0d08e7cb09e2d1b1` after PR #8.
 
 ## Decision

@@ -1,6 +1,6 @@
 # ADR-021: Governed Kubernetes acceptance and Compose regression
 
-Status: Accepted for implementation in Kubernetes work package 5.
+Status: Implemented and merged (PR #11); synthetic engineering acceptance only. Production acceptance pending.
 
 ## Decision
 

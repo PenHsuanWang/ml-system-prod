@@ -1,37 +1,53 @@
-"""Regenerate the reviewable source manifest, excluding secrets and runtime data."""
+"""Build/check the source manifest from Git-tracked files, excluding local data."""
 
+import argparse
 import hashlib
 import json
-import os
+import subprocess
 from pathlib import Path
 
-EXCLUDED_DIRECTORIES = frozenset({".git", ".agents", ".codex", ".aws", ".venv", "var",
-                                  "work", "__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "node_modules",
-                                  "build", "dist", "htmlcov"})
+ROOT = Path(__file__).resolve().parents[1]
 
 
-def main() -> None:
-    root = Path(__file__).resolve().parents[1]
+def manifest(root=ROOT):
+    paths = (
+        subprocess.check_output(["git", "ls-files", "--cached", "-z"], cwd=root)
+        .decode()
+        .split("\0")
+    )
     entries = []
-    for directory, folders, names in os.walk(root):
-        folders[:] = sorted(name for name in folders if name not in EXCLUDED_DIRECTORIES
-                            and not name.endswith(".egg-info") and not (Path(directory)/name).is_symlink())
-        for name in sorted(names):
-            path = Path(directory)/name
-            relative = path.relative_to(root).as_posix()
-            if (relative == "FILE-MANIFEST.json" or path.is_symlink() or
-                name.endswith((".pyc", ".db", ".db-shm", ".db-wal", ":Zone.Identifier")) or
-                name in {".coverage", ".DS_Store"} or
-                    name.startswith(".env") and not name.endswith(".example")):
-                continue
-            data = path.read_bytes()
-            entries.append({"path": relative, "bytes": len(data),
-                            "sha256": hashlib.sha256(data).hexdigest()})
-    value = {"package": "ML System EBM CPU MVP source and documentation",
-             "document_status": "CPU MVP implemented; local smoke evidence only; target/production qualification pending",
-             "files": sorted(entries, key=lambda entry: entry["path"])}
-    (root/"FILE-MANIFEST.json").write_text(json.dumps(value, indent=2)+"\n", encoding="utf-8")
-    print(f"Manifest updated: {len(entries)} files")
+    for name in sorted(set(paths)):
+        if not name or name == "FILE-MANIFEST.json":
+            continue
+        path = root / name
+        if not path.is_file() or path.is_symlink():
+            continue
+        if name.startswith(".env") and not name.endswith(".example"):
+            raise ValueError("Private environment file must not be tracked")
+        data = path.read_bytes()
+        entries.append(
+            {"path": name, "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+        )
+    return {
+        "package": "ml-system-ebm Git-tracked source and documentation",
+        "document_status": "Capabilities and qualification scope: docs/implementation-status.md",
+        "files": entries,
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true")
+    args = parser.parse_args()
+    expected = manifest()
+    path = ROOT / "FILE-MANIFEST.json"
+    if args.check:
+        if json.loads(path.read_text()) != expected:
+            raise SystemExit("Source manifest is stale; run python scripts/update_manifest.py")
+        print(f"Manifest valid: {len(expected['files'])} tracked files")
+    else:
+        path.write_text(json.dumps(expected, indent=2) + "\n")
+        print(f"Manifest updated: {len(expected['files'])} tracked files")
 
 
 if __name__ == "__main__":

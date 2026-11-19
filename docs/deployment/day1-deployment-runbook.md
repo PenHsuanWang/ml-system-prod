@@ -10,8 +10,8 @@ Controller 的 network namespace。多主機、Kubernetes、NFS 與自動 Raw-to
 `compose.ml.yaml` 合併**。它不建立內建 MLflow、MinIO 或基礎設施服務。根目錄
 README 的 `create_ml_env.py` 與 `up --build` 則是參考開發環境的操作。
 
-本文件提供可重複執行的程序，不代表外部環境已通過驗收。2026-11-09 的
-`5ec1c6f` 已通過參考 Backend CI 與本地完整 864-case Backend 驗收；真實 Databricks、
+本文件提供可重複執行的程序，不代表外部環境已通過驗收。最新參考 Backend／K8s
+source、測試數與證據集中於 [實作狀態](../implementation-status.md)；真實 Databricks、
 這次 release 的外部 MLflow、production 容量與回復能力仍須取得自己的執行證據。
 新部署 profile 的實作、隔離驗證與仍待完成的現場資格見
 [2026-11-10 部署交付紀錄](../reviews/day1-deployment-2026-11-10.md)；參考環境的既有
@@ -49,6 +49,9 @@ TLS ingress／network policy，再驗證實際使用者會經過的路徑。
 交付的 private role JSON，不貼到聊天、PR、command arguments 或公開 logs。
 
 主要設定：
+
+所有 Python 預設值、Training／Ingestion timeout 關係與 role entrypoint 的差異見
+[現行設定參考](../configuration-reference.md)；實際生效值須核對下方渲染後 profile。
 
 | 設定 | 要求 |
 | --- | --- |
@@ -357,6 +360,26 @@ PY
 **Raw Snapshot 不會自動變成 ML DatasetVersion。** 本步使用事先已核准並註冊、
 tenant／recipe／schema 相符的 DatasetVersion；缺少它時是 No-Go，不能把新取回的
 Raw Snapshot ID 填進 Training API。
+
+若本次使用已發布的 EBM RawSnapshots，先依
+[DatasetBuilder 契約與完整 CLI](../ebm-implementation-status.md#rawsnapshot-datasetbuilder)
+執行明確建置，再由 reviewer 核對 DatasetVersion 與 Builder receipt／lineage。
+在本節既有 `compose` shell function 下，使用相同 App DB、tenant、Raw／Dataset roots
+及 runtime UID 的 operator，經原有 secret-loading entrypoint 執行：
+
+```sh
+compose --profile ops run --rm --no-deps operator \
+  python -m bootstrap.dataset_builder_cli \
+  --tenant-id '<tenant>' --dataset-id '<dataset>' --version '<version>' \
+  --recipe-id '<raw-recipe-id>' --segment-id 1 --split-seed 43 \
+  --fdc-snapshot-id '<fdc-id>' --fdc-manifest-digest '<fdc-sha256>' \
+  --wafer-snapshot-id '<wafer-id>' --wafer-manifest-digest '<wafer-sha256>'
+```
+
+所有 placeholder、recipe／segment／split 與兩個 digest 都須換成核准值。保存輸出的
+content／receipt digest；Builder 不啟動訓練或人工核准。MLP／既有 EBM 外部資料匯入
+使用 [README](../../README.md#real-local-training)／EBM 手冊的明確 import CLI，
+同樣須經該 operator entrypoint，不能使用 dev demo 作為 production 資料建置。
 
 以 scientist 帳號提交 `POST /api/v1/training/jobs`，帶唯一、已記錄的 Idempotency-Key：
 

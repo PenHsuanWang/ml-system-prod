@@ -5,12 +5,17 @@ of the six-PR migration. Read [ADR-017](../adr/017-kubernetes-runtime-boundaries
 before running commands. ACTIVE-serving recovery, cross-Pod training recovery,
 real CSI qualification, HA and production readiness are not delivered here.
 
+This boundary applies to the Foundation profile. Native Serving, Pod Training and
+combined Acceptance are now implemented as opt-in overlays; select the current
+[deployment profile](../../deploy/k8s/README.md) before following a runbook.
+
 ## 1. Prerequisites and review
 
 Use Linux/WSL2, Docker, a running `minikube` profile, kubectl with Kustomize,
 OpenSSL, and Python 3.11+ with PyYAML (`python -m pip install 'PyYAML>=6,<7'`).
-The tested node has 2 CPUs and approximately 10 GB RAM. Reserve disk space for
-images and PVCs. Infrastructure is single replica with local hostpath storage.
+The original Foundation smoke used 2 CPUs and approximately 10 GB RAM; this is a
+historical observation, not a minimum or capacity qualification for full Acceptance.
+Reserve disk space for images and PVCs. Infrastructure is single replica with local hostpath storage.
 The application helper intentionally has no production-context option.
 
 ```sh
@@ -70,6 +75,12 @@ private Kustomize overlay. It refuses overwrites. All role private values come
 from files, not `secretKeyRef` environment injections. Real Secrets, CA private
 keys and rendered private manifests must remain outside Git and shared logs.
 The public JSON examples are deliberately invalid placeholders.
+
+Init copies projected Secret/CA files into a UID-owned private volume because the
+production loader rejects symlinks. Running Pods retain their private copies;
+changing a Secret does not rotate those credentials in place. Production rotation,
+expiry alerts and coordinated Pod replacement require the site operations plan.
+See the [configuration layers](../configuration-reference.md#profile-與設定層).
 
 ## 3. Start the fresh namespace
 

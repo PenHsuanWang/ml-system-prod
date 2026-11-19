@@ -1,13 +1,11 @@
 # EBM end-to-end verification
 
-Executed evidence: [2026-11-13 machine-readable report](evidence/ebm-e2e-2026-11-13/report.json).
-The isolated full Backend runner completed **1,004 passed, zero failures/errors/skips**, including
-the final live EBM case. Python 3.12.16 / Torch 2.6.0 CPU were verified. Cached test images with
-read-only current source mounts were used locally; CI rebuilds the repository images. The
-report records both the tested local source commit and the published equivalent commit/tree.
-Real enterprise-data and production qualification remain pending.
+本頁保留可重跑的獨立 EBM raw-to-prediction 流程。
+[原始 2026-11-13 報告](evidence/ebm-e2e-2026-11-13/report.json) 固定當時 source 與
+實際環境；當前完整 Compose／K8s 結果集中於 [實作狀態](implementation-status.md)。
+企業資料與 production 資格仍待獨立核准。
 
-PR #4 extends the disposable Backend acceptance environment from published RawSnapshots
+The implemented EBM gate exercises the disposable Backend acceptance environment from published RawSnapshots
 through DatasetBuilder, tenant DatasetVersion, Management HTTP submission, durable Outbox,
 RabbitMQ/Taskiq Worker and training child, MLflow/S3, frozen-bundle evaluation, an explicit
 test reviewer, Deployment Controller, fenced ACTIVE route, and HTTP Prediction Gateway.

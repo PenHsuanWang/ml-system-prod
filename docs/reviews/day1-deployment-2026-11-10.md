@@ -1,5 +1,8 @@
 # Day-1 deployment implementation and verification — 2026-11-10
 
+> Historical executed qualification record. PR #1 is now merged; current scope and
+> pending production gates: [implementation status](../implementation-status.md).
+
 This delivery addresses the Day-1 review of PR #1 at `5ec1c6f`. It preserves the
 existing ports, application services and model lifecycle. The deployment target
 is a single Linux host with approved external PostgreSQL, MongoDB, RabbitMQ,
@@ -111,6 +114,6 @@ online RUL feasibility remain the separately documented workload packages;
 they are not implied by this deployment change.
 
 Use the [Day-1 runbook](../deployment/day1-deployment-runbook.md) for the actual
-deployment sequence. The earlier [Actions repair record](actions-failure-fixes-2026-11-09.md)
+deployment sequence. The earlier [Actions repair record](../implementation-status.md)
 contains the prior `5ec1c6f` Backend qualification. Current-head CI results are
 recorded on PR #1; historical green runs do not qualify later code.

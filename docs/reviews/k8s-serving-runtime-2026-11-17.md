@@ -1,5 +1,8 @@
 # Serving Runtime qualification — 2026-11-17
 
+> Historical executed qualification record. PR #9 is now merged; current scope and
+> pending production gates: [implementation status](../implementation-status.md).
+
 Baseline: merged PR #8 / master `3150c04`.
 Feature branch: `feature/k8s-serving-runtime`; Draft PR #9.
 

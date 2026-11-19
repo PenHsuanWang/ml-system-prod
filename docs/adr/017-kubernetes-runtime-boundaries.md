@@ -2,7 +2,7 @@
 
 Date: 2026-11-17
 
-Status: Proposed for review; foundation implementation only, production acceptance pending.
+Status: Implemented and merged (PR #7); subsequent engineering qualification is recorded in ADR-018–021. Production acceptance pending.
 
 ## Context
 

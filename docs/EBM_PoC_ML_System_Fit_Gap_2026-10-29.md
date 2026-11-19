@@ -1,10 +1,14 @@
 # EBM PoC Notebook 與 PyTorch ML System 架構 Fit–Gap 分析
 
-> 2026-10-31 實作更新：本文保留原始審查基線。本機 EBM 神經網路元件與平台整合現已實作，實際能力及未完成工作見 [目前實作狀態](ebm-implementation-status.md)；Databricks、校正／RUL、真實 Notebook 對照與目標環境資格仍待完成。
+> 歷史原稿分析：以下的程式差距是 2026-10-29 的快照，不是目前缺陷清單。
+> Neural、Databricks Batch、DatasetBuilder、完整 Compose／K8s 工程整合已交付；
+> 現況見 [實作狀態](implementation-status.md)，未完成的數值 parity、Calibration／
+> Temporal／Energy／RUL 契約見 [後續計畫](ebm-integration-plan.md)。保留本文是為了
+> 原始 Notebook 的數值語意與來源追溯，不再複製一份現行實作規範。
 
 > 日期：2026-10-29  
 > 修訂：依目前程式補正；整合實作仍待完成。  
-> 分析基礎：[Notebook](../EBM_final_forline.ipynb)（14 個 Cells）、[HLD v1.1](pytorch-ml-system-hld.md)、[LLD v1.3](pytorch-ml-system-lld.md)、[ADR-014](adr/014-implementation-baseline.md) 與目前程式碼。根目錄 HLD/LLD 為歷史副本。  
+> 分析基礎：本地原始 Notebook `EBM_final_forline.ipynb`（未納入 Git）（14 個 Cells）、[HLD v1.1](pytorch-ml-system-hld.md)、[LLD v1.3](pytorch-ml-system-lld.md)、[ADR-014](adr/014-implementation-baseline.md) 與目前程式碼。根目錄 HLD/LLD 為歷史副本。
 > 程式基準：`a88f6ff6d1c19987c7cbf4b1f90280d19f83786a`；Notebook SHA-256：`6559bcd463a79b4b9697a7d3916e110851d02a05ea3bbbb8e96d4d9f0448fba9`。  
 > 方法：Notebook JSON / Python AST 靜態檢視、既有儲存輸出摘要、與目前程式及設計契約對照。**未執行** Spark SQL、PyTorch 訓練、MLflow 整合、模型載入、效能測試或 E2E；既有驗收記錄不代表本次重跑。  
 > 文件性質：架構相容性審查；本報告不代表 PoC 模型已通過正式驗收或已具備線上推論能力。
@@ -67,15 +71,15 @@ Notebook 保留已存執行輸出（如資料快照恢復的 `READY`、圖表及
 
 | 證據 | Notebook 位置 |
 |---|---|
-| Spectrogram 參數與 shape | [Cell 2](../EBM_final_forline.ipynb#L560) |
-| Forward 不使用 feedback，Aux 回傳 None | [Cell 4](../EBM_final_forline.ipynb#L1242) |
-| Split 前 CDF ranking | [Cell 2](../EBM_final_forline.ipynb#L454)、[Cell 4](../EBM_final_forline.ipynb#L1379) |
-| Normalizer 重算、第一 Fold 訓練 | [Cell 4](../EBM_final_forline.ipynb#L1579)、[epochs 條件](../EBM_final_forline.ipynb#L1613) |
-| Fingerprint、load 與 checkpoint 欄位 | [Cell 4](../EBM_final_forline.ipynb#L828) |
-| 校正 Lot 與 pure testing 分離 | [Cell 5](../EBM_final_forline.ipynb#L2226) |
-| Direct fused energy | [Cell 5](../EBM_final_forline.ipynb#L2358) |
-| Completed-cycle anchors 與離線 RUL | [Cell 7](../EBM_final_forline.ipynb#L3422) |
-| 共享快照與 signature | [Cell 4](../EBM_final_forline.ipynb#L903) |
+| Spectrogram 參數與 shape | `EBM_final_forline.ipynb:560`（Cell 2；本地原稿） |
+| Forward 不使用 feedback，Aux 回傳 None | `EBM_final_forline.ipynb:1242`（Cell 4；本地原稿） |
+| Split 前 CDF ranking | `EBM_final_forline.ipynb:454`（Cell 2；本地原稿）、`EBM_final_forline.ipynb:1379`（Cell 4；本地原稿） |
+| Normalizer 重算、第一 Fold 訓練 | `EBM_final_forline.ipynb:1579`（Cell 4；本地原稿）、`EBM_final_forline.ipynb:1613`（epochs 條件；本地原稿） |
+| Fingerprint、load 與 checkpoint 欄位 | `EBM_final_forline.ipynb:828`（Cell 4；本地原稿） |
+| 校正 Lot 與 pure testing 分離 | `EBM_final_forline.ipynb:2226`（Cell 5；本地原稿） |
+| Direct fused energy | `EBM_final_forline.ipynb:2358`（Cell 5；本地原稿） |
+| Completed-cycle anchors 與離線 RUL | `EBM_final_forline.ipynb:3422`（Cell 7；本地原稿） |
+| 共享快照與 signature | `EBM_final_forline.ipynb:903`（Cell 4；本地原稿） |
 
 ## 2. 對照現有程式與 LLD v1.3
 

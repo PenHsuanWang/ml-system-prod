@@ -1,4 +1,7 @@
-# Python Backend Platform 軟體架構設計規格
+# 通用 Backend substrate 設計規格
+
+> 本文只描述共通 Backend substrate，並非目前 ML 能力或驗收清單。
+> 已交付 ML／K8s 架構見 [架構導讀](architecture.md) 與 [實作狀態](implementation-status.md)。
 
 | 文件控制 | 內容 |
 | --- | --- |
@@ -7,14 +10,14 @@
 | 狀態 | 工程交付基線；組織架構、安全與生產驗收仍待指定責任人審查 |
 | 適用對象 | 系統架構、Backend、Solution／Data Science、Platform／IT、測試與維運團隊 |
 | 適用程式 | 本專案 `server.py`、`worker.py`、`manage.py`、`src/`、`bootstrap/` 與部署／測試設定 |
-| 參考資料 | 使用者提供的 [SVG 與設計原稿](references/README.md)，採納紀錄見 [design-review.md](design-review.md) |
-| 配套規範 | [模組規範](module-spec.md)、[產品與部署](product-platform.md)、[ADRs](adr/README.md)、[驗證紀錄](validation.md) |
+| 參考資料 | 使用者提供的 [SVG 與設計原稿](references/README.md)，採納紀錄見 [architecture.md](architecture.md) |
+| 配套規範 | [模組規範](module-spec.md)、[產品與部署](deployment/day1-deployment-runbook.md)、[ADRs](adr/README.md)、[驗證紀錄](implementation-status.md) |
 
 此文件描述**目前可核對的實作及明確標示的擴充契約**，不是已完成目標環境生產驗收的聲明。程式與測試是行為證據；規格不一致時必須修訂程式或文件並重新驗證，不能只改圖。版本號是文件版本，獨立於 Python package 的 `0.1.0`。
 
 ## 1. 目的、範圍與品質目標
 
-本版依使用者指定 SVG 重構實體 package 與功能責任，保留既有 HTTP／任務行為；舊 Python import 路徑為有意的破壞性變更，見 [搬移對照](package-migration.md)。
+本版依使用者指定 SVG 重構實體 package 與功能責任，保留既有 HTTP／任務行為；舊 Python import 路徑為有意的破壞性變更，見 [搬移對照](module-spec.md)。
 
 本平台是可依不同產品需求擴充的通用 Python Backend Server 藍圖。平台處理 runtime、HTTP、安全、任務、資料與運算資源的共用機制；應用模組定義自己的 entity、policy、使用案例、workflow 與外部整合。平台不限定任何產業，也不預先指定應用的參與者、設定階層、流程順序或下游系統。
 
@@ -274,7 +277,7 @@ MongoExportSource 查詢固定 tenant；沒有 data.read_all 時固定 owner。�
 
 ## 10. 設定、健康與可觀測性
 
-設定使用 APP_ 環境變數與 .env，環境變數優先；CLI 覆寫 host/port/workers/reload。SecretStr 與錯誤遮蔽降低洩漏，不能取代外部 secret 管理。選用能力的啟用矩陣與完整參數見 [.env.example](../.env.example) 及 [產品平台說明](product-platform.md)。
+設定使用 APP_ 環境變數與 .env，環境變數優先；CLI 覆寫 host/port/workers/reload。SecretStr 與錯誤遮蔽降低洩漏，不能取代外部 secret 管理。選用能力的啟用矩陣與完整參數見 [.env.example](../src/config/settings.py) 及 [產品平台說明](deployment/day1-deployment-runbook.md)。
 
 | 部署模式 | 基線 |
 | --- | --- |
@@ -288,7 +291,7 @@ API lifespan 與 worker startup 共用 logging initializer，管理 `src` 與 `b
 
 ## 11. 部署與維運基線
 
-開發啟動、admin 建立、多程序命令與 API 範例見 [README](../README.md) 及 [product-platform.md](product-platform.md)。Dockerfile 與 Compose 為可審查的部署定義；現有 Compose 使用單實例基礎服務、開發 RabbitMQ credentials、Mongo root 帳號與 Redis 開發網路設定，不是生產安全／HA 拓撲。
+開發啟動、admin 建立、多程序命令與 API 範例見 [README](../README.md) 及 [deployment/day1-deployment-runbook.md](deployment/day1-deployment-runbook.md)。Dockerfile 與 Compose 為可審查的部署定義；現有 Compose 使用單實例基礎服務、開發 RabbitMQ credentials、Mongo root 帳號與 Redis 開發網路設定，不是生產安全／HA 拓撲。
 
 | 狀況 | 目前行為 | 維運處置與產品責任 |
 | --- | --- | --- |
@@ -299,9 +302,9 @@ API lifespan 與 worker startup 共用 logging initializer，管理 `src` 與 `b
 | Mongo 中斷 | 身份/資料服務不可用；不降級繞過認證 | 恢復受控 DB 連線與備份；migration/資料修復由 owner 管理 |
 | 長工作無法停止 | thread SDK 或 remote operation 可能持續 | SDK timeout；需硬截止時改獨立 process/remote 協定 |
 
-交付物回滾需使用已驗證的相容映像與設定、保留資料 volumes，先停止新提交並處理 in-flight。沒有通用 DB downgrade 或自動 queue schema migration；產品變更前必須定義新舊 payload/契約並存與資料遷移策略。備份恢復、HA、憑證輪替、SLO、RPO/RTO、容量與告警閾值由目標環境的部署驗收決定。
+交付物回滾需使用已驗證的相容映像與設定、保留資料 volumes，先停止新提交並處理 in-flight。沒有通用 DB downgrade 或自動 queue schema migration；產品變更前必須定義新舊 payload／契約並存與資料遷移策略。備份恢復、HA、憑證輪替、SLO、RPO/RTO、容量與告警閾值由目標環境的部署驗收決定。
 
-目前部署模型是同一份 distribution／image 依角色啟動 API 與 worker 的 modular monolith。`ModuleExports.services`、共用 queue 與共用資源不代表 capability 已具獨立服務契約；抽離前依[微服務契約設計與演進指南](microservice-contracts.md)完成 wire contract、資料與 queue ownership、服務身分、相容性、冪等及 rollout 驗收。本基線尚未宣告已提供 service discovery、契約 registry、outbox／inbox、獨立服務資料庫或 Kubernetes manifests。
+目前部署模型是同一份 distribution／image 依角色啟動 API 與 worker 的 modular monolith。`ModuleExports.services`、共用 queue 與共用資源不代表 capability 已具獨立服務契約；抽離前依[微服務契約設計與演進指南](microservice-contracts.md)完成 wire contract、資料與 queue ownership、服務身分、相容性、冪等及 rollout 驗收。共通 substrate 不提供通用 service discovery／wire-contract registry／inbox。ML 專用 Outbox、資料庫與 K8s manifests 已由 ML composition 實作，見架構導讀。
 
 ## 12. 實作與驗證可追溯性
 
@@ -316,12 +319,14 @@ API lifespan 與 worker startup 共用 logging initializer，管理 `src` 與 `b
 | Mongo lifecycle | src/infrastructure/persistence/mongo.py | test_storage.py；真 Mongo identity/export 整合 |
 | 匯出與空資料源 | exports capability、bootstrap.components.ModuleExports.datasets | test_exports.py，無業務來源 |
 | Kernel 版本與空 registry | kernels capability、bootstrap.components.ModuleExports.kernels | test_kernels.py，只有 tests 技術 fixture |
-| 部署、多 API/worker | compose.yaml、Dockerfile、CI workflow | Dockerfile image 實跑及 validation Compose 真 RabbitMQ 多程序通過；正式 Compose config 通過，詳見 validation |
+| 部署、多 API/worker | compose.yaml、Dockerfile、CI workflow | 底層 source／tests 與選用 Docker 程序；目前 ML 工程結果集中於實作狀態 |
 | 產品 entity、設定解析與 workflow | 尚無預設；由具體應用按需定義 | 不列為平台已實作／已驗證 |
 | HA/DR、SLO、audit、model governance | 待部署／應用規格 | 待決事項見 ADR 與正式驗收 |
 
-實際測試總數、環境、版本與未執行項目唯一彙整於 [validation.md](validation.md)，避免多份文件各自複製數值而失去同步。CI 已定義不表示遠端執行已通過。
+實際測試總數、環境、版本與未執行項目唯一彙整於 [implementation-status.md](implementation-status.md)，避免多份文件各自複製數值而失去同步。CI 已定義不表示遠端執行已通過。
 
-### 12.1 交付及後續驗收
+### 12.1 驗證與交付
 
-工程交付包含可執行原始碼、鎖定依賴清單、部署定義、測試、更新 SVG、設計／模組／部署文件、原稿與雜湊、比對及決策紀錄。本次 Linux arm64 Docker image 與真 RabbitMQ 多程序已完成工程驗證，證據見 [Docker 紀錄](evidence/docker-2026-10-24/README.md)。組織後續審查仍應指定 architecture/security/operations owner，按正式拓撲完成實際應用、負載、故障演練、SLO 與復原驗收；目前結果不代表生產釋出核准。
+當前 source／image、完整 Compose／K8s 結果與 production 限制集中於
+[實作狀態](implementation-status.md)。舊範本的平台測試數與 Docker 日誌已由新驗收取代；
+底層契約仍以現存 source／tests 為準。正式環境需獨立完成身份、容量、SLO 與還原驗收。

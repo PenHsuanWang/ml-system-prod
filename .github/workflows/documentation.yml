@@ -1,0 +1,26 @@
+name: Documentation integrity
+on:
+  pull_request:
+    paths:
+      - docs/**
+      - README.md
+      - deploy/**/*.md
+      - FILE-MANIFEST.json
+      - scripts/check_docs.py
+      - scripts/update_manifest.py
+      - .github/workflows/documentation.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  documentation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - name: Verify links, fragments and structured documentation
+        run: python scripts/check_docs.py
+      - name: Verify the Git-tracked source manifest
+        run: python scripts/update_manifest.py --check
