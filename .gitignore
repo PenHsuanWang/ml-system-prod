@@ -35,6 +35,7 @@ wheelhouse/
 .env.*
 !.env.example
 !.env.*.example
+/.local/ml-system/
 
 # Local runtime state and ML artifacts
 /work/

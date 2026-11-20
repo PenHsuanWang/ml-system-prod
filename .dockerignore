@@ -3,6 +3,8 @@
 .env
 .env.*
 !.env.example
+!.env.*.example
+/.local/ml-system/
 __pycache__
 *.py[cod]
 *.egg-info

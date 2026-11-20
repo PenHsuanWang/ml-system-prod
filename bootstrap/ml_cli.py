@@ -4,6 +4,7 @@ import argparse
 import asyncio
 import json
 import time
+import sys
 from pathlib import Path
 
 from bootstrap.ml_config import MLSettings
@@ -156,9 +157,12 @@ def demo_ebm(settings: MLSettings) -> None:
 
 
 def main() -> None:
+    if sys.argv[1:2] == ["init"]:
+        from bootstrap.init_cli import main as init_main
+        raise SystemExit(init_main(sys.argv[2:]))
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("operation", choices=["migrate",
-                        "demo", "demo-ebm", "relay", "control", "register-dataset", "register-ebm-dataset"])
+                        "demo", "demo-ebm", "relay", "control", "register-dataset", "register-ebm-dataset", "init"])
     parser.add_argument("--tenant-id")
     parser.add_argument("--dataset-id")
     parser.add_argument("--version")
@@ -167,6 +171,8 @@ def main() -> None:
     parser.add_argument("--npz-path", type=Path)
     parser.add_argument("--once", action="store_true")
     args = parser.parse_args()
+    if args.operation == "init":
+        parser.error("Use ml-system init before any setup options")
     settings = MLSettings.from_env()
     configure_telemetry(settings.role)
     if args.operation == "migrate":

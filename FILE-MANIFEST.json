@@ -4,8 +4,8 @@
   "files": [
     {
       "path": ".dockerignore",
-      "bytes": 190,
-      "sha256": "8ef58682c76681b51c3a5f8ea014b17b3a6b6f6259bc2da97e0d74065e0d6c1a"
+      "bytes": 225,
+      "sha256": "ec9c84990d230b0fb9737bfa3592d103457a2c067cfc598dfe09781f837f1b59"
     },
     {
       "path": ".env.ml.example",
@@ -39,13 +39,13 @@
     },
     {
       "path": ".github/workflows/ml-ci.yml",
-      "bytes": 13490,
-      "sha256": "ebef3dbbf5a716046f02c05fb0903832a602c2e373f6a4f9353365b53e088155"
+      "bytes": 14701,
+      "sha256": "430884a0b0d0224eb496c228457522fc41a2a7b6b65e2674840ce850689b9f1f"
     },
     {
       "path": ".gitignore",
-      "bytes": 1002,
-      "sha256": "d2358d454451a9285c924500e8431b0efdbcf8854bcebcefba55fa6bf9367ba7"
+      "bytes": 1021,
+      "sha256": "ca965a0b84d975acd9c6be1bb9ccea65627a953888276016171805a96521051a"
     },
     {
       "path": ".gitleaks.toml",
@@ -64,8 +64,8 @@
     },
     {
       "path": "Dockerfile.ml",
-      "bytes": 3414,
-      "sha256": "5c6bf407792fa5b508278d5f50556b83026d233790c1c3d2e8aad87369d23176"
+      "bytes": 3740,
+      "sha256": "361f1f8dc916e72b0a3ca66969a4947537908d6e2ec13ccdbb67f400d79e6044"
     },
     {
       "path": "Dockerfile.mlflow",
@@ -74,8 +74,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 14605,
-      "sha256": "4ea0dd00b9bbba55ed07c9ee1dc4a4e64597c78d137aea1ad21f300f31989add"
+      "bytes": 15072,
+      "sha256": "58dd7317f748eb9129848786cd3ab265b6d03d5739a19ba31549e5765e7d1f97"
     },
     {
       "path": "REVIEW-P1-P2-REMEDIATION.md",
@@ -153,14 +153,29 @@
       "sha256": "b3aeb3de683d3b7acce063551347a6d1e24d8f9b63ac8535c553227f7988aa57"
     },
     {
+      "path": "bootstrap/init_cli.py",
+      "bytes": 22423,
+      "sha256": "b4477d9f6535526d5d18d7f26d4cb499fb87495727c405d1fb9f18c433fb0549"
+    },
+    {
+      "path": "bootstrap/init_config.py",
+      "bytes": 17438,
+      "sha256": "d66121a5731fee8745d7c856303e41de9a3f936398e7af0ed3b8671f8ee9f958"
+    },
+    {
+      "path": "bootstrap/init_files.py",
+      "bytes": 14108,
+      "sha256": "154fc50cb63bf9033cb48fe9e11ba6161ad53b6c12d8887c6a6318c24428280e"
+    },
+    {
       "path": "bootstrap/ml_api.py",
       "bytes": 5237,
       "sha256": "6e3075b62c312b55641660ab47537cdfc5b298c6173a327b34fbdc8989511c92"
     },
     {
       "path": "bootstrap/ml_cli.py",
-      "bytes": 10560,
-      "sha256": "2cc2b6e0463ae215b5bd44b6ae69fa4bfebe7dee5cebaebbc5f0a17eae2a8b00"
+      "bytes": 10821,
+      "sha256": "98be6b80a04d047cd8c17a28b980fcd4ca63b24bd7aaadf414f328e1c0c8e7ab"
     },
     {
       "path": "bootstrap/ml_config.py",
@@ -439,8 +454,8 @@
     },
     {
       "path": "docs/README.md",
-      "bytes": 5097,
-      "sha256": "f333fa5e48eab304761b029c870292f7a235ba022c7bbef71883adf0c5f126b3"
+      "bytes": 5224,
+      "sha256": "764e8c1102fb1a01eb1f4a2f0f731ac49b3de8afda1ce7f584518705b63acc2c"
     },
     {
       "path": "docs/adr/014-implementation-baseline.md",
@@ -489,8 +504,8 @@
     },
     {
       "path": "docs/configuration-reference.md",
-      "bytes": 10848,
-      "sha256": "01c35395f246a5920f7ad9ea5cdbb38d2cbbabaa70d978800d5d01f6034f75e0"
+      "bytes": 11042,
+      "sha256": "5f51ec82d1646613e9b136ecb5f91fab197d66f96f0fbd165e1dcc2ce9f9fc51"
     },
     {
       "path": "docs/data-ingress-implementation.md",
@@ -504,8 +519,13 @@
     },
     {
       "path": "docs/deployment/day1-deployment-runbook.md",
-      "bytes": 27301,
-      "sha256": "d7c5bab523e90ecd0eca0b8ee045ae81c10bdf431ba6f5ef3960057e918a0437"
+      "bytes": 27585,
+      "sha256": "6ea93f3c9b007859a672a82c608323261b93fe6fb6cc50d4d016acba27ca173a"
+    },
+    {
+      "path": "docs/deployment/interactive-setup.md",
+      "bytes": 10873,
+      "sha256": "8b4f9f8bc15057d1d3b4e3f9131b0d6a62a5dcbafd8526d314d995574e9f1b9b"
     },
     {
       "path": "docs/deployment/kubernetes-acceptance.md",
@@ -989,8 +1009,8 @@
     },
     {
       "path": "pyproject.toml",
-      "bytes": 2127,
-      "sha256": "93dc1de7655524c86cf9e7ae77cd8848500a316d6888a80f0c3e92712ec5d975"
+      "bytes": 2154,
+      "sha256": "3783155f124b915634288c659a675462b8d9203fd184c2e3504b21fb2758bac7"
     },
     {
       "path": "pytorch-ml-system-hld.md",
@@ -1061,6 +1081,11 @@
       "path": "scripts/check_ingestion.py",
       "bytes": 1094,
       "sha256": "ff4b7841f7880e07b3f409c2d78a6737240763dd08fd4b45bd5364432717c33b"
+    },
+    {
+      "path": "scripts/check_init.py",
+      "bytes": 1034,
+      "sha256": "209f8cf945bb361edc1f815c77e52f1336a49f22139740ebc942e02d60c07016"
     },
     {
       "path": "scripts/check_k8s.py",
@@ -1151,6 +1176,11 @@
       "path": "scripts/verify_guide.py",
       "bytes": 7840,
       "sha256": "733d0d2cb31cce74c2586c2c400b889b232a9e5f6c0e790b58a11743ab002efe"
+    },
+    {
+      "path": "scripts/verify_init_compose.py",
+      "bytes": 7262,
+      "sha256": "306f8c512296e661218a403efd6ee5e57256a1c4d5815b32bd865a06f4d25def"
     },
     {
       "path": "scripts/verify_k8s_acceptance.py",
@@ -2521,6 +2551,26 @@
       "path": "tests/ml/ingestion/test_snapshot_publication.py",
       "bytes": 14298,
       "sha256": "6acfb5b13d7d3ca07e86e0015e5016e400bb21a240bcac747bbb6a3f053f0433"
+    },
+    {
+      "path": "tests/ml/init_setup/conftest.py",
+      "bytes": 2818,
+      "sha256": "c02bfee84376b1347fe79197d4b881ce808ea44ccd4499b9efcb834f617d8502"
+    },
+    {
+      "path": "tests/ml/init_setup/test_cli.py",
+      "bytes": 17014,
+      "sha256": "b8b6ad208ca9e12e56f7fb991e83a236b2d31b7555a5969edd7ef5ee7ef63167"
+    },
+    {
+      "path": "tests/ml/init_setup/test_config.py",
+      "bytes": 9102,
+      "sha256": "4d45850bb89abf0c329e2b10daf3bba2568440ac01ca577118502f053cc2cd08"
+    },
+    {
+      "path": "tests/ml/init_setup/test_files.py",
+      "bytes": 8013,
+      "sha256": "a0f21c1af6118509e0a0fc8fa78195cf818da31820eda109ff77e50697b79220"
     },
     {
       "path": "tests/ml/integration/test_backend_stack.py",

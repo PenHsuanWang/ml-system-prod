@@ -69,6 +69,17 @@ The synthetic development demo registers an EBM dataset and trains in a supervis
 
 ## Reference development stack
 
+首次設定可先安裝 base package，執行互動式引導：
+
+```sh
+python -m pip install -e .
+ml-system init
+```
+
+Wizard 支援本地 Compose、File／Databricks，以及既有外部服務 profile；隱藏輸入憑證，
+產生相容設定，並在覆寫前提供備份或取消。詳見[互動式初始化手冊](docs/deployment/interactive-setup.md)。
+完成後依畫面提供的 env／Compose 組合繼續。以下保留原有的簡單憑證產生方式：
+
 ```sh
 python scripts/create_ml_env.py
 docker compose --env-file .env.ml -f compose.ml.yaml up --build -d
