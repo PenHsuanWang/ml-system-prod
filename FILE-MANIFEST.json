@@ -154,18 +154,18 @@
     },
     {
       "path": "bootstrap/init_cli.py",
-      "bytes": 21964,
-      "sha256": "33e34ff1c7de47cb5d506d251fa391e4696f991c8c63b805e9301a4510cbf10b"
+      "bytes": 22542,
+      "sha256": "7c58341e697c16d8dda1e476399201a10edf8dcbe782d27f6bca9ee7c1eff709"
     },
     {
       "path": "bootstrap/init_config.py",
-      "bytes": 16636,
-      "sha256": "3a7a399c2c93d3ed1fb9ad6866824aa0c35c38d9adc16703c333f350dfe99a39"
+      "bytes": 16655,
+      "sha256": "9666f325ec422f958291efff87668ca00efa9b91892c47a0b8407eae034ac005"
     },
     {
       "path": "bootstrap/init_files.py",
-      "bytes": 13481,
-      "sha256": "6b2cc691335eae3ccc145f0907416872865a5dfa1d6e27304881085d0fe6da5e"
+      "bytes": 13814,
+      "sha256": "778e30bc110673c408acccb22816d3745ca1a309090bda6503c0232db27c24a4"
     },
     {
       "path": "bootstrap/ml_api.py",
@@ -524,8 +524,8 @@
     },
     {
       "path": "docs/deployment/interactive-setup.md",
-      "bytes": 10229,
-      "sha256": "739f20c427c6e1920d53ee0af5b59c6d3f73a4c984c8cf2f73b180e3d06afd31"
+      "bytes": 10446,
+      "sha256": "934f1d67060b8a6761ad65d19a19b40f14c33415dfc92edaf88c538f3370047e"
     },
     {
       "path": "docs/deployment/kubernetes-acceptance.md",
@@ -2559,8 +2559,8 @@
     },
     {
       "path": "tests/ml/init_setup/test_cli.py",
-      "bytes": 10712,
-      "sha256": "2bd53a7ecaebbc32f16f8919e7f15d9920a64bb9c592a2f53316d3a3dfbd5afb"
+      "bytes": 12379,
+      "sha256": "8b179fb33dda1031dcd4a96ad0e4a78b8279d7db347bc2f3b1fe04fef2590b6d"
     },
     {
       "path": "tests/ml/init_setup/test_config.py",
@@ -2569,8 +2569,8 @@
     },
     {
       "path": "tests/ml/init_setup/test_files.py",
-      "bytes": 7614,
-      "sha256": "a17874f0726ed631222e656a781ea0987ec66ab589f7796838d37110df86ec8c"
+      "bytes": 8013,
+      "sha256": "a0f21c1af6118509e0a0fc8fa78195cf818da31820eda109ff77e50697b79220"
     },
     {
       "path": "tests/ml/integration/test_backend_stack.py",
