@@ -14,6 +14,31 @@ permissions:
   contents: read
 
 jobs:
+  interactive-init:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12', cache: pip}
+      - name: Install only base and developer dependencies in an isolated environment
+        run: |
+          python -m venv "$RUNNER_TEMP/ml-init-base"
+          "$RUNNER_TEMP/ml-init-base/bin/python" -m pip install -e '.[dev]'
+          echo "$RUNNER_TEMP/ml-init-base/bin" >> "$GITHUB_PATH"
+      - name: Require setup without optional compute or connector SDKs
+        run: |
+          python -c 'from importlib.util import find_spec; assert all(find_spec(x) is None for x in ("torch", "numpy", "scipy", "mlflow", "databricks"))'
+          ml-system init --help
+          python -m bootstrap.init_cli --help
+      - run: python scripts/check_init.py
+      - run: python -m pytest tests/ml/init_setup -q --junitxml=init-results.xml
+      - name: Render generated profiles using real Compose without starting services
+        run: python -m scripts.verify_init_compose
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: {name: interactive-init-results, path: init-results.xml}
+
   contracts:
     runs-on: ubuntu-latest
     strategy:

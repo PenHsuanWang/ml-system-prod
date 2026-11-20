@@ -33,9 +33,11 @@ CMD ["taskiq", "worker", "bootstrap.ml_worker:broker", "--workers", "1", "--max-
 
 FROM training AS acceptance
 USER root
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 COPY tests ./tests
 COPY scripts ./scripts
 COPY deploy/k8s ./deploy/k8s
+COPY .gitignore .env.ml.production.example compose.ml*.yaml ./
 RUN pip install --no-cache-dir '.[dev,training,ebm,observability]'
 USER mlapp
 CMD ["python", "scripts/verify_ml_acceptance.py", "--require-stack", "--output-dir", "/app/var/acceptance"]
@@ -59,9 +61,11 @@ CMD ["uvicorn", "bootstrap.ml_api:create_app", "--factory", "--host", "0.0.0.0",
 
 FROM production AS k8s-acceptance
 USER root
+RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
 COPY tests ./tests
 COPY scripts ./scripts
 COPY deploy/k8s ./deploy/k8s
+COPY .gitignore .env.ml.production.example compose.ml*.yaml ./
 RUN pip install --no-cache-dir '.[dev]' 'PyYAML>=6,<7'
 USER mlapp
 
