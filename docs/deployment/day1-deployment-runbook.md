@@ -44,6 +44,10 @@ TLS ingress／network policy，再驗證實際使用者會經過的路徑。
 
 ## 2. 準備設定、Secrets 與 filesystem
 
+可先使用 [互動式初始化](interactive-setup.md) 的 `ml-system init --profile external`
+產生本節的環境檔及角色 JSON。以核准的非 root runtime UID／GID 操作；產生成功
+不取代以下 release preflight、外部依賴資格、migration 或 Go／No-Go。
+
 從 `.env.ml.production.example` 複製出受保護、未追蹤的站台設定檔，填入核准值。
 該檔保存 image、public endpoints、路徑與 limits；連線憑證放在 secrets 管理流程
 交付的 private role JSON，不貼到聊天、PR、command arguments 或公開 logs。

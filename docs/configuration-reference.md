@@ -5,6 +5,9 @@
 必須提供核准值。`.env` 不會被所有 Python entrypoint 自動載入；Compose 使用
 `--env-file`，直接執行 CLI 則須先配置該程序的環境。
 
+首次安裝可用 [Interactive Setup](deployment/interactive-setup.md) 的 `ml-system init`。
+它產生既有 profile／schema，並明確處理覆寫、備份與 private file permissions。
+
 ## Profile 與設定層
 
 | 場景 | 設定來源與執行邊界 |
