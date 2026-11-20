@@ -102,6 +102,14 @@ def test_external_roles_load_with_unmodified_production_entrypoint(external, fil
     assert (external.private / "operator-definitions").is_dir()
 
 
+def test_external_plan_rejects_private_keys_in_merged_environment(external, files):
+    path = external.project / ".env.ml.production"
+    path.write_text("MLFLOW_TRACKING_TOKEN=existing-private-value\n")
+    path.chmod(0o600)
+    with pytest.raises(SetupError, match="Production credentials belong only in private role JSON"):
+        build_plan(external, files)
+
+
 def test_per_role_existing_credentials_preserved_without_changes(external):
     original = role_configurations(external)
     original["relay"]["ML_DATABASE_URL"] = "postgresql+psycopg://relay:separate@postgres/ml"

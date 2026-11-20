@@ -11,12 +11,14 @@ import secrets
 import shlex
 import sys
 import warnings
-from collections.abc import Callable
+from collections.abc import Callable, Set
 from functools import partial
 from pathlib import Path
 from typing import Any, NoReturn
 
 from bootstrap.init_config import (
+    DATABRICKS_ENV_KEYS,
+    INGESTION_ENV_KEYS,
     LOCAL_PASSWORDS,
     OAUTH_CONTAINER_PATH,
     ROLES,
@@ -31,6 +33,7 @@ from bootstrap.init_config import (
     load_object,
     local_defaults,
     single_line,
+    validate_production_env,
 )
 from bootstrap.init_files import (
     PrivateFiles,
@@ -108,7 +111,7 @@ class Prompt:
         return self.choose(label, ("y", "n"), "y" if default else "n") == "y"
 
 
-def _saved_environment(files: PrivateFiles, path: Path, managed: set[str]) -> dict[str, str]:
+def _saved_environment(files: PrivateFiles, path: Path, managed: Set[str]) -> dict[str, str]:
     original = files.read(path)
     if original:
         text = original.decode()
@@ -458,7 +461,10 @@ def configure(project: Path, private: Path, profile: str, prompt: Prompt) -> Set
         raise SetupError("Select the repository checkout with --project-dir.")
     files = PrivateFiles(project)
     spec = SetupSpec(project, private, profile)
-    external_keys = set(env_values(read_regular(project / ".env.ml.production.example").decode()))
+    external_keys = (
+        set(env_values(read_regular(project / ".env.ml.production.example").decode()))
+        | DATABRICKS_ENV_KEYS
+    )
     local_keys = {
         *LOCAL_PASSWORDS,
         "APP_JWT_SECRET",
@@ -466,17 +472,10 @@ def configure(project: Path, private: Path, profile: str, prompt: Prompt) -> Set
         "ML_GID",
         "OTEL_EXPORTER_OTLP_ENDPOINT",
     }
-    ingestion_keys = {
-        "ML_INGESTION_INPUT_DIR",
-        "ML_DATABRICKS_CONNECTIONS_CONFIG",
-        "ML_DATABRICKS_SOURCES_CONFIG",
-        "ML_DATABRICKS_CLIENT_SECRET_FILE",
-        "DATABRICKS_TOKEN",
-    }
     saved = _saved_environment(
         files,
         project / (".env.ml" if profile == "compose" else ".env.ml.production"),
-        local_keys if profile == "compose" else external_keys | {"DATABRICKS_TOKEN"},
+        local_keys if profile == "compose" else external_keys,
     )
     if profile == "compose":
         spec.environment = local_defaults(saved)
@@ -487,7 +486,7 @@ def configure(project: Path, private: Path, profile: str, prompt: Prompt) -> Set
             validate=lambda v: connection_uri(v, {"http", "https"}),
         )
         spec.environment["OTEL_EXPORTER_OTLP_ENDPOINT"] = otlp
-        ingestion = _saved_environment(files, project / ".env.ml.ingestion", ingestion_keys)
+        ingestion = _saved_environment(files, project / ".env.ml.ingestion", INGESTION_ENV_KEYS)
         if prompt.yes(
             "Configure Databricks ingestion?",
             default=bool(ingestion.get("ML_DATABRICKS_CONNECTIONS_CONFIG")),
@@ -506,9 +505,9 @@ def configure(project: Path, private: Path, profile: str, prompt: Prompt) -> Set
                 )
             )
     else:
+        validate_production_env(saved)
         defaults = example_environment(project)
-        allowed = external_keys | {"DATABRICKS_TOKEN"}
-        spec.environment = {**defaults, **{k: v for k, v in saved.items() if k in allowed}}
+        spec.environment = {**defaults, **{k: v for k, v in saved.items() if k in external_keys}}
         _external(spec, files, prompt, saved)
         _databricks(spec, files, prompt, saved)
     plan = build_plan(spec, files)

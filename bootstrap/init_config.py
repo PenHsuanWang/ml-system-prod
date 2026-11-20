@@ -7,6 +7,7 @@ import os
 import re
 import secrets
 import ssl
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -23,6 +24,7 @@ from bootstrap.init_files import (
     PrivateFiles,
     SetupError,
     absolute_path,
+    compose_env_key,
     env_values,
     merge_env,
     read_regular,
@@ -42,6 +44,15 @@ LOCAL_PASSWORDS = (
     "ML_S3_PASSWORD",
 )
 OAUTH_CONTAINER_PATH = "/run/secrets/databricks_client_secret"
+DATABRICKS_ENV_KEYS = frozenset(
+    {
+        "ML_DATABRICKS_CONNECTIONS_CONFIG",
+        "ML_DATABRICKS_SOURCES_CONFIG",
+        "ML_DATABRICKS_CLIENT_SECRET_FILE",
+        "DATABRICKS_TOKEN",
+    }
+)
+INGESTION_ENV_KEYS = DATABRICKS_ENV_KEYS | {"ML_INGESTION_INPUT_DIR"}
 
 
 def single_line(value: str) -> str:
@@ -116,6 +127,14 @@ def example_environment(project: Path) -> dict[str, str]:
     return {
         k: v for k, v in values.items() if "REPLACE" not in v and not v.startswith("/absolute/")
     }
+
+
+def validate_production_env(keys: Iterable[str]) -> None:
+    if any(compose_env_key(key) in PRIVATE_KEYS for key in keys):
+        raise SetupError(
+            "Production credentials belong only in private role JSON. Remove the private "
+            "keys from .env.ml.production before setup."
+        )
 
 
 @dataclass(repr=False)
@@ -307,14 +326,15 @@ def build_plan(spec: SetupSpec, files: PrivateFiles) -> SetupPlan:
             credential(environment["DATABRICKS_TOKEN"])
             if spec.profile == "external":
                 environment["ML_DATABRICKS_CLIENT_SECRET_FILE"] = "/dev/null"
-            if spec.profile == "compose":
+            else:
+                environment.pop("ML_DATABRICKS_CLIENT_SECRET_FILE", None)
                 compose.extend(["compose.ml.ingestion.yaml", "compose.ml.databricks-token.yaml"])
         else:
             credential(spec.oauth_secret or "")
             secret_path = spec.private / "databricks/oauth-secret"
             outputs[secret_path] = (spec.oauth_secret or "").encode()
             environment["ML_DATABRICKS_CLIENT_SECRET_FILE"] = str(secret_path)
-            environment["DATABRICKS_TOKEN"] = ""
+            environment.pop("DATABRICKS_TOKEN", None)
             if spec.profile == "compose":
                 compose.extend(["compose.ml.ingestion.yaml", "compose.ml.databricks.yaml"])
         if spec.profile == "compose":
@@ -338,8 +358,6 @@ def build_plan(spec: SetupSpec, files: PrivateFiles) -> SetupPlan:
         for role, configuration in role_configurations(spec).items():
             outputs[spec.private / "roles" / (role + ".json")] = json_bytes(configuration)
         environment["ML_DEPLOYMENT_CONFIG_DIR"] = str(spec.private / "roles")
-        if PRIVATE_KEYS & set(environment):
-            raise SetupError("Production credentials belong only in private role JSON.")
     if spec.profile == "compose":
         local = {
             k: environment[k] for k in (*LOCAL_PASSWORDS, "APP_JWT_SECRET", "ML_UID", "ML_GID")
@@ -349,17 +367,22 @@ def build_plan(spec: SetupSpec, files: PrivateFiles) -> SetupPlan:
         values = {".env.ml": local}
         if "ML_INGESTION_INPUT_DIR" in environment:
             values[".env.ml.ingestion"] = {
-                k: v
-                for k, v in environment.items()
-                if k.startswith("ML_DATABRICKS_")
-                or k in {"DATABRICKS_TOKEN", "ML_INGESTION_INPUT_DIR"}
+                k: v for k, v in environment.items() if k in INGESTION_ENV_KEYS
             }
     else:
         values = {".env.ml.production": environment}
+    managed = {
+        ".env.ml.ingestion": INGESTION_ENV_KEYS,
+        ".env.ml.production": DATABRICKS_ENV_KEYS,
+    }
     for name, updates in values.items():
         path = spec.project / name
         original = files.read(path)
-        outputs[path] = merge_env(original.decode() if original else "", updates).encode()
+        obsolete = managed.get(name, frozenset()).difference(updates)
+        merged = merge_env(original.decode() if original else "", updates, remove=obsolete)
+        if name == ".env.ml.production":
+            validate_production_env(env_values(merged))
+        outputs[path] = merged.encode()
     for path in outputs:
         files.read(path)
     return SetupPlan(

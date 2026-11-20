@@ -12,6 +12,7 @@ import shutil
 import stat
 import subprocess
 import uuid
+from collections.abc import Set
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
@@ -102,14 +103,19 @@ def referenced_keys(text: str) -> set[str]:
     }
 
 
-def merge_env(text: str, updates: dict[str, str]) -> str:
+def compose_env_key(key: str) -> str:
+    # Compose accepts a colon delimiter that python-dotenv can read as part of the key.
+    return key.partition(":")[0]
+
+
+def merge_env(text: str, updates: dict[str, str], *, remove: Set[str] = frozenset()) -> str:
     env_values(text)
     remaining = dict(updates)
     lines = []
     for binding in parse_stream(io.StringIO(text)):
         if binding.key in remaining:
             lines.append(f"{binding.key}={env_quote(remaining.pop(binding.key))}\n")
-        else:
+        elif binding.key is None or compose_env_key(binding.key) not in remove:
             lines.append(binding.original.string)
     result = "".join(lines)
     if result and not result.endswith("\n"):

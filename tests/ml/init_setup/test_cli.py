@@ -13,7 +13,7 @@ import pytest
 
 from bootstrap.init_cli import Cancelled, Prompt, configure, main
 from bootstrap.init_config import build_plan
-from bootstrap.init_files import env_values
+from bootstrap.init_files import SetupError, env_values
 
 
 def answers(monkeypatch, mapping):
@@ -98,6 +98,97 @@ def test_databricks_wizard_outputs_compatible_secret_references(project, monkeyp
         ).read_text() == "oauth-test-only"
 
 
+def test_switch_databricks_token_to_file_batch(project, monkeypatch):
+    private = project / ".local/ml-system"
+    answers(
+        monkeypatch,
+        {
+            "Configure Databricks": "y",
+            "Databricks authentication": "token",
+            "Workspace hostname": "dbc-approved.cloud.databricks.com",
+            "Warehouse HTTP path": "/sql/1.0/warehouses/0123abcd",
+            "Databricks access token": "unused-after-switch",
+            "Write these files": "y",
+        },
+    )
+    configure(project, private, "compose", Prompt())
+    path = project / ".env.ml.ingestion"
+    original = path.read_text()
+    assert env_values(original)["DATABRICKS_TOKEN"] == "unused-after-switch"
+    unmanaged = '# Operator notes\nML_DATABRICKS_OPERATOR_HINT="first\nsecond"\n'
+    path.write_text(original + unmanaged)
+
+    answers(
+        monkeypatch,
+        {
+            "Configure Databricks": "n",
+            "Configure File Batch": "y",
+            "Existing file": "overwrite",
+            "Write these files": "y",
+        },
+    )
+    plan = configure(project, private, "compose", Prompt())
+    assert plan.compose_files == ("compose.ml.yaml", "compose.ml.ingestion.yaml")
+    contents = path.read_text()
+    assert contents.endswith(unmanaged)
+    assert env_values(contents) == {
+        "ML_INGESTION_INPUT_DIR": str(private / "ingestion-input"),
+        "ML_DATABRICKS_OPERATOR_HINT": "first\nsecond",
+    }
+
+
+@pytest.mark.parametrize("profile", ["compose", "external"])
+def test_switch_oauth_to_token_removes_stale_references(
+    project, spec, external, files, monkeypatch, profile
+):
+    setup = external if profile == "external" else spec
+    setup.connections = {
+        "warehouse-main": {
+            "server_hostname": "dbc-approved.cloud.databricks.com",
+            "http_path": "/sql/1.0/warehouses/0123abcd",
+            "client_id": "oauth-principal",
+            "client_secret_file": "/run/secrets/databricks_client_secret",
+        }
+    }
+    setup.oauth_secret = "previous-oauth-secret"
+    if profile == "compose":
+        setup.environment["ML_INGESTION_INPUT_DIR"] = str(setup.private / "ingestion-input")
+    original = build_plan(setup, files)
+    files.write(
+        original.outputs, dict.fromkeys(original.outputs, "overwrite"), original.directories
+    )
+    path = project / original.env_files[-1]
+    oauth_path = setup.private / "databricks/oauth-secret"
+    assert env_values(path.read_text())["ML_DATABRICKS_CLIENT_SECRET_FILE"] == str(oauth_path)
+
+    answers(
+        monkeypatch,
+        {
+            "Databricks authentication": "token",
+            "Databricks access token": "replacement-token",
+            "Existing file": "overwrite",
+            "Write these files": "y",
+        },
+    )
+    plan = configure(project, setup.private, profile, Prompt())
+    env = env_values(path.read_text())
+    assert env["DATABRICKS_TOKEN"] == "replacement-token"
+    if profile == "external":
+        assert env["ML_DATABRICKS_CLIENT_SECRET_FILE"] == "/dev/null"
+    else:
+        assert "ML_DATABRICKS_CLIENT_SECRET_FILE" not in env
+        assert plan.compose_files[-1] == "compose.ml.databricks-token.yaml"
+    connection = json.loads((setup.private / "databricks/connections.json").read_text())[
+        "warehouse-main"
+    ]
+    assert connection == {
+        "server_hostname": "dbc-approved.cloud.databricks.com",
+        "http_path": "/sql/1.0/warehouses/0123abcd",
+        "access_token_env": "DATABRICKS_TOKEN",
+    }
+    assert oauth_path.read_text() == "previous-oauth-secret"
+
+
 def test_final_cancel_leaves_new_setup_unwritten(project, monkeypatch):
     answers(monkeypatch, {})
     with pytest.raises(Cancelled):
@@ -111,8 +202,6 @@ def test_managed_env_references_require_resolution_but_unknown_lines_survive(pro
     path.write_text(original)
     path.chmod(0o600)
     answers(monkeypatch, {"Write these files": "y", "Existing file": "overwrite"})
-    from bootstrap.init_files import SetupError
-
     with pytest.raises(SetupError, match="variable references"):
         configure(project, project / ".local/ml-system", "compose", Prompt())
     assert path.read_text() == original
@@ -125,8 +214,6 @@ def test_existing_private_directory_must_be_owner_only(project, monkeypatch):
     private = project / ".local/ml-system"
     private.mkdir(parents=True)
     private.chmod(0o755)
-    from bootstrap.init_files import SetupError
-
     with pytest.raises(SetupError, match="0700"):
         configure(project, private, "compose", Prompt())
 
@@ -270,6 +357,34 @@ def test_external_wizard_keeps_credentials_hidden(project, external, monkeypatch
     ]:
         assert value not in captured.out + captured.err
     assert "ML_DATABASE_URL" not in rendered
+
+
+@pytest.mark.parametrize(
+    "assignment",
+    [
+        "APP_JWT_SECRET=existing-private-value",
+        "export 'MLFLOW_TRACKING_TOKEN'=existing-private-value",
+        "APP_JWT_SECRET:existing-private-value",
+    ],
+)
+def test_external_rejects_private_keys_in_public_env(
+    external, files, monkeypatch, capsys, assignment
+):
+    plan = build_plan(external, files)
+    files.write(plan.outputs, dict.fromkeys(plan.outputs, "overwrite"), plan.directories)
+    path = external.project / ".env.ml.production"
+    path.write_text(path.read_text() + assignment + "\n")
+    original = {output: output.read_bytes() for output in plan.outputs}
+    calls = answers(monkeypatch, {"Existing file": "backup", "Write these files": "y"})
+
+    with pytest.raises(SetupError, match="Production credentials belong only in private role JSON"):
+        configure(external.project, external.private, "external", Prompt())
+
+    assert not calls
+    assert {output: output.read_bytes() for output in original} == original
+    assert not list(external.project.rglob("*.bak-*"))
+    captured = capsys.readouterr()
+    assert "existing-private-value" not in captured.out + captured.err
 
 
 @pytest.mark.parametrize("writer_mode", ["", "token"])

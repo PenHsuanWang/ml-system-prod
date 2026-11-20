@@ -121,6 +121,10 @@ overwrite / backup / cancel    [cancel]
 Token 中的 `$`、`#`、引號或反斜線被改寫。既有管理欄位若使用未解析的 `$VAR`／
 `${VAR}`，先停止並要求明確值，不執行 shell 或偷偷讀取環境來展開；非管理 references
 維持原文。請把 `.env.ml*` 當 Compose env files 使用，不以 shell `source` 載入。
+若 `.env.ml.production` 含有應放在 role JSON 的私有欄位，Wizard 會在詢問設定前停止。
+切換至 File Batch 或切換 Databricks 認證模式時，Wizard 會移除 dotenv 中不再使用的管理欄位。
+External profile 在 Token 模式仍會將未使用的 OAuth mount 指向 `/dev/null`。
+切換模式後，先前的 Databricks JSON 與 OAuth secret 檔可能仍留在磁碟，供日後重新使用。
 
 MLflow writer／reader 已有憑證時，選擇預設的 `keep` 會保留各角色原有的認證方式與憑證。
 明確選擇 `basic` 或 `token` 會將指定的憑證套用到對應的所有角色，並移除舊認證欄位。
