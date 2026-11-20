@@ -396,35 +396,48 @@ def _external(spec: SetupSpec, files: PrivateFiles, prompt: Prompt, saved: dict[
         secret=True,
         validate=jwt_secret,
     )
+    spec.changed_private = {
+        k for k, v in spec.private_values.items() if previous_values.get(k) != v
+    }
     for prefix, label in (
         ("MLFLOW_TRACKING_", "MLflow writer"),
         ("ML_SERVING_MLFLOW_", "MLflow reader"),
     ):
+        token_key = prefix + "TOKEN"
+        username_key = prefix + "USERNAME"
+        password_key = prefix + "PASSWORD"
+        saved_mode = "token" if previous_values.get(token_key) else "basic"
+        saved_keys = (token_key,) if saved_mode == "token" else (username_key, password_key)
+        saved_credentials = next(
+            (
+                values
+                for values in spec.existing_roles.values()
+                if all(values.get(key) for key in saved_keys)
+            ),
+            None,
+        )
         mode = prompt.choose(
             label + " authentication",
-            ("basic", "token"),
-            "token" if previous_values.get(prefix + "TOKEN") else "basic",
+            ("keep", "basic", "token") if saved_credentials else ("basic", "token"),
+            "keep" if saved_credentials else saved_mode,
         )
+        if mode == "keep" and saved_credentials is not None:
+            # Use one stored credential set as the default for roles without credentials.
+            spec.private_values.update({key: saved_credentials[key] for key in saved_keys})
+            continue
         if mode == "token":
-            spec.private_values[prefix + "TOKEN"] = prompt.ask(
-                label + " token", previous_values.get(prefix + "TOKEN"), secret=True
+            spec.private_values[token_key] = prompt.ask(
+                label + " token", previous_values.get(token_key), secret=True
             )
+            spec.changed_private.add(token_key)
         else:
-            spec.private_values[prefix + "USERNAME"] = prompt.ask(
-                label + " username", previous_values.get(prefix + "USERNAME")
+            spec.private_values[username_key] = prompt.ask(
+                label + " username", previous_values.get(username_key)
             )
-            spec.private_values[prefix + "PASSWORD"] = prompt.ask(
-                label + " password", previous_values.get(prefix + "PASSWORD"), secret=True
+            spec.private_values[password_key] = prompt.ask(
+                label + " password", previous_values.get(password_key), secret=True
             )
-    spec.changed_private = {
-        k for k, v in spec.private_values.items() if previous_values.get(k) != v
-    }
-    # Switching authentication must remove the old mechanism from all writer/reader roles.
-    for prefix in ("MLFLOW_TRACKING_", "ML_SERVING_MLFLOW_"):
-        removed = {
-            k for k in previous_values if k.startswith(prefix) and k not in spec.private_values
-        }
-        spec.changed_private.update(removed)
+            spec.changed_private.update((username_key, password_key))
 
 
 def configure(project: Path, private: Path, profile: str, prompt: Prompt) -> SetupPlan:

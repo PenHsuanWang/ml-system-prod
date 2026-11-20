@@ -152,15 +152,14 @@ def role_configurations(spec: SetupSpec) -> dict[str, dict[str, str]]:
         previous = spec.existing_roles.get(role, {})
         if set(previous) - keys:
             raise SetupError("Existing role file contains unsupported or overprivileged fields.")
-        configuration = {k: v for k, v in previous.items() if k in keys}
+        configuration = previous.copy()
         for group in (WRITER_KEYS, READER_KEYS):
-            if spec.changed_private & group:
+            allowed = group & keys
+            if allowed and (spec.changed_private & group or not configuration.keys() & group):
                 configuration = {k: v for k, v in configuration.items() if k not in group}
-                configuration.update(
-                    {k: v for k, v in spec.private_values.items() if k in group & keys}
-                )
+                configuration.update({k: v for k, v in spec.private_values.items() if k in allowed})
         for key, value in spec.private_values.items():
-            if key in keys and (key not in configuration or key in spec.changed_private):
+            if key in REQUIRED[role] and (key not in configuration or key in spec.changed_private):
                 configuration[key] = value
         if not REQUIRED[role] <= set(configuration) or not set(configuration) <= keys:
             raise SetupError("Missing or unsupported role configuration fields.")

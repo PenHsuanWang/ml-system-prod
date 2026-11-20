@@ -122,8 +122,9 @@ Token 中的 `$`、`#`、引號或反斜線被改寫。既有管理欄位若使�
 `${VAR}`，先停止並要求明確值，不執行 shell 或偷偷讀取環境來展開；非管理 references
 維持原文。請把 `.env.ml*` 當 Compose env files 使用，不以 shell `source` 載入。
 
-既有角色的不同帳號／憑證在保留答案時會保留；明確更改共同連線值才更新相關角色。
-切換 MLflow Basic／Token 時會移除舊機制，並再次檢查每個 role 的必要與允許欄位。
+MLflow writer／reader 已有憑證時，選擇預設的 `keep` 會保留各角色原有的認證方式與憑證。
+明確選擇 `basic` 或 `token` 會將指定的憑證套用到對應的所有角色，並移除舊認證欄位。
+明確更改共同連線值才更新相關角色。Wizard 會再次檢查各角色的必要與允許欄位。
 本地舊密碼若不符合原 Compose URI 的安全字元集合，Wizard 停止而不自行旋轉。
 
 私有檔案與備份為 `0600`，新目錄為 `0700`；既有 private root 亦須為該使用者擁有的
@@ -134,9 +135,10 @@ Runtime UID／GID 必須與執行初始化的非 root 使用者一致；不自�
 Wizard 拒絕 tracked／未被 Git 忽略的私有輸出、symlink、hardlink、FIFO、路徑 traversal、
 重複 env／JSON keys 與寫入前發生的檔案變動。目錄鎖防止兩個 setup writer 同時發布。
 每個檔案使用 owner-only 暫存、fsync 與原子替換；一般寫入失敗會回復已發布的檔案。
+還原檔與備份各自獨立，修改還原檔時備份仍保留原始內容。
 
 **多檔案不是檔案系統交易。** Process kill／斷電／無法回復的 I/O failure 可能留下
-`<filename>.init-old-*`／`.init-new-*`；它們仍是 private、Git-ignored 的檔案。
+`<filename>.init-old-*`／`.init-new-*`／`.init-backup-*`；它們仍是 private、Git-ignored 的檔案。
 發現殘留時，新一次初始化會停止。先保留所有檔案，核對 old bytes、已發布設定與
 備份，再由 operator 決定回復／清理；不要把不完整設定當作部署成功。
 

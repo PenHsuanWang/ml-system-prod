@@ -5,6 +5,7 @@ import subprocess
 import pytest
 
 from bootstrap.init_files import (
+    PrivateFiles,
     SetupError,
     absolute_path,
     env_quote,
@@ -152,7 +153,10 @@ def test_concurrent_change_rejected_without_overwrite(files, project, exists):
     assert path.read_bytes() == b"concurrent-value"
 
 
-def test_multifile_failure_restores_old_removes_new_and_cleans_staging(files, project, monkeypatch):
+@pytest.mark.parametrize("choice", ["overwrite", "backup"])
+def test_multifile_failure_restores_old_removes_new_and_cleans_staging(
+    files, project, monkeypatch, choice
+):
     first, second, third = [project / (".env." + name) for name in ["one", "two", "three"]]
     private(first, b"old-one")
     private(third, b"old-three")
@@ -168,9 +172,15 @@ def test_multifile_failure_restores_old_removes_new_and_cleans_staging(files, pr
 
     monkeypatch.setattr(os, "replace", fail_third)
     with pytest.raises(OSError):
-        files.write(outputs, dict.fromkeys(outputs, "overwrite"))
+        files.write(outputs, {first: choice, second: "overwrite", third: "overwrite"})
     assert first.read_bytes() == b"old-one" and third.read_bytes() == b"old-three"
     assert not second.exists() and not list(project.glob("*.init-*"))
+    assert PrivateFiles(project).read(first) == b"old-one"
+    if choice == "backup":
+        (backup,) = project.glob(first.name + ".bak-*")
+        first.write_bytes(b"edited-after-rollback")
+        assert backup.read_bytes() == b"old-one"
+        assert backup.stat().st_nlink == 1
 
 
 def test_incomplete_rollback_retains_private_ignored_old_bytes(files, project, monkeypatch):

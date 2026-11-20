@@ -12,6 +12,7 @@ import warnings
 import pytest
 
 from bootstrap.init_cli import Cancelled, Prompt, configure, main
+from bootstrap.init_config import build_plan
 from bootstrap.init_files import env_values
 
 
@@ -269,3 +270,44 @@ def test_external_wizard_keeps_credentials_hidden(project, external, monkeypatch
     ]:
         assert value not in captured.out + captured.err
     assert "ML_DATABASE_URL" not in rendered
+
+
+@pytest.mark.parametrize("writer_mode", ["", "token"])
+def test_external_wizard_retains_mixed_role_auth_unless_explicitly_replaced(
+    external, files, monkeypatch, writer_mode
+):
+    plan = build_plan(external, files)
+    files.write(plan.outputs, dict.fromkeys(plan.outputs, "overwrite"), plan.directories)
+    roles = external.private / "roles"
+    writer = "MLFLOW_TRACKING_"
+    reader = "ML_SERVING_MLFLOW_"
+    expected = {}
+    for role in ("supervisor", "control", "operator"):
+        path = roles / (role + ".json")
+        config = json.loads(path.read_text())
+        if role == "supervisor":
+            del config[writer + "USERNAME"], config[writer + "PASSWORD"]
+            config[writer + "TOKEN"] = "supervisor-test-token"
+        if role == "operator":
+            del config[reader + "TOKEN"]
+            config.update(
+                ML_SERVING_MLFLOW_USERNAME="operator-reader",
+                ML_SERVING_MLFLOW_PASSWORD="operator-reader-test-password",
+            )
+        path.write_text(json.dumps(config))
+        if writer_mode == "token":
+            config.pop(writer + "USERNAME", None)
+            config.pop(writer + "PASSWORD", None)
+            config[writer + "TOKEN"] = "supervisor-test-token"
+        expected[path] = config
+
+    answers(
+        monkeypatch,
+        {
+            "MLflow writer authentication": writer_mode,
+            "Existing file": "overwrite",
+            "Write these files": "y",
+        },
+    )
+    configure(external.project, external.private, "external", Prompt())
+    assert {path: json.loads(path.read_text()) for path in expected} == expected

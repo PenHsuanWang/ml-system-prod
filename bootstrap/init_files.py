@@ -292,13 +292,18 @@ class PrivateFiles:
                     stamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
                     backup = path.with_name(path.name + ".bak-" + stamp + "-" + uuid.uuid4().hex)
                     self.guard(backup)
-                    os.link(
-                        recovery[path],
-                        backup.name,
-                        src_dir_fd=parents[path],
-                        dst_dir_fd=parents[path],
-                        follow_symlinks=False,
-                    )
+                    # Stage separate bytes so rollback can restore a single-link file.
+                    backup_source = self._stage(parents[path], original.data, path, "backup")
+                    try:
+                        os.link(
+                            backup_source,
+                            backup.name,
+                            src_dir_fd=parents[path],
+                            dst_dir_fd=parents[path],
+                            follow_symlinks=False,
+                        )
+                    finally:
+                        os.unlink(backup_source, dir_fd=parents[path])
                     backups.append(backup)
                 os.replace(
                     staged[path], path.name, src_dir_fd=parents[path], dst_dir_fd=parents[path]
