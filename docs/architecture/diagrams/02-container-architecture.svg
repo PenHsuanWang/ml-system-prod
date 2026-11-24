@@ -1,0 +1,310 @@
+<svg aria-labelledby="svg-title svg-desc" xmlns="http://www.w3.org/2000/svg" role="img" width="1500" height="1225" viewBox="0 0 1500 1225">
+  <title id="svg-title">ML platform | executable roles and shared state</title>
+  <desc id="svg-desc">C4 Level 2  ·  Local-process backends with MLflow tracking  ·  Optional governed ingestion shown | 8c9023b00828000287e169ac760afe57102d7353</desc>
+  <defs>
+    <marker id="arrow-sync" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#3f6574" />
+    </marker>
+    <marker id="arrow-return" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#667c84" />
+    </marker>
+    <marker id="arrow-async" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#477366" />
+    </marker>
+    <marker id="arrow-data" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#706247" />
+    </marker>
+    <marker id="arrow-manual" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#915e40" />
+    </marker>
+    <marker id="arrow-observe" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#795e79" />
+    </marker>
+    <marker id="arrow-launch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#386c67" />
+    </marker>
+    <marker id="arrow-dependency" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#6b6785" />
+    </marker>
+    <marker id="arrow-wire" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#986f40" />
+    </marker>
+    <marker id="arrow-branch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#985953" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="100%" height="100%" fill="white" />
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="32" y="26" font-size="12" font-weight="bold" text-anchor="start" fill="#41585c">ML SYSTEM EBM   /   ARCHITECTURE GUIDE</text>
+    <text x="1468" y="26" font-size="12" font-weight="normal" text-anchor="end" fill="#41585c">02   /   8c9023b0</text>
+    <text x="32" y="61" font-size="28" font-weight="bold" text-anchor="start" fill="#223b40">ML platform | executable roles and shared state</text>
+    <text x="32" y="88" font-size="15" font-weight="normal" text-anchor="start" fill="#41585c">C4 Level 2  ·  Local-process backends with MLflow tracking  ·  Optional governed ingestion shown</text>
+    <g id="platform" data-parent="" data-kind="system">
+      <title>Governed ML platform | Separately running application roles and platform-owned stores</title>
+      <rect x="32" y="120" width="1436" height="710" rx="4" fill="#eff5f3" stroke="#688983" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="44" y="140" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Governed ML platform</text>
+      <text x="44" y="157" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Separately running application roles and platform-owned stores</text>
+    </g>
+    <g id="management" data-parent="platform" data-kind="process">
+      <title>Management API | HTTP · admission and governance</title>
+      <rect x="70" y="225" width="200" height="72" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="170.0" y="258.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Management API</text>
+      <text x="170.0" y="275.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">HTTP · admission and governance</text>
+    </g>
+    <g id="mongo" data-parent="platform" data-kind="storage">
+      <title>MongoDB | Accounts and sessions</title>
+      <rect x="335" y="225" width="208" height="72" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="439.0" y="258.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">MongoDB</text>
+      <text x="439.0" y="275.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Accounts and sessions</text>
+    </g>
+    <g id="gateway" data-parent="platform" data-kind="process">
+      <title>Prediction Gateway | HTTP · active route and identity</title>
+      <rect x="618" y="225" width="202" height="72" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="719.0" y="258.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Prediction Gateway</text>
+      <text x="719.0" y="275.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">HTTP · active route and identity</text>
+    </g>
+    <g id="serving" data-parent="platform" data-kind="process">
+      <title>Serving runtime | One fixed model generation</title>
+      <rect x="906" y="225" width="202" height="72" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1007.0" y="258.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Serving runtime</text>
+      <text x="1007.0" y="275.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">One fixed model generation</text>
+    </g>
+    <g id="control" data-parent="platform" data-kind="process">
+      <title>Control | Reconcile deployment state</title>
+      <rect x="1192" y="225" width="208" height="72" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1296.0" y="258.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Control</text>
+      <text x="1296.0" y="275.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Reconcile deployment state</text>
+    </g>
+    <g id="sql" data-parent="platform" data-kind="storage">
+      <title>Application PostgreSQL | Jobs, attempts, outbox, dataset metadata, approval evidence, deployments and routes</title>
+      <rect x="375" y="383" width="655" height="74" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="702.5" y="417.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Application PostgreSQL</text>
+      <text x="702.5" y="434.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Jobs, attempts, outbox, dataset metadata, approval evidence, deployments and routes</text>
+    </g>
+    <g id="ingestion" data-parent="platform" data-kind="process">
+      <title>Ingestion worker | Optional · SQL poller</title>
+      <rect x="68" y="540" width="198" height="72" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="167.0" y="573.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Ingestion worker</text>
+      <text x="167.0" y="590.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Optional · SQL poller</text>
+    </g>
+    <g id="relay" data-parent="platform" data-kind="process">
+      <title>Outbox Relay | Lease and publish</title>
+      <rect x="335" y="540" width="180" height="72" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="425.0" y="573.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Outbox Relay</text>
+      <text x="425.0" y="590.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Lease and publish</text>
+    </g>
+    <g id="rabbit" data-parent="platform" data-kind="storage">
+      <title>RabbitMQ | Durable command queue</title>
+      <rect x="580" y="540" width="190" height="72" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="675.0" y="573.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">RabbitMQ</text>
+      <text x="675.0" y="590.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Durable command queue</text>
+    </g>
+    <g id="supervisor" data-parent="platform" data-kind="process">
+      <title>Training Supervisor | Taskiq · manual ACK</title>
+      <rect x="849" y="540" width="206" height="72" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="952.0" y="573.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Training Supervisor</text>
+      <text x="952.0" y="590.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Taskiq · manual ACK</text>
+    </g>
+    <g id="compute" data-parent="platform" data-kind="process">
+      <title>Training compute | Isolated child · CPU fit</title>
+      <rect x="1184" y="540" width="214" height="72" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1291.0" y="573.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Training compute</text>
+      <text x="1291.0" y="590.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Isolated child · CPU fit</text>
+    </g>
+    <g id="files" data-parent="platform" data-kind="storage">
+      <title>Runtime filesystem | Raw snapshots, datasets and execution directories</title>
+      <rect x="336" y="716" width="365" height="72" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="518.5" y="749.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Runtime filesystem</text>
+      <text x="518.5" y="766.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Raw snapshots, datasets and execution directories</text>
+    </g>
+    <g id="redis" data-parent="platform" data-kind="storage">
+      <title>Redis | Technical terminal snapshot</title>
+      <rect x="824" y="638" width="214" height="56" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="931.0" y="663.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Redis</text>
+      <text x="931.0" y="680.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Technical terminal snapshot</text>
+    </g>
+    <g id="source" data-parent="" data-kind="external">
+      <title>Approved source | Configured file or Databricks SQL</title>
+      <rect x="66" y="910" width="232" height="72" rx="4" fill="#f4ebe0" stroke="#a18c70" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="182.0" y="943.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Approved source</text>
+      <text x="182.0" y="960.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Configured file or Databricks SQL</text>
+    </g>
+    <g id="mlflow" data-parent="" data-kind="external">
+      <title>MLflow | Tracking and Registry API</title>
+      <rect x="907" y="910" width="210" height="72" rx="4" fill="#f4ebe0" stroke="#a18c70" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1012.0" y="943.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">MLflow</text>
+      <text x="1012.0" y="960.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Tracking and Registry API</text>
+    </g>
+    <g id="tracker_db" data-parent="" data-kind="storage">
+      <title>Tracking PostgreSQL | MLflow metadata</title>
+      <rect x="1212" y="881" width="224" height="66" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1324.0" y="911.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Tracking PostgreSQL</text>
+      <text x="1324.0" y="928.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">MLflow metadata</text>
+    </g>
+    <g id="artifacts" data-parent="" data-kind="storage">
+      <title>MinIO | S3-compatible artifact store</title>
+      <rect x="1212" y="1003" width="224" height="66" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1324.0" y="1033.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">MinIO</text>
+      <text x="1324.0" y="1050.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">S3-compatible artifact store</text>
+    </g>
+    <path d="M 270 260 L 335 260" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="identity-management" d="M 270 260 L 335 260" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="management" data-target="mongo" data-kind="sync" data-evidence="E01">
+      <title>Authenticate the principal via the identity module</title>
+    </path>
+    <path d="M 618 260 L 543 260" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="identity-gateway" d="M 618 260 L 543 260" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="gateway" data-target="mongo" data-kind="sync" data-evidence="E07">
+      <title>Resolve the token and active session</title>
+    </path>
+    <path d="M 965 225 L 965 194 L 465 194 L 465 225" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="identity-serving" d="M 965 225 L 965 194 L 465 194 L 465 225" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="serving" data-target="mongo" data-kind="sync" data-evidence="E07">
+      <title>Authenticate the forwarded bearer</title>
+    </path>
+    <path d="M 820 260 L 906 260" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="serve-request" d="M 820 260 L 906 260" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="gateway" data-target="serving" data-kind="sync" data-evidence="E07">
+      <title>HTTP readiness and prediction at the resolved address</title>
+    </path>
+    <path d="M 1192 261 L 1108 261" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="ensure-serving" d="M 1192 261 L 1108 261" fill="none" stroke="#386c67" stroke-width="1.8" marker-end="url(#arrow-launch)" data-source="control" data-target="serving" data-kind="launch" data-evidence="E06">
+      <title>Ensure or retire the generation's local process</title>
+    </path>
+    <path d="M 165 297 L 165 344 L 456 344 L 456 383" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="admission" d="M 165 297 L 165 344 L 456 344 L 456 383" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="management" data-target="sql" data-kind="data" data-evidence="E03,E06" stroke-dasharray="3 3">
+      <title>Persist jobs, approvals and deployment requests</title>
+    </path>
+    <path d="M 723 297 L 723 383" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="route" d="M 723 297 L 723 383" fill="none" stroke="#795e79" stroke-width="1.8" marker-end="url(#arrow-observe)" data-source="gateway" data-target="sql" data-kind="observe" data-evidence="E07" stroke-dasharray="7 3 2 3">
+      <title>Read deployment and recheck the active route</title>
+    </path>
+    <path d="M 1310 297 L 1310 344 L 949 344 L 949 383" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="reconcile" d="M 1310 297 L 1310 344 L 949 344 L 949 383" fill="none" stroke="#795e79" stroke-width="1.8" marker-end="url(#arrow-observe)" data-source="control" data-target="sql" data-kind="observe" data-evidence="E06" stroke-dasharray="7 3 2 3">
+      <title>Poll, fence and update durable state</title>
+    </path>
+    <path d="M 160 540 L 160 484 L 406 484 L 406 457" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="ingest-state" d="M 160 540 L 160 484 L 406 484 L 406 457" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="ingestion" data-target="sql" data-kind="data" data-evidence="E05" stroke-dasharray="3 3">
+      <title>Claim ingestion work and commit snapshot metadata</title>
+    </path>
+    <path d="M 450 540 L 450 457" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="lease" d="M 450 540 L 450 457" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="relay" data-target="sql" data-kind="data" data-evidence="E03" stroke-dasharray="3 3">
+      <title>Lease the outbox and record publication</title>
+    </path>
+    <path d="M 515 565 L 580 565" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="publish" d="M 515 565 L 580 565" fill="none" stroke="#477366" stroke-width="1.8" marker-end="url(#arrow-async)" data-source="relay" data-target="rabbit" data-kind="async" data-evidence="E03" stroke-dasharray="8 4">
+      <title>AMQP publish with confirmation</title>
+    </path>
+    <path d="M 770 563 L 849 563" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="delivery" d="M 770 563 L 849 563" fill="none" stroke="#477366" stroke-width="1.8" marker-end="url(#arrow-async)" data-source="rabbit" data-target="supervisor" data-kind="async" data-evidence="E03" stroke-dasharray="8 4">
+      <title>Deliver the training command</title>
+    </path>
+    <path d="M 849 591 L 770 591" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="ack" d="M 849 591 L 770 591" fill="none" stroke="#477366" stroke-width="1.8" marker-end="url(#arrow-async)" data-source="supervisor" data-target="rabbit" data-kind="async" data-evidence="E03" stroke-dasharray="8 4">
+      <title>ACK after the terminal snapshot succeeds</title>
+    </path>
+    <path d="M 944 540 L 944 457" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="attempt" d="M 944 540 L 944 457" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="supervisor" data-target="sql" data-kind="data" data-evidence="E04" stroke-dasharray="3 3">
+      <title>Claim, fence and finalize the attempt</title>
+    </path>
+    <path d="M 1055 574 L 1184 574" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="fit" d="M 1055 574 L 1184 574" fill="none" stroke="#386c67" stroke-width="1.8" marker-end="url(#arrow-launch)" data-source="supervisor" data-target="compute" data-kind="launch" data-evidence="E04">
+      <title>Launch the prepared training child</title>
+    </path>
+    <path d="M 209 612 L 209 754 L 336 754" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="raw" d="M 209 612 L 209 754 L 336 754" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="ingestion" data-target="files" data-kind="data" data-evidence="E05" stroke-dasharray="3 3">
+      <title>Publish the immutable raw payload</title>
+    </path>
+    <path d="M 122 612 L 122 910" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="fetch" d="M 122 612 L 122 910" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="ingestion" data-target="source" data-kind="data" data-evidence="E05" stroke-dasharray="3 3">
+      <title>Acquire data through the approved adapter</title>
+    </path>
+    <path d="M 1283 612 L 1283 704 L 571 704 L 571 716" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="fit-files" d="M 1283 612 L 1283 704 L 571 704 L 571 716" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="compute" data-target="files" data-kind="data" data-evidence="E04" stroke-dasharray="3 3">
+      <title>Read dataset bytes and write execution output</title>
+    </path>
+    <path d="M 914 612 L 914 638" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="ack-snapshot" d="M 914 612 L 914 638" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="supervisor" data-target="redis" data-kind="data" data-evidence="E03" stroke-dasharray="3 3">
+      <title>Persist the technical terminal snapshot</title>
+    </path>
+    <path d="M 1038 540 L 1038 513 L 1411 513 L 1411 839 L 1040 839 L 1040 910" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="register" d="M 1038 540 L 1038 513 L 1411 513 L 1411 839 L 1040 839 L 1040 910" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="supervisor" data-target="mlflow" data-kind="data" data-evidence="E04" stroke-dasharray="3 3">
+      <title>Log run artifacts and register the bundle</title>
+    </path>
+    <path d="M 1030 225 L 1030 179 L 1432 179 L 1432 859 L 1100 859 L 1100 910" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="materialize" d="M 1030 225 L 1030 179 L 1432 179 L 1432 859 L 1100 859 L 1100 910" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="serving" data-target="mlflow" data-kind="data" data-evidence="E07" stroke-dasharray="3 3">
+      <title>Fetch pinned bundle bytes on a startup cache miss</title>
+    </path>
+    <path d="M 1117 928 L 1166 928 L 1166 914 L 1212 914" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="track-metadata" d="M 1117 928 L 1166 928 L 1166 914 L 1212 914" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="mlflow" data-target="tracker_db" data-kind="data" data-evidence="E08" stroke-dasharray="3 3">
+      <title>Persist tracking metadata over PostgreSQL</title>
+    </path>
+    <path d="M 1117 963 L 1156 963 L 1156 1036 L 1212 1036" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="track-bytes" d="M 1117 963 L 1156 963 L 1156 1036 L 1212 1036" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="mlflow" data-target="artifacts" data-kind="data" data-evidence="E08" stroke-dasharray="3 3">
+      <title>Serve bundle artifacts via the S3 backend</title>
+    </path>
+    <rect x="284" y="238" width="36" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="302.0" y="250" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">Auth</text>
+    <rect x="563" y="238" width="36" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="581.0" y="250" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">Auth</text>
+    <rect x="652" y="172" width="127" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="715.5" y="184" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">Revalidate bearer</text>
+    <rect x="845" y="238" width="36" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="863.0" y="250" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">HTTP</text>
+    <rect x="1114" y="239" width="71" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1149.5" y="251" font-size="12" font-weight="normal" text-anchor="middle" fill="#386c67">Reconcile</text>
+    <rect x="257" y="322" width="106" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="310.0" y="334" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Admit / govern</text>
+    <rect x="727" y="331" width="78" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="766.0" y="343" font-size="12" font-weight="normal" text-anchor="middle" fill="#795e79">Read route</text>
+    <rect x="1070" y="322" width="120" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1130.0" y="334" font-size="12" font-weight="normal" text-anchor="middle" fill="#795e79">Fence / activate</text>
+    <rect x="230" y="462" width="106" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="283.0" y="474" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Claim / commit</text>
+    <rect x="454" y="490" width="92" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="500.0" y="502" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Lease outbox</text>
+    <rect x="518" y="543" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="546.5" y="555" font-size="12" font-weight="normal" text-anchor="middle" fill="#477366">Publish</text>
+    <rect x="780" y="541" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="808.5" y="553" font-size="12" font-weight="normal" text-anchor="middle" fill="#477366">Deliver</text>
+    <rect x="796" y="569" width="29" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="810.5" y="581" font-size="12" font-weight="normal" text-anchor="middle" fill="#477366">ACK</text>
+    <rect x="948" y="490" width="99" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="997.5" y="502" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Claim attempt</text>
+    <rect x="1080" y="552" width="78" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1119.0" y="564" font-size="12" font-weight="normal" text-anchor="middle" fill="#386c67">Launch fit</text>
+    <rect x="213" y="674" width="120" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="273.0" y="686" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Publish snapshot</text>
+    <rect x="33" y="752" width="85" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="75.5" y="764" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Read source</text>
+    <rect x="828" y="708" width="197" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="926.5" y="720" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Read dataset / write result</text>
+    <rect x="918" y="616" width="99" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="967.5" y="628" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Save snapshot</text>
+    <rect x="1168" y="491" width="113" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1224.5" y="503" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Register bundle</text>
+    <rect x="1287" y="495" width="141" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1357.5" y="507" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Fetch pinned bundle</text>
+    <rect x="1126" y="906" width="29" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1140.5" y="918" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">SQL</text>
+    <rect x="1160" y="990" width="22" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1171.0" y="1002" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">S3</text>
+    <path d="M 32 1093 H 1468" stroke="#bdc9c8" />
+    <path d="M 32 1117 h 25" stroke="#3f6574" stroke-width="2" stroke-dasharray="none" marker-end="url(#arrow-sync)" />
+    <text x="64" y="1121" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Call</text>
+    <path d="M 120 1117 h 25" stroke="#386c67" stroke-width="2" stroke-dasharray="none" marker-end="url(#arrow-launch)" />
+    <text x="152" y="1121" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Launch</text>
+    <path d="M 224 1117 h 25" stroke="#706247" stroke-width="2" stroke-dasharray="3 3" marker-end="url(#arrow-data)" />
+    <text x="256" y="1121" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">State / artifact I/O</text>
+    <path d="M 440 1117 h 25" stroke="#795e79" stroke-width="2" stroke-dasharray="7 3 2 3" marker-end="url(#arrow-observe)" />
+    <text x="472" y="1121" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Observe / reconcile</text>
+    <path d="M 648 1117 h 25" stroke="#477366" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#arrow-async)" />
+    <text x="680" y="1121" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Message</text>
+    <rect x="32" y="1138" width="13" height="13" fill="#eff5f3" stroke="#688983" />
+    <text x="52" y="1149" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Product</text>
+    <rect x="121" y="1138" width="13" height="13" fill="#e3edf1" stroke="#6e909b" />
+    <text x="141" y="1149" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">OS process / role</text>
+    <rect x="290" y="1138" width="13" height="13" fill="#e6edeb" stroke="#78918c" />
+    <text x="310" y="1149" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Store / volume</text>
+    <rect x="435" y="1138" width="13" height="13" fill="#f4ebe0" stroke="#a18c70" />
+    <text x="455" y="1149" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">External system</text>
+    <text x="32" y="1172" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Process count and physical placement vary by profile. Compute and Serving are launched roles. See views 06–08 for placement.</text>
+    <text x="32" y="1195" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">MLflow backing stores follow the self-hosted Compose reference. Dataset preparation, approval and deployment each require explicit requests.</text>
+  </g>
+</svg>

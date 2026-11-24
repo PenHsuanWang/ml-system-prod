@@ -1,0 +1,439 @@
+<svg aria-labelledby="svg-title svg-desc" xmlns="http://www.w3.org/2000/svg" role="img" width="1575" height="2132" viewBox="0 0 1575 2132">
+  <title id="svg-title">Training, delivery and release decisions</title>
+  <desc id="svg-desc">Reference worker with local compute and MLflow. Each guarded exit applies only when its condition holds. | 8c9023b00828000287e169ac760afe57102d7353</desc>
+  <defs>
+    <marker id="arrow-sync" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#3f6574" />
+    </marker>
+    <marker id="arrow-return" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#667c84" />
+    </marker>
+    <marker id="arrow-async" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#477366" />
+    </marker>
+    <marker id="arrow-data" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#706247" />
+    </marker>
+    <marker id="arrow-manual" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#915e40" />
+    </marker>
+    <marker id="arrow-observe" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#795e79" />
+    </marker>
+    <marker id="arrow-launch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#386c67" />
+    </marker>
+    <marker id="arrow-dependency" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#6b6785" />
+    </marker>
+    <marker id="arrow-wire" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#986f40" />
+    </marker>
+    <marker id="arrow-branch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#985953" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="100%" height="100%" fill="white" />
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="32" y="26" font-size="12" font-weight="bold" text-anchor="start" fill="#41585c">ML SYSTEM EBM   /   ARCHITECTURE GUIDE</text>
+    <text x="1543" y="26" font-size="12" font-weight="normal" text-anchor="end" fill="#41585c">04   /   8c9023b0</text>
+    <text x="32" y="61" font-size="28" font-weight="bold" text-anchor="start" fill="#223b40">Training, delivery and release decisions</text>
+    <text x="32" y="88" font-size="15" font-weight="normal" text-anchor="start" fill="#41585c">Reference worker with local compute and MLflow. Each guarded exit applies only when its condition holds.</text>
+    <g id="scientist" data-parent="" data-kind="participant">
+      <title>Scientist | ml:train</title>
+      <rect x="36" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="90.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Scientist</text>
+      <text x="90.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml:train</text>
+    </g>
+    <path id="life-scientist" d="M 90 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="reviewer" data-parent="" data-kind="participant">
+      <title>Reviewer | ml:model:approve</title>
+      <rect x="152" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="206.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Reviewer</text>
+      <text x="206.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml:model:approve</text>
+    </g>
+    <path id="life-reviewer" d="M 206 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="deployer" data-parent="" data-kind="participant">
+      <title>Deployer | ml:deploy</title>
+      <rect x="269" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="323.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Deployer</text>
+      <text x="323.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml:deploy</text>
+    </g>
+    <path id="life-deployer" d="M 323 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="api" data-parent="" data-kind="participant">
+      <title>Management | HTTP API</title>
+      <rect x="385" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="439.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Management</text>
+      <text x="439.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">HTTP API</text>
+    </g>
+    <path id="life-api" d="M 439 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="control" data-parent="" data-kind="participant">
+      <title>Control | reconciler</title>
+      <rect x="501" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="555.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Control</text>
+      <text x="555.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">reconciler</text>
+    </g>
+    <path id="life-control" d="M 555 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="serving" data-parent="" data-kind="participant">
+      <title>Serving | child process</title>
+      <rect x="617" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="671.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Serving</text>
+      <text x="671.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">child process</text>
+    </g>
+    <path id="life-serving" d="M 671 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="sql" data-parent="" data-kind="participant">
+      <title>SQL | business state</title>
+      <rect x="734" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="788.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">SQL</text>
+      <text x="788.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">business state</text>
+    </g>
+    <path id="life-sql" d="M 788 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="relay" data-parent="" data-kind="participant">
+      <title>Relay | outbox poller</title>
+      <rect x="850" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="904.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Relay</text>
+      <text x="904.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">outbox poller</text>
+    </g>
+    <path id="life-relay" d="M 904 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="rabbit" data-parent="" data-kind="participant">
+      <title>RabbitMQ | command queue</title>
+      <rect x="966" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1020.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">RabbitMQ</text>
+      <text x="1020.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">command queue</text>
+    </g>
+    <path id="life-rabbit" d="M 1020 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="worker" data-parent="" data-kind="participant">
+      <title>Supervisor | Taskiq worker</title>
+      <rect x="1082" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1136.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Supervisor</text>
+      <text x="1136.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Taskiq worker</text>
+    </g>
+    <path id="life-worker" d="M 1136 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="compute" data-parent="" data-kind="participant">
+      <title>Compute | child process</title>
+      <rect x="1198" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1252.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Compute</text>
+      <text x="1252.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">child process</text>
+    </g>
+    <path id="life-compute" d="M 1252 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="tracker" data-parent="" data-kind="participant">
+      <title>MLflow | model registry</title>
+      <rect x="1315" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1369.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">MLflow</text>
+      <text x="1369.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">model registry</text>
+    </g>
+    <path id="life-tracker" d="M 1369 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="redis" data-parent="" data-kind="participant">
+      <title>Redis | ACK evidence</title>
+      <rect x="1431" y="114" width="108" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1485.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Redis</text>
+      <text x="1485.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ACK evidence</text>
+    </g>
+    <path id="life-redis" d="M 1485 175 V 1993" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <rect x="24" y="197" width="1527" height="27" rx="3" fill="#e7efed" />
+    <text x="34" y="216" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Accept a training request</text>
+    <text x="90" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Scientist</text>
+    <text x="206" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Reviewer</text>
+    <text x="323" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Deployer</text>
+    <text x="439" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Management</text>
+    <text x="555" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Control</text>
+    <text x="671" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Serving</text>
+    <text x="788" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">SQL</text>
+    <text x="904" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Relay</text>
+    <text x="1020" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">RabbitMQ</text>
+    <text x="1136" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Supervisor</text>
+    <text x="1252" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Compute</text>
+    <text x="1369" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">MLflow</text>
+    <text x="1485" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Redis</text>
+    <path d="M 90 287 L 439 287" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-01" d="M 90 287 L 439 287" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="scientist" data-target="api" data-kind="sync" data-evidence="E01">
+      <title>POST /api/v1/training/jobs + Idempotency-Key</title>
+    </path>
+    <text x="264.5" y="280" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">POST /api/v1/training/jobs + Idempotency-Key</text>
+    <path d="M 439 321 L 788 321" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-02" d="M 439 321 L 788 321" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="api" data-target="sql" data-kind="data" data-evidence="E03" stroke-dasharray="3 3">
+      <title>Commit job, attempt, key, outbox and audit together</title>
+    </path>
+    <text x="613.5" y="314" font-size="14" font-weight="normal" text-anchor="middle" fill="#706247" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Commit job, attempt, key, outbox and audit together</text>
+    <path d="M 439 355 L 90 355" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-03" d="M 439 355 L 90 355" fill="none" stroke="#667c84" stroke-width="1.8" marker-end="url(#arrow-return)" data-source="api" data-target="scientist" data-kind="return" data-evidence="E01" stroke-dasharray="5 4">
+      <title>202 · job_id and status_url</title>
+    </path>
+    <text x="264.5" y="348" font-size="14" font-weight="normal" text-anchor="middle" fill="#667c84" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">202 · job_id and status_url</text>
+    <rect x="24" y="377" width="1527" height="27" rx="3" fill="#e7efed" />
+    <text x="34" y="396" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Publish the durable command</text>
+    <text x="90" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Scientist</text>
+    <text x="206" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Reviewer</text>
+    <text x="323" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Deployer</text>
+    <text x="439" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Management</text>
+    <text x="555" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Control</text>
+    <text x="671" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Serving</text>
+    <text x="788" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">SQL</text>
+    <text x="904" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Relay</text>
+    <text x="1020" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">RabbitMQ</text>
+    <text x="1136" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Supervisor</text>
+    <text x="1252" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Compute</text>
+    <text x="1369" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">MLflow</text>
+    <text x="1485" y="423" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Redis</text>
+    <path d="M 904 467 L 788 467" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-04" d="M 904 467 L 788 467" fill="none" stroke="#795e79" stroke-width="1.8" marker-end="url(#arrow-observe)" data-source="relay" data-target="sql" data-kind="observe" data-evidence="E03" stroke-dasharray="7 3 2 3">
+      <title>Lease pending outbox row</title>
+    </path>
+    <text x="846.0" y="460" font-size="14" font-weight="normal" text-anchor="middle" fill="#795e79" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Lease pending outbox row</text>
+    <path d="M 904 501 L 1020 501" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-05" d="M 904 501 L 1020 501" fill="none" stroke="#477366" stroke-width="1.8" marker-end="url(#arrow-async)" data-source="relay" data-target="rabbit" data-kind="async" data-evidence="E03" stroke-dasharray="8 4">
+      <title>Publish persistent command_id</title>
+    </path>
+    <text x="962.0" y="494" font-size="14" font-weight="normal" text-anchor="middle" fill="#477366" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Publish persistent command_id</text>
+    <path d="M 904 535 L 788 535" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-06" d="M 904 535 L 788 535" fill="none" stroke="#985953" stroke-width="1.8" marker-end="url(#arrow-branch)" data-source="relay" data-target="sql" data-kind="branch" data-evidence="E03" stroke-dasharray="5 3">
+      <title>If publish fails → retry with backoff or mark DEAD</title>
+    </path>
+    <text x="846.0" y="528" font-size="14" font-weight="normal" text-anchor="middle" fill="#985953" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">If publish fails → retry with backoff or mark DEAD</text>
+    <path d="M 1020 569 L 904 569" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-07" d="M 1020 569 L 904 569" fill="none" stroke="#667c84" stroke-width="1.8" marker-end="url(#arrow-return)" data-source="rabbit" data-target="relay" data-kind="return" data-evidence="E03" stroke-dasharray="5 4">
+      <title>On success · publisher confirm</title>
+    </path>
+    <text x="962.0" y="562" font-size="14" font-weight="normal" text-anchor="middle" fill="#667c84" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">On success · publisher confirm</text>
+    <path d="M 904 603 L 788 603" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-08" d="M 904 603 L 788 603" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="relay" data-target="sql" data-kind="data" data-evidence="E03" stroke-dasharray="3 3">
+      <title>Mark leased command PUBLISHED</title>
+    </path>
+    <text x="846.0" y="596" font-size="14" font-weight="normal" text-anchor="middle" fill="#706247" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Mark leased command PUBLISHED</text>
+    <path d="M 1020 637 L 1136 637" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-09" d="M 1020 637 L 1136 637" fill="none" stroke="#477366" stroke-width="1.8" marker-end="url(#arrow-async)" data-source="rabbit" data-target="worker" data-kind="async" data-evidence="E03" stroke-dasharray="8 4">
+      <title>Deliver command · at least once</title>
+    </path>
+    <text x="1078.0" y="630" font-size="14" font-weight="normal" text-anchor="middle" fill="#477366" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Deliver command · at least once</text>
+    <rect x="24" y="659" width="1527" height="27" rx="3" fill="#e7efed" />
+    <text x="34" y="678" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Claim the attempt and launch compute</text>
+    <text x="90" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Scientist</text>
+    <text x="206" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Reviewer</text>
+    <text x="323" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Deployer</text>
+    <text x="439" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Management</text>
+    <text x="555" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Control</text>
+    <text x="671" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Serving</text>
+    <text x="788" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">SQL</text>
+    <text x="904" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Relay</text>
+    <text x="1020" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">RabbitMQ</text>
+    <text x="1136" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Supervisor</text>
+    <text x="1252" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Compute</text>
+    <text x="1369" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">MLflow</text>
+    <text x="1485" y="705" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Redis</text>
+    <path d="M 1136 749 L 788 749" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-10" d="M 1136 749 L 788 749" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="worker" data-target="sql" data-kind="sync" data-evidence="E03">
+      <title>Match durable intent and claim attempt</title>
+    </path>
+    <text x="962.0" y="742" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Match durable intent and claim attempt</text>
+    <path d="M 788 783 L 1136 783" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-11" d="M 788 783 L 1136 783" fill="none" stroke="#985953" stroke-width="1.8" marker-end="url(#arrow-branch)" data-source="sql" data-target="worker" data-kind="branch" data-evidence="E03" stroke-dasharray="5 3">
+      <title>If terminal → skip fit and go to ACK gate</title>
+    </path>
+    <text x="962.0" y="776" font-size="14" font-weight="normal" text-anchor="middle" fill="#985953" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">If terminal → skip fit and go to ACK gate</text>
+    <path d="M 1136 817 L 788 817" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-12" d="M 1136 817 L 788 817" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="worker" data-target="sql" data-kind="data" data-evidence="E04" stroke-dasharray="3 3">
+      <title>Persist prepared launch identity in execution_ref</title>
+    </path>
+    <text x="962.0" y="810" font-size="14" font-weight="normal" text-anchor="middle" fill="#706247" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Persist prepared launch identity in execution_ref</text>
+    <path d="M 1136 851 L 1252 851" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-13" d="M 1136 851 L 1252 851" fill="none" stroke="#386c67" stroke-width="1.8" marker-end="url(#arrow-launch)" data-source="worker" data-target="compute" data-kind="launch" data-evidence="E04">
+      <title>Spawn approved training process</title>
+    </path>
+    <text x="1194.0" y="844" font-size="14" font-weight="normal" text-anchor="middle" fill="#386c67" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Spawn approved training process</text>
+    <path d="M 1136 885 L 788 885" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-14" d="M 1136 885 L 788 885" fill="none" stroke="#985953" stroke-width="1.8" marker-end="url(#arrow-branch)" data-source="worker" data-target="sql" data-kind="branch" data-evidence="E04" stroke-dasharray="5 3">
+      <title>If physical stop is uncertain → record reconciliation state</title>
+    </path>
+    <text x="962.0" y="878" font-size="14" font-weight="normal" text-anchor="middle" fill="#985953" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">If physical stop is uncertain → record reconciliation state</text>
+    <path d="M 1252 919 L 1222 919 L 1222 932 L 1252 932" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-15" d="M 1252 919 L 1222 919 L 1222 932 L 1252 932" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="compute" data-target="compute" data-kind="data" data-evidence="E04" stroke-dasharray="3 3">
+      <title>Fit and write frozen bundle, metrics and result.json</title>
+    </path>
+    <text x="1252.0" y="912" font-size="14" font-weight="normal" text-anchor="middle" fill="#706247" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Fit and write frozen bundle, metrics and result.json</text>
+    <path d="M 1252 966 L 1136 966" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-16" d="M 1252 966 L 1136 966" fill="none" stroke="#667c84" stroke-width="1.8" marker-end="url(#arrow-return)" data-source="compute" data-target="worker" data-kind="return" data-evidence="E04" stroke-dasharray="5 4">
+      <title>After exit · result read from execution directory</title>
+    </path>
+    <text x="1194.0" y="959" font-size="14" font-weight="normal" text-anchor="middle" fill="#667c84" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">After exit · result read from execution directory</text>
+    <rect x="24" y="988" width="1527" height="27" rx="3" fill="#e7efed" />
+    <text x="34" y="1007" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Register and evaluate the exported bundle</text>
+    <text x="90" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Scientist</text>
+    <text x="206" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Reviewer</text>
+    <text x="323" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Deployer</text>
+    <text x="439" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Management</text>
+    <text x="555" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Control</text>
+    <text x="671" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Serving</text>
+    <text x="788" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">SQL</text>
+    <text x="904" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Relay</text>
+    <text x="1020" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">RabbitMQ</text>
+    <text x="1136" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Supervisor</text>
+    <text x="1252" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Compute</text>
+    <text x="1369" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">MLflow</text>
+    <text x="1485" y="1034" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Redis</text>
+    <path d="M 1136 1078 L 1369 1078" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-17" d="M 1136 1078 L 1369 1078" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="worker" data-target="tracker" data-kind="data" data-evidence="E04" stroke-dasharray="3 3">
+      <title>Log metrics and register frozen artifact</title>
+    </path>
+    <text x="1252.5" y="1071" font-size="14" font-weight="normal" text-anchor="middle" fill="#706247" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Log metrics and register frozen artifact</text>
+    <path d="M 1369 1112 L 1136 1112" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-18" d="M 1369 1112 L 1136 1112" fill="none" stroke="#667c84" stroke-width="1.8" marker-end="url(#arrow-return)" data-source="tracker" data-target="worker" data-kind="return" data-evidence="E04" stroke-dasharray="5 4">
+      <title>Registry version and artifact_ref</title>
+    </path>
+    <text x="1252.5" y="1105" font-size="14" font-weight="normal" text-anchor="middle" fill="#667c84" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Registry version and artifact_ref</text>
+    <path d="M 1136 1146 L 788 1146" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-19" d="M 1136 1146 L 788 1146" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="worker" data-target="sql" data-kind="data" data-evidence="E04" stroke-dasharray="3 3">
+      <title>Save immutable ModelBinding</title>
+    </path>
+    <text x="962.0" y="1139" font-size="14" font-weight="normal" text-anchor="middle" fill="#706247" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Save immutable ModelBinding</text>
+    <path d="M 1136 1180 L 1106 1180 L 1106 1193 L 1136 1193" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-20" d="M 1136 1180 L 1106 1180 L 1106 1193 L 1136 1193" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="worker" data-target="worker" data-kind="sync" data-evidence="E04">
+      <title>Evaluate exact artifact on held-out data</title>
+    </path>
+    <text x="1136.0" y="1173" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Evaluate exact artifact on held-out data</text>
+    <path d="M 1136 1227 L 788 1227" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-21" d="M 1136 1227 L 788 1227" fill="none" stroke="#985953" stroke-width="1.8" marker-end="url(#arrow-branch)" data-source="worker" data-target="sql" data-kind="branch" data-evidence="E04" stroke-dasharray="5 3">
+      <title>If evaluator raises → save ERROR; leave recovery pending</title>
+    </path>
+    <text x="962.0" y="1220" font-size="14" font-weight="normal" text-anchor="middle" fill="#985953" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">If evaluator raises → save ERROR; leave recovery pending</text>
+    <path d="M 1136 1261 L 788 1261" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-22" d="M 1136 1261 L 788 1261" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="worker" data-target="sql" data-kind="data" data-evidence="E04" stroke-dasharray="3 3">
+      <title>Save Evaluation, then finish job with evidence IDs</title>
+    </path>
+    <text x="962.0" y="1254" font-size="14" font-weight="normal" text-anchor="middle" fill="#706247" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Save Evaluation, then finish job with evidence IDs</text>
+    <rect x="24" y="1283" width="1527" height="27" rx="3" fill="#e7efed" />
+    <text x="34" y="1302" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Acknowledge a terminal delivery</text>
+    <text x="90" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Scientist</text>
+    <text x="206" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Reviewer</text>
+    <text x="323" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Deployer</text>
+    <text x="439" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Management</text>
+    <text x="555" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Control</text>
+    <text x="671" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Serving</text>
+    <text x="788" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">SQL</text>
+    <text x="904" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Relay</text>
+    <text x="1020" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">RabbitMQ</text>
+    <text x="1136" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Supervisor</text>
+    <text x="1252" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Compute</text>
+    <text x="1369" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">MLflow</text>
+    <text x="1485" y="1329" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Redis</text>
+    <path d="M 1136 1373 L 788 1373" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-23" d="M 1136 1373 L 788 1373" fill="none" stroke="#795e79" stroke-width="1.8" marker-end="url(#arrow-observe)" data-source="worker" data-target="sql" data-kind="observe" data-evidence="E03" stroke-dasharray="7 3 2 3">
+      <title>Validate exact command and terminal job</title>
+    </path>
+    <text x="962.0" y="1366" font-size="14" font-weight="normal" text-anchor="middle" fill="#795e79" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Validate exact command and terminal job</text>
+    <path d="M 1136 1407 L 1485 1407" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-24" d="M 1136 1407 L 1485 1407" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="worker" data-target="redis" data-kind="data" data-evidence="E03" stroke-dasharray="3 3">
+      <title>Persist technical snapshot with TTL</title>
+    </path>
+    <text x="1310.5" y="1400" font-size="14" font-weight="normal" text-anchor="middle" fill="#706247" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Persist technical snapshot with TTL</text>
+    <path d="M 1485 1441 L 1136 1441" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-25" d="M 1485 1441 L 1136 1441" fill="none" stroke="#985953" stroke-width="1.8" marker-end="url(#arrow-branch)" data-source="redis" data-target="worker" data-kind="branch" data-evidence="E03" stroke-dasharray="5 3">
+      <title>If write fails → leave unacked; retry gate</title>
+    </path>
+    <text x="1310.5" y="1434" font-size="14" font-weight="normal" text-anchor="middle" fill="#985953" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">If write fails → leave unacked; retry gate</text>
+    <path d="M 1136 1475 L 1020 1475" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-26" d="M 1136 1475 L 1020 1475" fill="none" stroke="#477366" stroke-width="1.8" marker-end="url(#arrow-async)" data-source="worker" data-target="rabbit" data-kind="async" data-evidence="E03" stroke-dasharray="8 4">
+      <title>After snapshot succeeds · consumer ACK</title>
+    </path>
+    <text x="1078.0" y="1468" font-size="14" font-weight="normal" text-anchor="middle" fill="#477366" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">After snapshot succeeds · consumer ACK</text>
+    <rect x="24" y="1497" width="1527" height="27" rx="3" fill="#e7efed" />
+    <text x="34" y="1516" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Independent operator requests after eligible evidence exists</text>
+    <text x="90" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Scientist</text>
+    <text x="206" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Reviewer</text>
+    <text x="323" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Deployer</text>
+    <text x="439" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Management</text>
+    <text x="555" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Control</text>
+    <text x="671" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Serving</text>
+    <text x="788" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">SQL</text>
+    <text x="904" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Relay</text>
+    <text x="1020" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">RabbitMQ</text>
+    <text x="1136" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Supervisor</text>
+    <text x="1252" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Compute</text>
+    <text x="1369" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">MLflow</text>
+    <text x="1485" y="1543" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Redis</text>
+    <path d="M 206 1587 L 439 1587" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-27" d="M 206 1587 L 439 1587" fill="none" stroke="#915e40" stroke-width="1.8" marker-end="url(#arrow-manual)" data-source="reviewer" data-target="api" data-kind="manual" data-evidence="E06" stroke-dasharray="10 3 2 3">
+      <title>Submit Approval for evaluation and environment</title>
+    </path>
+    <text x="322.5" y="1580" font-size="14" font-weight="normal" text-anchor="middle" fill="#915e40" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Submit Approval for evaluation and environment</text>
+    <path d="M 439 1621 L 788 1621" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-28" d="M 439 1621 L 788 1621" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="api" data-target="sql" data-kind="data" data-evidence="E06" stroke-dasharray="3 3">
+      <title>Check matching policy pass; save Approval</title>
+    </path>
+    <text x="613.5" y="1614" font-size="14" font-weight="normal" text-anchor="middle" fill="#706247" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Check matching policy pass; save Approval</text>
+    <path d="M 439 1655 L 206 1655" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-29" d="M 439 1655 L 206 1655" fill="none" stroke="#667c84" stroke-width="1.8" marker-end="url(#arrow-return)" data-source="api" data-target="reviewer" data-kind="return" data-evidence="E06" stroke-dasharray="5 4">
+      <title>201 · Approval</title>
+    </path>
+    <text x="322.5" y="1648" font-size="14" font-weight="normal" text-anchor="middle" fill="#667c84" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">201 · Approval</text>
+    <path d="M 323 1689 L 439 1689" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-30" d="M 323 1689 L 439 1689" fill="none" stroke="#915e40" stroke-width="1.8" marker-end="url(#arrow-manual)" data-source="deployer" data-target="api" data-kind="manual" data-evidence="E06" stroke-dasharray="10 3 2 3">
+      <title>Submit separate Deployment request</title>
+    </path>
+    <text x="381.0" y="1682" font-size="14" font-weight="normal" text-anchor="middle" fill="#915e40" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Submit separate Deployment request</text>
+    <path d="M 439 1723 L 788 1723" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-31" d="M 439 1723 L 788 1723" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="api" data-target="sql" data-kind="data" data-evidence="E06" stroke-dasharray="3 3">
+      <title>Check approval; create REQUESTED generation</title>
+    </path>
+    <text x="613.5" y="1716" font-size="14" font-weight="normal" text-anchor="middle" fill="#706247" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Check approval; create REQUESTED generation</text>
+    <path d="M 439 1757 L 323 1757" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-32" d="M 439 1757 L 323 1757" fill="none" stroke="#667c84" stroke-width="1.8" marker-end="url(#arrow-return)" data-source="api" data-target="deployer" data-kind="return" data-evidence="E06" stroke-dasharray="5 4">
+      <title>202 · deployment_id and generation</title>
+    </path>
+    <text x="381.0" y="1750" font-size="14" font-weight="normal" text-anchor="middle" fill="#667c84" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">202 · deployment_id and generation</text>
+    <rect x="24" y="1779" width="1527" height="27" rx="3" fill="#e7efed" />
+    <text x="34" y="1798" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Control reconciles the requested generation on its next poll</text>
+    <text x="90" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Scientist</text>
+    <text x="206" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Reviewer</text>
+    <text x="323" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Deployer</text>
+    <text x="439" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Management</text>
+    <text x="555" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Control</text>
+    <text x="671" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Serving</text>
+    <text x="788" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">SQL</text>
+    <text x="904" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Relay</text>
+    <text x="1020" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">RabbitMQ</text>
+    <text x="1136" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Supervisor</text>
+    <text x="1252" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Compute</text>
+    <text x="1369" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">MLflow</text>
+    <text x="1485" y="1825" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Redis</text>
+    <path d="M 555 1869 L 788 1869" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-33" d="M 555 1869 L 788 1869" fill="none" stroke="#795e79" stroke-width="1.8" marker-end="url(#arrow-observe)" data-source="control" data-target="sql" data-kind="observe" data-evidence="E06" stroke-dasharray="7 3 2 3">
+      <title>Poll deployment records for reconciliation</title>
+    </path>
+    <text x="671.5" y="1862" font-size="14" font-weight="normal" text-anchor="middle" fill="#795e79" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Poll deployment records for reconciliation</text>
+    <path d="M 555 1903 L 671 1903" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-34" d="M 555 1903 L 671 1903" fill="none" stroke="#386c67" stroke-width="1.8" marker-end="url(#arrow-launch)" data-source="control" data-target="serving" data-kind="launch" data-evidence="E06">
+      <title>Launch fixed generation under exclusive intent</title>
+    </path>
+    <text x="613.0" y="1896" font-size="14" font-weight="normal" text-anchor="middle" fill="#386c67" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Launch fixed generation under exclusive intent</text>
+    <path d="M 555 1937 L 671 1937" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-35" d="M 555 1937 L 671 1937" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="control" data-target="serving" data-kind="sync" data-evidence="E06">
+      <title>GET /health/ready and verify generation identity</title>
+    </path>
+    <text x="613.0" y="1930" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">GET /health/ready and verify generation identity</text>
+    <path d="M 555 1971 L 788 1971" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-36" d="M 555 1971 L 788 1971" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="control" data-target="sql" data-kind="data" data-evidence="E06" stroke-dasharray="3 3">
+      <title>When ready, activate only at expected route revision</title>
+    </path>
+    <text x="671.5" y="1964" font-size="14" font-weight="normal" text-anchor="middle" fill="#706247" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">When ready, activate only at expected route revision</text>
+    <path d="M 32 2005 H 1543" stroke="#bdc9c8" />
+    <path d="M 32 2029 h 25" stroke="#3f6574" stroke-width="2" stroke-dasharray="none" marker-end="url(#arrow-sync)" />
+    <text x="64" y="2033" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Call</text>
+    <path d="M 120 2029 h 25" stroke="#706247" stroke-width="2" stroke-dasharray="3 3" marker-end="url(#arrow-data)" />
+    <text x="152" y="2033" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">State / artifact I/O</text>
+    <path d="M 336 2029 h 25" stroke="#667c84" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow-return)" />
+    <text x="368" y="2033" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Response</text>
+    <path d="M 456 2029 h 25" stroke="#795e79" stroke-width="2" stroke-dasharray="7 3 2 3" marker-end="url(#arrow-observe)" />
+    <text x="488" y="2033" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Observe / reconcile</text>
+    <path d="M 664 2029 h 25" stroke="#477366" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#arrow-async)" />
+    <text x="696" y="2033" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Message</text>
+    <path d="M 776 2029 h 25" stroke="#985953" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#arrow-branch)" />
+    <text x="808" y="2033" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Conditional exit / path</text>
+    <path d="M 1016 2029 h 25" stroke="#386c67" stroke-width="2" stroke-dasharray="none" marker-end="url(#arrow-launch)" />
+    <text x="1048" y="2033" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Launch</text>
+    <path d="M 1120 2029 h 25" stroke="#915e40" stroke-width="2" stroke-dasharray="10 3 2 3" marker-end="url(#arrow-manual)" />
+    <text x="1152" y="2033" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Operator request</text>
+    <text x="32" y="2056" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Relay bookkeeping and worker delivery can interleave after publication. Terminal redelivery reuses the ACK gate.</text>
+    <text x="32" y="2079" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Approval and deployment require separate permissions. Neither depends on a broker ACK.</text>
+    <text x="32" y="2102" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Control retries pending readiness. A stale route revision prevents the generation from replacing the current route.</text>
+  </g>
+</svg>

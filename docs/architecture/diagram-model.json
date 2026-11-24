@@ -1,0 +1,5373 @@
+{
+  "source_commit": "8c9023b00828000287e169ac760afe57102d7353",
+  "diagrams": [
+    {
+      "file": "01-system-context.svg",
+      "kind": "context",
+      "title": "System context",
+      "width": 1500,
+      "height": 1080,
+      "groups": [
+        {
+          "id": "product",
+          "title": "ML System EBM — product boundary",
+          "type": "system",
+          "parent": null,
+          "x": 520,
+          "y": 160,
+          "w": 460,
+          "h": 675
+        }
+      ],
+      "nodes": [
+        {
+          "id": "system",
+          "title": "Governed CPU ML platform",
+          "type": "system",
+          "parent": "product",
+          "x": 550,
+          "y": 220,
+          "w": 400,
+          "h": 540
+        },
+        {
+          "id": "actor-0",
+          "title": "Scientist",
+          "type": "external",
+          "parent": null,
+          "x": 42,
+          "y": 225,
+          "w": 345,
+          "h": 94
+        },
+        {
+          "id": "actor-1",
+          "title": "Reviewer / deployment operator",
+          "type": "external",
+          "parent": null,
+          "x": 42,
+          "y": 370,
+          "w": 345,
+          "h": 94
+        },
+        {
+          "id": "actor-2",
+          "title": "Data / platform operator",
+          "type": "external",
+          "parent": null,
+          "x": 42,
+          "y": 515,
+          "w": 345,
+          "h": 94
+        },
+        {
+          "id": "actor-3",
+          "title": "Prediction client",
+          "type": "external",
+          "parent": null,
+          "x": 42,
+          "y": 660,
+          "w": 345,
+          "h": 94
+        },
+        {
+          "id": "external-0",
+          "title": "Approved batch sources",
+          "type": "external",
+          "parent": null,
+          "x": 1110,
+          "y": 225,
+          "w": 345,
+          "h": 94
+        },
+        {
+          "id": "external-1",
+          "title": "MLflow + artifact storage",
+          "type": "external",
+          "parent": null,
+          "x": 1110,
+          "y": 370,
+          "w": 345,
+          "h": 94
+        },
+        {
+          "id": "external-2",
+          "title": "Identity and coordination stores",
+          "type": "external",
+          "parent": null,
+          "x": 1110,
+          "y": 515,
+          "w": 345,
+          "h": 94
+        },
+        {
+          "id": "external-3",
+          "title": "Optional OTLP collector",
+          "type": "external",
+          "parent": null,
+          "x": 1110,
+          "y": 660,
+          "w": 345,
+          "h": 94
+        },
+        {
+          "id": "note-870",
+          "title": "Scope / interpretation",
+          "type": "note",
+          "parent": null,
+          "x": 42,
+          "y": 870,
+          "w": 1416,
+          "h": 82
+        }
+      ],
+      "relationships": [
+        {
+          "id": "input-0",
+          "source": "actor-0",
+          "target": "system",
+          "points": [
+            [
+              387,
+              272
+            ],
+            [
+              550,
+              272
+            ]
+          ],
+          "label": "HTTP / JWT",
+          "kind": "sync",
+          "evidence": [
+            "E01",
+            "E05",
+            "E06"
+          ]
+        },
+        {
+          "id": "input-1",
+          "source": "actor-1",
+          "target": "system",
+          "points": [
+            [
+              387,
+              417
+            ],
+            [
+              550,
+              417
+            ]
+          ],
+          "label": "Approve / deploy",
+          "kind": "manual",
+          "evidence": [
+            "E01",
+            "E05",
+            "E06"
+          ]
+        },
+        {
+          "id": "input-2",
+          "source": "actor-2",
+          "target": "system",
+          "points": [
+            [
+              387,
+              562
+            ],
+            [
+              550,
+              562
+            ]
+          ],
+          "label": "Explicit CLI",
+          "kind": "manual",
+          "evidence": [
+            "E01",
+            "E05",
+            "E06"
+          ]
+        },
+        {
+          "id": "input-3",
+          "source": "actor-3",
+          "target": "system",
+          "points": [
+            [
+              387,
+              707
+            ],
+            [
+              550,
+              707
+            ]
+          ],
+          "label": "HTTP / JWT",
+          "kind": "sync",
+          "evidence": [
+            "E01",
+            "E05",
+            "E06"
+          ]
+        },
+        {
+          "id": "integration-0",
+          "source": "system",
+          "target": "external-0",
+          "points": [
+            [
+              950,
+              272
+            ],
+            [
+              1110,
+              272
+            ]
+          ],
+          "label": "Batch read",
+          "kind": "data",
+          "evidence": [
+            "E05"
+          ]
+        },
+        {
+          "id": "integration-1",
+          "source": "system",
+          "target": "external-1",
+          "points": [
+            [
+              950,
+              417
+            ],
+            [
+              1110,
+              417
+            ]
+          ],
+          "label": "Artifact I/O",
+          "kind": "data",
+          "evidence": [
+            "E04"
+          ]
+        },
+        {
+          "id": "integration-2",
+          "source": "system",
+          "target": "external-2",
+          "points": [
+            [
+              950,
+              562
+            ],
+            [
+              1110,
+              562
+            ]
+          ],
+          "label": "State I/O",
+          "kind": "sync",
+          "evidence": [
+            "E02"
+          ]
+        },
+        {
+          "id": "integration-3",
+          "source": "system",
+          "target": "external-3",
+          "points": [
+            [
+              950,
+              707
+            ],
+            [
+              1110,
+              707
+            ]
+          ],
+          "label": "OTLP HTTP",
+          "kind": "data",
+          "evidence": [
+            "E12"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "02-container-architecture.svg",
+      "kind": "topology",
+      "title": "ML platform | executable roles and shared state",
+      "subtitle": "C4 Level 2  ·  Local-process backends with MLflow tracking  ·  Optional governed ingestion shown",
+      "width": 1500,
+      "groups": [
+        {
+          "id": "platform",
+          "parent": null,
+          "x": 32,
+          "y": 120,
+          "w": 1436,
+          "h": 710,
+          "title": "Governed ML platform",
+          "subtitle": "Separately running application roles and platform-owned stores",
+          "type": "system"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "management",
+          "parent": "platform",
+          "x": 70,
+          "y": 225,
+          "w": 200,
+          "h": 72,
+          "title": "Management API",
+          "subtitle": "HTTP · admission and governance",
+          "type": "process"
+        },
+        {
+          "id": "mongo",
+          "parent": "platform",
+          "x": 335,
+          "y": 225,
+          "w": 208,
+          "h": 72,
+          "title": "MongoDB",
+          "subtitle": "Accounts and sessions",
+          "type": "storage"
+        },
+        {
+          "id": "gateway",
+          "parent": "platform",
+          "x": 618,
+          "y": 225,
+          "w": 202,
+          "h": 72,
+          "title": "Prediction Gateway",
+          "subtitle": "HTTP · active route and identity",
+          "type": "process"
+        },
+        {
+          "id": "serving",
+          "parent": "platform",
+          "x": 906,
+          "y": 225,
+          "w": 202,
+          "h": 72,
+          "title": "Serving runtime",
+          "subtitle": "One fixed model generation",
+          "type": "process"
+        },
+        {
+          "id": "control",
+          "parent": "platform",
+          "x": 1192,
+          "y": 225,
+          "w": 208,
+          "h": 72,
+          "title": "Control",
+          "subtitle": "Reconcile deployment state",
+          "type": "process"
+        },
+        {
+          "id": "sql",
+          "parent": "platform",
+          "x": 375,
+          "y": 383,
+          "w": 655,
+          "h": 74,
+          "title": "Application PostgreSQL",
+          "subtitle": "Jobs, attempts, outbox, dataset metadata, approval evidence, deployments and routes",
+          "type": "storage"
+        },
+        {
+          "id": "ingestion",
+          "parent": "platform",
+          "x": 68,
+          "y": 540,
+          "w": 198,
+          "h": 72,
+          "title": "Ingestion worker",
+          "subtitle": "Optional · SQL poller",
+          "type": "process"
+        },
+        {
+          "id": "relay",
+          "parent": "platform",
+          "x": 335,
+          "y": 540,
+          "w": 180,
+          "h": 72,
+          "title": "Outbox Relay",
+          "subtitle": "Lease and publish",
+          "type": "process"
+        },
+        {
+          "id": "rabbit",
+          "parent": "platform",
+          "x": 580,
+          "y": 540,
+          "w": 190,
+          "h": 72,
+          "title": "RabbitMQ",
+          "subtitle": "Durable command queue",
+          "type": "storage"
+        },
+        {
+          "id": "supervisor",
+          "parent": "platform",
+          "x": 849,
+          "y": 540,
+          "w": 206,
+          "h": 72,
+          "title": "Training Supervisor",
+          "subtitle": "Taskiq · manual ACK",
+          "type": "process"
+        },
+        {
+          "id": "compute",
+          "parent": "platform",
+          "x": 1184,
+          "y": 540,
+          "w": 214,
+          "h": 72,
+          "title": "Training compute",
+          "subtitle": "Isolated child · CPU fit",
+          "type": "process"
+        },
+        {
+          "id": "files",
+          "parent": "platform",
+          "x": 336,
+          "y": 716,
+          "w": 365,
+          "h": 72,
+          "title": "Runtime filesystem",
+          "subtitle": "Raw snapshots, datasets and execution directories",
+          "type": "storage"
+        },
+        {
+          "id": "redis",
+          "parent": "platform",
+          "x": 824,
+          "y": 638,
+          "w": 214,
+          "h": 56,
+          "title": "Redis",
+          "subtitle": "Technical terminal snapshot",
+          "type": "storage"
+        },
+        {
+          "id": "source",
+          "parent": null,
+          "x": 66,
+          "y": 910,
+          "w": 232,
+          "h": 72,
+          "title": "Approved source",
+          "subtitle": "Configured file or Databricks SQL",
+          "type": "external"
+        },
+        {
+          "id": "mlflow",
+          "parent": null,
+          "x": 907,
+          "y": 910,
+          "w": 210,
+          "h": 72,
+          "title": "MLflow",
+          "subtitle": "Tracking and Registry API",
+          "type": "external"
+        },
+        {
+          "id": "tracker_db",
+          "parent": null,
+          "x": 1212,
+          "y": 881,
+          "w": 224,
+          "h": 66,
+          "title": "Tracking PostgreSQL",
+          "subtitle": "MLflow metadata",
+          "type": "storage"
+        },
+        {
+          "id": "artifacts",
+          "parent": null,
+          "x": 1212,
+          "y": 1003,
+          "w": 224,
+          "h": 66,
+          "title": "MinIO",
+          "subtitle": "S3-compatible artifact store",
+          "type": "storage"
+        }
+      ],
+      "relationships": [
+        {
+          "id": "identity-management",
+          "source": "management",
+          "target": "mongo",
+          "points": [
+            [
+              270,
+              260
+            ],
+            [
+              335,
+              260
+            ]
+          ],
+          "kind": "sync",
+          "label": "Authenticate the principal via the identity module",
+          "evidence": [
+            "E01"
+          ],
+          "key": 1,
+          "caption": "Auth"
+        },
+        {
+          "id": "identity-gateway",
+          "source": "gateway",
+          "target": "mongo",
+          "points": [
+            [
+              618,
+              260
+            ],
+            [
+              543,
+              260
+            ]
+          ],
+          "kind": "sync",
+          "label": "Resolve the token and active session",
+          "evidence": [
+            "E07"
+          ],
+          "key": 2,
+          "caption": "Auth"
+        },
+        {
+          "id": "identity-serving",
+          "source": "serving",
+          "target": "mongo",
+          "points": [
+            [
+              965,
+              225
+            ],
+            [
+              965,
+              194
+            ],
+            [
+              465,
+              194
+            ],
+            [
+              465,
+              225
+            ]
+          ],
+          "kind": "sync",
+          "label": "Authenticate the forwarded bearer",
+          "evidence": [
+            "E07"
+          ],
+          "key": 3,
+          "caption": "Revalidate bearer"
+        },
+        {
+          "id": "serve-request",
+          "source": "gateway",
+          "target": "serving",
+          "points": [
+            [
+              820,
+              260
+            ],
+            [
+              906,
+              260
+            ]
+          ],
+          "kind": "sync",
+          "label": "HTTP readiness and prediction at the resolved address",
+          "evidence": [
+            "E07"
+          ],
+          "key": 4,
+          "caption": "HTTP"
+        },
+        {
+          "id": "ensure-serving",
+          "source": "control",
+          "target": "serving",
+          "points": [
+            [
+              1192,
+              261
+            ],
+            [
+              1108,
+              261
+            ]
+          ],
+          "kind": "launch",
+          "label": "Ensure or retire the generation's local process",
+          "evidence": [
+            "E06"
+          ],
+          "key": 5,
+          "caption": "Reconcile"
+        },
+        {
+          "id": "admission",
+          "source": "management",
+          "target": "sql",
+          "points": [
+            [
+              165,
+              297
+            ],
+            [
+              165,
+              344
+            ],
+            [
+              456,
+              344
+            ],
+            [
+              456,
+              383
+            ]
+          ],
+          "kind": "data",
+          "label": "Persist jobs, approvals and deployment requests",
+          "evidence": [
+            "E03",
+            "E06"
+          ],
+          "key": 6,
+          "caption": "Admit / govern"
+        },
+        {
+          "id": "route",
+          "source": "gateway",
+          "target": "sql",
+          "points": [
+            [
+              723,
+              297
+            ],
+            [
+              723,
+              383
+            ]
+          ],
+          "kind": "observe",
+          "label": "Read deployment and recheck the active route",
+          "evidence": [
+            "E07"
+          ],
+          "key": 7,
+          "caption": "Read route"
+        },
+        {
+          "id": "reconcile",
+          "source": "control",
+          "target": "sql",
+          "points": [
+            [
+              1310,
+              297
+            ],
+            [
+              1310,
+              344
+            ],
+            [
+              949,
+              344
+            ],
+            [
+              949,
+              383
+            ]
+          ],
+          "kind": "observe",
+          "label": "Poll, fence and update durable state",
+          "evidence": [
+            "E06"
+          ],
+          "key": 8,
+          "caption": "Fence / activate"
+        },
+        {
+          "id": "ingest-state",
+          "source": "ingestion",
+          "target": "sql",
+          "points": [
+            [
+              160,
+              540
+            ],
+            [
+              160,
+              484
+            ],
+            [
+              406,
+              484
+            ],
+            [
+              406,
+              457
+            ]
+          ],
+          "kind": "data",
+          "label": "Claim ingestion work and commit snapshot metadata",
+          "evidence": [
+            "E05"
+          ],
+          "key": 9,
+          "caption": "Claim / commit"
+        },
+        {
+          "id": "lease",
+          "source": "relay",
+          "target": "sql",
+          "points": [
+            [
+              450,
+              540
+            ],
+            [
+              450,
+              457
+            ]
+          ],
+          "kind": "data",
+          "label": "Lease the outbox and record publication",
+          "evidence": [
+            "E03"
+          ],
+          "key": 10,
+          "caption": "Lease outbox"
+        },
+        {
+          "id": "publish",
+          "source": "relay",
+          "target": "rabbit",
+          "points": [
+            [
+              515,
+              565
+            ],
+            [
+              580,
+              565
+            ]
+          ],
+          "kind": "async",
+          "label": "AMQP publish with confirmation",
+          "evidence": [
+            "E03"
+          ],
+          "key": 11,
+          "caption": "Publish"
+        },
+        {
+          "id": "delivery",
+          "source": "rabbit",
+          "target": "supervisor",
+          "points": [
+            [
+              770,
+              563
+            ],
+            [
+              849,
+              563
+            ]
+          ],
+          "kind": "async",
+          "label": "Deliver the training command",
+          "evidence": [
+            "E03"
+          ],
+          "key": 12,
+          "caption": "Deliver"
+        },
+        {
+          "id": "ack",
+          "source": "supervisor",
+          "target": "rabbit",
+          "points": [
+            [
+              849,
+              591
+            ],
+            [
+              770,
+              591
+            ]
+          ],
+          "kind": "async",
+          "label": "ACK after the terminal snapshot succeeds",
+          "evidence": [
+            "E03"
+          ],
+          "key": 13,
+          "caption": "ACK"
+        },
+        {
+          "id": "attempt",
+          "source": "supervisor",
+          "target": "sql",
+          "points": [
+            [
+              944,
+              540
+            ],
+            [
+              944,
+              457
+            ]
+          ],
+          "kind": "data",
+          "label": "Claim, fence and finalize the attempt",
+          "evidence": [
+            "E04"
+          ],
+          "key": 14,
+          "caption": "Claim attempt"
+        },
+        {
+          "id": "fit",
+          "source": "supervisor",
+          "target": "compute",
+          "points": [
+            [
+              1055,
+              574
+            ],
+            [
+              1184,
+              574
+            ]
+          ],
+          "kind": "launch",
+          "label": "Launch the prepared training child",
+          "evidence": [
+            "E04"
+          ],
+          "key": 15,
+          "caption": "Launch fit"
+        },
+        {
+          "id": "raw",
+          "source": "ingestion",
+          "target": "files",
+          "points": [
+            [
+              209,
+              612
+            ],
+            [
+              209,
+              754
+            ],
+            [
+              336,
+              754
+            ]
+          ],
+          "kind": "data",
+          "label": "Publish the immutable raw payload",
+          "evidence": [
+            "E05"
+          ],
+          "key": 16,
+          "caption": "Publish snapshot"
+        },
+        {
+          "id": "fetch",
+          "source": "ingestion",
+          "target": "source",
+          "points": [
+            [
+              122,
+              612
+            ],
+            [
+              122,
+              910
+            ]
+          ],
+          "kind": "data",
+          "label": "Acquire data through the approved adapter",
+          "evidence": [
+            "E05"
+          ],
+          "key": 17,
+          "caption": "Read source"
+        },
+        {
+          "id": "fit-files",
+          "source": "compute",
+          "target": "files",
+          "points": [
+            [
+              1283,
+              612
+            ],
+            [
+              1283,
+              704
+            ],
+            [
+              571,
+              704
+            ],
+            [
+              571,
+              716
+            ]
+          ],
+          "kind": "data",
+          "label": "Read dataset bytes and write execution output",
+          "evidence": [
+            "E04"
+          ],
+          "key": 18,
+          "caption": "Read dataset / write result"
+        },
+        {
+          "id": "ack-snapshot",
+          "source": "supervisor",
+          "target": "redis",
+          "points": [
+            [
+              914,
+              612
+            ],
+            [
+              914,
+              638
+            ]
+          ],
+          "kind": "data",
+          "label": "Persist the technical terminal snapshot",
+          "evidence": [
+            "E03"
+          ],
+          "key": 19,
+          "caption": "Save snapshot"
+        },
+        {
+          "id": "register",
+          "source": "supervisor",
+          "target": "mlflow",
+          "points": [
+            [
+              1038,
+              540
+            ],
+            [
+              1038,
+              513
+            ],
+            [
+              1411,
+              513
+            ],
+            [
+              1411,
+              839
+            ],
+            [
+              1040,
+              839
+            ],
+            [
+              1040,
+              910
+            ]
+          ],
+          "kind": "data",
+          "label": "Log run artifacts and register the bundle",
+          "evidence": [
+            "E04"
+          ],
+          "key": 20,
+          "caption": "Register bundle"
+        },
+        {
+          "id": "materialize",
+          "source": "serving",
+          "target": "mlflow",
+          "points": [
+            [
+              1030,
+              225
+            ],
+            [
+              1030,
+              179
+            ],
+            [
+              1432,
+              179
+            ],
+            [
+              1432,
+              859
+            ],
+            [
+              1100,
+              859
+            ],
+            [
+              1100,
+              910
+            ]
+          ],
+          "kind": "data",
+          "label": "Fetch pinned bundle bytes on a startup cache miss",
+          "evidence": [
+            "E07"
+          ],
+          "key": 21,
+          "caption": "Fetch pinned bundle"
+        },
+        {
+          "id": "track-metadata",
+          "source": "mlflow",
+          "target": "tracker_db",
+          "points": [
+            [
+              1117,
+              928
+            ],
+            [
+              1166,
+              928
+            ],
+            [
+              1166,
+              914
+            ],
+            [
+              1212,
+              914
+            ]
+          ],
+          "kind": "data",
+          "label": "Persist tracking metadata over PostgreSQL",
+          "evidence": [
+            "E08"
+          ],
+          "key": 22,
+          "caption": "SQL"
+        },
+        {
+          "id": "track-bytes",
+          "source": "mlflow",
+          "target": "artifacts",
+          "points": [
+            [
+              1117,
+              963
+            ],
+            [
+              1156,
+              963
+            ],
+            [
+              1156,
+              1036
+            ],
+            [
+              1212,
+              1036
+            ]
+          ],
+          "kind": "data",
+          "label": "Serve bundle artifacts via the S3 backend",
+          "evidence": [
+            "E08"
+          ],
+          "key": 23,
+          "caption": "S3"
+        }
+      ],
+      "notes": [
+        "Process count and physical placement vary by profile. Compute and Serving are launched roles. See views 06–08 for placement.",
+        "MLflow backing stores follow the self-hosted Compose reference. Dataset preparation, approval and deployment each require explicit requests."
+      ],
+      "height": 1225
+    },
+    {
+      "file": "03-component-architecture.svg",
+      "kind": "topology",
+      "title": "Management API | training admission",
+      "subtitle": "C4 Level 3  ·  One executable container  ·  POST /api/v1/training/jobs in the default Management factory",
+      "width": 1500,
+      "groups": [
+        {
+          "id": "management",
+          "parent": null,
+          "x": 32,
+          "y": 126,
+          "w": 1106,
+          "h": 716,
+          "title": "Management API process",
+          "subtitle": "Logical components inside one FastAPI executable",
+          "type": "process"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "factory",
+          "parent": "management",
+          "x": 66,
+          "y": 218,
+          "w": 240,
+          "h": 76,
+          "title": "Management composition root",
+          "subtitle": "create_app + build_components",
+          "type": "logical"
+        },
+        {
+          "id": "router",
+          "parent": "management",
+          "x": 405,
+          "y": 218,
+          "w": 284,
+          "h": 76,
+          "title": "Training HTTP router",
+          "subtitle": "submit · get_services · get_actor",
+          "type": "logical"
+        },
+        {
+          "id": "identity",
+          "parent": "management",
+          "x": 786,
+          "y": 218,
+          "w": 311,
+          "h": 76,
+          "title": "Management identity",
+          "subtitle": "TemplateIdentity → IdentityService\nMongoIdentityRepository",
+          "type": "logical"
+        },
+        {
+          "id": "mongo",
+          "parent": null,
+          "x": 1202,
+          "y": 218,
+          "w": 243,
+          "h": 76,
+          "title": "MongoDB",
+          "subtitle": "Identity sessions and accounts",
+          "type": "storage"
+        },
+        {
+          "id": "domain",
+          "parent": "management",
+          "x": 66,
+          "y": 414,
+          "w": 240,
+          "h": 76,
+          "title": "Domain types and rules",
+          "subtitle": "Actor, Job, TERMINAL, digest",
+          "type": "logical"
+        },
+        {
+          "id": "service",
+          "parent": "management",
+          "x": 405,
+          "y": 414,
+          "w": 284,
+          "h": 76,
+          "title": "TrainingService",
+          "subtitle": "Application · submit / get / cancel",
+          "type": "logical"
+        },
+        {
+          "id": "recipes",
+          "parent": "management",
+          "x": 786,
+          "y": 414,
+          "w": 311,
+          "h": 76,
+          "title": "ApprovedRecipeResolver",
+          "subtitle": "Infrastructure · freeze approved spec",
+          "type": "logical"
+        },
+        {
+          "id": "catalog",
+          "parent": "management",
+          "x": 786,
+          "y": 545,
+          "w": 311,
+          "h": 72,
+          "title": "SQLDatasetCatalog",
+          "subtitle": "Infrastructure · resolve a dataset version",
+          "type": "logical"
+        },
+        {
+          "id": "contracts",
+          "parent": "management",
+          "x": 405,
+          "y": 695,
+          "w": 284,
+          "h": 76,
+          "title": "Training use-case ports",
+          "subtitle": "TrainingRepository and RecipeResolver",
+          "type": "logical"
+        },
+        {
+          "id": "repository",
+          "parent": "management",
+          "x": 786,
+          "y": 695,
+          "w": 311,
+          "h": 76,
+          "title": "SQLTrainingRepository",
+          "subtitle": "Infrastructure · atomic job acceptance",
+          "type": "logical"
+        },
+        {
+          "id": "sql",
+          "parent": null,
+          "x": 1202,
+          "y": 604,
+          "w": 243,
+          "h": 100,
+          "title": "Application PostgreSQL",
+          "subtitle": "Dataset versions, jobs, attempts,\nidempotency, outbox and audit",
+          "type": "storage"
+        }
+      ],
+      "relationships": [
+        {
+          "id": "wire-router",
+          "source": "factory",
+          "target": "router",
+          "points": [
+            [
+              306,
+              250
+            ],
+            [
+              405,
+              250
+            ]
+          ],
+          "kind": "wire",
+          "label": "Mount routers and expose services through app.state",
+          "evidence": [
+            "E02"
+          ],
+          "key": 1,
+          "caption": "Mount"
+        },
+        {
+          "id": "wire-service",
+          "source": "factory",
+          "target": "service",
+          "points": [
+            [
+              187,
+              294
+            ],
+            [
+              187,
+              361
+            ],
+            [
+              476,
+              361
+            ],
+            [
+              476,
+              414
+            ]
+          ],
+          "kind": "wire",
+          "label": "Construct TrainingService(training, recipes)",
+          "evidence": [
+            "E02"
+          ],
+          "key": 2,
+          "caption": "Inject adapters"
+        },
+        {
+          "id": "actor",
+          "source": "router",
+          "target": "identity",
+          "points": [
+            [
+              689,
+              256
+            ],
+            [
+              786,
+              256
+            ]
+          ],
+          "kind": "sync",
+          "label": "Resolve the caller's bearer token",
+          "evidence": [
+            "E01"
+          ],
+          "key": 3,
+          "caption": "Resolve"
+        },
+        {
+          "id": "authenticate",
+          "source": "identity",
+          "target": "mongo",
+          "points": [
+            [
+              1097,
+              256
+            ],
+            [
+              1202,
+              256
+            ]
+          ],
+          "kind": "sync",
+          "label": "Read active session and user through the repository",
+          "evidence": [
+            "E01"
+          ],
+          "key": 4,
+          "caption": "Session"
+        },
+        {
+          "id": "submit",
+          "source": "router",
+          "target": "service",
+          "points": [
+            [
+              545,
+              294
+            ],
+            [
+              545,
+              414
+            ]
+          ],
+          "kind": "sync",
+          "label": "Call training.submit with actor, key and intent",
+          "evidence": [
+            "E01"
+          ],
+          "key": 5,
+          "caption": "submit()"
+        },
+        {
+          "id": "domain-imports",
+          "source": "service",
+          "target": "domain",
+          "points": [
+            [
+              405,
+              452
+            ],
+            [
+              306,
+              452
+            ]
+          ],
+          "kind": "dependency",
+          "label": "Import domain types, digests and terminal-state rules",
+          "evidence": [
+            "E02"
+          ],
+          "key": 6,
+          "caption": "Import"
+        },
+        {
+          "id": "resolve",
+          "source": "service",
+          "target": "recipes",
+          "points": [
+            [
+              689,
+              444
+            ],
+            [
+              786,
+              444
+            ]
+          ],
+          "kind": "sync",
+          "label": "Dispatch recipes.resolve through the injected port",
+          "evidence": [
+            "E02"
+          ],
+          "key": 7,
+          "caption": "resolve()"
+        },
+        {
+          "id": "dataset-version",
+          "source": "recipes",
+          "target": "catalog",
+          "points": [
+            [
+              947,
+              490
+            ],
+            [
+              947,
+              545
+            ]
+          ],
+          "kind": "sync",
+          "label": "Resolve the approved dataset identity",
+          "evidence": [
+            "E02"
+          ],
+          "key": 8,
+          "caption": "Resolve version"
+        },
+        {
+          "id": "catalog-read",
+          "source": "catalog",
+          "target": "sql",
+          "points": [
+            [
+              1097,
+              580
+            ],
+            [
+              1236,
+              580
+            ],
+            [
+              1236,
+              604
+            ]
+          ],
+          "kind": "data",
+          "label": "Read dataset metadata for admission",
+          "evidence": [
+            "E02"
+          ],
+          "key": 9,
+          "caption": "Read metadata"
+        },
+        {
+          "id": "persist",
+          "source": "service",
+          "target": "repository",
+          "points": [
+            [
+              689,
+              471
+            ],
+            [
+              741,
+              471
+            ],
+            [
+              741,
+              728
+            ],
+            [
+              786,
+              728
+            ]
+          ],
+          "kind": "sync",
+          "label": "Call find_submission and submit on the concrete adapter",
+          "evidence": [
+            "E02"
+          ],
+          "key": 10,
+          "caption": "submit()"
+        },
+        {
+          "id": "imports",
+          "source": "service",
+          "target": "contracts",
+          "points": [
+            [
+              545,
+              490
+            ],
+            [
+              545,
+              695
+            ]
+          ],
+          "kind": "dependency",
+          "label": "Import Protocols for constructor annotations",
+          "evidence": [
+            "E02"
+          ],
+          "key": 11,
+          "caption": "Type imports"
+        },
+        {
+          "id": "transaction",
+          "source": "repository",
+          "target": "sql",
+          "points": [
+            [
+              1097,
+              733
+            ],
+            [
+              1238,
+              733
+            ],
+            [
+              1238,
+              704
+            ]
+          ],
+          "kind": "data",
+          "label": "Commit the job, attempt, idempotency, outbox and audit",
+          "evidence": [
+            "E03"
+          ],
+          "key": 12,
+          "caption": "Commit"
+        }
+      ],
+      "notes": [
+        "Wire = automatic startup composition. Dependency = source-level import. Sync = request-time method call on the injected object.",
+        "Registry, deployment, dataset and optional ingestion routers share this executable. Scientific training plugins execute on the training path."
+      ],
+      "height": 998
+    },
+    {
+      "file": "04-training-sequence.svg",
+      "kind": "sequence",
+      "title": "Training, delivery and release decisions",
+      "subtitle": "Reference worker with local compute and MLflow. Each guarded exit applies only when its condition holds.",
+      "width": 1575,
+      "groups": [],
+      "nodes": [
+        {
+          "id": "scientist",
+          "parent": null,
+          "x": 36,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "Scientist",
+          "subtitle": "ml:train",
+          "type": "participant",
+          "axis": 90,
+          "lifelineEnd": 1993
+        },
+        {
+          "id": "reviewer",
+          "parent": null,
+          "x": 152,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "Reviewer",
+          "subtitle": "ml:model:approve",
+          "type": "participant",
+          "axis": 206,
+          "lifelineEnd": 1993
+        },
+        {
+          "id": "deployer",
+          "parent": null,
+          "x": 269,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "Deployer",
+          "subtitle": "ml:deploy",
+          "type": "participant",
+          "axis": 323,
+          "lifelineEnd": 1993
+        },
+        {
+          "id": "api",
+          "parent": null,
+          "x": 385,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "Management",
+          "subtitle": "HTTP API",
+          "type": "participant",
+          "axis": 439,
+          "lifelineEnd": 1993
+        },
+        {
+          "id": "control",
+          "parent": null,
+          "x": 501,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "Control",
+          "subtitle": "reconciler",
+          "type": "participant",
+          "axis": 555,
+          "lifelineEnd": 1993
+        },
+        {
+          "id": "serving",
+          "parent": null,
+          "x": 617,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "Serving",
+          "subtitle": "child process",
+          "type": "participant",
+          "axis": 671,
+          "lifelineEnd": 1993
+        },
+        {
+          "id": "sql",
+          "parent": null,
+          "x": 734,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "SQL",
+          "subtitle": "business state",
+          "type": "participant",
+          "axis": 788,
+          "lifelineEnd": 1993
+        },
+        {
+          "id": "relay",
+          "parent": null,
+          "x": 850,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "Relay",
+          "subtitle": "outbox poller",
+          "type": "participant",
+          "axis": 904,
+          "lifelineEnd": 1993
+        },
+        {
+          "id": "rabbit",
+          "parent": null,
+          "x": 966,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "RabbitMQ",
+          "subtitle": "command queue",
+          "type": "participant",
+          "axis": 1020,
+          "lifelineEnd": 1993
+        },
+        {
+          "id": "worker",
+          "parent": null,
+          "x": 1082,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "Supervisor",
+          "subtitle": "Taskiq worker",
+          "type": "participant",
+          "axis": 1136,
+          "lifelineEnd": 1993
+        },
+        {
+          "id": "compute",
+          "parent": null,
+          "x": 1198,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "Compute",
+          "subtitle": "child process",
+          "type": "participant",
+          "axis": 1252,
+          "lifelineEnd": 1993
+        },
+        {
+          "id": "tracker",
+          "parent": null,
+          "x": 1315,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "MLflow",
+          "subtitle": "model registry",
+          "type": "participant",
+          "axis": 1369,
+          "lifelineEnd": 1993
+        },
+        {
+          "id": "redis",
+          "parent": null,
+          "x": 1431,
+          "y": 114,
+          "w": 108,
+          "h": 61,
+          "title": "Redis",
+          "subtitle": "ACK evidence",
+          "type": "participant",
+          "axis": 1485,
+          "lifelineEnd": 1993
+        }
+      ],
+      "relationships": [
+        {
+          "id": "msg-01",
+          "source": "scientist",
+          "target": "api",
+          "points": [
+            [
+              90,
+              287
+            ],
+            [
+              439,
+              287
+            ]
+          ],
+          "label": "POST /api/v1/training/jobs + Idempotency-Key",
+          "kind": "sync",
+          "evidence": [
+            "E01"
+          ]
+        },
+        {
+          "id": "msg-02",
+          "source": "api",
+          "target": "sql",
+          "points": [
+            [
+              439,
+              321
+            ],
+            [
+              788,
+              321
+            ]
+          ],
+          "label": "Commit job, attempt, key, outbox and audit together",
+          "kind": "data",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-03",
+          "source": "api",
+          "target": "scientist",
+          "points": [
+            [
+              439,
+              355
+            ],
+            [
+              90,
+              355
+            ]
+          ],
+          "label": "202 · job_id and status_url",
+          "kind": "return",
+          "evidence": [
+            "E01"
+          ]
+        },
+        {
+          "id": "msg-04",
+          "source": "relay",
+          "target": "sql",
+          "points": [
+            [
+              904,
+              467
+            ],
+            [
+              788,
+              467
+            ]
+          ],
+          "label": "Lease pending outbox row",
+          "kind": "observe",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-05",
+          "source": "relay",
+          "target": "rabbit",
+          "points": [
+            [
+              904,
+              501
+            ],
+            [
+              1020,
+              501
+            ]
+          ],
+          "label": "Publish persistent command_id",
+          "kind": "async",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-06",
+          "source": "relay",
+          "target": "sql",
+          "points": [
+            [
+              904,
+              535
+            ],
+            [
+              788,
+              535
+            ]
+          ],
+          "label": "If publish fails → retry with backoff or mark DEAD",
+          "kind": "branch",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-07",
+          "source": "rabbit",
+          "target": "relay",
+          "points": [
+            [
+              1020,
+              569
+            ],
+            [
+              904,
+              569
+            ]
+          ],
+          "label": "On success · publisher confirm",
+          "kind": "return",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-08",
+          "source": "relay",
+          "target": "sql",
+          "points": [
+            [
+              904,
+              603
+            ],
+            [
+              788,
+              603
+            ]
+          ],
+          "label": "Mark leased command PUBLISHED",
+          "kind": "data",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-09",
+          "source": "rabbit",
+          "target": "worker",
+          "points": [
+            [
+              1020,
+              637
+            ],
+            [
+              1136,
+              637
+            ]
+          ],
+          "label": "Deliver command · at least once",
+          "kind": "async",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-10",
+          "source": "worker",
+          "target": "sql",
+          "points": [
+            [
+              1136,
+              749
+            ],
+            [
+              788,
+              749
+            ]
+          ],
+          "label": "Match durable intent and claim attempt",
+          "kind": "sync",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-11",
+          "source": "sql",
+          "target": "worker",
+          "points": [
+            [
+              788,
+              783
+            ],
+            [
+              1136,
+              783
+            ]
+          ],
+          "label": "If terminal → skip fit and go to ACK gate",
+          "kind": "branch",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-12",
+          "source": "worker",
+          "target": "sql",
+          "points": [
+            [
+              1136,
+              817
+            ],
+            [
+              788,
+              817
+            ]
+          ],
+          "label": "Persist prepared launch identity in execution_ref",
+          "kind": "data",
+          "evidence": [
+            "E04"
+          ]
+        },
+        {
+          "id": "msg-13",
+          "source": "worker",
+          "target": "compute",
+          "points": [
+            [
+              1136,
+              851
+            ],
+            [
+              1252,
+              851
+            ]
+          ],
+          "label": "Spawn approved training process",
+          "kind": "launch",
+          "evidence": [
+            "E04"
+          ]
+        },
+        {
+          "id": "msg-14",
+          "source": "worker",
+          "target": "sql",
+          "points": [
+            [
+              1136,
+              885
+            ],
+            [
+              788,
+              885
+            ]
+          ],
+          "label": "If physical stop is uncertain → record reconciliation state",
+          "kind": "branch",
+          "evidence": [
+            "E04"
+          ]
+        },
+        {
+          "id": "msg-15",
+          "source": "compute",
+          "target": "compute",
+          "points": [
+            [
+              1252,
+              919
+            ],
+            [
+              1222,
+              919
+            ],
+            [
+              1222,
+              932
+            ],
+            [
+              1252,
+              932
+            ]
+          ],
+          "label": "Fit and write frozen bundle, metrics and result.json",
+          "kind": "data",
+          "evidence": [
+            "E04"
+          ]
+        },
+        {
+          "id": "msg-16",
+          "source": "compute",
+          "target": "worker",
+          "points": [
+            [
+              1252,
+              966
+            ],
+            [
+              1136,
+              966
+            ]
+          ],
+          "label": "After exit · result read from execution directory",
+          "kind": "return",
+          "evidence": [
+            "E04"
+          ]
+        },
+        {
+          "id": "msg-17",
+          "source": "worker",
+          "target": "tracker",
+          "points": [
+            [
+              1136,
+              1078
+            ],
+            [
+              1369,
+              1078
+            ]
+          ],
+          "label": "Log metrics and register frozen artifact",
+          "kind": "data",
+          "evidence": [
+            "E04"
+          ]
+        },
+        {
+          "id": "msg-18",
+          "source": "tracker",
+          "target": "worker",
+          "points": [
+            [
+              1369,
+              1112
+            ],
+            [
+              1136,
+              1112
+            ]
+          ],
+          "label": "Registry version and artifact_ref",
+          "kind": "return",
+          "evidence": [
+            "E04"
+          ]
+        },
+        {
+          "id": "msg-19",
+          "source": "worker",
+          "target": "sql",
+          "points": [
+            [
+              1136,
+              1146
+            ],
+            [
+              788,
+              1146
+            ]
+          ],
+          "label": "Save immutable ModelBinding",
+          "kind": "data",
+          "evidence": [
+            "E04"
+          ]
+        },
+        {
+          "id": "msg-20",
+          "source": "worker",
+          "target": "worker",
+          "points": [
+            [
+              1136,
+              1180
+            ],
+            [
+              1106,
+              1180
+            ],
+            [
+              1106,
+              1193
+            ],
+            [
+              1136,
+              1193
+            ]
+          ],
+          "label": "Evaluate exact artifact on held-out data",
+          "kind": "sync",
+          "evidence": [
+            "E04"
+          ]
+        },
+        {
+          "id": "msg-21",
+          "source": "worker",
+          "target": "sql",
+          "points": [
+            [
+              1136,
+              1227
+            ],
+            [
+              788,
+              1227
+            ]
+          ],
+          "label": "If evaluator raises → save ERROR; leave recovery pending",
+          "kind": "branch",
+          "evidence": [
+            "E04"
+          ]
+        },
+        {
+          "id": "msg-22",
+          "source": "worker",
+          "target": "sql",
+          "points": [
+            [
+              1136,
+              1261
+            ],
+            [
+              788,
+              1261
+            ]
+          ],
+          "label": "Save Evaluation, then finish job with evidence IDs",
+          "kind": "data",
+          "evidence": [
+            "E04"
+          ]
+        },
+        {
+          "id": "msg-23",
+          "source": "worker",
+          "target": "sql",
+          "points": [
+            [
+              1136,
+              1373
+            ],
+            [
+              788,
+              1373
+            ]
+          ],
+          "label": "Validate exact command and terminal job",
+          "kind": "observe",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-24",
+          "source": "worker",
+          "target": "redis",
+          "points": [
+            [
+              1136,
+              1407
+            ],
+            [
+              1485,
+              1407
+            ]
+          ],
+          "label": "Persist technical snapshot with TTL",
+          "kind": "data",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-25",
+          "source": "redis",
+          "target": "worker",
+          "points": [
+            [
+              1485,
+              1441
+            ],
+            [
+              1136,
+              1441
+            ]
+          ],
+          "label": "If write fails → leave unacked; retry gate",
+          "kind": "branch",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-26",
+          "source": "worker",
+          "target": "rabbit",
+          "points": [
+            [
+              1136,
+              1475
+            ],
+            [
+              1020,
+              1475
+            ]
+          ],
+          "label": "After snapshot succeeds · consumer ACK",
+          "kind": "async",
+          "evidence": [
+            "E03"
+          ]
+        },
+        {
+          "id": "msg-27",
+          "source": "reviewer",
+          "target": "api",
+          "points": [
+            [
+              206,
+              1587
+            ],
+            [
+              439,
+              1587
+            ]
+          ],
+          "label": "Submit Approval for evaluation and environment",
+          "kind": "manual",
+          "evidence": [
+            "E06"
+          ]
+        },
+        {
+          "id": "msg-28",
+          "source": "api",
+          "target": "sql",
+          "points": [
+            [
+              439,
+              1621
+            ],
+            [
+              788,
+              1621
+            ]
+          ],
+          "label": "Check matching policy pass; save Approval",
+          "kind": "data",
+          "evidence": [
+            "E06"
+          ]
+        },
+        {
+          "id": "msg-29",
+          "source": "api",
+          "target": "reviewer",
+          "points": [
+            [
+              439,
+              1655
+            ],
+            [
+              206,
+              1655
+            ]
+          ],
+          "label": "201 · Approval",
+          "kind": "return",
+          "evidence": [
+            "E06"
+          ]
+        },
+        {
+          "id": "msg-30",
+          "source": "deployer",
+          "target": "api",
+          "points": [
+            [
+              323,
+              1689
+            ],
+            [
+              439,
+              1689
+            ]
+          ],
+          "label": "Submit separate Deployment request",
+          "kind": "manual",
+          "evidence": [
+            "E06"
+          ]
+        },
+        {
+          "id": "msg-31",
+          "source": "api",
+          "target": "sql",
+          "points": [
+            [
+              439,
+              1723
+            ],
+            [
+              788,
+              1723
+            ]
+          ],
+          "label": "Check approval; create REQUESTED generation",
+          "kind": "data",
+          "evidence": [
+            "E06"
+          ]
+        },
+        {
+          "id": "msg-32",
+          "source": "api",
+          "target": "deployer",
+          "points": [
+            [
+              439,
+              1757
+            ],
+            [
+              323,
+              1757
+            ]
+          ],
+          "label": "202 · deployment_id and generation",
+          "kind": "return",
+          "evidence": [
+            "E06"
+          ]
+        },
+        {
+          "id": "msg-33",
+          "source": "control",
+          "target": "sql",
+          "points": [
+            [
+              555,
+              1869
+            ],
+            [
+              788,
+              1869
+            ]
+          ],
+          "label": "Poll deployment records for reconciliation",
+          "kind": "observe",
+          "evidence": [
+            "E06"
+          ]
+        },
+        {
+          "id": "msg-34",
+          "source": "control",
+          "target": "serving",
+          "points": [
+            [
+              555,
+              1903
+            ],
+            [
+              671,
+              1903
+            ]
+          ],
+          "label": "Launch fixed generation under exclusive intent",
+          "kind": "launch",
+          "evidence": [
+            "E06"
+          ]
+        },
+        {
+          "id": "msg-35",
+          "source": "control",
+          "target": "serving",
+          "points": [
+            [
+              555,
+              1937
+            ],
+            [
+              671,
+              1937
+            ]
+          ],
+          "label": "GET /health/ready and verify generation identity",
+          "kind": "sync",
+          "evidence": [
+            "E06"
+          ]
+        },
+        {
+          "id": "msg-36",
+          "source": "control",
+          "target": "sql",
+          "points": [
+            [
+              555,
+              1971
+            ],
+            [
+              788,
+              1971
+            ]
+          ],
+          "label": "When ready, activate only at expected route revision",
+          "kind": "data",
+          "evidence": [
+            "E06"
+          ]
+        }
+      ],
+      "notes": [
+        "Relay bookkeeping and worker delivery can interleave after publication. Terminal redelivery reuses the ACK gate.",
+        "Approval and deployment require separate permissions. Neither depends on a broker ACK.",
+        "Control retries pending readiness. A stale route revision prevents the generation from replacing the current route."
+      ],
+      "phases": [
+        {
+          "title": "Accept a training request",
+          "relationships": [
+            "msg-01",
+            "msg-02",
+            "msg-03"
+          ]
+        },
+        {
+          "title": "Publish the durable command",
+          "relationships": [
+            "msg-04",
+            "msg-05",
+            "msg-06",
+            "msg-07",
+            "msg-08",
+            "msg-09"
+          ]
+        },
+        {
+          "title": "Claim the attempt and launch compute",
+          "relationships": [
+            "msg-10",
+            "msg-11",
+            "msg-12",
+            "msg-13",
+            "msg-14",
+            "msg-15",
+            "msg-16"
+          ]
+        },
+        {
+          "title": "Register and evaluate the exported bundle",
+          "relationships": [
+            "msg-17",
+            "msg-18",
+            "msg-19",
+            "msg-20",
+            "msg-21",
+            "msg-22"
+          ]
+        },
+        {
+          "title": "Acknowledge a terminal delivery",
+          "relationships": [
+            "msg-23",
+            "msg-24",
+            "msg-25",
+            "msg-26"
+          ]
+        },
+        {
+          "title": "Independent operator requests after eligible evidence exists",
+          "relationships": [
+            "msg-27",
+            "msg-28",
+            "msg-29",
+            "msg-30",
+            "msg-31",
+            "msg-32"
+          ]
+        },
+        {
+          "title": "Control reconciles the requested generation on its next poll",
+          "relationships": [
+            "msg-33",
+            "msg-34",
+            "msg-35",
+            "msg-36"
+          ]
+        }
+      ],
+      "height": 2132
+    },
+    {
+      "file": "05-inference-sequence.svg",
+      "kind": "sequence",
+      "title": "Prediction against an active deployment",
+      "subtitle": "One request, from tenant-scoped routing to the final SQL check. Guarded exits end the affected request.",
+      "width": 1050,
+      "groups": [],
+      "nodes": [
+        {
+          "id": "client",
+          "parent": null,
+          "x": 43,
+          "y": 114,
+          "w": 142,
+          "h": 61,
+          "title": "Client",
+          "subtitle": "HTTP caller",
+          "type": "participant",
+          "axis": 114,
+          "lifelineEnd": 1215
+        },
+        {
+          "id": "gateway",
+          "parent": null,
+          "x": 207,
+          "y": 114,
+          "w": 142,
+          "h": 61,
+          "title": "Gateway",
+          "subtitle": "ingress process",
+          "type": "participant",
+          "axis": 278,
+          "lifelineEnd": 1215
+        },
+        {
+          "id": "mongo",
+          "parent": null,
+          "x": 372,
+          "y": 114,
+          "w": 142,
+          "h": 61,
+          "title": "MongoDB",
+          "subtitle": "identity state",
+          "type": "participant",
+          "axis": 443,
+          "lifelineEnd": 1215
+        },
+        {
+          "id": "sql",
+          "parent": null,
+          "x": 536,
+          "y": 114,
+          "w": 142,
+          "h": 61,
+          "title": "SQL",
+          "subtitle": "route + spec",
+          "type": "participant",
+          "axis": 607,
+          "lifelineEnd": 1215
+        },
+        {
+          "id": "serving",
+          "parent": null,
+          "x": 701,
+          "y": 114,
+          "w": 142,
+          "h": 61,
+          "title": "Serving",
+          "subtitle": "fixed deployment",
+          "type": "participant",
+          "axis": 772,
+          "lifelineEnd": 1215
+        },
+        {
+          "id": "model",
+          "parent": null,
+          "x": 865,
+          "y": 114,
+          "w": 142,
+          "h": 61,
+          "title": "Model runtime",
+          "subtitle": "Serving threads",
+          "type": "participant",
+          "axis": 936,
+          "lifelineEnd": 1215
+        }
+      ],
+      "relationships": [
+        {
+          "id": "msg-01",
+          "source": "client",
+          "target": "gateway",
+          "points": [
+            [
+              114,
+              287
+            ],
+            [
+              278,
+              287
+            ]
+          ],
+          "label": "POST /api/v1/prediction/predict + bearer",
+          "kind": "sync",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-02",
+          "source": "gateway",
+          "target": "mongo",
+          "points": [
+            [
+              278,
+              321
+            ],
+            [
+              443,
+              321
+            ]
+          ],
+          "label": "Read current session and user permissions",
+          "kind": "sync",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-03",
+          "source": "gateway",
+          "target": "sql",
+          "points": [
+            [
+              278,
+              355
+            ],
+            [
+              607,
+              355
+            ]
+          ],
+          "label": "After ml:predict check, read tenant / endpoint route",
+          "kind": "observe",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-04",
+          "source": "gateway",
+          "target": "client",
+          "points": [
+            [
+              278,
+              389
+            ],
+            [
+              114,
+              389
+            ]
+          ],
+          "label": "If no active deployment → 503",
+          "kind": "branch",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-05",
+          "source": "gateway",
+          "target": "sql",
+          "points": [
+            [
+              278,
+              423
+            ],
+            [
+              607,
+              423
+            ]
+          ],
+          "label": "Fetch deployment for route.deployment_id",
+          "kind": "sync",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-06",
+          "source": "gateway",
+          "target": "gateway",
+          "points": [
+            [
+              278,
+              457
+            ],
+            [
+              308,
+              457
+            ],
+            [
+              308,
+              470
+            ],
+            [
+              278,
+              470
+            ]
+          ],
+          "label": "Check generation and release state; resolve address",
+          "kind": "sync",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-07",
+          "source": "gateway",
+          "target": "serving",
+          "points": [
+            [
+              278,
+              582
+            ],
+            [
+              772,
+              582
+            ]
+          ],
+          "label": "GET /health/ready",
+          "kind": "sync",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-08",
+          "source": "serving",
+          "target": "gateway",
+          "points": [
+            [
+              772,
+              616
+            ],
+            [
+              278,
+              616
+            ]
+          ],
+          "label": "Readiness, tenant, deployment identity and Pod UID",
+          "kind": "return",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-09",
+          "source": "gateway",
+          "target": "client",
+          "points": [
+            [
+              278,
+              650
+            ],
+            [
+              114,
+              650
+            ]
+          ],
+          "label": "If unready or identity differs → 503",
+          "kind": "branch",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-10",
+          "source": "gateway",
+          "target": "serving",
+          "points": [
+            [
+              278,
+              762
+            ],
+            [
+              772,
+              762
+            ]
+          ],
+          "label": "Forward prediction, bearer and trace context",
+          "kind": "sync",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-11",
+          "source": "serving",
+          "target": "mongo",
+          "points": [
+            [
+              772,
+              796
+            ],
+            [
+              443,
+              796
+            ]
+          ],
+          "label": "Revalidate current session and user",
+          "kind": "sync",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-12",
+          "source": "serving",
+          "target": "model",
+          "points": [
+            [
+              772,
+              830
+            ],
+            [
+              936,
+              830
+            ]
+          ],
+          "label": "Predict after scope, endpoint and input checks",
+          "kind": "sync",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-13",
+          "source": "model",
+          "target": "serving",
+          "points": [
+            [
+              936,
+              864
+            ],
+            [
+              772,
+              864
+            ]
+          ],
+          "label": "Prediction values for the batch",
+          "kind": "return",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-14",
+          "source": "serving",
+          "target": "gateway",
+          "points": [
+            [
+              772,
+              898
+            ],
+            [
+              278,
+              898
+            ]
+          ],
+          "label": "Predictions with immutable deployment provenance",
+          "kind": "return",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-15",
+          "source": "gateway",
+          "target": "gateway",
+          "points": [
+            [
+              278,
+              1010
+            ],
+            [
+              308,
+              1010
+            ],
+            [
+              308,
+              1023
+            ],
+            [
+              278,
+              1023
+            ]
+          ],
+          "label": "For 2xx, match provenance and readiness Pod UID",
+          "kind": "sync",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-16",
+          "source": "gateway",
+          "target": "client",
+          "points": [
+            [
+              278,
+              1057
+            ],
+            [
+              114,
+              1057
+            ]
+          ],
+          "label": "If success identity differs → 503",
+          "kind": "branch",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-17",
+          "source": "gateway",
+          "target": "sql",
+          "points": [
+            [
+              278,
+              1091
+            ],
+            [
+              607,
+              1091
+            ]
+          ],
+          "label": "Read the same tenant / endpoint route again",
+          "kind": "observe",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-18",
+          "source": "sql",
+          "target": "gateway",
+          "points": [
+            [
+              607,
+              1125
+            ],
+            [
+              278,
+              1125
+            ]
+          ],
+          "label": "Current route including revision and generation",
+          "kind": "return",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-19",
+          "source": "gateway",
+          "target": "client",
+          "points": [
+            [
+              278,
+              1159
+            ],
+            [
+              114,
+              1159
+            ]
+          ],
+          "label": "If route changed or response redirects → 503",
+          "kind": "branch",
+          "evidence": [
+            "E07"
+          ]
+        },
+        {
+          "id": "msg-20",
+          "source": "gateway",
+          "target": "client",
+          "points": [
+            [
+              278,
+              1193
+            ],
+            [
+              114,
+              1193
+            ]
+          ],
+          "label": "Stable route · return Serving body and status",
+          "kind": "return",
+          "evidence": [
+            "E07"
+          ]
+        }
+      ],
+      "notes": [
+        "The Gateway resolver reads the local instance record or derives Kubernetes Service DNS from deployment identity.",
+        "Serving loads the pinned bundle at startup. Its request timeout leaves the slot occupied until physical work completes."
+      ],
+      "phases": [
+        {
+          "title": "Authenticate and resolve the destination",
+          "relationships": [
+            "msg-01",
+            "msg-02",
+            "msg-03",
+            "msg-04",
+            "msg-05",
+            "msg-06"
+          ]
+        },
+        {
+          "title": "Probe the chosen Serving instance",
+          "relationships": [
+            "msg-07",
+            "msg-08",
+            "msg-09"
+          ]
+        },
+        {
+          "title": "Execute the fixed model",
+          "relationships": [
+            "msg-10",
+            "msg-11",
+            "msg-12",
+            "msg-13",
+            "msg-14"
+          ]
+        },
+        {
+          "title": "Verify before returning",
+          "relationships": [
+            "msg-15",
+            "msg-16",
+            "msg-17",
+            "msg-18",
+            "msg-19",
+            "msg-20"
+          ]
+        }
+      ],
+      "height": 1331
+    },
+    {
+      "file": "06-local-runtime.svg",
+      "kind": "topology",
+      "title": "Native execution on a Linux host",
+      "subtitle": "Two execution modes · select one · arrows trace selected process and storage connections",
+      "width": 1520,
+      "groups": [
+        {
+          "id": "demo",
+          "parent": null,
+          "x": 35,
+          "y": 125,
+          "w": 1450,
+          "h": 205,
+          "title": "Training demo  /  one host",
+          "subtitle": "Documented default configuration · no external service processes",
+          "type": "host"
+        },
+        {
+          "id": "host",
+          "parent": null,
+          "x": 35,
+          "y": 355,
+          "w": 875,
+          "h": 620,
+          "title": "HTTP and worker roles  /  one host",
+          "subtitle": "Individual entrypoints · full host startup and shutdown remain unqualified",
+          "type": "host"
+        },
+        {
+          "id": "endpoints",
+          "parent": null,
+          "x": 960,
+          "y": 355,
+          "w": 525,
+          "h": 620,
+          "title": "Reachable dependencies",
+          "subtitle": "Example with PostgreSQL and MLflow · physical placement unspecified",
+          "type": "external"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "demo-cli",
+          "parent": "demo",
+          "x": 62,
+          "y": 205,
+          "w": 295,
+          "h": 66,
+          "title": "ml_cli demo  /  demo-ebm",
+          "subtitle": "CLI + Supervisor in the same process",
+          "type": "process"
+        },
+        {
+          "id": "demo-runner",
+          "parent": "demo",
+          "x": 440,
+          "y": 205,
+          "w": 225,
+          "h": 66,
+          "title": "Compute child",
+          "subtitle": "ml_training_runner",
+          "type": "process"
+        },
+        {
+          "id": "demo-dir",
+          "parent": "demo",
+          "x": 790,
+          "y": 205,
+          "w": 245,
+          "h": 66,
+          "title": "Execution directory",
+          "subtitle": "Per-attempt files and bundle",
+          "type": "storage"
+        },
+        {
+          "id": "demo-state",
+          "parent": "demo",
+          "x": 1170,
+          "y": 205,
+          "w": 265,
+          "h": 66,
+          "title": "SQLite + local tracker files",
+          "subtitle": "Durable job and model evidence",
+          "type": "storage"
+        },
+        {
+          "id": "gateway",
+          "parent": "host",
+          "x": 65,
+          "y": 472,
+          "w": 225,
+          "h": 60,
+          "title": "Prediction Gateway",
+          "subtitle": "uvicorn · :8001",
+          "type": "process"
+        },
+        {
+          "id": "serving",
+          "parent": "host",
+          "x": 65,
+          "y": 570,
+          "w": 225,
+          "h": 60,
+          "title": "Serving child",
+          "subtitle": "ml_serving · loopback port",
+          "type": "process"
+        },
+        {
+          "id": "control",
+          "parent": "host",
+          "x": 370,
+          "y": 570,
+          "w": 210,
+          "h": 60,
+          "title": "Control",
+          "subtitle": "ml_cli control",
+          "type": "process"
+        },
+        {
+          "id": "management",
+          "parent": "host",
+          "x": 650,
+          "y": 472,
+          "w": 235,
+          "h": 60,
+          "title": "Management API",
+          "subtitle": "uvicorn · :8000",
+          "type": "process"
+        },
+        {
+          "id": "relay",
+          "parent": "host",
+          "x": 650,
+          "y": 570,
+          "w": 235,
+          "h": 60,
+          "title": "Outbox Relay",
+          "subtitle": "ml_cli relay · SQL lease",
+          "type": "process"
+        },
+        {
+          "id": "worker",
+          "parent": "host",
+          "x": 650,
+          "y": 683,
+          "w": 235,
+          "h": 60,
+          "title": "Training Supervisor",
+          "subtitle": "Taskiq · manual ACK",
+          "type": "process"
+        },
+        {
+          "id": "child",
+          "parent": "host",
+          "x": 370,
+          "y": 683,
+          "w": 210,
+          "h": 60,
+          "title": "Compute child",
+          "subtitle": "ml_training_runner",
+          "type": "process"
+        },
+        {
+          "id": "ingest",
+          "parent": "host",
+          "x": 65,
+          "y": 808,
+          "w": 225,
+          "h": 68,
+          "title": "Optional ingestion worker",
+          "subtitle": "ingestion_cli work · SQL polling",
+          "type": "process"
+        },
+        {
+          "id": "files",
+          "parent": "host",
+          "x": 370,
+          "y": 808,
+          "w": 210,
+          "h": 68,
+          "title": "Runtime files",
+          "subtitle": "Datasets, raw and executions",
+          "type": "storage"
+        },
+        {
+          "id": "migrate",
+          "parent": "host",
+          "x": 650,
+          "y": 808,
+          "w": 235,
+          "h": 68,
+          "title": "Migration CLI",
+          "subtitle": "ml_cli migrate · one-shot",
+          "type": "process"
+        },
+        {
+          "id": "sql",
+          "parent": "endpoints",
+          "x": 980,
+          "y": 472,
+          "w": 220,
+          "h": 60,
+          "title": "Application SQL",
+          "subtitle": "Business state + outbox",
+          "type": "external"
+        },
+        {
+          "id": "mongo",
+          "parent": "endpoints",
+          "x": 1240,
+          "y": 472,
+          "w": 220,
+          "h": 60,
+          "title": "MongoDB",
+          "subtitle": "Identity and sessions",
+          "type": "external"
+        },
+        {
+          "id": "rabbit",
+          "parent": "endpoints",
+          "x": 980,
+          "y": 570,
+          "w": 220,
+          "h": 60,
+          "title": "RabbitMQ",
+          "subtitle": "Durable command queue",
+          "type": "external"
+        },
+        {
+          "id": "redis",
+          "parent": "endpoints",
+          "x": 980,
+          "y": 683,
+          "w": 220,
+          "h": 60,
+          "title": "Redis",
+          "subtitle": "Technical result snapshot",
+          "type": "external"
+        },
+        {
+          "id": "tracker",
+          "parent": "endpoints",
+          "x": 1240,
+          "y": 683,
+          "w": 220,
+          "h": 60,
+          "title": "MLflow",
+          "subtitle": "Tracking and model registry",
+          "type": "external"
+        }
+      ],
+      "relationships": [
+        {
+          "id": "demo-launch",
+          "source": "demo-cli",
+          "target": "demo-runner",
+          "points": [
+            [
+              357,
+              234
+            ],
+            [
+              440,
+              234
+            ]
+          ],
+          "kind": "launch",
+          "label": "Launch one OS process per accepted attempt",
+          "evidence": [
+            "E04"
+          ],
+          "key": 1,
+          "caption": "Spawn"
+        },
+        {
+          "id": "demo-output",
+          "source": "demo-runner",
+          "target": "demo-dir",
+          "points": [
+            [
+              665,
+              234
+            ],
+            [
+              790,
+              234
+            ]
+          ],
+          "kind": "data",
+          "label": "Write checkpoints, metrics and frozen bundle",
+          "evidence": [
+            "E04"
+          ],
+          "key": 2,
+          "caption": "Write bundle"
+        },
+        {
+          "id": "demo-persist",
+          "source": "demo-cli",
+          "target": "demo-state",
+          "points": [
+            [
+              190,
+              271
+            ],
+            [
+              190,
+              301
+            ],
+            [
+              1295,
+              301
+            ],
+            [
+              1295,
+              271
+            ]
+          ],
+          "kind": "data",
+          "label": "Migrate, persist job, lease command directly and register model evidence",
+          "evidence": [
+            "E09"
+          ],
+          "key": 3,
+          "caption": "Lease job / store evidence"
+        },
+        {
+          "id": "predict",
+          "source": "gateway",
+          "target": "serving",
+          "points": [
+            [
+              180,
+              532
+            ],
+            [
+              180,
+              570
+            ]
+          ],
+          "kind": "sync",
+          "label": "Forward to the fixed process over loopback HTTP",
+          "evidence": [
+            "E07"
+          ],
+          "key": 4,
+          "caption": "HTTP"
+        },
+        {
+          "id": "serve-launch",
+          "source": "control",
+          "target": "serving",
+          "points": [
+            [
+              370,
+              601
+            ],
+            [
+              290,
+              601
+            ]
+          ],
+          "kind": "launch",
+          "label": "Start a fixed-model Serving child",
+          "evidence": [
+            "E07"
+          ],
+          "key": 5,
+          "caption": "Spawn"
+        },
+        {
+          "id": "admit",
+          "source": "management",
+          "target": "sql",
+          "points": [
+            [
+              885,
+              501
+            ],
+            [
+              980,
+              501
+            ]
+          ],
+          "kind": "data",
+          "label": "Persist admitted jobs and governance state",
+          "evidence": [
+            "E03"
+          ],
+          "key": 6,
+          "caption": "Commit"
+        },
+        {
+          "id": "authenticate",
+          "source": "management",
+          "target": "mongo",
+          "points": [
+            [
+              780,
+              472
+            ],
+            [
+              780,
+              445
+            ],
+            [
+              1350,
+              445
+            ],
+            [
+              1350,
+              472
+            ]
+          ],
+          "kind": "sync",
+          "label": "Resolve tenant and identity",
+          "evidence": [
+            "E01"
+          ],
+          "key": 7,
+          "caption": "Session"
+        },
+        {
+          "id": "publish",
+          "source": "relay",
+          "target": "rabbit",
+          "points": [
+            [
+              885,
+              590
+            ],
+            [
+              980,
+              590
+            ]
+          ],
+          "kind": "async",
+          "label": "Publish a leased command with broker confirmation",
+          "evidence": [
+            "E03"
+          ],
+          "key": 8,
+          "caption": "Publish"
+        },
+        {
+          "id": "consume",
+          "source": "rabbit",
+          "target": "worker",
+          "points": [
+            [
+              980,
+              611
+            ],
+            [
+              938,
+              611
+            ],
+            [
+              938,
+              700
+            ],
+            [
+              885,
+              700
+            ]
+          ],
+          "kind": "async",
+          "label": "Deliver to the Supervisor for manual acknowledgement",
+          "evidence": [
+            "E03"
+          ],
+          "key": 9,
+          "caption": "Deliver"
+        },
+        {
+          "id": "snapshot",
+          "source": "worker",
+          "target": "redis",
+          "points": [
+            [
+              885,
+              729
+            ],
+            [
+              980,
+              729
+            ]
+          ],
+          "kind": "data",
+          "label": "Store terminal technical result before AMQP acknowledgement",
+          "evidence": [
+            "E03"
+          ],
+          "key": 10,
+          "caption": "Persist"
+        },
+        {
+          "id": "register",
+          "source": "worker",
+          "target": "tracker",
+          "points": [
+            [
+              815,
+              683
+            ],
+            [
+              815,
+              655
+            ],
+            [
+              1345,
+              655
+            ],
+            [
+              1345,
+              683
+            ]
+          ],
+          "kind": "data",
+          "label": "Register the frozen model bundle using the selected tracker",
+          "evidence": [
+            "E04"
+          ],
+          "key": 11,
+          "caption": "Register bundle"
+        },
+        {
+          "id": "train-launch",
+          "source": "worker",
+          "target": "child",
+          "points": [
+            [
+              650,
+              714
+            ],
+            [
+              580,
+              714
+            ]
+          ],
+          "kind": "launch",
+          "label": "Start isolated training compute",
+          "evidence": [
+            "E04"
+          ],
+          "key": 12,
+          "caption": "Spawn"
+        },
+        {
+          "id": "train-files",
+          "source": "child",
+          "target": "files",
+          "points": [
+            [
+              480,
+              743
+            ],
+            [
+              480,
+              808
+            ]
+          ],
+          "kind": "data",
+          "label": "Read datasets and write attempt output",
+          "evidence": [
+            "E04"
+          ],
+          "key": 13,
+          "caption": "Attempt output"
+        },
+        {
+          "id": "publish-raw",
+          "source": "ingest",
+          "target": "files",
+          "points": [
+            [
+              290,
+              842
+            ],
+            [
+              370,
+              842
+            ]
+          ],
+          "kind": "data",
+          "label": "Publish immutable raw snapshots",
+          "evidence": [
+            "E05"
+          ],
+          "key": 14,
+          "caption": "Publish"
+        },
+        {
+          "id": "schema",
+          "source": "migrate",
+          "target": "sql",
+          "points": [
+            [
+              885,
+              843
+            ],
+            [
+              950,
+              843
+            ],
+            [
+              950,
+              520
+            ],
+            [
+              980,
+              520
+            ]
+          ],
+          "kind": "data",
+          "label": "Prepare SQL schema before starting the full roles",
+          "evidence": [
+            "E09"
+          ],
+          "key": 15,
+          "caption": "Migrate"
+        }
+      ],
+      "notes": [
+        "Demo uses SQLite and local tracker defaults. The CLI leases its command and invokes the Supervisor directly.",
+        "Full host requires coordinated SQL, identity, broker, Redis and durable paths. Tracker can instead use the dev local adapter.",
+        "Linux /proc boot identity and POSIX process groups constrain recovery. Native macOS full-lifecycle execution is unqualified."
+      ],
+      "height": 1154
+    },
+    {
+      "file": "07-docker-compose-runtime.svg",
+      "kind": "topology",
+      "title": "Docker Compose development deployment",
+      "subtitle": "compose.ml.yaml · service DNS on the project network · secondary text names the process or persistent volume",
+      "width": 1520,
+      "groups": [
+        {
+          "id": "project",
+          "parent": null,
+          "x": 35,
+          "y": 125,
+          "w": 1450,
+          "h": 845,
+          "title": "Compose project  /  ml-system-ebm",
+          "subtitle": "Default project network · host ingress is restricted to loopback",
+          "type": "network"
+        },
+        {
+          "id": "supervisor-box",
+          "parent": "project",
+          "x": 640,
+          "y": 408,
+          "w": 500,
+          "h": 177,
+          "title": "supervisor  /  Docker container",
+          "subtitle": "training image · Taskiq processes and compute share the container",
+          "type": "container"
+        },
+        {
+          "id": "ns",
+          "parent": "project",
+          "x": 55,
+          "y": 614,
+          "w": 685,
+          "h": 325,
+          "title": "Control network namespace",
+          "subtitle": "gateway uses network_mode: service:control · separate Docker containers",
+          "type": "network"
+        },
+        {
+          "id": "control-box",
+          "parent": "ns",
+          "x": 73,
+          "y": 692,
+          "w": 365,
+          "h": 205,
+          "title": "control  /  Docker container",
+          "subtitle": "Publishes 127.0.0.1:8001 to port 8001",
+          "type": "container"
+        },
+        {
+          "id": "gateway-box",
+          "parent": "ns",
+          "x": 474,
+          "y": 692,
+          "w": 244,
+          "h": 205,
+          "title": "gateway  /  Docker container",
+          "subtitle": "Gateway listens on the shared interface",
+          "type": "container"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "api",
+          "parent": "project",
+          "x": 65,
+          "y": 279,
+          "w": 245,
+          "h": 72,
+          "title": "management",
+          "subtitle": "uvicorn · 127.0.0.1:8000 → :8000",
+          "type": "container"
+        },
+        {
+          "id": "sql",
+          "parent": "project",
+          "x": 380,
+          "y": 279,
+          "w": 210,
+          "h": 72,
+          "title": "postgres  /  :5432",
+          "subtitle": "app-db · SQL health check",
+          "type": "container"
+        },
+        {
+          "id": "mongo",
+          "parent": "project",
+          "x": 380,
+          "y": 185,
+          "w": 210,
+          "h": 63,
+          "title": "mongo  /  :27017",
+          "subtitle": "identity-db · ping health check",
+          "type": "container"
+        },
+        {
+          "id": "migrate",
+          "parent": "project",
+          "x": 677,
+          "y": 279,
+          "w": 220,
+          "h": 72,
+          "title": "migrate  /  one-shot",
+          "subtitle": "ml_cli migrate · restart: no",
+          "type": "container"
+        },
+        {
+          "id": "ingest",
+          "parent": "project",
+          "x": 1180,
+          "y": 279,
+          "w": 270,
+          "h": 72,
+          "title": "ingestion-worker  /  profile",
+          "subtitle": "ingestion_cli work · input mount :ro",
+          "type": "container"
+        },
+        {
+          "id": "relay",
+          "parent": "project",
+          "x": 65,
+          "y": 482,
+          "w": 245,
+          "h": 72,
+          "title": "relay",
+          "subtitle": "ml_cli relay · SQL polling",
+          "type": "container"
+        },
+        {
+          "id": "rabbit",
+          "parent": "project",
+          "x": 380,
+          "y": 482,
+          "w": 210,
+          "h": 72,
+          "title": "rabbitmq  /  :5672",
+          "subtitle": "broker · ping health check",
+          "type": "container"
+        },
+        {
+          "id": "taskiq",
+          "parent": "supervisor-box",
+          "x": 660,
+          "y": 489,
+          "w": 193,
+          "h": 67,
+          "title": "Taskiq Supervisor",
+          "subtitle": "One consumer · manual ACK",
+          "type": "process"
+        },
+        {
+          "id": "compute",
+          "parent": "supervisor-box",
+          "x": 921,
+          "y": 489,
+          "w": 198,
+          "h": 67,
+          "title": "Compute child",
+          "subtitle": "ml_training_runner",
+          "type": "process"
+        },
+        {
+          "id": "redis",
+          "parent": "project",
+          "x": 1180,
+          "y": 482,
+          "w": 270,
+          "h": 72,
+          "title": "redis  /  :6379",
+          "subtitle": "AOF · no declared named volume",
+          "type": "container"
+        },
+        {
+          "id": "control",
+          "parent": "control-box",
+          "x": 86,
+          "y": 795,
+          "w": 147,
+          "h": 69,
+          "title": "Control",
+          "subtitle": "ml_cli control",
+          "type": "process"
+        },
+        {
+          "id": "serving",
+          "parent": "control-box",
+          "x": 276,
+          "y": 795,
+          "w": 148,
+          "h": 69,
+          "title": "Serving child",
+          "subtitle": "Dynamic loopback port",
+          "type": "process"
+        },
+        {
+          "id": "gateway",
+          "parent": "gateway-box",
+          "x": 491,
+          "y": 795,
+          "w": 209,
+          "h": 69,
+          "title": "Gateway",
+          "subtitle": "uvicorn · :8001",
+          "type": "process"
+        },
+        {
+          "id": "mlflow",
+          "parent": "project",
+          "x": 780,
+          "y": 700,
+          "w": 260,
+          "h": 74,
+          "title": "mlflow  /  :5000",
+          "subtitle": "MLflow server · /health check",
+          "type": "container"
+        },
+        {
+          "id": "track-sql",
+          "parent": "project",
+          "x": 1180,
+          "y": 700,
+          "w": 270,
+          "h": 74,
+          "title": "mlflow-db  /  :5432",
+          "subtitle": "mlflow-db · SQL health check",
+          "type": "container"
+        },
+        {
+          "id": "minio",
+          "parent": "project",
+          "x": 1180,
+          "y": 814,
+          "w": 270,
+          "h": 64,
+          "title": "minio  /  :9000",
+          "subtitle": "MinIO server · artifacts volume",
+          "type": "container"
+        },
+        {
+          "id": "bucket",
+          "parent": "project",
+          "x": 1180,
+          "y": 900,
+          "w": 270,
+          "h": 53,
+          "title": "minio-init  /  one-shot",
+          "subtitle": "mc mb · initialize bucket",
+          "type": "container"
+        },
+        {
+          "id": "bind",
+          "parent": null,
+          "x": 770,
+          "y": 1006,
+          "w": 305,
+          "h": 64,
+          "title": "Host bind mount",
+          "subtitle": "./var → /app/var in application roles",
+          "type": "storage"
+        }
+      ],
+      "relationships": [
+        {
+          "id": "management-sql",
+          "source": "api",
+          "target": "sql",
+          "points": [
+            [
+              310,
+              315
+            ],
+            [
+              380,
+              315
+            ]
+          ],
+          "kind": "data",
+          "label": "Persist application metadata in PostgreSQL",
+          "evidence": [
+            "E08"
+          ],
+          "key": 1,
+          "caption": "SQL"
+        },
+        {
+          "id": "management-auth",
+          "source": "api",
+          "target": "mongo",
+          "points": [
+            [
+              185,
+              279
+            ],
+            [
+              185,
+              217
+            ],
+            [
+              380,
+              217
+            ]
+          ],
+          "kind": "sync",
+          "label": "Resolve identity using MongoDB",
+          "evidence": [
+            "E01"
+          ],
+          "key": 2,
+          "caption": "Session lookup"
+        },
+        {
+          "id": "migration",
+          "source": "migrate",
+          "target": "sql",
+          "points": [
+            [
+              677,
+              315
+            ],
+            [
+              590,
+              315
+            ]
+          ],
+          "kind": "data",
+          "label": "Apply schema migrations to the application database",
+          "evidence": [
+            "E08"
+          ],
+          "key": 3,
+          "caption": "Migrate"
+        },
+        {
+          "id": "ingest-start",
+          "source": "migrate",
+          "target": "ingest",
+          "points": [
+            [
+              897,
+              315
+            ],
+            [
+              1180,
+              315
+            ]
+          ],
+          "kind": "dependency",
+          "label": "Successful migration gates ingestion overlay startup",
+          "evidence": [
+            "E08"
+          ],
+          "key": 4,
+          "caption": "After migration succeeds"
+        },
+        {
+          "id": "publish",
+          "source": "relay",
+          "target": "rabbit",
+          "points": [
+            [
+              310,
+              520
+            ],
+            [
+              380,
+              520
+            ]
+          ],
+          "kind": "async",
+          "label": "Publish training command over AMQP",
+          "evidence": [
+            "E03"
+          ],
+          "key": 5,
+          "caption": "Publish"
+        },
+        {
+          "id": "consume",
+          "source": "rabbit",
+          "target": "taskiq",
+          "points": [
+            [
+              590,
+              520
+            ],
+            [
+              660,
+              520
+            ]
+          ],
+          "kind": "async",
+          "label": "Deliver command to the manual-ACK consumer",
+          "evidence": [
+            "E03"
+          ],
+          "key": 6,
+          "caption": "Deliver"
+        },
+        {
+          "id": "fork",
+          "source": "taskiq",
+          "target": "compute",
+          "points": [
+            [
+              853,
+              525
+            ],
+            [
+              921,
+              525
+            ]
+          ],
+          "kind": "launch",
+          "label": "Spawn the training runner inside the Supervisor container",
+          "evidence": [
+            "E04"
+          ],
+          "key": 7,
+          "caption": "Spawn"
+        },
+        {
+          "id": "result",
+          "source": "taskiq",
+          "target": "redis",
+          "points": [
+            [
+              801,
+              556
+            ],
+            [
+              801,
+              586
+            ],
+            [
+              1310,
+              586
+            ],
+            [
+              1310,
+              554
+            ]
+          ],
+          "kind": "data",
+          "label": "Store technical terminal result before acknowledging delivery",
+          "evidence": [
+            "E03"
+          ],
+          "key": 8,
+          "caption": "Save terminal snapshot"
+        },
+        {
+          "id": "registration",
+          "source": "taskiq",
+          "target": "mlflow",
+          "points": [
+            [
+              690,
+              556
+            ],
+            [
+              690,
+              599
+            ],
+            [
+              833,
+              599
+            ],
+            [
+              833,
+              700
+            ]
+          ],
+          "kind": "data",
+          "label": "Register the frozen bundle through MLflow",
+          "evidence": [
+            "E04"
+          ],
+          "key": 9,
+          "caption": "Register bundle"
+        },
+        {
+          "id": "train-files",
+          "source": "compute",
+          "target": "bind",
+          "points": [
+            [
+              1045,
+              556
+            ],
+            [
+              1045,
+              606
+            ],
+            [
+              1090,
+              606
+            ],
+            [
+              1090,
+              986
+            ],
+            [
+              920,
+              986
+            ],
+            [
+              920,
+              1006
+            ]
+          ],
+          "kind": "data",
+          "label": "Write execution outputs through the application bind mount",
+          "evidence": [
+            "E08"
+          ],
+          "key": 10,
+          "caption": "Attempt output"
+        },
+        {
+          "id": "serving-spawn",
+          "source": "control",
+          "target": "serving",
+          "points": [
+            [
+              233,
+              830
+            ],
+            [
+              276,
+              830
+            ]
+          ],
+          "kind": "launch",
+          "label": "Launch Serving child in the Control container",
+          "evidence": [
+            "E07"
+          ],
+          "key": 11,
+          "caption": "11"
+        },
+        {
+          "id": "forward",
+          "source": "gateway",
+          "target": "serving",
+          "points": [
+            [
+              491,
+              830
+            ],
+            [
+              424,
+              830
+            ]
+          ],
+          "kind": "sync",
+          "label": "Reach Serving over shared network namespace loopback",
+          "evidence": [
+            "E07"
+          ],
+          "key": 12,
+          "caption": "HTTP"
+        },
+        {
+          "id": "mlflow-db",
+          "source": "mlflow",
+          "target": "track-sql",
+          "points": [
+            [
+              1040,
+              735
+            ],
+            [
+              1180,
+              735
+            ]
+          ],
+          "kind": "data",
+          "label": "Store tracking and registry metadata in PostgreSQL",
+          "evidence": [
+            "E08"
+          ],
+          "key": 13,
+          "caption": "PostgreSQL"
+        },
+        {
+          "id": "mlflow-s3",
+          "source": "mlflow",
+          "target": "minio",
+          "points": [
+            [
+              910,
+              774
+            ],
+            [
+              910,
+              846
+            ],
+            [
+              1180,
+              846
+            ]
+          ],
+          "kind": "data",
+          "label": "Proxy model artifacts to the MinIO S3 endpoint",
+          "evidence": [
+            "E08"
+          ],
+          "key": 14,
+          "caption": "S3 artifact proxy"
+        },
+        {
+          "id": "make-bucket",
+          "source": "bucket",
+          "target": "minio",
+          "points": [
+            [
+              1320,
+              900
+            ],
+            [
+              1320,
+              878
+            ]
+          ],
+          "kind": "data",
+          "label": "Create ml-artifacts bucket before MLflow starts",
+          "evidence": [
+            "E08"
+          ],
+          "key": 15,
+          "caption": "Create bucket"
+        }
+      ],
+      "notes": [
+        "Startup: mlflow-db healthy + minio-init success → MLflow; postgres, mongo, rabbitmq and MLflow healthy → migrate.",
+        "Migrate success gates Management, Relay, Supervisor and Control. Gateway waits for Control started. Both one-shots exit.",
+        "Ingestion and acceptance use optional overlays/profiles. Standalone external-mlflow uses separately supplied endpoints and role files.",
+        "Base: 5 long-lived app roles, 7 infrastructure services, 2 one-shots. ./var is shared; most app roles lack a Compose health check."
+      ],
+      "height": 1295
+    },
+    {
+      "file": "08-kubernetes-runtime.svg",
+      "kind": "topology",
+      "title": "Kubernetes deployment on single-node Minikube",
+      "subtitle": "minikube-training overlay · native Serving and Pod-aware Training · single-container infra Pods identify their container in the subtitle",
+      "width": 1580,
+      "groups": [
+        {
+          "id": "ns",
+          "parent": null,
+          "x": 30,
+          "y": 125,
+          "w": 1520,
+          "h": 1210,
+          "title": "Application qualification namespace",
+          "subtitle": "Base resources + Minikube infrastructure + opt-in serving/training overlays",
+          "type": "namespace"
+        },
+        {
+          "id": "mgmt-pod",
+          "parent": "ns",
+          "x": 275,
+          "y": 207,
+          "w": 289,
+          "h": 167,
+          "title": "ml-management  /  Pod",
+          "subtitle": "Init container: prepare-management",
+          "type": "pod"
+        },
+        {
+          "id": "migration-pod",
+          "parent": "ns",
+          "x": 918,
+          "y": 207,
+          "w": 245,
+          "h": 167,
+          "title": "ml-migrate  /  Job Pod",
+          "subtitle": "Init container: prepare-migrate",
+          "type": "pod"
+        },
+        {
+          "id": "ingestion-pod",
+          "parent": "ns",
+          "x": 1190,
+          "y": 207,
+          "w": 330,
+          "h": 167,
+          "title": "ml-ingestion-worker  /  Pod",
+          "subtitle": "Init container: prepare-ingestion-worker",
+          "type": "pod"
+        },
+        {
+          "id": "relay-pod",
+          "parent": "ns",
+          "x": 51,
+          "y": 414,
+          "w": 230,
+          "h": 211,
+          "title": "ml-relay  /  Pod",
+          "subtitle": "Init container: prepare-relay",
+          "type": "pod"
+        },
+        {
+          "id": "supervisor-pod",
+          "parent": "ns",
+          "x": 555,
+          "y": 414,
+          "w": 700,
+          "h": 234,
+          "title": "ml-supervisor  /  Pod",
+          "subtitle": "Init container: prepare-supervisor",
+          "type": "pod"
+        },
+        {
+          "id": "sup-container",
+          "parent": "supervisor-pod",
+          "x": 571,
+          "y": 479,
+          "w": 666,
+          "h": 152,
+          "title": "supervisor  /  container",
+          "subtitle": "One Taskiq worker · guardian and compute are child processes",
+          "type": "container"
+        },
+        {
+          "id": "control-pod",
+          "parent": "ns",
+          "x": 300,
+          "y": 706,
+          "w": 340,
+          "h": 294,
+          "title": "ml-control  /  Pod",
+          "subtitle": "Init containers: prepare-control, prepare-gateway",
+          "type": "pod"
+        },
+        {
+          "id": "deployment",
+          "parent": "ns",
+          "x": 952,
+          "y": 680,
+          "w": 564,
+          "h": 324,
+          "title": "ml-serve-<UUID>  /  Kubernetes Deployment",
+          "subtitle": "One replica · fixed model, image and source revision",
+          "type": "workload"
+        },
+        {
+          "id": "serve-pod",
+          "parent": "deployment",
+          "x": 969,
+          "y": 746,
+          "w": 527,
+          "h": 204,
+          "title": "Serving replica  /  Pod",
+          "subtitle": "Init container: prepare-serving",
+          "type": "pod"
+        },
+        {
+          "id": "mlflow-pod",
+          "parent": "ns",
+          "x": 704,
+          "y": 1060,
+          "w": 443,
+          "h": 232,
+          "title": "mlflow  /  Pod",
+          "subtitle": "Service :8443 → TLS sidecar · mlflow PVC for auth data",
+          "type": "pod"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "management-svc",
+          "parent": "ns",
+          "x": 50,
+          "y": 288,
+          "w": 198,
+          "h": 66,
+          "title": "Service · ml-management",
+          "subtitle": "ClusterIP · :8000",
+          "type": "resource"
+        },
+        {
+          "id": "management",
+          "parent": "mgmt-pod",
+          "x": 292,
+          "y": 288,
+          "w": 252,
+          "h": 66,
+          "title": "management",
+          "subtitle": "Container · uvicorn :8000",
+          "type": "container"
+        },
+        {
+          "id": "mongodb",
+          "parent": "ns",
+          "x": 654,
+          "y": 190,
+          "w": 228,
+          "h": 65,
+          "title": "Pod · mongodb",
+          "subtitle": "Container: mongodb · PVC · :27017",
+          "type": "pod"
+        },
+        {
+          "id": "postgres",
+          "parent": "ns",
+          "x": 654,
+          "y": 288,
+          "w": 228,
+          "h": 66,
+          "title": "Pod · postgres",
+          "subtitle": "Container: postgres · PVC · :5432",
+          "type": "pod"
+        },
+        {
+          "id": "migrate",
+          "parent": "migration-pod",
+          "x": 933,
+          "y": 288,
+          "w": 215,
+          "h": 66,
+          "title": "migrate",
+          "subtitle": "Container · schema migration",
+          "type": "container"
+        },
+        {
+          "id": "ingestion",
+          "parent": "ingestion-pod",
+          "x": 1208,
+          "y": 288,
+          "w": 294,
+          "h": 66,
+          "title": "ingestion-worker",
+          "subtitle": "Container · poll SQL / publish raw snapshots",
+          "type": "container"
+        },
+        {
+          "id": "relay",
+          "parent": "relay-pod",
+          "x": 64,
+          "y": 542,
+          "w": 203,
+          "h": 64,
+          "title": "relay",
+          "subtitle": "Container · ml_cli relay",
+          "type": "container"
+        },
+        {
+          "id": "broker",
+          "parent": "ns",
+          "x": 320,
+          "y": 542,
+          "w": 201,
+          "h": 64,
+          "title": "Pod · rabbitmq",
+          "subtitle": "rabbitmq container · PVC · :5672",
+          "type": "pod"
+        },
+        {
+          "id": "supervisor",
+          "parent": "sup-container",
+          "x": 586,
+          "y": 547,
+          "w": 169,
+          "h": 63,
+          "title": "Taskiq Supervisor",
+          "subtitle": "Consumer process",
+          "type": "process"
+        },
+        {
+          "id": "guardian",
+          "parent": "sup-container",
+          "x": 809,
+          "y": 547,
+          "w": 165,
+          "h": 63,
+          "title": "Guardian",
+          "subtitle": "Stop receipt + deadline",
+          "type": "process"
+        },
+        {
+          "id": "compute",
+          "parent": "sup-container",
+          "x": 1029,
+          "y": 547,
+          "w": 191,
+          "h": 63,
+          "title": "Compute child",
+          "subtitle": "ml_training_runner",
+          "type": "process"
+        },
+        {
+          "id": "redis",
+          "parent": "ns",
+          "x": 1303,
+          "y": 547,
+          "w": 217,
+          "h": 63,
+          "title": "Pod · redis",
+          "subtitle": "Container: redis · PVC · :6379",
+          "type": "pod"
+        },
+        {
+          "id": "gateway-svc",
+          "parent": "ns",
+          "x": 50,
+          "y": 800,
+          "w": 198,
+          "h": 68,
+          "title": "Service · ml-gateway",
+          "subtitle": "Selects ml-control · :8001",
+          "type": "resource"
+        },
+        {
+          "id": "gateway",
+          "parent": "control-pod",
+          "x": 316,
+          "y": 800,
+          "w": 307,
+          "h": 68,
+          "title": "gateway",
+          "subtitle": "Container · uvicorn :8001",
+          "type": "container"
+        },
+        {
+          "id": "control",
+          "parent": "control-pod",
+          "x": 316,
+          "y": 909,
+          "w": 307,
+          "h": 68,
+          "title": "control",
+          "subtitle": "Container · Kubernetes API client",
+          "type": "container"
+        },
+        {
+          "id": "serve-svc",
+          "parent": "ns",
+          "x": 680,
+          "y": 800,
+          "w": 230,
+          "h": 68,
+          "title": "Service · ml-serve-<UUID>",
+          "subtitle": "Per-deployment ClusterIP · :8001",
+          "type": "resource"
+        },
+        {
+          "id": "spec",
+          "parent": "ns",
+          "x": 680,
+          "y": 909,
+          "w": 230,
+          "h": 68,
+          "title": "Immutable ConfigMap",
+          "subtitle": "spec.json for this deployment UUID",
+          "type": "resource"
+        },
+        {
+          "id": "serving",
+          "parent": "serve-pod",
+          "x": 985,
+          "y": 811,
+          "w": 215,
+          "h": 65,
+          "title": "serving",
+          "subtitle": "Container · fixed model on :8001",
+          "type": "container"
+        },
+        {
+          "id": "cache",
+          "parent": "serve-pod",
+          "x": 1260,
+          "y": 811,
+          "w": 216,
+          "h": 65,
+          "title": "Bounded emptyDir",
+          "subtitle": "Verified artifact cache · 2 GiB root",
+          "type": "storage"
+        },
+        {
+          "id": "runtime",
+          "parent": "ns",
+          "x": 306,
+          "y": 1138,
+          "w": 305,
+          "h": 75,
+          "title": "PVC · ml-runtime",
+          "subtitle": "ReadWriteOnce · datasets, snapshots, executions",
+          "type": "storage"
+        },
+        {
+          "id": "tls",
+          "parent": "mlflow-pod",
+          "x": 721,
+          "y": 1142,
+          "w": 166,
+          "h": 65,
+          "title": "tls",
+          "subtitle": "Container · nginx :8443",
+          "type": "container"
+        },
+        {
+          "id": "mlflow",
+          "parent": "mlflow-pod",
+          "x": 944,
+          "y": 1142,
+          "w": 185,
+          "h": 65,
+          "title": "mlflow",
+          "subtitle": "Container · server :5000",
+          "type": "container"
+        },
+        {
+          "id": "minio",
+          "parent": "ns",
+          "x": 1207,
+          "y": 1142,
+          "w": 295,
+          "h": 65,
+          "title": "Pod · minio",
+          "subtitle": "Container: minio · PVC · S3 :9000",
+          "type": "pod"
+        },
+        {
+          "id": "minio-init",
+          "parent": "ns",
+          "x": 1207,
+          "y": 1240,
+          "w": 295,
+          "h": 65,
+          "title": "Job Pod · minio-init",
+          "subtitle": "Container: initialize · bucket setup",
+          "type": "pod"
+        }
+      ],
+      "relationships": [
+        {
+          "id": "ingress-mgmt",
+          "source": "management-svc",
+          "target": "management",
+          "points": [
+            [
+              248,
+              321
+            ],
+            [
+              292,
+              321
+            ]
+          ],
+          "kind": "sync",
+          "label": "Forward HTTP requests to the selected Management Pod",
+          "evidence": [
+            "E11"
+          ],
+          "key": 1,
+          "caption": "HTTP"
+        },
+        {
+          "id": "identity",
+          "source": "management",
+          "target": "mongodb",
+          "points": [
+            [
+              544,
+              304
+            ],
+            [
+              608,
+              304
+            ],
+            [
+              608,
+              222
+            ],
+            [
+              654,
+              222
+            ]
+          ],
+          "kind": "sync",
+          "label": "Read tenant identity and sessions using MongoDB",
+          "evidence": [
+            "E01"
+          ],
+          "key": 2,
+          "caption": "Session"
+        },
+        {
+          "id": "app-sql",
+          "source": "management",
+          "target": "postgres",
+          "points": [
+            [
+              544,
+              339
+            ],
+            [
+              654,
+              339
+            ]
+          ],
+          "kind": "data",
+          "label": "Use application database in PostgreSQL",
+          "evidence": [
+            "E11"
+          ],
+          "key": 3,
+          "caption": "SQL"
+        },
+        {
+          "id": "migrate-sql",
+          "source": "migrate",
+          "target": "postgres",
+          "points": [
+            [
+              933,
+              321
+            ],
+            [
+              882,
+              321
+            ]
+          ],
+          "kind": "data",
+          "label": "Apply the application schema",
+          "evidence": [
+            "E11"
+          ],
+          "key": 4,
+          "caption": "SQL"
+        },
+        {
+          "id": "poll-ingestion",
+          "source": "ingestion",
+          "target": "postgres",
+          "points": [
+            [
+              1208,
+              336
+            ],
+            [
+              1175,
+              336
+            ],
+            [
+              1175,
+              392
+            ],
+            [
+              817,
+              392
+            ],
+            [
+              817,
+              354
+            ]
+          ],
+          "kind": "observe",
+          "label": "Poll SQL for ingestion jobs independently of the training queue",
+          "evidence": [
+            "E05"
+          ],
+          "key": 5,
+          "caption": "Claim ingestion work"
+        },
+        {
+          "id": "publish",
+          "source": "relay",
+          "target": "broker",
+          "points": [
+            [
+              267,
+              575
+            ],
+            [
+              320,
+              575
+            ]
+          ],
+          "kind": "async",
+          "label": "Publish command to RabbitMQ Service",
+          "evidence": [
+            "E03"
+          ],
+          "key": 6,
+          "caption": "6"
+        },
+        {
+          "id": "receive",
+          "source": "broker",
+          "target": "supervisor",
+          "points": [
+            [
+              521,
+              575
+            ],
+            [
+              586,
+              575
+            ]
+          ],
+          "kind": "async",
+          "label": "Deliver command over AMQP to the Supervisor",
+          "evidence": [
+            "E03"
+          ],
+          "key": 7,
+          "caption": "AMQP"
+        },
+        {
+          "id": "start-guardian",
+          "source": "supervisor",
+          "target": "guardian",
+          "points": [
+            [
+              755,
+              577
+            ],
+            [
+              809,
+              577
+            ]
+          ],
+          "kind": "launch",
+          "label": "Start the Pod-aware guardian inside the Supervisor container",
+          "evidence": [
+            "E11"
+          ],
+          "key": 8,
+          "caption": "Fork"
+        },
+        {
+          "id": "start-runner",
+          "source": "guardian",
+          "target": "compute",
+          "points": [
+            [
+              974,
+              577
+            ],
+            [
+              1029,
+              577
+            ]
+          ],
+          "kind": "launch",
+          "label": "Launch the runner in a new process group",
+          "evidence": [
+            "E11"
+          ],
+          "key": 9,
+          "caption": "Spawn"
+        },
+        {
+          "id": "snapshot",
+          "source": "supervisor",
+          "target": "redis",
+          "points": [
+            [
+              670,
+              610
+            ],
+            [
+              670,
+              660
+            ],
+            [
+              1410,
+              660
+            ],
+            [
+              1410,
+              610
+            ]
+          ],
+          "kind": "data",
+          "label": "Store the terminal technical snapshot before manual ACK",
+          "evidence": [
+            "E03"
+          ],
+          "key": 10,
+          "caption": "Persist"
+        },
+        {
+          "id": "gateway-ingress",
+          "source": "gateway-svc",
+          "target": "gateway",
+          "points": [
+            [
+              248,
+              834
+            ],
+            [
+              316,
+              834
+            ]
+          ],
+          "kind": "sync",
+          "label": "Forward requests to Gateway in the selected Control Pod",
+          "evidence": [
+            "E11"
+          ],
+          "key": 11,
+          "caption": "11"
+        },
+        {
+          "id": "forward",
+          "source": "gateway",
+          "target": "serve-svc",
+          "points": [
+            [
+              623,
+              834
+            ],
+            [
+              680,
+              834
+            ]
+          ],
+          "kind": "sync",
+          "label": "Resolve the deployment Service name and forward prediction",
+          "evidence": [
+            "E07"
+          ],
+          "key": 12,
+          "caption": "HTTP"
+        },
+        {
+          "id": "serve-route",
+          "source": "serve-svc",
+          "target": "serving",
+          "points": [
+            [
+              910,
+              834
+            ],
+            [
+              985,
+              834
+            ]
+          ],
+          "kind": "sync",
+          "label": "Route to the ready replica on port 8001",
+          "evidence": [
+            "E11"
+          ],
+          "key": 13,
+          "caption": "HTTP"
+        },
+        {
+          "id": "ensure-svc",
+          "source": "control",
+          "target": "serve-svc",
+          "points": [
+            [
+              551,
+              909
+            ],
+            [
+              551,
+              889
+            ],
+            [
+              778,
+              889
+            ],
+            [
+              778,
+              868
+            ]
+          ],
+          "kind": "observe",
+          "label": "Ensure or retire the per-deployment Service via Kubernetes API",
+          "evidence": [
+            "E11"
+          ],
+          "key": 14,
+          "caption": "Ensure Service"
+        },
+        {
+          "id": "ensure-spec",
+          "source": "control",
+          "target": "spec",
+          "points": [
+            [
+              623,
+              944
+            ],
+            [
+              680,
+              944
+            ]
+          ],
+          "kind": "observe",
+          "label": "Ensure or retire the immutable spec ConfigMap via Kubernetes API",
+          "evidence": [
+            "E11"
+          ],
+          "key": 15,
+          "caption": "Apply"
+        },
+        {
+          "id": "read-spec",
+          "source": "serving",
+          "target": "spec",
+          "points": [
+            [
+              1008,
+              876
+            ],
+            [
+              1008,
+              945
+            ],
+            [
+              910,
+              945
+            ]
+          ],
+          "kind": "data",
+          "label": "Read the fixed spec through its read-only volume mount",
+          "evidence": [
+            "E11"
+          ],
+          "key": 16,
+          "caption": "Read spec"
+        },
+        {
+          "id": "cache-fill",
+          "source": "serving",
+          "target": "cache",
+          "points": [
+            [
+              1200,
+              844
+            ],
+            [
+              1260,
+              844
+            ]
+          ],
+          "kind": "data",
+          "label": "Materialize and verify the startup bundle in Pod-local storage",
+          "evidence": [
+            "E11"
+          ],
+          "key": 17,
+          "caption": "Cache"
+        },
+        {
+          "id": "observe-evidence",
+          "source": "control",
+          "target": "runtime",
+          "points": [
+            [
+              459,
+              977
+            ],
+            [
+              459,
+              1138
+            ]
+          ],
+          "kind": "data",
+          "label": "Read shared execution evidence during reconciliation",
+          "evidence": [
+            "E11"
+          ],
+          "key": 18,
+          "caption": "Read evidence"
+        },
+        {
+          "id": "ensure-deployment",
+          "source": "control",
+          "target": "deployment",
+          "points": [
+            [
+              567,
+              977
+            ],
+            [
+              567,
+              990
+            ],
+            [
+              952,
+              990
+            ]
+          ],
+          "kind": "observe",
+          "label": "Create, observe or retire the fixed-version Kubernetes Deployment via scoped API",
+          "evidence": [
+            "E11"
+          ],
+          "key": 19,
+          "caption": "Ensure Deployment"
+        },
+        {
+          "id": "checkpoint",
+          "source": "compute",
+          "target": "runtime",
+          "points": [
+            [
+              1090,
+              610
+            ],
+            [
+              1090,
+              673
+            ],
+            [
+              280,
+              673
+            ],
+            [
+              280,
+              1195
+            ],
+            [
+              306,
+              1195
+            ]
+          ],
+          "kind": "data",
+          "label": "Write checkpoints and frozen output under the shared execution root",
+          "evidence": [
+            "E11"
+          ],
+          "key": 20,
+          "caption": "Checkpoint"
+        },
+        {
+          "id": "model-read",
+          "source": "serving",
+          "target": "tls",
+          "points": [
+            [
+              1100,
+              876
+            ],
+            [
+              1100,
+              1018
+            ],
+            [
+              684,
+              1018
+            ],
+            [
+              684,
+              1174
+            ],
+            [
+              721,
+              1174
+            ]
+          ],
+          "kind": "data",
+          "label": "Read exact artifacts via the MLflow HTTPS Service at startup",
+          "evidence": [
+            "E11"
+          ],
+          "key": 21,
+          "caption": "Fetch pinned model"
+        },
+        {
+          "id": "tls-upstream",
+          "source": "tls",
+          "target": "mlflow",
+          "points": [
+            [
+              887,
+              1174
+            ],
+            [
+              944,
+              1174
+            ]
+          ],
+          "kind": "sync",
+          "label": "Proxy HTTPS traffic to MLflow on loopback HTTP :5000",
+          "evidence": [
+            "E11"
+          ],
+          "key": 22,
+          "caption": "HTTP"
+        },
+        {
+          "id": "artifact-store",
+          "source": "mlflow",
+          "target": "minio",
+          "points": [
+            [
+              1129,
+              1174
+            ],
+            [
+              1207,
+              1174
+            ]
+          ],
+          "kind": "data",
+          "label": "Proxy model artifacts to the MinIO S3 endpoint",
+          "evidence": [
+            "E11"
+          ],
+          "key": 23,
+          "caption": "S3"
+        },
+        {
+          "id": "create-bucket",
+          "source": "minio-init",
+          "target": "minio",
+          "points": [
+            [
+              1350,
+              1240
+            ],
+            [
+              1350,
+              1207
+            ]
+          ],
+          "kind": "data",
+          "label": "Initialize the ml-artifacts bucket",
+          "evidence": [
+            "E11"
+          ],
+          "key": 24,
+          "caption": "Initialize"
+        }
+      ],
+      "notes": [
+        "Control and Supervisor alone mount scoped Kubernetes API credentials. Serving has no API token or application DB.",
+        "Application roles mount ml-runtime and use bounded artifact caches. Serving uses emptyDir. Minikube postgres hosts app and MLflow databases.",
+        "Peer infra traffic uses Services. Role Secret / CA projections are copied to private files by role-specific init containers.",
+        "Singleton Recreate is implemented. Production CSI, multi-node recovery, network-policy enforcement and HA remain unqualified."
+      ],
+      "height": 1583
+    }
+  ]
+}

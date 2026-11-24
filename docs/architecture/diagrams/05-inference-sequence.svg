@@ -1,0 +1,228 @@
+<svg aria-labelledby="svg-title svg-desc" xmlns="http://www.w3.org/2000/svg" role="img" width="1050" height="1331" viewBox="0 0 1050 1331">
+  <title id="svg-title">Prediction against an active deployment</title>
+  <desc id="svg-desc">One request, from tenant-scoped routing to the final SQL check. Guarded exits end the affected request. | 8c9023b00828000287e169ac760afe57102d7353</desc>
+  <defs>
+    <marker id="arrow-sync" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#3f6574" />
+    </marker>
+    <marker id="arrow-return" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#667c84" />
+    </marker>
+    <marker id="arrow-async" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#477366" />
+    </marker>
+    <marker id="arrow-data" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#706247" />
+    </marker>
+    <marker id="arrow-manual" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#915e40" />
+    </marker>
+    <marker id="arrow-observe" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#795e79" />
+    </marker>
+    <marker id="arrow-launch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#386c67" />
+    </marker>
+    <marker id="arrow-dependency" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#6b6785" />
+    </marker>
+    <marker id="arrow-wire" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#986f40" />
+    </marker>
+    <marker id="arrow-branch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#985953" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="100%" height="100%" fill="white" />
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="32" y="26" font-size="12" font-weight="bold" text-anchor="start" fill="#41585c">ML SYSTEM EBM   /   ARCHITECTURE GUIDE</text>
+    <text x="1018" y="26" font-size="12" font-weight="normal" text-anchor="end" fill="#41585c">05   /   8c9023b0</text>
+    <text x="32" y="61" font-size="28" font-weight="bold" text-anchor="start" fill="#223b40">Prediction against an active deployment</text>
+    <text x="32" y="88" font-size="15" font-weight="normal" text-anchor="start" fill="#41585c">One request, from tenant-scoped routing to the final SQL check. Guarded exits end the affected request.</text>
+    <g id="client" data-parent="" data-kind="participant">
+      <title>Client | HTTP caller</title>
+      <rect x="43" y="114" width="142" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="114.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Client</text>
+      <text x="114.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">HTTP caller</text>
+    </g>
+    <path id="life-client" d="M 114 175 V 1215" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="gateway" data-parent="" data-kind="participant">
+      <title>Gateway | ingress process</title>
+      <rect x="207" y="114" width="142" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="278.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Gateway</text>
+      <text x="278.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ingress process</text>
+    </g>
+    <path id="life-gateway" d="M 278 175 V 1215" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="mongo" data-parent="" data-kind="participant">
+      <title>MongoDB | identity state</title>
+      <rect x="372" y="114" width="142" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="443.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">MongoDB</text>
+      <text x="443.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">identity state</text>
+    </g>
+    <path id="life-mongo" d="M 443 175 V 1215" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="sql" data-parent="" data-kind="participant">
+      <title>SQL | route + spec</title>
+      <rect x="536" y="114" width="142" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="607.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">SQL</text>
+      <text x="607.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">route + spec</text>
+    </g>
+    <path id="life-sql" d="M 607 175 V 1215" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="serving" data-parent="" data-kind="participant">
+      <title>Serving | fixed deployment</title>
+      <rect x="701" y="114" width="142" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="772.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Serving</text>
+      <text x="772.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">fixed deployment</text>
+    </g>
+    <path id="life-serving" d="M 772 175 V 1215" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <g id="model" data-parent="" data-kind="participant">
+      <title>Model runtime | Serving threads</title>
+      <rect x="865" y="114" width="142" height="61" rx="4" fill="#e8efed" stroke="#77918e" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="936.0" y="141.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Model runtime</text>
+      <text x="936.0" y="158.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Serving threads</text>
+    </g>
+    <path id="life-model" d="M 936 175 V 1215" stroke="#a5b3b2" stroke-width="1" stroke-dasharray="3 4" />
+    <rect x="24" y="197" width="1002" height="27" rx="3" fill="#e7efed" />
+    <text x="34" y="216" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Authenticate and resolve the destination</text>
+    <text x="114" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Client</text>
+    <text x="278" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Gateway</text>
+    <text x="443" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">MongoDB</text>
+    <text x="607" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">SQL</text>
+    <text x="772" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Serving</text>
+    <text x="936" y="243" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Model runtime</text>
+    <path d="M 114 287 L 278 287" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-01" d="M 114 287 L 278 287" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="client" data-target="gateway" data-kind="sync" data-evidence="E07">
+      <title>POST /api/v1/prediction/predict + bearer</title>
+    </path>
+    <text x="196.0" y="280" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">POST /api/v1/prediction/predict + bearer</text>
+    <path d="M 278 321 L 443 321" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-02" d="M 278 321 L 443 321" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="gateway" data-target="mongo" data-kind="sync" data-evidence="E07">
+      <title>Read current session and user permissions</title>
+    </path>
+    <text x="360.5" y="314" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Read current session and user permissions</text>
+    <path d="M 278 355 L 607 355" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-03" d="M 278 355 L 607 355" fill="none" stroke="#795e79" stroke-width="1.8" marker-end="url(#arrow-observe)" data-source="gateway" data-target="sql" data-kind="observe" data-evidence="E07" stroke-dasharray="7 3 2 3">
+      <title>After ml:predict check, read tenant / endpoint route</title>
+    </path>
+    <text x="442.5" y="348" font-size="14" font-weight="normal" text-anchor="middle" fill="#795e79" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">After ml:predict check, read tenant / endpoint route</text>
+    <path d="M 278 389 L 114 389" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-04" d="M 278 389 L 114 389" fill="none" stroke="#985953" stroke-width="1.8" marker-end="url(#arrow-branch)" data-source="gateway" data-target="client" data-kind="branch" data-evidence="E07" stroke-dasharray="5 3">
+      <title>If no active deployment → 503</title>
+    </path>
+    <text x="196.0" y="382" font-size="14" font-weight="normal" text-anchor="middle" fill="#985953" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">If no active deployment → 503</text>
+    <path d="M 278 423 L 607 423" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-05" d="M 278 423 L 607 423" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="gateway" data-target="sql" data-kind="sync" data-evidence="E07">
+      <title>Fetch deployment for route.deployment_id</title>
+    </path>
+    <text x="442.5" y="416" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Fetch deployment for route.deployment_id</text>
+    <path d="M 278 457 L 308 457 L 308 470 L 278 470" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-06" d="M 278 457 L 308 457 L 308 470 L 278 470" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="gateway" data-target="gateway" data-kind="sync" data-evidence="E07">
+      <title>Check generation and release state; resolve address</title>
+    </path>
+    <text x="278.0" y="450" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Check generation and release state; resolve address</text>
+    <rect x="24" y="492" width="1002" height="27" rx="3" fill="#e7efed" />
+    <text x="34" y="511" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Probe the chosen Serving instance</text>
+    <text x="114" y="538" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Client</text>
+    <text x="278" y="538" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Gateway</text>
+    <text x="443" y="538" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">MongoDB</text>
+    <text x="607" y="538" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">SQL</text>
+    <text x="772" y="538" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Serving</text>
+    <text x="936" y="538" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Model runtime</text>
+    <path d="M 278 582 L 772 582" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-07" d="M 278 582 L 772 582" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="gateway" data-target="serving" data-kind="sync" data-evidence="E07">
+      <title>GET /health/ready</title>
+    </path>
+    <text x="525.0" y="575" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">GET /health/ready</text>
+    <path d="M 772 616 L 278 616" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-08" d="M 772 616 L 278 616" fill="none" stroke="#667c84" stroke-width="1.8" marker-end="url(#arrow-return)" data-source="serving" data-target="gateway" data-kind="return" data-evidence="E07" stroke-dasharray="5 4">
+      <title>Readiness, tenant, deployment identity and Pod UID</title>
+    </path>
+    <text x="525.0" y="609" font-size="14" font-weight="normal" text-anchor="middle" fill="#667c84" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Readiness, tenant, deployment identity and Pod UID</text>
+    <path d="M 278 650 L 114 650" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-09" d="M 278 650 L 114 650" fill="none" stroke="#985953" stroke-width="1.8" marker-end="url(#arrow-branch)" data-source="gateway" data-target="client" data-kind="branch" data-evidence="E07" stroke-dasharray="5 3">
+      <title>If unready or identity differs → 503</title>
+    </path>
+    <text x="196.0" y="643" font-size="14" font-weight="normal" text-anchor="middle" fill="#985953" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">If unready or identity differs → 503</text>
+    <rect x="24" y="672" width="1002" height="27" rx="3" fill="#e7efed" />
+    <text x="34" y="691" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Execute the fixed model</text>
+    <text x="114" y="718" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Client</text>
+    <text x="278" y="718" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Gateway</text>
+    <text x="443" y="718" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">MongoDB</text>
+    <text x="607" y="718" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">SQL</text>
+    <text x="772" y="718" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Serving</text>
+    <text x="936" y="718" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Model runtime</text>
+    <path d="M 278 762 L 772 762" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-10" d="M 278 762 L 772 762" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="gateway" data-target="serving" data-kind="sync" data-evidence="E07">
+      <title>Forward prediction, bearer and trace context</title>
+    </path>
+    <text x="525.0" y="755" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Forward prediction, bearer and trace context</text>
+    <path d="M 772 796 L 443 796" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-11" d="M 772 796 L 443 796" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="serving" data-target="mongo" data-kind="sync" data-evidence="E07">
+      <title>Revalidate current session and user</title>
+    </path>
+    <text x="607.5" y="789" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Revalidate current session and user</text>
+    <path d="M 772 830 L 936 830" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-12" d="M 772 830 L 936 830" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="serving" data-target="model" data-kind="sync" data-evidence="E07">
+      <title>Predict after scope, endpoint and input checks</title>
+    </path>
+    <text x="836.8" y="823" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Predict after scope, endpoint and input checks</text>
+    <path d="M 936 864 L 772 864" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-13" d="M 936 864 L 772 864" fill="none" stroke="#667c84" stroke-width="1.8" marker-end="url(#arrow-return)" data-source="model" data-target="serving" data-kind="return" data-evidence="E07" stroke-dasharray="5 4">
+      <title>Prediction values for the batch</title>
+    </path>
+    <text x="854.0" y="857" font-size="14" font-weight="normal" text-anchor="middle" fill="#667c84" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Prediction values for the batch</text>
+    <path d="M 772 898 L 278 898" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-14" d="M 772 898 L 278 898" fill="none" stroke="#667c84" stroke-width="1.8" marker-end="url(#arrow-return)" data-source="serving" data-target="gateway" data-kind="return" data-evidence="E07" stroke-dasharray="5 4">
+      <title>Predictions with immutable deployment provenance</title>
+    </path>
+    <text x="525.0" y="891" font-size="14" font-weight="normal" text-anchor="middle" fill="#667c84" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Predictions with immutable deployment provenance</text>
+    <rect x="24" y="920" width="1002" height="27" rx="3" fill="#e7efed" />
+    <text x="34" y="939" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Verify before returning</text>
+    <text x="114" y="966" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Client</text>
+    <text x="278" y="966" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Gateway</text>
+    <text x="443" y="966" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">MongoDB</text>
+    <text x="607" y="966" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">SQL</text>
+    <text x="772" y="966" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Serving</text>
+    <text x="936" y="966" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c" stroke="white" stroke-width="4" paint-order="stroke">Model runtime</text>
+    <path d="M 278 1010 L 308 1010 L 308 1023 L 278 1023" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-15" d="M 278 1010 L 308 1010 L 308 1023 L 278 1023" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="gateway" data-target="gateway" data-kind="sync" data-evidence="E07">
+      <title>For 2xx, match provenance and readiness Pod UID</title>
+    </path>
+    <text x="278.0" y="1003" font-size="14" font-weight="normal" text-anchor="middle" fill="#3f6574" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">For 2xx, match provenance and readiness Pod UID</text>
+    <path d="M 278 1057 L 114 1057" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-16" d="M 278 1057 L 114 1057" fill="none" stroke="#985953" stroke-width="1.8" marker-end="url(#arrow-branch)" data-source="gateway" data-target="client" data-kind="branch" data-evidence="E07" stroke-dasharray="5 3">
+      <title>If success identity differs → 503</title>
+    </path>
+    <text x="196.0" y="1050" font-size="14" font-weight="normal" text-anchor="middle" fill="#985953" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">If success identity differs → 503</text>
+    <path d="M 278 1091 L 607 1091" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-17" d="M 278 1091 L 607 1091" fill="none" stroke="#795e79" stroke-width="1.8" marker-end="url(#arrow-observe)" data-source="gateway" data-target="sql" data-kind="observe" data-evidence="E07" stroke-dasharray="7 3 2 3">
+      <title>Read the same tenant / endpoint route again</title>
+    </path>
+    <text x="442.5" y="1084" font-size="14" font-weight="normal" text-anchor="middle" fill="#795e79" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Read the same tenant / endpoint route again</text>
+    <path d="M 607 1125 L 278 1125" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-18" d="M 607 1125 L 278 1125" fill="none" stroke="#667c84" stroke-width="1.8" marker-end="url(#arrow-return)" data-source="sql" data-target="gateway" data-kind="return" data-evidence="E07" stroke-dasharray="5 4">
+      <title>Current route including revision and generation</title>
+    </path>
+    <text x="442.5" y="1118" font-size="14" font-weight="normal" text-anchor="middle" fill="#667c84" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Current route including revision and generation</text>
+    <path d="M 278 1159 L 114 1159" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-19" d="M 278 1159 L 114 1159" fill="none" stroke="#985953" stroke-width="1.8" marker-end="url(#arrow-branch)" data-source="gateway" data-target="client" data-kind="branch" data-evidence="E07" stroke-dasharray="5 3">
+      <title>If route changed or response redirects → 503</title>
+    </path>
+    <text x="204.8" y="1152" font-size="14" font-weight="normal" text-anchor="middle" fill="#985953" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">If route changed or response redirects → 503</text>
+    <path d="M 278 1193 L 114 1193" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="msg-20" d="M 278 1193 L 114 1193" fill="none" stroke="#667c84" stroke-width="1.8" marker-end="url(#arrow-return)" data-source="gateway" data-target="client" data-kind="return" data-evidence="E07" stroke-dasharray="5 4">
+      <title>Stable route · return Serving body and status</title>
+    </path>
+    <text x="209.0" y="1186" font-size="14" font-weight="normal" text-anchor="middle" fill="#667c84" stroke="white" stroke-width="4" paint-order="stroke" stroke-linejoin="round">Stable route · return Serving body and status</text>
+    <path d="M 32 1227 H 1018" stroke="#bdc9c8" />
+    <path d="M 32 1251 h 25" stroke="#3f6574" stroke-width="2" stroke-dasharray="none" marker-end="url(#arrow-sync)" />
+    <text x="64" y="1255" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Call</text>
+    <path d="M 120 1251 h 25" stroke="#795e79" stroke-width="2" stroke-dasharray="7 3 2 3" marker-end="url(#arrow-observe)" />
+    <text x="152" y="1255" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Observe / reconcile</text>
+    <path d="M 328 1251 h 25" stroke="#985953" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#arrow-branch)" />
+    <text x="360" y="1255" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Conditional exit / path</text>
+    <path d="M 568 1251 h 25" stroke="#667c84" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow-return)" />
+    <text x="600" y="1255" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Response</text>
+    <text x="32" y="1278" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">The Gateway resolver reads the local instance record or derives Kubernetes Service DNS from deployment identity.</text>
+    <text x="32" y="1301" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Serving loads the pinned bundle at startup. Its request timeout leaves the slot occupied until physical work completes.</text>
+  </g>
+</svg>

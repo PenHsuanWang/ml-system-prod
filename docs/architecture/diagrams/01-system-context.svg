@@ -1,0 +1,98 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1080" viewBox="0 0 1500 1080" role="img" aria-labelledby="title desc">
+<title id="title">01 | System context</title>
+<desc id="desc">C4 Level 1 | governed CPU ML product; deployment-independent. Source baseline 8c9023b00828000287e169ac760afe57102d7353. Relationship evidence is in diagram-evidence.md.</desc>
+<defs>
+<marker id="arrow-sync" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#526777"/></marker>
+<marker id="arrow-async" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#738373"/></marker>
+<marker id="arrow-data" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#7d7169"/></marker>
+<marker id="arrow-manual" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#98765e"/></marker>
+<marker id="arrow-observe" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#82758e"/></marker>
+</defs>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="Arial, Helvetica, sans-serif" fill="#29363d">
+<text x="42" y="48" font-size="28" font-weight="bold" text-anchor="start">01 | System context</text>
+<text x="42" y="80" font-size="16" font-weight="normal" text-anchor="start">C4 Level 1 | governed CPU ML product; deployment-independent</text>
+<text x="42" y="108" font-size="13" font-weight="normal" text-anchor="start">IMPLEMENTED unless noted | source: 8c9023b00828 | arrows show labeled semantics, not automatic triggers</text>
+<g id="product" data-boundary="true"><rect x="520" y="160" width="460" height="675" fill="none" stroke="#a6ada9" stroke-width="1.5" stroke-dasharray="5 4"/>
+<text x="534" y="184" font-size="15" font-weight="bold" text-anchor="start">ML System EBM — product boundary</text>
+</g>
+<g id="system" data-kind="system"><rect x="550" y="220" width="400" height="540" rx="4" fill="#dce6e1" stroke="#87928f"/>
+<text x="566" y="245" font-size="18" font-weight="bold" text-anchor="start">Governed CPU ML platform</text>
+<text x="566" y="269" font-size="15" font-weight="normal" text-anchor="start">Approved batch acquisition</text>
+<text x="566" y="290" font-size="15" font-weight="normal" text-anchor="start">Explicit immutable Dataset preparation</text>
+<text x="566" y="311" font-size="15" font-weight="normal" text-anchor="start"></text>
+<text x="566" y="332" font-size="15" font-weight="normal" text-anchor="start">MLP / EBM training and checkpoints</text>
+<text x="566" y="353" font-size="15" font-weight="normal" text-anchor="start">Exact frozen-bundle evaluation</text>
+<text x="566" y="374" font-size="15" font-weight="normal" text-anchor="start"></text>
+<text x="566" y="395" font-size="15" font-weight="normal" text-anchor="start">Human approval + separate deployment</text>
+<text x="566" y="416" font-size="15" font-weight="normal" text-anchor="start">Fixed-version predictions + provenance</text>
+<text x="566" y="437" font-size="15" font-weight="normal" text-anchor="start"></text>
+<text x="566" y="458" font-size="15" font-weight="normal" text-anchor="start">No automatic ingestion-to-training</text>
+<text x="566" y="479" font-size="15" font-weight="normal" text-anchor="start">No automatic model approval</text>
+</g>
+<g id="actor-0" data-kind="external"><rect x="42" y="225" width="345" height="94" rx="4" fill="#eee7de" stroke="#87928f"/>
+<text x="58" y="250" font-size="18" font-weight="bold" text-anchor="start">Scientist</text>
+<text x="58" y="274" font-size="15" font-weight="normal" text-anchor="start">Submit jobs; inspect results</text>
+</g>
+<path id="input-0" data-source="actor-0" data-target="system" data-evidence="E01,E05,E06" d="M 387 272 L 550 272" fill="none" stroke="#526777" stroke-width="2" stroke-dasharray="" marker-end="url(#arrow-sync)"/>
+<text x="468.5" y="260" font-size="14" font-weight="normal" text-anchor="middle">HTTP / JWT</text>
+<g id="actor-1" data-kind="external"><rect x="42" y="370" width="345" height="94" rx="4" fill="#eee7de" stroke="#87928f"/>
+<text x="58" y="395" font-size="18" font-weight="bold" text-anchor="start">Reviewer / deployment operator</text>
+<text x="58" y="419" font-size="15" font-weight="normal" text-anchor="start">Approve; deploy; rollback</text>
+</g>
+<path id="input-1" data-source="actor-1" data-target="system" data-evidence="E01,E05,E06" d="M 387 417 L 550 417" fill="none" stroke="#98765e" stroke-width="2" stroke-dasharray="12 4 2 4" marker-end="url(#arrow-manual)"/>
+<text x="468.5" y="405" font-size="14" font-weight="normal" text-anchor="middle">Approve / deploy</text>
+<g id="actor-2" data-kind="external"><rect x="42" y="515" width="345" height="94" rx="4" fill="#eee7de" stroke="#87928f"/>
+<text x="58" y="540" font-size="18" font-weight="bold" text-anchor="start">Data / platform operator</text>
+<text x="58" y="564" font-size="15" font-weight="normal" text-anchor="start">Register sources; build datasets</text>
+</g>
+<path id="input-2" data-source="actor-2" data-target="system" data-evidence="E01,E05,E06" d="M 387 562 L 550 562" fill="none" stroke="#98765e" stroke-width="2" stroke-dasharray="12 4 2 4" marker-end="url(#arrow-manual)"/>
+<text x="468.5" y="550" font-size="14" font-weight="normal" text-anchor="middle">Explicit CLI</text>
+<g id="actor-3" data-kind="external"><rect x="42" y="660" width="345" height="94" rx="4" fill="#eee7de" stroke="#87928f"/>
+<text x="58" y="685" font-size="18" font-weight="bold" text-anchor="start">Prediction client</text>
+<text x="58" y="709" font-size="15" font-weight="normal" text-anchor="start">MLP features or EBM spectrograms</text>
+</g>
+<path id="input-3" data-source="actor-3" data-target="system" data-evidence="E01,E05,E06" d="M 387 707 L 550 707" fill="none" stroke="#526777" stroke-width="2" stroke-dasharray="" marker-end="url(#arrow-sync)"/>
+<text x="468.5" y="695" font-size="14" font-weight="normal" text-anchor="middle">HTTP / JWT</text>
+<g id="external-0" data-kind="external"><rect x="1110" y="225" width="345" height="94" rx="4" fill="#eee7de" stroke="#87928f"/>
+<text x="1126" y="250" font-size="18" font-weight="bold" text-anchor="start">Approved batch sources</text>
+<text x="1126" y="274" font-size="15" font-weight="normal" text-anchor="start">File roots / Databricks Warehouse</text>
+</g>
+<path id="integration-0" data-source="system" data-target="external-0" data-evidence="E05" d="M 950 272 L 1110 272" fill="none" stroke="#7d7169" stroke-width="2" stroke-dasharray="3 4" marker-end="url(#arrow-data)"/>
+<text x="1030.0" y="260" font-size="14" font-weight="normal" text-anchor="middle">Batch read</text>
+<g id="external-1" data-kind="external"><rect x="1110" y="370" width="345" height="94" rx="4" fill="#eee7de" stroke="#87928f"/>
+<text x="1126" y="395" font-size="18" font-weight="bold" text-anchor="start">MLflow + artifact storage</text>
+<text x="1126" y="419" font-size="15" font-weight="normal" text-anchor="start">Tracking / Registry / S3-compatible</text>
+</g>
+<path id="integration-1" data-source="system" data-target="external-1" data-evidence="E04" d="M 950 417 L 1110 417" fill="none" stroke="#7d7169" stroke-width="2" stroke-dasharray="3 4" marker-end="url(#arrow-data)"/>
+<text x="1030.0" y="405" font-size="14" font-weight="normal" text-anchor="middle">Artifact I/O</text>
+<g id="external-2" data-kind="external"><rect x="1110" y="515" width="345" height="94" rx="4" fill="#eee7de" stroke="#87928f"/>
+<text x="1126" y="540" font-size="18" font-weight="bold" text-anchor="start">Identity and coordination stores</text>
+<text x="1126" y="564" font-size="15" font-weight="normal" text-anchor="start">Mongo / SQL / AMQP / Redis</text>
+</g>
+<path id="integration-2" data-source="system" data-target="external-2" data-evidence="E02" d="M 950 562 L 1110 562" fill="none" stroke="#526777" stroke-width="2" stroke-dasharray="" marker-end="url(#arrow-sync)"/>
+<text x="1030.0" y="550" font-size="14" font-weight="normal" text-anchor="middle">State I/O</text>
+<g id="external-3" data-kind="external"><rect x="1110" y="660" width="345" height="94" rx="4" fill="#eee7de" stroke="#87928f"/>
+<text x="1126" y="685" font-size="18" font-weight="bold" text-anchor="start">Optional OTLP collector</text>
+<text x="1126" y="709" font-size="15" font-weight="normal" text-anchor="start">Telemetry sink; not business truth</text>
+</g>
+<path id="integration-3" data-source="system" data-target="external-3" data-evidence="E12" d="M 950 707 L 1110 707" fill="none" stroke="#7d7169" stroke-width="2" stroke-dasharray="3 4" marker-end="url(#arrow-data)"/>
+<text x="1030.0" y="695" font-size="14" font-weight="normal" text-anchor="middle">OTLP HTTP</text>
+<g id="note-870" data-kind="note"><rect x="42" y="870" width="1416" height="82" rx="4" fill="#f5f3ef" stroke="#87928f"/>
+<text x="58" y="895" font-size="18" font-weight="bold" text-anchor="start">Scope / interpretation</text>
+<text x="58" y="919" font-size="15" font-weight="normal" text-anchor="start">Infrastructure placement varies by profile. This context view does not claim a running environment.</text>
+<text x="58" y="940" font-size="15" font-weight="normal" text-anchor="start">Databricks / enterprise MLflow / production operations require separate target-site qualification.</text>
+</g>
+<path id="legend-sync" data-evidence="" d="M 42 1018 L 92 1018" fill="none" stroke="#526777" stroke-width="2" stroke-dasharray="" marker-end="url(#arrow-sync)"/>
+<text x="104" y="1023" font-size="14" font-weight="normal" text-anchor="start">Sync call</text>
+<path id="legend-async" data-evidence="" d="M 327 1018 L 377 1018" fill="none" stroke="#738373" stroke-width="2" stroke-dasharray="9 5" marker-end="url(#arrow-async)"/>
+<text x="389" y="1023" font-size="14" font-weight="normal" text-anchor="start">Async message</text>
+<path id="legend-data" data-evidence="" d="M 612 1018 L 662 1018" fill="none" stroke="#7d7169" stroke-width="2" stroke-dasharray="3 4" marker-end="url(#arrow-data)"/>
+<text x="674" y="1023" font-size="14" font-weight="normal" text-anchor="start">Data / artifact</text>
+<path id="legend-manual" data-evidence="" d="M 897 1018 L 947 1018" fill="none" stroke="#98765e" stroke-width="2" stroke-dasharray="12 4 2 4" marker-end="url(#arrow-manual)"/>
+<text x="959" y="1023" font-size="14" font-weight="normal" text-anchor="start">Manual action</text>
+<path id="legend-observe" data-evidence="" d="M 1182 1018 L 1232 1018" fill="none" stroke="#82758e" stroke-width="2" stroke-dasharray="7 3 2 3" marker-end="url(#arrow-observe)"/>
+<text x="1244" y="1023" font-size="14" font-weight="normal" text-anchor="start">Observe / reconcile</text>
+<text x="42" y="1060" font-size="12" font-weight="normal" text-anchor="start">Boundary labels distinguish packages, OS processes, Docker containers, Pods and external systems.</text>
+</g>
+</svg>

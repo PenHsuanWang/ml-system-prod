@@ -1,0 +1,295 @@
+<svg aria-labelledby="svg-title svg-desc" xmlns="http://www.w3.org/2000/svg" role="img" width="1520" height="1295" viewBox="0 0 1520 1295">
+  <title id="svg-title">Docker Compose development deployment</title>
+  <desc id="svg-desc">compose.ml.yaml · service DNS on the project network · secondary text names the process or persistent volume | 8c9023b00828000287e169ac760afe57102d7353</desc>
+  <defs>
+    <marker id="arrow-sync" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#3f6574" />
+    </marker>
+    <marker id="arrow-return" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#667c84" />
+    </marker>
+    <marker id="arrow-async" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#477366" />
+    </marker>
+    <marker id="arrow-data" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#706247" />
+    </marker>
+    <marker id="arrow-manual" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#915e40" />
+    </marker>
+    <marker id="arrow-observe" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#795e79" />
+    </marker>
+    <marker id="arrow-launch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#386c67" />
+    </marker>
+    <marker id="arrow-dependency" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#6b6785" />
+    </marker>
+    <marker id="arrow-wire" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#986f40" />
+    </marker>
+    <marker id="arrow-branch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#985953" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="100%" height="100%" fill="white" />
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="32" y="26" font-size="12" font-weight="bold" text-anchor="start" fill="#41585c">ML SYSTEM EBM   /   ARCHITECTURE GUIDE</text>
+    <text x="1488" y="26" font-size="12" font-weight="normal" text-anchor="end" fill="#41585c">07   /   8c9023b0</text>
+    <text x="32" y="61" font-size="28" font-weight="bold" text-anchor="start" fill="#223b40">Docker Compose development deployment</text>
+    <text x="32" y="88" font-size="15" font-weight="normal" text-anchor="start" fill="#41585c">compose.ml.yaml · service DNS on the project network · secondary text names the process or persistent volume</text>
+    <g id="project" data-parent="" data-kind="network">
+      <title>Compose project  /  ml-system-ebm | Default project network · host ingress is restricted to loopback</title>
+      <rect x="35" y="125" width="1450" height="845" rx="4" fill="#f2f4f9" stroke="#8e9bae" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="47" y="145" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Compose project  /  ml-system-ebm</text>
+      <text x="47" y="162" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Default project network · host ingress is restricted to loopback</text>
+    </g>
+    <g id="supervisor-box" data-parent="project" data-kind="container">
+      <title>supervisor  /  Docker container | training image · Taskiq processes and compute share the container</title>
+      <rect x="640" y="408" width="500" height="177" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="652" y="428" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">supervisor  /  Docker container</text>
+      <text x="652" y="445" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">training image · Taskiq processes and compute share the container</text>
+    </g>
+    <g id="ns" data-parent="project" data-kind="network">
+      <title>Control network namespace | gateway uses network_mode: service:control · separate Docker containers</title>
+      <rect x="55" y="614" width="685" height="325" rx="4" fill="#f2f4f9" stroke="#8e9bae" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="67" y="634" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Control network namespace</text>
+      <text x="67" y="651" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">gateway uses network_mode: service:control · separate Docker containers</text>
+    </g>
+    <g id="control-box" data-parent="ns" data-kind="container">
+      <title>control  /  Docker container | Publishes 127.0.0.1:8001 to port 8001</title>
+      <rect x="73" y="692" width="365" height="205" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="85" y="712" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">control  /  Docker container</text>
+      <text x="85" y="729" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Publishes 127.0.0.1:8001 to port 8001</text>
+    </g>
+    <g id="gateway-box" data-parent="ns" data-kind="container">
+      <title>gateway  /  Docker container | Gateway listens on the shared interface</title>
+      <rect x="474" y="692" width="244" height="205" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="486" y="712" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">gateway  /  Docker container</text>
+      <text x="486" y="729" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Gateway listens on the shared interface</text>
+    </g>
+    <g id="api" data-parent="project" data-kind="container">
+      <title>management | uvicorn · 127.0.0.1:8000 → :8000</title>
+      <rect x="65" y="279" width="245" height="72" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="187.5" y="312.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">management</text>
+      <text x="187.5" y="329.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">uvicorn · 127.0.0.1:8000 → :8000</text>
+    </g>
+    <g id="sql" data-parent="project" data-kind="container">
+      <title>postgres  /  :5432 | app-db · SQL health check</title>
+      <rect x="380" y="279" width="210" height="72" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="485.0" y="312.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">postgres  /  :5432</text>
+      <text x="485.0" y="329.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">app-db · SQL health check</text>
+    </g>
+    <g id="mongo" data-parent="project" data-kind="container">
+      <title>mongo  /  :27017 | identity-db · ping health check</title>
+      <rect x="380" y="185" width="210" height="63" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="485.0" y="213.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">mongo  /  :27017</text>
+      <text x="485.0" y="230.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">identity-db · ping health check</text>
+    </g>
+    <g id="migrate" data-parent="project" data-kind="container">
+      <title>migrate  /  one-shot | ml_cli migrate · restart: no</title>
+      <rect x="677" y="279" width="220" height="72" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="787.0" y="312.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">migrate  /  one-shot</text>
+      <text x="787.0" y="329.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml_cli migrate · restart: no</text>
+    </g>
+    <g id="ingest" data-parent="project" data-kind="container">
+      <title>ingestion-worker  /  profile | ingestion_cli work · input mount :ro</title>
+      <rect x="1180" y="279" width="270" height="72" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1315.0" y="312.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">ingestion-worker  /  profile</text>
+      <text x="1315.0" y="329.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ingestion_cli work · input mount :ro</text>
+    </g>
+    <g id="relay" data-parent="project" data-kind="container">
+      <title>relay | ml_cli relay · SQL polling</title>
+      <rect x="65" y="482" width="245" height="72" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="187.5" y="515.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">relay</text>
+      <text x="187.5" y="532.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml_cli relay · SQL polling</text>
+    </g>
+    <g id="rabbit" data-parent="project" data-kind="container">
+      <title>rabbitmq  /  :5672 | broker · ping health check</title>
+      <rect x="380" y="482" width="210" height="72" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="485.0" y="515.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">rabbitmq  /  :5672</text>
+      <text x="485.0" y="532.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">broker · ping health check</text>
+    </g>
+    <g id="taskiq" data-parent="supervisor-box" data-kind="process">
+      <title>Taskiq Supervisor | One consumer · manual ACK</title>
+      <rect x="660" y="489" width="193" height="67" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="756.5" y="519.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Taskiq Supervisor</text>
+      <text x="756.5" y="536.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">One consumer · manual ACK</text>
+    </g>
+    <g id="compute" data-parent="supervisor-box" data-kind="process">
+      <title>Compute child | ml_training_runner</title>
+      <rect x="921" y="489" width="198" height="67" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1020.0" y="519.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Compute child</text>
+      <text x="1020.0" y="536.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml_training_runner</text>
+    </g>
+    <g id="redis" data-parent="project" data-kind="container">
+      <title>redis  /  :6379 | AOF · no declared named volume</title>
+      <rect x="1180" y="482" width="270" height="72" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1315.0" y="515.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">redis  /  :6379</text>
+      <text x="1315.0" y="532.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">AOF · no declared named volume</text>
+    </g>
+    <g id="control" data-parent="control-box" data-kind="process">
+      <title>Control | ml_cli control</title>
+      <rect x="86" y="795" width="147" height="69" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="159.5" y="826.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Control</text>
+      <text x="159.5" y="843.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml_cli control</text>
+    </g>
+    <g id="serving" data-parent="control-box" data-kind="process">
+      <title>Serving child | Dynamic loopback port</title>
+      <rect x="276" y="795" width="148" height="69" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="350.0" y="826.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Serving child</text>
+      <text x="350.0" y="843.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Dynamic loopback port</text>
+    </g>
+    <g id="gateway" data-parent="gateway-box" data-kind="process">
+      <title>Gateway | uvicorn · :8001</title>
+      <rect x="491" y="795" width="209" height="69" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="595.5" y="826.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Gateway</text>
+      <text x="595.5" y="843.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">uvicorn · :8001</text>
+    </g>
+    <g id="mlflow" data-parent="project" data-kind="container">
+      <title>mlflow  /  :5000 | MLflow server · /health check</title>
+      <rect x="780" y="700" width="260" height="74" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="910.0" y="734.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">mlflow  /  :5000</text>
+      <text x="910.0" y="751.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">MLflow server · /health check</text>
+    </g>
+    <g id="track-sql" data-parent="project" data-kind="container">
+      <title>mlflow-db  /  :5432 | mlflow-db · SQL health check</title>
+      <rect x="1180" y="700" width="270" height="74" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1315.0" y="734.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">mlflow-db  /  :5432</text>
+      <text x="1315.0" y="751.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">mlflow-db · SQL health check</text>
+    </g>
+    <g id="minio" data-parent="project" data-kind="container">
+      <title>minio  /  :9000 | MinIO server · artifacts volume</title>
+      <rect x="1180" y="814" width="270" height="64" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1315.0" y="843.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">minio  /  :9000</text>
+      <text x="1315.0" y="860.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">MinIO server · artifacts volume</text>
+    </g>
+    <g id="bucket" data-parent="project" data-kind="container">
+      <title>minio-init  /  one-shot | mc mb · initialize bucket</title>
+      <rect x="1180" y="900" width="270" height="53" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1315.0" y="923.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">minio-init  /  one-shot</text>
+      <text x="1315.0" y="940.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">mc mb · initialize bucket</text>
+    </g>
+    <g id="bind" data-parent="" data-kind="storage">
+      <title>Host bind mount | ./var → /app/var in application roles</title>
+      <rect x="770" y="1006" width="305" height="64" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="922.5" y="1035.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Host bind mount</text>
+      <text x="922.5" y="1052.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">./var → /app/var in application roles</text>
+    </g>
+    <path d="M 310 315 L 380 315" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="management-sql" d="M 310 315 L 380 315" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="api" data-target="sql" data-kind="data" data-evidence="E08" stroke-dasharray="3 3">
+      <title>Persist application metadata in PostgreSQL</title>
+    </path>
+    <path d="M 185 279 L 185 217 L 380 217" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="management-auth" d="M 185 279 L 185 217 L 380 217" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="api" data-target="mongo" data-kind="sync" data-evidence="E01">
+      <title>Resolve identity using MongoDB</title>
+    </path>
+    <path d="M 677 315 L 590 315" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="migration" d="M 677 315 L 590 315" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="migrate" data-target="sql" data-kind="data" data-evidence="E08" stroke-dasharray="3 3">
+      <title>Apply schema migrations to the application database</title>
+    </path>
+    <path d="M 897 315 L 1180 315" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="ingest-start" d="M 897 315 L 1180 315" fill="none" stroke="#6b6785" stroke-width="1.8" marker-end="url(#arrow-dependency)" data-source="migrate" data-target="ingest" data-kind="dependency" data-evidence="E08" stroke-dasharray="2 4">
+      <title>Successful migration gates ingestion overlay startup</title>
+    </path>
+    <path d="M 310 520 L 380 520" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="publish" d="M 310 520 L 380 520" fill="none" stroke="#477366" stroke-width="1.8" marker-end="url(#arrow-async)" data-source="relay" data-target="rabbit" data-kind="async" data-evidence="E03" stroke-dasharray="8 4">
+      <title>Publish training command over AMQP</title>
+    </path>
+    <path d="M 590 520 L 660 520" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="consume" d="M 590 520 L 660 520" fill="none" stroke="#477366" stroke-width="1.8" marker-end="url(#arrow-async)" data-source="rabbit" data-target="taskiq" data-kind="async" data-evidence="E03" stroke-dasharray="8 4">
+      <title>Deliver command to the manual-ACK consumer</title>
+    </path>
+    <path d="M 853 525 L 921 525" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="fork" d="M 853 525 L 921 525" fill="none" stroke="#386c67" stroke-width="1.8" marker-end="url(#arrow-launch)" data-source="taskiq" data-target="compute" data-kind="launch" data-evidence="E04">
+      <title>Spawn the training runner inside the Supervisor container</title>
+    </path>
+    <path d="M 801 556 L 801 586 L 1310 586 L 1310 554" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="result" d="M 801 556 L 801 586 L 1310 586 L 1310 554" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="taskiq" data-target="redis" data-kind="data" data-evidence="E03" stroke-dasharray="3 3">
+      <title>Store technical terminal result before acknowledging delivery</title>
+    </path>
+    <path d="M 690 556 L 690 599 L 833 599 L 833 700" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="registration" d="M 690 556 L 690 599 L 833 599 L 833 700" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="taskiq" data-target="mlflow" data-kind="data" data-evidence="E04" stroke-dasharray="3 3">
+      <title>Register the frozen bundle through MLflow</title>
+    </path>
+    <path d="M 1045 556 L 1045 606 L 1090 606 L 1090 986 L 920 986 L 920 1006" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="train-files" d="M 1045 556 L 1045 606 L 1090 606 L 1090 986 L 920 986 L 920 1006" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="compute" data-target="bind" data-kind="data" data-evidence="E08" stroke-dasharray="3 3">
+      <title>Write execution outputs through the application bind mount</title>
+    </path>
+    <path d="M 233 830 L 276 830" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="serving-spawn" d="M 233 830 L 276 830" fill="none" stroke="#386c67" stroke-width="1.8" marker-end="url(#arrow-launch)" data-source="control" data-target="serving" data-kind="launch" data-evidence="E07">
+      <title>Launch Serving child in the Control container</title>
+    </path>
+    <path d="M 491 830 L 424 830" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="forward" d="M 491 830 L 424 830" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="gateway" data-target="serving" data-kind="sync" data-evidence="E07">
+      <title>Reach Serving over shared network namespace loopback</title>
+    </path>
+    <path d="M 1040 735 L 1180 735" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="mlflow-db" d="M 1040 735 L 1180 735" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="mlflow" data-target="track-sql" data-kind="data" data-evidence="E08" stroke-dasharray="3 3">
+      <title>Store tracking and registry metadata in PostgreSQL</title>
+    </path>
+    <path d="M 910 774 L 910 846 L 1180 846" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="mlflow-s3" d="M 910 774 L 910 846 L 1180 846" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="mlflow" data-target="minio" data-kind="data" data-evidence="E08" stroke-dasharray="3 3">
+      <title>Proxy model artifacts to the MinIO S3 endpoint</title>
+    </path>
+    <path d="M 1320 900 L 1320 878" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="make-bucket" d="M 1320 900 L 1320 878" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="bucket" data-target="minio" data-kind="data" data-evidence="E08" stroke-dasharray="3 3">
+      <title>Create ml-artifacts bucket before MLflow starts</title>
+    </path>
+    <rect x="330" y="293" width="29" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="344.5" y="305" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">SQL</text>
+    <rect x="229" y="195" width="106" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="282.0" y="207" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">Session lookup</text>
+    <rect x="606" y="293" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="634.5" y="305" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Migrate</text>
+    <rect x="950" y="293" width="176" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1038.0" y="305" font-size="12" font-weight="normal" text-anchor="middle" fill="#6b6785">After migration succeeds</text>
+    <rect x="316" y="498" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="344.5" y="510" font-size="12" font-weight="normal" text-anchor="middle" fill="#477366">Publish</text>
+    <rect x="596" y="498" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="624.5" y="510" font-size="12" font-weight="normal" text-anchor="middle" fill="#477366">Deliver</text>
+    <rect x="866" y="503" width="43" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="887.5" y="515" font-size="12" font-weight="normal" text-anchor="middle" fill="#386c67">Spawn</text>
+    <rect x="1047" y="564" width="162" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1128.0" y="576" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Save terminal snapshot</text>
+    <rect x="704" y="603" width="113" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="760.5" y="615" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Register bundle</text>
+    <rect x="1094" y="787" width="106" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1147.0" y="799" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Attempt output</text>
+    <rect x="245" y="808" width="18" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="254.0" y="820" font-size="12" font-weight="normal" text-anchor="middle" fill="#386c67">11</text>
+    <rect x="440" y="808" width="36" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="458.0" y="820" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">HTTP</text>
+    <rect x="1092" y="713" width="78" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1131.0" y="725" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">PostgreSQL</text>
+    <rect x="960" y="824" width="127" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1023.5" y="836" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">S3 artifact proxy</text>
+    <rect x="1324" y="880" width="99" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1373.5" y="892" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Create bucket</text>
+    <text x="32" y="1094" font-size="14" font-weight="normal" text-anchor="start" fill="#223b40">11   Launch Serving child in the Control container</text>
+    <path d="M 32 1117 H 1488" stroke="#bdc9c8" />
+    <path d="M 32 1141 h 25" stroke="#706247" stroke-width="2" stroke-dasharray="3 3" marker-end="url(#arrow-data)" />
+    <text x="64" y="1145" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">State / artifact I/O</text>
+    <path d="M 248 1141 h 25" stroke="#3f6574" stroke-width="2" stroke-dasharray="none" marker-end="url(#arrow-sync)" />
+    <text x="280" y="1145" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Call</text>
+    <path d="M 336 1141 h 25" stroke="#6b6785" stroke-width="2" stroke-dasharray="2 4" marker-end="url(#arrow-dependency)" />
+    <text x="368" y="1145" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Declared dependency</text>
+    <path d="M 544 1141 h 25" stroke="#477366" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#arrow-async)" />
+    <text x="576" y="1145" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Message</text>
+    <path d="M 656 1141 h 25" stroke="#386c67" stroke-width="2" stroke-dasharray="none" marker-end="url(#arrow-launch)" />
+    <text x="688" y="1145" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Launch</text>
+    <rect x="32" y="1162" width="13" height="13" fill="#f2f4f9" stroke="#8e9bae" />
+    <text x="52" y="1173" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Network / namespace</text>
+    <rect x="217" y="1162" width="13" height="13" fill="#eaf0e3" stroke="#869274" />
+    <text x="237" y="1173" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Docker / OCI container</text>
+    <rect x="426" y="1162" width="13" height="13" fill="#e3edf1" stroke="#6e909b" />
+    <text x="446" y="1173" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">OS process / role</text>
+    <rect x="595" y="1162" width="13" height="13" fill="#e6edeb" stroke="#78918c" />
+    <text x="615" y="1173" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Store / volume</text>
+    <text x="32" y="1196" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Startup: mlflow-db healthy + minio-init success → MLflow; postgres, mongo, rabbitmq and MLflow healthy → migrate.</text>
+    <text x="32" y="1219" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Migrate success gates Management, Relay, Supervisor and Control. Gateway waits for Control started. Both one-shots exit.</text>
+    <text x="32" y="1242" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Ingestion and acceptance use optional overlays/profiles. Standalone external-mlflow uses separately supplied endpoints and role files.</text>
+    <text x="32" y="1265" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Base: 5 long-lived app roles, 7 infrastructure services, 2 one-shots. ./var is shared; most app roles lack a Compose health check.</text>
+  </g>
+</svg>

@@ -1,0 +1,2727 @@
+{
+  "source_commit": "8c9023b00828000287e169ac760afe57102d7353",
+  "groups": {
+    "E01": [
+      {
+        "path": "bootstrap/ml_api.py",
+        "line": 27,
+        "needle": "def create_app("
+      },
+      {
+        "path": "src/api/ml_http.py",
+        "line": 51,
+        "needle": "def submit("
+      },
+      {
+        "path": "src/api/ml_http.py",
+        "line": 159,
+        "needle": "def mount_management("
+      },
+      {
+        "path": "src/api/ingestion/routers.py",
+        "line": 64,
+        "needle": "def submit("
+      },
+      {
+        "path": "src/application/identity/service.py",
+        "line": 33,
+        "needle": "class IdentityService:"
+      },
+      {
+        "path": "src/api/identity/routers.py",
+        "line": 23,
+        "needle": "@router.post(\"/login\""
+      },
+      {
+        "path": "src/infrastructure/ml_identity.py",
+        "line": 16,
+        "needle": "class MongoActorResolver"
+      },
+      {
+        "path": "bootstrap/ml_api.py",
+        "line": 82,
+        "needle": "service = app.state.runtime.modules[\"identity\"]"
+      },
+      {
+        "path": "src/infrastructure/persistence/identity.py",
+        "line": 35,
+        "needle": "class MongoIdentityRepository:"
+      },
+      {
+        "path": "src/api/ml_http.py",
+        "line": 34,
+        "needle": "return await request.app.state.ml_identity.resolve"
+      },
+      {
+        "path": "src/api/ml_http.py",
+        "line": 56,
+        "needle": "return public_job(services.training.submit"
+      }
+    ],
+    "E02": [
+      {
+        "path": "bootstrap/ml_wiring.py",
+        "line": 61,
+        "needle": "def build_components("
+      },
+      {
+        "path": "bootstrap/ml_wiring.py",
+        "line": 42,
+        "needle": "def supervisor("
+      },
+      {
+        "path": "bootstrap/ml_training_wiring.py",
+        "line": 7,
+        "needle": "def training_executor("
+      },
+      {
+        "path": "bootstrap/ml_serving_wiring.py",
+        "line": 11,
+        "needle": "def endpoint_resolver("
+      },
+      {
+        "path": "bootstrap/components.py",
+        "line": 57,
+        "needle": "class ModuleDefinition:"
+      },
+      {
+        "path": "bootstrap/components.py",
+        "line": 80,
+        "needle": "class ModuleCatalog:"
+      },
+      {
+        "path": "bootstrap/wiring.py",
+        "line": 9,
+        "needle": "def build_modules("
+      },
+      {
+        "path": "src/application/training/ports.py",
+        "line": 12,
+        "needle": "class TrainingRepository"
+      },
+      {
+        "path": "src/domain/training/models.py",
+        "line": 11,
+        "needle": "class JobState"
+      },
+      {
+        "path": "src/domain/training/workloads.py",
+        "line": 13,
+        "needle": "class WorkloadContract"
+      },
+      {
+        "path": "bootstrap/ml_wiring.py",
+        "line": 81,
+        "needle": "services = MLServices(TrainingService(training, recipes)"
+      },
+      {
+        "path": "bootstrap/ml_api.py",
+        "line": 92,
+        "needle": "current.state.ml_services = components.services"
+      },
+      {
+        "path": "src/application/training/service.py",
+        "line": 5,
+        "needle": "from src.application.training.ports import RecipeResolver"
+      },
+      {
+        "path": "src/application/training/service.py",
+        "line": 7,
+        "needle": "from src.domain.training.models import Attempt"
+      },
+      {
+        "path": "src/application/training/service.py",
+        "line": 27,
+        "needle": "spec_json = self.recipes.resolve"
+      },
+      {
+        "path": "src/application/training/service.py",
+        "line": 28,
+        "needle": "return self.repository.submit"
+      },
+      {
+        "path": "src/infrastructure/datasets/ml_recipes.py",
+        "line": 71,
+        "needle": "dataset = self.catalog.resolve("
+      },
+      {
+        "path": "src/infrastructure/persistence/ml_datasets.py",
+        "line": 39,
+        "needle": "def resolve(self, actor: Actor, dataset_id: str, version: str)"
+      }
+    ],
+    "E03": [
+      {
+        "path": "src/application/training/service.py",
+        "line": 15,
+        "needle": "def submit("
+      },
+      {
+        "path": "src/infrastructure/persistence/ml_training.py",
+        "line": 67,
+        "needle": "def submit("
+      },
+      {
+        "path": "src/infrastructure/persistence/ml_training.py",
+        "line": 176,
+        "needle": "def validate_delivery("
+      },
+      {
+        "path": "src/infrastructure/persistence/ml_database.py",
+        "line": 144,
+        "needle": "class Database:"
+      },
+      {
+        "path": "src/application/training/outbox.py",
+        "line": 15,
+        "needle": "class OutboxRelay:"
+      },
+      {
+        "path": "src/infrastructure/messaging/ml_rabbitmq.py",
+        "line": 14,
+        "needle": "class RabbitMQCommandPublisher"
+      },
+      {
+        "path": "src/infrastructure/messaging/ml_topology.py",
+        "line": 4,
+        "needle": "def build_training_broker("
+      },
+      {
+        "path": "src/application/training/delivery.py",
+        "line": 29,
+        "needle": "async def acknowledge_terminal("
+      },
+      {
+        "path": "src/infrastructure/messaging/ml_rabbitmq.py",
+        "line": 43,
+        "needle": "confirmation = await self.exchange.publish"
+      },
+      {
+        "path": "bootstrap/ml_worker.py",
+        "line": 77,
+        "needle": "state[\"acknowledgement\"], context.ack"
+      },
+      {
+        "path": "src/application/training/outbox.py",
+        "line": 28,
+        "needle": "await asyncio.to_thread(self.repository.retry, item)"
+      },
+      {
+        "path": "src/infrastructure/persistence/ml_outbox.py",
+        "line": 55,
+        "needle": "state=\"DEAD\" if row[\"tries\"] >= 20"
+      },
+      {
+        "path": "src/infrastructure/messaging/ml_rabbitmq.py",
+        "line": 47,
+        "needle": "if not isinstance(confirmation, Basic.Ack)"
+      },
+      {
+        "path": "src/infrastructure/messaging/training_ack.py",
+        "line": 16,
+        "needle": "\"ml:ack:\" + snapshot.command_id"
+      },
+      {
+        "path": "src/application/training/delivery.py",
+        "line": 41,
+        "needle": "await store.persist(snapshot)"
+      },
+      {
+        "path": "src/application/training/delivery.py",
+        "line": 42,
+        "needle": "await ack()"
+      }
+    ],
+    "E04": [
+      {
+        "path": "src/application/training/supervisor.py",
+        "line": 41,
+        "needle": "def execute("
+      },
+      {
+        "path": "src/application/training/supervisor.py",
+        "line": 71,
+        "needle": "def monitor("
+      },
+      {
+        "path": "src/application/training/supervisor.py",
+        "line": 139,
+        "needle": "def finalize("
+      },
+      {
+        "path": "src/application/training/supervisor.py",
+        "line": 163,
+        "needle": "def _finalize("
+      },
+      {
+        "path": "bootstrap/ml_worker.py",
+        "line": 23,
+        "needle": "def build_broker("
+      },
+      {
+        "path": "bootstrap/ml_training_runner.py",
+        "line": 119,
+        "needle": "def main("
+      },
+      {
+        "path": "src/infrastructure/execution/local_process.py",
+        "line": 49,
+        "needle": "def launch("
+      },
+      {
+        "path": "src/infrastructure/mlflow/tracking.py",
+        "line": 12,
+        "needle": "class LocalExperimentTracker"
+      },
+      {
+        "path": "src/infrastructure/mlflow/tracking.py",
+        "line": 46,
+        "needle": "class MLflowExperimentTracker"
+      },
+      {
+        "path": "src/infrastructure/serving/evaluation.py",
+        "line": 108,
+        "needle": "class WorkloadBundleEvaluator"
+      },
+      {
+        "path": "bootstrap/ml_training_runner.py",
+        "line": 69,
+        "needle": "dataset = FileDatasetSource(dataset_root).load"
+      },
+      {
+        "path": "src/infrastructure/mlflow/tracking.py",
+        "line": 90,
+        "needle": "self.client.log_artifacts(run_id"
+      },
+      {
+        "path": "src/infrastructure/persistence/ml_training.py",
+        "line": 210,
+        "needle": "def prepare_execution("
+      },
+      {
+        "path": "src/application/training/supervisor.py",
+        "line": 60,
+        "needle": "self.repository.prepare_execution(claim,"
+      },
+      {
+        "path": "src/application/training/supervisor.py",
+        "line": 62,
+        "needle": "self.executor.launch(handle)"
+      },
+      {
+        "path": "src/plugins/training/pytorch_trainer.py",
+        "line": 148,
+        "needle": "atomic_json(directory/\"result.json\", result)"
+      },
+      {
+        "path": "src/plugins/training/ebm_trainer_v1.py",
+        "line": 244,
+        "needle": "atomic_json(directory / \"result.json\", result)"
+      },
+      {
+        "path": "src/infrastructure/execution/local_process.py",
+        "line": 117,
+        "needle": "Path(handle.directory)/\"result.json\""
+      },
+      {
+        "path": "src/application/training/supervisor.py",
+        "line": 180,
+        "needle": "version, artifact_ref = self.tracker.register("
+      },
+      {
+        "path": "src/application/training/supervisor.py",
+        "line": 184,
+        "needle": "binding = self.registry.save_binding("
+      },
+      {
+        "path": "src/application/training/supervisor.py",
+        "line": 189,
+        "needle": "evaluation = self.evaluator.evaluate("
+      },
+      {
+        "path": "src/application/training/supervisor.py",
+        "line": 202,
+        "needle": "evaluation = self.registry.save_evaluation(evaluation)"
+      },
+      {
+        "path": "src/application/training/supervisor.py",
+        "line": 208,
+        "needle": "self.repository.finish(claim, binding.binding_id, evaluation.evaluation_id)"
+      }
+    ],
+    "E05": [
+      {
+        "path": "src/application/ingestion/service.py",
+        "line": 20,
+        "needle": "def submit("
+      },
+      {
+        "path": "src/application/ingestion/supervisor.py",
+        "line": 128,
+        "needle": "def run_once("
+      },
+      {
+        "path": "src/application/datasets/builder.py",
+        "line": 72,
+        "needle": "class EBMDatasetPreparationService:"
+      },
+      {
+        "path": "src/plugins/features/ebm_dataset_builder_v1.py",
+        "line": 170,
+        "needle": "splits_by_lot ="
+      },
+      {
+        "path": "src/infrastructure/ingestion/adapters/databricks_client.py",
+        "line": 321,
+        "needle": "class DatabricksSQLClient:"
+      },
+      {
+        "path": "src/infrastructure/ingestion/storage/raw_snapshot_writer.py",
+        "line": 66,
+        "needle": "def directory_fd("
+      },
+      {
+        "path": "bootstrap/ingestion_cli.py",
+        "line": 128,
+        "needle": "def main("
+      },
+      {
+        "path": "bootstrap/ingestion_wiring.py",
+        "line": 67,
+        "needle": "class IngestionSettings:"
+      },
+      {
+        "path": "bootstrap/ingestion_wiring.py",
+        "line": 212,
+        "needle": "store = LocalRawSnapshotStore(settings.raw_root)"
+      }
+    ],
+    "E06": [
+      {
+        "path": "src/application/model_registry/service.py",
+        "line": 22,
+        "needle": "def approve("
+      },
+      {
+        "path": "src/infrastructure/persistence/ml_training.py",
+        "line": 293,
+        "needle": "def finish("
+      },
+      {
+        "path": "src/infrastructure/persistence/ml_deployments.py",
+        "line": 29,
+        "needle": "def create("
+      },
+      {
+        "path": "src/application/deployments/service.py",
+        "line": 24,
+        "needle": "def rollback("
+      },
+      {
+        "path": "src/application/deployments/service.py",
+        "line": 30,
+        "needle": "class DeploymentController:"
+      },
+      {
+        "path": "bootstrap/ml_cli.py",
+        "line": 53,
+        "needle": "def control("
+      },
+      {
+        "path": "src/api/ml_http.py",
+        "line": 103,
+        "needle": "@registry_router.post(\"/bindings/{binding_id}/approvals\", status_code=201)"
+      },
+      {
+        "path": "src/api/ml_http.py",
+        "line": 119,
+        "needle": "@deployment_router.post(\"\", status_code=202)"
+      },
+      {
+        "path": "bootstrap/ml_cli.py",
+        "line": 75,
+        "needle": "rows = connection.execute(select(deployments).where("
+      },
+      {
+        "path": "src/infrastructure/deployment/local_serving.py",
+        "line": 93,
+        "needle": "self._processes[deployment.deployment_id] = subprocess.Popen("
+      },
+      {
+        "path": "src/infrastructure/deployment/local_serving.py",
+        "line": 110,
+        "needle": "response = httpx.get(metadata[\"address\"]+\"/health/ready\""
+      },
+      {
+        "path": "src/application/deployments/service.py",
+        "line": 59,
+        "needle": "if not self.executor.ready(deployment):"
+      },
+      {
+        "path": "src/application/deployments/service.py",
+        "line": 67,
+        "needle": "self.repository.activate(deployment)"
+      },
+      {
+        "path": "src/infrastructure/persistence/ml_deployments.py",
+        "line": 120,
+        "needle": "routes.c.revision == deployment.expected_route_revision).values("
+      }
+    ],
+    "E07": [
+      {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 66,
+        "needle": "async def predict("
+      },
+      {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 57,
+        "needle": "async def ready("
+      },
+      {
+        "path": "bootstrap/ml_serving.py",
+        "line": 32,
+        "needle": "def create_app("
+      },
+      {
+        "path": "bootstrap/ml_serving.py",
+        "line": 123,
+        "needle": "def main("
+      },
+      {
+        "path": "src/infrastructure/deployment/local_serving.py",
+        "line": 62,
+        "needle": "def _launch("
+      },
+      {
+        "path": "src/infrastructure/serving/materializer.py",
+        "line": 23,
+        "needle": "class BundleMaterializer:"
+      },
+      {
+        "path": "src/infrastructure/serving/bounded_prediction.py",
+        "line": 21,
+        "needle": "class BoundedPredictionExecutor:"
+      },
+      {
+        "path": "src/infrastructure/serving/bounded_ebm_prediction.py",
+        "line": 24,
+        "needle": "class BoundedEBMPredictionExecutor:"
+      },
+      {
+        "path": "src/application/prediction/service.py",
+        "line": 10,
+        "needle": "class PredictionService:"
+      },
+      {
+        "path": "bootstrap/ml_serving.py",
+        "line": 50,
+        "needle": "provider = identity or MongoActorResolver("
+      },
+      {
+        "path": "src/infrastructure/serving/materializer.py",
+        "line": 41,
+        "needle": "result = Path(client.download_artifacts"
+      },
+      {
+        "path": "src/infrastructure/ml_identity.py",
+        "line": 44,
+        "needle": "session = self.db.identity_sessions.find_one("
+      },
+      {
+        "path": "src/infrastructure/deployment/endpoints.py",
+        "line": 26,
+        "needle": "return f\"http://{resource_name(deployment)}."
+      },
+      {
+        "path": "src/infrastructure/deployment/endpoints.py",
+        "line": 36,
+        "needle": "address = json.loads((self.root / deployment.deployment_id / \"instance.json\")"
+      },
+      {
+        "path": "src/domain/deployments/identity.py",
+        "line": 36,
+        "needle": "def matches_identity("
+      },
+      {
+        "path": "src/infrastructure/persistence/ml_deployments.py",
+        "line": 104,
+        "needle": "def route(self, tenant: str, endpoint: str) -> Route:"
+      },
+      {
+        "path": "src/domain/deployments/models.py",
+        "line": 7,
+        "needle": "class Route:"
+      },
+      {
+        "path": "bootstrap/ml_serving.py",
+        "line": 111,
+        "needle": "result = asdict(state[\"prediction\"].predict("
+      },
+      {
+        "path": "bootstrap/ml_serving.py",
+        "line": 115,
+        "needle": "result[\"provenance\"].update(spec_digest=trusted_digest"
+      },
+      {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 83,
+        "needle": "address = state[\"resolver\"].resolve(deployment)"
+      },
+      {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 94,
+        "needle": "if response.is_success and ("
+      },
+      {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 98,
+        "needle": "current = await asyncio.to_thread("
+      },
+      {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 100,
+        "needle": "if current != route or response.is_redirect:"
+      }
+    ],
+    "E08": [
+      {
+        "path": "compose.ml.yaml",
+        "line": 3,
+        "needle": "x-ml-environment:"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 25,
+        "needle": "x-ml-app:"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 35,
+        "needle": "  postgres:"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 38,
+        "needle": "  mlflow:"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 91,
+        "needle": "  migrate:"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 108,
+        "needle": "  supervisor:"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 129,
+        "needle": "  gateway:"
+      },
+      {
+        "path": "compose.ml.ingestion.yaml",
+        "line": 9,
+        "needle": "  ingestion-worker:"
+      },
+      {
+        "path": "compose.ml.databricks.yaml",
+        "line": 33,
+        "needle": "secrets:"
+      },
+      {
+        "path": "compose.ml.databricks-token.yaml",
+        "line": 3,
+        "needle": "services:"
+      },
+      {
+        "path": "compose.ml.acceptance.yaml",
+        "line": 20,
+        "needle": "  acceptance:"
+      },
+      {
+        "path": "compose.yaml",
+        "line": 43,
+        "needle": "services:"
+      },
+      {
+        "path": "Dockerfile",
+        "line": 1,
+        "needle": "FROM "
+      },
+      {
+        "path": "Dockerfile.ml",
+        "line": 1,
+        "needle": "FROM python:3.12-slim AS api"
+      },
+      {
+        "path": "Dockerfile.ml",
+        "line": 27,
+        "needle": "FROM api AS training"
+      },
+      {
+        "path": "Dockerfile.ml",
+        "line": 51,
+        "needle": "FROM ebm AS production"
+      },
+      {
+        "path": "Dockerfile.mlflow",
+        "line": 7,
+        "needle": "ENTRYPOINT"
+      },
+      {
+        "path": "Dockerfile.minio",
+        "line": 27,
+        "needle": "FROM runtime AS server"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 79,
+        "needle": "MLFLOW_BACKEND_STORE_URI: postgresql+psycopg://"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 80,
+        "needle": "MLFLOW_S3_ENDPOINT_URL: http://minio:9000"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 131,
+        "needle": "network_mode: service:control"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 29,
+        "needle": "volumes: [./var:/app/var]"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 90,
+        "needle": "minio-init: {condition: service_completed_successfully}"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 127,
+        "needle": "ports: [127.0.0.1:8001:8001]"
+      },
+      {
+        "path": "compose.ml.yaml",
+        "line": 134,
+        "needle": "depends_on: {control: {condition: service_started}}"
+      }
+    ],
+    "E09": [
+      {
+        "path": "bootstrap/ml_config.py",
+        "line": 11,
+        "needle": "class MLSettings:"
+      },
+      {
+        "path": "bootstrap/ml_config.py",
+        "line": 43,
+        "needle": "def from_env("
+      },
+      {
+        "path": "bootstrap/ml_cli.py",
+        "line": 25,
+        "needle": "def migrate("
+      },
+      {
+        "path": "bootstrap/ml_cli.py",
+        "line": 36,
+        "needle": "async def relay("
+      },
+      {
+        "path": "bootstrap/ml_cli.py",
+        "line": 53,
+        "needle": "def control("
+      },
+      {
+        "path": "bootstrap/ml_cli.py",
+        "line": 100,
+        "needle": "def demo("
+      },
+      {
+        "path": "bootstrap/ml_cli.py",
+        "line": 124,
+        "needle": "def demo_ebm("
+      },
+      {
+        "path": "bootstrap/ml_cli.py",
+        "line": 159,
+        "needle": "def main("
+      },
+      {
+        "path": "src/infrastructure/execution/local_process.py",
+        "line": 19,
+        "needle": "def process_identity("
+      },
+      {
+        "path": "src/infrastructure/execution/local_process.py",
+        "line": 63,
+        "needle": "def inspect("
+      },
+      {
+        "path": "src/config/settings.py",
+        "line": 10,
+        "needle": "class Settings("
+      },
+      {
+        "path": "pyproject.toml",
+        "line": 21,
+        "needle": "[project.optional-dependencies]"
+      },
+      {
+        "path": "worker.py",
+        "line": 7,
+        "needle": "broker ="
+      },
+      {
+        "path": "server.py",
+        "line": 30,
+        "needle": "def create_app("
+      },
+      {
+        "path": "README.md",
+        "line": 34,
+        "needle": "## Real local training"
+      },
+      {
+        "path": "docs/configuration-reference.md",
+        "line": 11,
+        "needle": "## Profile"
+      },
+      {
+        "path": "bootstrap/ml_cli.py",
+        "line": 147,
+        "needle": "        components.supervisor().execute(command)"
+      },
+      {
+        "path": "bootstrap/ml_config.py",
+        "line": 13,
+        "needle": "database_url: str = field(default=\"sqlite:///./var/ml.db\""
+      },
+      {
+        "path": "src/infrastructure/execution/local_process.py",
+        "line": 22,
+        "needle": "tail = Path(f\"/proc/{pid}/stat\")"
+      },
+      {
+        "path": "src/infrastructure/deployment/local_serving.py",
+        "line": 69,
+        "needle": "reservation.bind((\"127.0.0.1\", 0))"
+      }
+    ],
+    "E10": [
+      {
+        "path": "compose.ml.external-mlflow.yaml",
+        "line": 6,
+        "needle": "x-runtime-environment:"
+      },
+      {
+        "path": "compose.ml.external-mlflow.yaml",
+        "line": 37,
+        "needle": "x-runtime:"
+      },
+      {
+        "path": "compose.ml.external-mlflow.yaml",
+        "line": 85,
+        "needle": "services:"
+      },
+      {
+        "path": "bootstrap/deployment_entrypoint.py",
+        "line": 50,
+        "needle": "REQUIRED ="
+      },
+      {
+        "path": "bootstrap/deployment_entrypoint.py",
+        "line": 72,
+        "needle": "def _read_configuration("
+      },
+      {
+        "path": "bootstrap/deployment_entrypoint.py",
+        "line": 118,
+        "needle": "def load_runtime_environment("
+      },
+      {
+        "path": "docs/deployment/day1-deployment-runbook.md",
+        "line": 1,
+        "needle": "# Day-1"
+      },
+      {
+        "path": "docs/configuration-reference.md",
+        "line": 35,
+        "needle": "`docker compose exec`"
+      }
+    ],
+    "E11": [
+      {
+        "path": "deploy/k8s/base/workloads.yaml",
+        "line": 5,
+        "needle": "  name: ml-management"
+      },
+      {
+        "path": "deploy/k8s/base/workloads.yaml",
+        "line": 320,
+        "needle": "  name: ml-supervisor"
+      },
+      {
+        "path": "deploy/k8s/base/workloads.yaml",
+        "line": 471,
+        "needle": "  name: ml-control"
+      },
+      {
+        "path": "deploy/k8s/base/workloads.yaml",
+        "line": 737,
+        "needle": "  name: ml-ingestion-worker"
+      },
+      {
+        "path": "deploy/k8s/base/services.yaml",
+        "line": 17,
+        "needle": "  name: ml-gateway"
+      },
+      {
+        "path": "deploy/k8s/base/storage.yaml",
+        "line": 3,
+        "needle": "kind: PersistentVolumeClaim"
+      },
+      {
+        "path": "deploy/k8s/base/networkpolicies.yaml",
+        "line": 3,
+        "needle": "kind: NetworkPolicy"
+      },
+      {
+        "path": "deploy/k8s/overlays/minikube-training/training-runtime.yaml",
+        "line": 4,
+        "needle": "  name: ml-supervisor"
+      },
+      {
+        "path": "deploy/k8s/overlays/minikube-serving/control-api.yaml",
+        "line": 4,
+        "needle": "  name: ml-control"
+      },
+      {
+        "path": "deploy/k8s/infrastructure/minikube/mlflow.yaml",
+        "line": 25,
+        "needle": "kind: Deployment"
+      },
+      {
+        "path": "src/infrastructure/deployment/kubernetes_serving.py",
+        "line": 80,
+        "needle": "class KubernetesServingExecutor"
+      },
+      {
+        "path": "src/infrastructure/execution/pod_process.py",
+        "line": 17,
+        "needle": "class PodProcessExecutor"
+      },
+      {
+        "path": "bootstrap/ml_training_guardian.py",
+        "line": 28,
+        "needle": "def supervise("
+      },
+      {
+        "path": "docs/adr/017-kubernetes-runtime-boundaries.md",
+        "line": 14,
+        "needle": "## Decision"
+      },
+      {
+        "path": "docs/adr/018-kubernetes-storage-contracts.md",
+        "line": 8,
+        "needle": "## Decision"
+      },
+      {
+        "path": "docs/adr/019-kubernetes-serving-runtime.md",
+        "line": 7,
+        "needle": "## Decision"
+      },
+      {
+        "path": "docs/adr/020-pod-training-runtime.md",
+        "line": 7,
+        "needle": "## Decision"
+      },
+      {
+        "path": "docs/adr/021-kubernetes-acceptance.md",
+        "line": 5,
+        "needle": "## Decision"
+      },
+      {
+        "path": "deploy/k8s/base/migration-job.yaml",
+        "line": 5,
+        "needle": "  name: ml-migrate"
+      },
+      {
+        "path": "deploy/k8s/base/services.yaml",
+        "line": 12,
+        "needle": "targetPort: 8000"
+      },
+      {
+        "path": "deploy/k8s/base/services.yaml",
+        "line": 20,
+        "needle": "app.kubernetes.io/name: ml-control"
+      },
+      {
+        "path": "deploy/k8s/base/workloads.yaml",
+        "line": 541,
+        "needle": "- name: prepare-gateway"
+      },
+      {
+        "path": "deploy/k8s/base/storage.yaml",
+        "line": 8,
+        "needle": "- ReadWriteOnce"
+      },
+      {
+        "path": "deploy/k8s/overlays/minikube-training/kustomization.yaml",
+        "line": 12,
+        "needle": "ML_TRAINING_BACKEND=pod"
+      },
+      {
+        "path": "deploy/k8s/overlays/minikube-serving/kustomization.yaml",
+        "line": 12,
+        "needle": "ML_SERVING_BACKEND=kubernetes"
+      },
+      {
+        "path": "src/infrastructure/deployment/kubernetes_serving.py",
+        "line": 157,
+        "needle": "\"name\": \"prepare-serving\""
+      },
+      {
+        "path": "src/infrastructure/deployment/kubernetes_serving.py",
+        "line": 243,
+        "needle": "\"immutable\": True"
+      },
+      {
+        "path": "deploy/k8s/infrastructure/minikube/kustomization.yaml",
+        "line": 4,
+        "needle": "- postgres.yaml"
+      },
+      {
+        "path": "deploy/k8s/infrastructure/minikube/files/nginx.conf",
+        "line": 18,
+        "needle": "proxy_pass http://127.0.0.1:5000"
+      },
+      {
+        "path": "deploy/k8s/infrastructure/minikube/files/01-mlflow.sql",
+        "line": 1,
+        "needle": "CREATE DATABASE mlflow;"
+      },
+      {
+        "path": "deploy/k8s/infrastructure/minikube/minio-init-job.yaml",
+        "line": 24,
+        "needle": "- name: initialize"
+      },
+      {
+        "path": "deploy/k8s/README.md",
+        "line": 32,
+        "needle": "Single-node engineering"
+      }
+    ],
+    "E12": [
+      {
+        "path": "scripts/check_boundaries.py",
+        "line": 74,
+        "needle": "LAYER_DEPENDENCIES:"
+      },
+      {
+        "path": "scripts/verify_ml_acceptance.py",
+        "line": 50,
+        "needle": "def main("
+      },
+      {
+        "path": "tests/ml/test_training_contracts.py",
+        "line": 27,
+        "needle": "def test_concurrent_acceptance"
+      },
+      {
+        "path": "tests/ml/test_model_governance.py",
+        "line": 26,
+        "needle": "def test_approval_pins_exact_evidence"
+      },
+      {
+        "path": "tests/ml/test_pod_training_runtime.py",
+        "line": 273,
+        "needle": "async def test_ack_requires_terminal_sql"
+      },
+      {
+        "path": ".github/workflows/ml-ci.yml",
+        "line": 42,
+        "needle": "  contracts:"
+      },
+      {
+        "path": "bootstrap/ml_telemetry.py",
+        "line": 11,
+        "needle": "def configure_telemetry("
+      },
+      {
+        "path": "src/infrastructure/ml_tracing.py",
+        "line": 1,
+        "needle": "W3C tracing"
+      }
+    ],
+    "E13": [
+      {
+        "path": "docs/adr/README.md",
+        "line": 44,
+        "needle": "## ADR-008"
+      },
+      {
+        "path": "docs/adr/README.md",
+        "line": 60,
+        "needle": "## ADR-009"
+      },
+      {
+        "path": "docs/adr/README.md",
+        "line": 70,
+        "needle": "## ADR-010"
+      },
+      {
+        "path": "docs/adr/014-implementation-baseline.md",
+        "line": 5,
+        "needle": "The upstream source"
+      },
+      {
+        "path": "docs/adr/014-implementation-baseline.md",
+        "line": 7,
+        "needle": "1. Freeze"
+      },
+      {
+        "path": "docs/adr/014-implementation-baseline.md",
+        "line": 8,
+        "needle": "2. Use"
+      },
+      {
+        "path": "docs/adr/014-implementation-baseline.md",
+        "line": 9,
+        "needle": "3. PostgreSQL"
+      },
+      {
+        "path": "docs/adr/014-implementation-baseline.md",
+        "line": 10,
+        "needle": "4. Keep"
+      }
+    ],
+    "E14": [
+      {
+        "path": "docs/adr/016-databricks-batch-ingestion.md",
+        "line": 24,
+        "needle": "## Decision"
+      },
+      {
+        "path": "src/domain/training/workloads.py",
+        "line": 61,
+        "needle": "APPROVED_WORKLOADS ="
+      },
+      {
+        "path": "bootstrap/ml_training_runner.py",
+        "line": 96,
+        "needle": "TRAINING_HANDLERS ="
+      },
+      {
+        "path": "bootstrap/init_cli.py",
+        "line": 557,
+        "needle": "def main("
+      },
+      {
+        "path": "docs/deployment/interactive-setup.md",
+        "line": 1,
+        "needle": "# "
+      },
+      {
+        "path": "src/plugins/models/ebm_cnn_v1.py",
+        "line": 119,
+        "needle": "def build_ebm_cnn("
+      }
+    ],
+    "E15": [
+      {
+        "path": "docs/implementation-status.md",
+        "line": 6,
+        "needle": "## 已交付"
+      },
+      {
+        "path": "docs/implementation-status.md",
+        "line": 42,
+        "needle": "## 尚未完成"
+      },
+      {
+        "path": "docs/ebm-implementation-status.md",
+        "line": 9,
+        "needle": "## 已實作"
+      },
+      {
+        "path": "docs/ebm-implementation-status.md",
+        "line": 52,
+        "needle": "尚未提供跨 Job"
+      },
+      {
+        "path": "docs/ebm-integration-plan.md",
+        "line": 1,
+        "needle": "# "
+      },
+      {
+        "path": "docs/evidence/k8s-acceptance-2026-11-18/qualification.json",
+        "line": 1,
+        "needle": "{"
+      }
+    ]
+  },
+  "relationships": {
+    "01-system-context.svg": {
+      "input-0": {
+        "path": "src/api/ml_http.py",
+        "line": 50,
+        "needle": "@training_router.post(\"/jobs\", status_code=202)",
+        "source": "actor-0",
+        "target": "system",
+        "groups": [
+          "E01",
+          "E05",
+          "E06"
+        ]
+      },
+      "input-1": {
+        "path": "src/api/ml_http.py",
+        "line": 103,
+        "needle": "@registry_router.post(\"/bindings/{binding_id}/approvals\"",
+        "source": "actor-1",
+        "target": "system",
+        "groups": [
+          "E01",
+          "E05",
+          "E06"
+        ]
+      },
+      "input-2": {
+        "path": "bootstrap/ingestion_cli.py",
+        "line": 17,
+        "needle": "commands = parser.add_subparsers",
+        "source": "actor-2",
+        "target": "system",
+        "groups": [
+          "E01",
+          "E05",
+          "E06"
+        ]
+      },
+      "input-3": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 65,
+        "needle": "@app.post(\"/api/v1/prediction/predict\")",
+        "source": "actor-3",
+        "target": "system",
+        "groups": [
+          "E01",
+          "E05",
+          "E06"
+        ]
+      },
+      "integration-0": {
+        "path": "src/application/ingestion/supervisor.py",
+        "line": 128,
+        "needle": "def run_once(",
+        "source": "system",
+        "target": "external-0",
+        "groups": [
+          "E05"
+        ]
+      },
+      "integration-1": {
+        "path": "src/infrastructure/mlflow/tracking.py",
+        "line": 90,
+        "needle": "self.client.log_artifacts(run_id",
+        "source": "system",
+        "target": "external-1",
+        "groups": [
+          "E04"
+        ]
+      },
+      "integration-2": {
+        "path": "compose.ml.yaml",
+        "line": 3,
+        "needle": "x-ml-environment:",
+        "source": "system",
+        "target": "external-2",
+        "groups": [
+          "E02"
+        ]
+      },
+      "integration-3": {
+        "path": "bootstrap/ml_telemetry.py",
+        "line": 30,
+        "needle": "provider.add_span_processor(BatchSpanProcessor(",
+        "source": "system",
+        "target": "external-3",
+        "groups": [
+          "E12"
+        ]
+      }
+    },
+    "02-container-architecture.svg": {
+      "identity-management": {
+        "path": "bootstrap/ml_api.py",
+        "line": 83,
+        "needle": "principal = await service.authenticate(token)",
+        "source": "management",
+        "target": "mongo",
+        "groups": [
+          "E01"
+        ]
+      },
+      "identity-gateway": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 33,
+        "needle": "provider = identity or MongoActorResolver(",
+        "source": "gateway",
+        "target": "mongo",
+        "groups": [
+          "E07"
+        ]
+      },
+      "identity-serving": {
+        "path": "bootstrap/ml_serving.py",
+        "line": 50,
+        "needle": "provider = identity or MongoActorResolver(",
+        "source": "serving",
+        "target": "mongo",
+        "groups": [
+          "E07"
+        ]
+      },
+      "serve-request": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 91,
+        "needle": "response = await state[\"client\"].post(address+",
+        "source": "gateway",
+        "target": "serving",
+        "groups": [
+          "E07"
+        ]
+      },
+      "ensure-serving": {
+        "path": "src/infrastructure/deployment/local_serving.py",
+        "line": 93,
+        "needle": "self._processes[deployment.deployment_id] = subprocess.Popen(",
+        "source": "control",
+        "target": "serving",
+        "groups": [
+          "E06"
+        ]
+      },
+      "admission": {
+        "path": "src/infrastructure/persistence/ml_training.py",
+        "line": 97,
+        "needle": "c.execute(insert(outbox).values(id=command_id",
+        "source": "management",
+        "target": "sql",
+        "groups": [
+          "E03",
+          "E06"
+        ]
+      },
+      "route": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 98,
+        "needle": "current = await asyncio.to_thread(state[\"components\"].deployments.route",
+        "source": "gateway",
+        "target": "sql",
+        "groups": [
+          "E07"
+        ]
+      },
+      "reconcile": {
+        "path": "bootstrap/ml_cli.py",
+        "line": 86,
+        "needle": "if deployment.state !=",
+        "source": "control",
+        "target": "sql",
+        "groups": [
+          "E06"
+        ]
+      },
+      "ingest-state": {
+        "path": "src/application/ingestion/supervisor.py",
+        "line": 222,
+        "needle": "final = self.jobs.finish(claim, snapshot)",
+        "source": "ingestion",
+        "target": "sql",
+        "groups": [
+          "E05"
+        ]
+      },
+      "lease": {
+        "path": "src/application/training/outbox.py",
+        "line": 22,
+        "needle": "items = await asyncio.to_thread(self.repository.lease, limit)",
+        "source": "relay",
+        "target": "sql",
+        "groups": [
+          "E03"
+        ]
+      },
+      "publish": {
+        "path": "src/infrastructure/messaging/ml_rabbitmq.py",
+        "line": 43,
+        "needle": "confirmation = await self.exchange.publish",
+        "source": "relay",
+        "target": "rabbit",
+        "groups": [
+          "E03"
+        ]
+      },
+      "delivery": {
+        "path": "bootstrap/ml_worker.py",
+        "line": 97,
+        "needle": "@broker.task(task_name=TASK_NAME, ack_type=\"manual\")",
+        "source": "rabbit",
+        "target": "supervisor",
+        "groups": [
+          "E03"
+        ]
+      },
+      "ack": {
+        "path": "src/application/training/delivery.py",
+        "line": 42,
+        "needle": "await ack()",
+        "source": "supervisor",
+        "target": "rabbit",
+        "groups": [
+          "E03"
+        ]
+      },
+      "attempt": {
+        "path": "src/application/training/supervisor.py",
+        "line": 44,
+        "needle": "claim = self.repository.claim(command)",
+        "source": "supervisor",
+        "target": "sql",
+        "groups": [
+          "E04"
+        ]
+      },
+      "fit": {
+        "path": "src/application/training/supervisor.py",
+        "line": 62,
+        "needle": "self.executor.launch(handle)",
+        "source": "supervisor",
+        "target": "compute",
+        "groups": [
+          "E04"
+        ]
+      },
+      "raw": {
+        "path": "src/application/ingestion/supervisor.py",
+        "line": 212,
+        "needle": "snapshot = self.publisher.publish(intent)",
+        "source": "ingestion",
+        "target": "files",
+        "groups": [
+          "E05"
+        ]
+      },
+      "fetch": {
+        "path": "src/application/ingestion/supervisor.py",
+        "line": 148,
+        "needle": "staged = adapter.acquire(extraction, control)",
+        "source": "ingestion",
+        "target": "source",
+        "groups": [
+          "E05"
+        ]
+      },
+      "fit-files": {
+        "path": "bootstrap/ml_training_runner.py",
+        "line": 70,
+        "needle": "PyTorchTrainer().train(spec, root, progress, producer=producer, dataset=dataset)",
+        "source": "compute",
+        "target": "files",
+        "groups": [
+          "E04"
+        ]
+      },
+      "ack-snapshot": {
+        "path": "src/infrastructure/messaging/training_ack.py",
+        "line": 15,
+        "needle": "accepted = await self.redis.set(",
+        "source": "supervisor",
+        "target": "redis",
+        "groups": [
+          "E03"
+        ]
+      },
+      "register": {
+        "path": "src/infrastructure/mlflow/tracking.py",
+        "line": 90,
+        "needle": "self.client.log_artifacts(run_id",
+        "source": "supervisor",
+        "target": "mlflow",
+        "groups": [
+          "E04"
+        ]
+      },
+      "materialize": {
+        "path": "src/infrastructure/serving/materializer.py",
+        "line": 41,
+        "needle": "result = Path(client.download_artifacts",
+        "source": "serving",
+        "target": "mlflow",
+        "groups": [
+          "E07"
+        ]
+      },
+      "track-metadata": {
+        "path": "compose.ml.yaml",
+        "line": 79,
+        "needle": "MLFLOW_BACKEND_STORE_URI: postgresql+psycopg://",
+        "source": "mlflow",
+        "target": "tracker_db",
+        "groups": [
+          "E08"
+        ]
+      },
+      "track-bytes": {
+        "path": "compose.ml.yaml",
+        "line": 80,
+        "needle": "MLFLOW_S3_ENDPOINT_URL: http://minio:9000",
+        "source": "mlflow",
+        "target": "artifacts",
+        "groups": [
+          "E08"
+        ]
+      }
+    },
+    "03-component-architecture.svg": {
+      "wire-router": {
+        "path": "bootstrap/ml_api.py",
+        "line": 92,
+        "needle": "current.state.ml_services = components.services",
+        "source": "factory",
+        "target": "router",
+        "groups": [
+          "E02"
+        ]
+      },
+      "wire-service": {
+        "path": "bootstrap/ml_wiring.py",
+        "line": 81,
+        "needle": "services = MLServices(TrainingService(training, recipes)",
+        "source": "factory",
+        "target": "service",
+        "groups": [
+          "E02"
+        ]
+      },
+      "actor": {
+        "path": "src/api/ml_http.py",
+        "line": 34,
+        "needle": "return await request.app.state.ml_identity.resolve",
+        "source": "router",
+        "target": "identity",
+        "groups": [
+          "E01"
+        ]
+      },
+      "authenticate": {
+        "path": "src/application/identity/service.py",
+        "line": 141,
+        "needle": "session = await self._repository.get_session(",
+        "source": "identity",
+        "target": "mongo",
+        "groups": [
+          "E01"
+        ]
+      },
+      "submit": {
+        "path": "src/api/ml_http.py",
+        "line": 56,
+        "needle": "return public_job(services.training.submit",
+        "source": "router",
+        "target": "service",
+        "groups": [
+          "E01"
+        ]
+      },
+      "domain-imports": {
+        "path": "src/application/training/service.py",
+        "line": 7,
+        "needle": "from src.domain.training.models import Attempt",
+        "source": "service",
+        "target": "domain",
+        "groups": [
+          "E02"
+        ]
+      },
+      "resolve": {
+        "path": "src/application/training/service.py",
+        "line": 27,
+        "needle": "spec_json = self.recipes.resolve",
+        "source": "service",
+        "target": "recipes",
+        "groups": [
+          "E02"
+        ]
+      },
+      "dataset-version": {
+        "path": "src/infrastructure/datasets/ml_recipes.py",
+        "line": 71,
+        "needle": "dataset = self.catalog.resolve(",
+        "source": "recipes",
+        "target": "catalog",
+        "groups": [
+          "E02"
+        ]
+      },
+      "catalog-read": {
+        "path": "src/infrastructure/persistence/ml_datasets.py",
+        "line": 41,
+        "needle": "rows = connection.execute(select(datasets).where(",
+        "source": "catalog",
+        "target": "sql",
+        "groups": [
+          "E02"
+        ]
+      },
+      "persist": {
+        "path": "src/application/training/service.py",
+        "line": 28,
+        "needle": "return self.repository.submit",
+        "source": "service",
+        "target": "repository",
+        "groups": [
+          "E02"
+        ]
+      },
+      "imports": {
+        "path": "src/application/training/service.py",
+        "line": 5,
+        "needle": "from src.application.training.ports import RecipeResolver",
+        "source": "service",
+        "target": "contracts",
+        "groups": [
+          "E02"
+        ]
+      },
+      "transaction": {
+        "path": "src/infrastructure/persistence/ml_training.py",
+        "line": 97,
+        "needle": "c.execute(insert(outbox).values(id=command_id",
+        "source": "repository",
+        "target": "sql",
+        "groups": [
+          "E03"
+        ]
+      }
+    },
+    "04-training-sequence.svg": {
+      "msg-01": {
+        "path": "src/api/ml_http.py",
+        "line": 52,
+        "needle": "idempotency_key: Annotated[str, Header(min_length=1, max_length=128)]",
+        "source": "scientist",
+        "target": "api",
+        "groups": [
+          "E01"
+        ]
+      },
+      "msg-02": {
+        "path": "src/infrastructure/persistence/ml_training.py",
+        "line": 97,
+        "needle": "c.execute(insert(outbox).values(id=command_id, job_id=job_id, attempt_id=attempt_id,",
+        "source": "api",
+        "target": "sql",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-03": {
+        "path": "src/api/ml_http.py",
+        "line": 47,
+        "needle": "\"status_url\": f\"/api/v1/training/jobs/{job.job_id}\"",
+        "source": "api",
+        "target": "scientist",
+        "groups": [
+          "E01"
+        ]
+      },
+      "msg-04": {
+        "path": "src/application/training/outbox.py",
+        "line": 22,
+        "needle": "items = await asyncio.to_thread(self.repository.lease, limit)",
+        "source": "relay",
+        "target": "sql",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-05": {
+        "path": "src/infrastructure/messaging/ml_rabbitmq.py",
+        "line": 45,
+        "needle": "message_id=command.command_id, delivery_mode=aio_pika.DeliveryMode.PERSISTENT",
+        "source": "relay",
+        "target": "rabbit",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-06": {
+        "path": "src/infrastructure/persistence/ml_outbox.py",
+        "line": 55,
+        "needle": "state=\"DEAD\" if row[\"tries\"] >= 20 else \"PENDING\"",
+        "source": "relay",
+        "target": "sql",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-07": {
+        "path": "src/infrastructure/messaging/ml_rabbitmq.py",
+        "line": 47,
+        "needle": "if not isinstance(confirmation, Basic.Ack):",
+        "source": "rabbit",
+        "target": "relay",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-08": {
+        "path": "src/application/training/outbox.py",
+        "line": 30,
+        "needle": "await asyncio.to_thread(self.repository.published, item)",
+        "source": "relay",
+        "target": "sql",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-09": {
+        "path": "bootstrap/ml_worker.py",
+        "line": 97,
+        "needle": "@broker.task(task_name=TASK_NAME, ack_type=\"manual\")",
+        "source": "rabbit",
+        "target": "worker",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-10": {
+        "path": "src/infrastructure/persistence/ml_training.py",
+        "line": 155,
+        "needle": "raise Conflict(\"Command does not match durable intent\")",
+        "source": "worker",
+        "target": "sql",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-11": {
+        "path": "src/application/training/supervisor.py",
+        "line": 45,
+        "needle": "if claim.already_complete:",
+        "source": "sql",
+        "target": "worker",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-12": {
+        "path": "src/application/training/supervisor.py",
+        "line": 60,
+        "needle": "self.repository.prepare_execution(claim, canonical_json(asdict(handle)))",
+        "source": "worker",
+        "target": "sql",
+        "groups": [
+          "E04"
+        ]
+      },
+      "msg-13": {
+        "path": "src/infrastructure/execution/local_process.py",
+        "line": 57,
+        "needle": "process = subprocess.Popen([sys.executable, \"-m\", \"bootstrap.ml_training_runner\"",
+        "source": "worker",
+        "target": "compute",
+        "groups": [
+          "E04"
+        ]
+      },
+      "msg-14": {
+        "path": "src/infrastructure/persistence/ml_training.py",
+        "line": 314,
+        "needle": "else \"FAILED\") if confirmed else \"NEEDS_RECONCILIATION\"",
+        "source": "worker",
+        "target": "sql",
+        "groups": [
+          "E04"
+        ]
+      },
+      "msg-15": {
+        "path": "src/plugins/training/pytorch_trainer.py",
+        "line": 148,
+        "needle": "atomic_json(directory/\"result.json\", result)",
+        "source": "compute",
+        "target": "compute",
+        "groups": [
+          "E04"
+        ]
+      },
+      "msg-16": {
+        "path": "src/infrastructure/execution/local_process.py",
+        "line": 117,
+        "needle": "path = Path(handle.directory)/\"result.json\"",
+        "source": "compute",
+        "target": "worker",
+        "groups": [
+          "E04"
+        ]
+      },
+      "msg-17": {
+        "path": "src/infrastructure/mlflow/tracking.py",
+        "line": 90,
+        "needle": "self.client.log_artifacts(run_id, bundle_path, artifact_path=\"bundle\")",
+        "source": "worker",
+        "target": "tracker",
+        "groups": [
+          "E04"
+        ]
+      },
+      "msg-18": {
+        "path": "src/application/training/supervisor.py",
+        "line": 180,
+        "needle": "version, artifact_ref = self.tracker.register(",
+        "source": "tracker",
+        "target": "worker",
+        "groups": [
+          "E04"
+        ]
+      },
+      "msg-19": {
+        "path": "src/application/training/supervisor.py",
+        "line": 184,
+        "needle": "binding = self.registry.save_binding(ModelBinding(",
+        "source": "worker",
+        "target": "sql",
+        "groups": [
+          "E04"
+        ]
+      },
+      "msg-20": {
+        "path": "src/application/training/supervisor.py",
+        "line": 189,
+        "needle": "evaluation = self.evaluator.evaluate(binding, claim.job.spec_json)",
+        "source": "worker",
+        "target": "worker",
+        "groups": [
+          "E04"
+        ]
+      },
+      "msg-21": {
+        "path": "src/application/training/supervisor.py",
+        "line": 200,
+        "needle": "workload.evaluator_version, \"ERROR\", canonical_json(metrics), digest(report)",
+        "source": "worker",
+        "target": "sql",
+        "groups": [
+          "E04"
+        ]
+      },
+      "msg-22": {
+        "path": "src/application/training/supervisor.py",
+        "line": 208,
+        "needle": "self.repository.finish(claim, binding.binding_id, evaluation.evaluation_id)",
+        "source": "worker",
+        "target": "sql",
+        "groups": [
+          "E04"
+        ]
+      },
+      "msg-23": {
+        "path": "src/application/training/delivery.py",
+        "line": 35,
+        "needle": "job = await asyncio.to_thread(repository.validate_delivery, command)",
+        "source": "worker",
+        "target": "sql",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-24": {
+        "path": "src/infrastructure/messaging/training_ack.py",
+        "line": 16,
+        "needle": "\"ml:ack:\" + snapshot.command_id, json.dumps(asdict(snapshot)), ex=self.retention",
+        "source": "worker",
+        "target": "redis",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-25": {
+        "path": "bootstrap/ml_worker.py",
+        "line": 81,
+        "needle": "\"Acknowledgement pending command=%s\", command.command_id",
+        "source": "redis",
+        "target": "worker",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-26": {
+        "path": "src/application/training/delivery.py",
+        "line": 42,
+        "needle": "await ack()",
+        "source": "worker",
+        "target": "rabbit",
+        "groups": [
+          "E03"
+        ]
+      },
+      "msg-27": {
+        "path": "src/api/ml_http.py",
+        "line": 106,
+        "needle": "return asdict(services.registry.approve(actor, binding_id, body.evaluation_id, body.environment))",
+        "source": "reviewer",
+        "target": "api",
+        "groups": [
+          "E06"
+        ]
+      },
+      "msg-28": {
+        "path": "src/application/model_registry/service.py",
+        "line": 33,
+        "needle": "return self.repository.approve(actor, binding, evaluation, environment)",
+        "source": "api",
+        "target": "sql",
+        "groups": [
+          "E06"
+        ]
+      },
+      "msg-29": {
+        "path": "src/api/ml_http.py",
+        "line": 103,
+        "needle": "@registry_router.post(\"/bindings/{binding_id}/approvals\", status_code=201)",
+        "source": "api",
+        "target": "reviewer",
+        "groups": [
+          "E06"
+        ]
+      },
+      "msg-30": {
+        "path": "src/api/ml_http.py",
+        "line": 121,
+        "needle": "value = services.deployments.create(",
+        "source": "deployer",
+        "target": "api",
+        "groups": [
+          "E06"
+        ]
+      },
+      "msg-31": {
+        "path": "src/infrastructure/persistence/ml_deployments.py",
+        "line": 82,
+        "needle": "binding_id, approval_id, \"REQUESTED\", revision, canonical_json(spec), digest(spec)",
+        "source": "api",
+        "target": "sql",
+        "groups": [
+          "E06"
+        ]
+      },
+      "msg-32": {
+        "path": "src/api/ml_http.py",
+        "line": 119,
+        "needle": "@deployment_router.post(\"\", status_code=202)",
+        "source": "api",
+        "target": "deployer",
+        "groups": [
+          "E06"
+        ]
+      },
+      "msg-33": {
+        "path": "bootstrap/ml_cli.py",
+        "line": 75,
+        "needle": "rows = connection.execute(select(deployments).where(",
+        "source": "control",
+        "target": "sql",
+        "groups": [
+          "E06"
+        ]
+      },
+      "msg-34": {
+        "path": "src/infrastructure/deployment/local_serving.py",
+        "line": 93,
+        "needle": "self._processes[deployment.deployment_id] = subprocess.Popen(",
+        "source": "control",
+        "target": "serving",
+        "groups": [
+          "E06"
+        ]
+      },
+      "msg-35": {
+        "path": "src/infrastructure/deployment/local_serving.py",
+        "line": 110,
+        "needle": "response = httpx.get(metadata[\"address\"]+\"/health/ready\", timeout=2)",
+        "source": "control",
+        "target": "serving",
+        "groups": [
+          "E06"
+        ]
+      },
+      "msg-36": {
+        "path": "src/infrastructure/persistence/ml_deployments.py",
+        "line": 120,
+        "needle": "routes.c.revision == deployment.expected_route_revision).values(",
+        "source": "control",
+        "target": "sql",
+        "groups": [
+          "E06"
+        ]
+      }
+    },
+    "05-inference-sequence.svg": {
+      "msg-01": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 65,
+        "needle": "@app.post(\"/api/v1/prediction/predict\")",
+        "source": "client",
+        "target": "gateway",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-02": {
+        "path": "src/infrastructure/ml_identity.py",
+        "line": 44,
+        "needle": "session = self.db.identity_sessions.find_one(",
+        "source": "gateway",
+        "target": "mongo",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-03": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 73,
+        "needle": "route = await asyncio.to_thread(state[\"components\"].deployments.route,",
+        "source": "gateway",
+        "target": "sql",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-04": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 76,
+        "needle": "raise Unavailable(\"No active model\")",
+        "source": "gateway",
+        "target": "client",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-05": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 79,
+        "needle": "deployment = await asyncio.to_thread(state[\"components\"].deployments.get,",
+        "source": "gateway",
+        "target": "sql",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-06": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 83,
+        "needle": "address = state[\"resolver\"].resolve(deployment)",
+        "source": "gateway",
+        "target": "gateway",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-07": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 84,
+        "needle": "health = await state[\"client\"].get(address+\"/health/ready\")",
+        "source": "gateway",
+        "target": "serving",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-08": {
+        "path": "bootstrap/ml_serving.py",
+        "line": 93,
+        "needle": "return {\"ready\": bool(state), \"deployment_id\": state[\"spec\"][\"deployment_id\"],",
+        "source": "serving",
+        "target": "gateway",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-09": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 89,
+        "needle": "or not matches_identity(deployment, actual)):",
+        "source": "gateway",
+        "target": "client",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-10": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 92,
+        "needle": "json=body.model_dump(), headers={\"Authorization\": authorization, **capture_context()}",
+        "source": "gateway",
+        "target": "serving",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-11": {
+        "path": "src/api/ml_http.py",
+        "line": 34,
+        "needle": "return await request.app.state.ml_identity.resolve(credentials.credentials)",
+        "source": "serving",
+        "target": "mongo",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-12": {
+        "path": "bootstrap/ml_serving.py",
+        "line": 111,
+        "needle": "result = asdict(state[\"prediction\"].predict(actor, body.endpoint_id, values))",
+        "source": "serving",
+        "target": "model",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-13": {
+        "path": "src/infrastructure/serving/bounded_prediction.py",
+        "line": 44,
+        "needle": "result = tuple(Prediction(**item) for item in raw)",
+        "source": "model",
+        "target": "serving",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-14": {
+        "path": "bootstrap/ml_serving.py",
+        "line": 115,
+        "needle": "result[\"provenance\"].update(spec_digest=trusted_digest,",
+        "source": "serving",
+        "target": "gateway",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-15": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 96,
+        "needle": "or value[\"provenance\"].get(\"pod_uid\", \"\") != actual.get(\"pod_uid\", \"\")):",
+        "source": "gateway",
+        "target": "gateway",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-16": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 97,
+        "needle": "raise Unavailable(\"Serving response identity mismatch\")",
+        "source": "gateway",
+        "target": "client",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-17": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 98,
+        "needle": "current = await asyncio.to_thread(state[\"components\"].deployments.route,",
+        "source": "gateway",
+        "target": "sql",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-18": {
+        "path": "src/infrastructure/persistence/ml_deployments.py",
+        "line": 110,
+        "needle": "return Route(**dict(row))",
+        "source": "sql",
+        "target": "gateway",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-19": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 100,
+        "needle": "if current != route or response.is_redirect:",
+        "source": "gateway",
+        "target": "client",
+        "groups": [
+          "E07"
+        ]
+      },
+      "msg-20": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 102,
+        "needle": "return JSONResponse(value, status_code=response.status_code)",
+        "source": "gateway",
+        "target": "client",
+        "groups": [
+          "E07"
+        ]
+      }
+    },
+    "06-local-runtime.svg": {
+      "demo-launch": {
+        "path": "src/infrastructure/execution/local_process.py",
+        "line": 57,
+        "needle": "process = subprocess.Popen([sys.executable, \"-m\", \"bootstrap.ml_training_runner\"",
+        "source": "demo-cli",
+        "target": "demo-runner",
+        "groups": [
+          "E04"
+        ]
+      },
+      "demo-output": {
+        "path": "src/plugins/training/pytorch_trainer.py",
+        "line": 148,
+        "needle": "atomic_json(directory/\"result.json\", result)",
+        "source": "demo-runner",
+        "target": "demo-dir",
+        "groups": [
+          "E04"
+        ]
+      },
+      "demo-persist": {
+        "path": "bootstrap/ml_cli.py",
+        "line": 145,
+        "needle": "        items = SQLOutboxRepository(components.database).lease(100)",
+        "source": "demo-cli",
+        "target": "demo-state",
+        "groups": [
+          "E09"
+        ]
+      },
+      "predict": {
+        "path": "bootstrap/ml_gateway.py",
+        "line": 91,
+        "needle": "response = await state[\"client\"].post(address+\"/api/v1/prediction/predict\"",
+        "source": "gateway",
+        "target": "serving",
+        "groups": [
+          "E07"
+        ]
+      },
+      "serve-launch": {
+        "path": "src/infrastructure/deployment/local_serving.py",
+        "line": 93,
+        "needle": "self._processes[deployment.deployment_id] = subprocess.Popen(",
+        "source": "control",
+        "target": "serving",
+        "groups": [
+          "E07"
+        ]
+      },
+      "admit": {
+        "path": "src/application/training/service.py",
+        "line": 28,
+        "needle": "return self.repository.submit(actor, key, fingerprint, spec_json,",
+        "source": "management",
+        "target": "sql",
+        "groups": [
+          "E03"
+        ]
+      },
+      "authenticate": {
+        "path": "bootstrap/identity.py",
+        "line": 23,
+        "needle": "repository = MongoIdentityRepository(mongo.database)",
+        "source": "management",
+        "target": "mongo",
+        "groups": [
+          "E01"
+        ]
+      },
+      "publish": {
+        "path": "src/infrastructure/messaging/ml_rabbitmq.py",
+        "line": 43,
+        "needle": "confirmation = await self.exchange.publish(aio_pika.Message(",
+        "source": "relay",
+        "target": "rabbit",
+        "groups": [
+          "E03"
+        ]
+      },
+      "consume": {
+        "path": "bootstrap/ml_worker.py",
+        "line": 69,
+        "needle": "await asyncio.to_thread(state[\"supervisor\"].execute, command)",
+        "source": "rabbit",
+        "target": "worker",
+        "groups": [
+          "E03"
+        ]
+      },
+      "snapshot": {
+        "path": "bootstrap/ml_worker.py",
+        "line": 50,
+        "needle": "acknowledgement=RedisAcknowledgementStore(snapshots, settings.retention_seconds)",
+        "source": "worker",
+        "target": "redis",
+        "groups": [
+          "E03"
+        ]
+      },
+      "register": {
+        "path": "src/application/training/supervisor.py",
+        "line": 180,
+        "needle": "version, artifact_ref = self.tracker.register(run_id, name, result.bundle_ref,",
+        "source": "worker",
+        "target": "tracker",
+        "groups": [
+          "E04"
+        ]
+      },
+      "train-launch": {
+        "path": "src/infrastructure/execution/local_process.py",
+        "line": 57,
+        "needle": "process = subprocess.Popen([sys.executable, \"-m\", \"bootstrap.ml_training_runner\"",
+        "source": "worker",
+        "target": "child",
+        "groups": [
+          "E04"
+        ]
+      },
+      "train-files": {
+        "path": "src/plugins/training/pytorch_trainer.py",
+        "line": 148,
+        "needle": "atomic_json(directory/\"result.json\", result)",
+        "source": "child",
+        "target": "files",
+        "groups": [
+          "E04"
+        ]
+      },
+      "publish-raw": {
+        "path": "src/application/ingestion/supervisor.py",
+        "line": 212,
+        "needle": "snapshot = self.publisher.publish(intent)",
+        "source": "ingest",
+        "target": "files",
+        "groups": [
+          "E05"
+        ]
+      },
+      "schema": {
+        "path": "bootstrap/ml_cli.py",
+        "line": 33,
+        "needle": "command.upgrade(config, \"head\")",
+        "source": "migrate",
+        "target": "sql",
+        "groups": [
+          "E09"
+        ]
+      }
+    },
+    "07-docker-compose-runtime.svg": {
+      "management-sql": {
+        "path": "compose.ml.yaml",
+        "line": 4,
+        "needle": "ML_DATABASE_URL: postgresql+psycopg:",
+        "source": "api",
+        "target": "sql",
+        "groups": [
+          "E08"
+        ]
+      },
+      "management-auth": {
+        "path": "compose.ml.yaml",
+        "line": 18,
+        "needle": "APP_MONGO_URI: mongodb://",
+        "source": "api",
+        "target": "mongo",
+        "groups": [
+          "E01"
+        ]
+      },
+      "migration": {
+        "path": "compose.ml.yaml",
+        "line": 94,
+        "needle": "command: [python, -m, bootstrap.ml_cli, migrate]",
+        "source": "migrate",
+        "target": "sql",
+        "groups": [
+          "E08"
+        ]
+      },
+      "ingest-start": {
+        "path": "compose.ml.ingestion.yaml",
+        "line": 24,
+        "needle": "migrate: {condition: service_completed_successfully}",
+        "source": "migrate",
+        "target": "ingest",
+        "groups": [
+          "E08"
+        ]
+      },
+      "publish": {
+        "path": "src/infrastructure/messaging/ml_rabbitmq.py",
+        "line": 43,
+        "needle": "confirmation = await self.exchange.publish(aio_pika.Message(",
+        "source": "relay",
+        "target": "rabbit",
+        "groups": [
+          "E03"
+        ]
+      },
+      "consume": {
+        "path": "bootstrap/ml_worker.py",
+        "line": 69,
+        "needle": "await asyncio.to_thread(state[\"supervisor\"].execute, command)",
+        "source": "rabbit",
+        "target": "taskiq",
+        "groups": [
+          "E03"
+        ]
+      },
+      "fork": {
+        "path": "src/infrastructure/execution/local_process.py",
+        "line": 57,
+        "needle": "process = subprocess.Popen([sys.executable, \"-m\", \"bootstrap.ml_training_runner\"",
+        "source": "taskiq",
+        "target": "compute",
+        "groups": [
+          "E04"
+        ]
+      },
+      "result": {
+        "path": "bootstrap/ml_worker.py",
+        "line": 50,
+        "needle": "acknowledgement=RedisAcknowledgementStore(snapshots, settings.retention_seconds)",
+        "source": "taskiq",
+        "target": "redis",
+        "groups": [
+          "E03"
+        ]
+      },
+      "registration": {
+        "path": "src/application/training/supervisor.py",
+        "line": 180,
+        "needle": "version, artifact_ref = self.tracker.register(run_id, name, result.bundle_ref,",
+        "source": "taskiq",
+        "target": "mlflow",
+        "groups": [
+          "E04"
+        ]
+      },
+      "train-files": {
+        "path": "compose.ml.yaml",
+        "line": 29,
+        "needle": "volumes: [./var:/app/var]",
+        "source": "compute",
+        "target": "bind",
+        "groups": [
+          "E08"
+        ]
+      },
+      "serving-spawn": {
+        "path": "src/infrastructure/deployment/local_serving.py",
+        "line": 93,
+        "needle": "self._processes[deployment.deployment_id] = subprocess.Popen(",
+        "source": "control",
+        "target": "serving",
+        "groups": [
+          "E07"
+        ]
+      },
+      "forward": {
+        "path": "compose.ml.yaml",
+        "line": 131,
+        "needle": "network_mode: service:control",
+        "source": "gateway",
+        "target": "serving",
+        "groups": [
+          "E07"
+        ]
+      },
+      "mlflow-db": {
+        "path": "compose.ml.yaml",
+        "line": 79,
+        "needle": "MLFLOW_BACKEND_STORE_URI: postgresql+psycopg:",
+        "source": "mlflow",
+        "target": "track-sql",
+        "groups": [
+          "E08"
+        ]
+      },
+      "mlflow-s3": {
+        "path": "compose.ml.yaml",
+        "line": 80,
+        "needle": "MLFLOW_S3_ENDPOINT_URL: http://minio:9000",
+        "source": "mlflow",
+        "target": "minio",
+        "groups": [
+          "E08"
+        ]
+      },
+      "make-bucket": {
+        "path": "compose.ml.yaml",
+        "line": 75,
+        "needle": "mc mb --ignore-existing internal/ml-artifacts",
+        "source": "bucket",
+        "target": "minio",
+        "groups": [
+          "E08"
+        ]
+      }
+    },
+    "08-kubernetes-runtime.svg": {
+      "ingress-mgmt": {
+        "path": "deploy/k8s/base/services.yaml",
+        "line": 12,
+        "needle": "targetPort: 8000",
+        "source": "management-svc",
+        "target": "management",
+        "groups": [
+          "E11"
+        ]
+      },
+      "identity": {
+        "path": "bootstrap/identity.py",
+        "line": 23,
+        "needle": "repository = MongoIdentityRepository(mongo.database)",
+        "source": "management",
+        "target": "mongodb",
+        "groups": [
+          "E01"
+        ]
+      },
+      "app-sql": {
+        "path": "deploy/k8s/examples/runtime-config.example.json",
+        "line": 2,
+        "needle": "\"ML_DATABASE_URL\": \"postgresql+psycopg://ROLE:REPLACE@postgres:5432/ml\"",
+        "source": "management",
+        "target": "postgres",
+        "groups": [
+          "E11"
+        ]
+      },
+      "migrate-sql": {
+        "path": "bootstrap/ml_cli.py",
+        "line": 33,
+        "needle": "command.upgrade(config, \"head\")",
+        "source": "migrate",
+        "target": "postgres",
+        "groups": [
+          "E11"
+        ]
+      },
+      "poll-ingestion": {
+        "path": "src/application/ingestion/supervisor.py",
+        "line": 128,
+        "needle": "def run_once(",
+        "source": "ingestion",
+        "target": "postgres",
+        "groups": [
+          "E05"
+        ]
+      },
+      "publish": {
+        "path": "src/infrastructure/messaging/ml_rabbitmq.py",
+        "line": 43,
+        "needle": "confirmation = await self.exchange.publish(aio_pika.Message(",
+        "source": "relay",
+        "target": "broker",
+        "groups": [
+          "E03"
+        ]
+      },
+      "receive": {
+        "path": "bootstrap/ml_worker.py",
+        "line": 69,
+        "needle": "await asyncio.to_thread(state[\"supervisor\"].execute, command)",
+        "source": "broker",
+        "target": "supervisor",
+        "groups": [
+          "E03"
+        ]
+      },
+      "start-guardian": {
+        "path": "src/infrastructure/execution/pod_process.py",
+        "line": 142,
+        "needle": "\"bootstrap.ml_training_guardian\",",
+        "source": "supervisor",
+        "target": "guardian",
+        "groups": [
+          "E11"
+        ]
+      },
+      "start-runner": {
+        "path": "bootstrap/ml_training_guardian.py",
+        "line": 72,
+        "needle": "child = subprocess.Popen(runner, stdin=subprocess.DEVNULL, start_new_session=True)",
+        "source": "guardian",
+        "target": "compute",
+        "groups": [
+          "E11"
+        ]
+      },
+      "snapshot": {
+        "path": "bootstrap/ml_worker.py",
+        "line": 50,
+        "needle": "acknowledgement=RedisAcknowledgementStore(snapshots, settings.retention_seconds)",
+        "source": "supervisor",
+        "target": "redis",
+        "groups": [
+          "E03"
+        ]
+      },
+      "gateway-ingress": {
+        "path": "deploy/k8s/base/services.yaml",
+        "line": 20,
+        "needle": "app.kubernetes.io/name: ml-control",
+        "source": "gateway-svc",
+        "target": "gateway",
+        "groups": [
+          "E11"
+        ]
+      },
+      "forward": {
+        "path": "src/infrastructure/deployment/endpoints.py",
+        "line": 26,
+        "needle": "return f\"http://{resource_name(deployment)}.{self.namespace}.svc:8001\"",
+        "source": "gateway",
+        "target": "serve-svc",
+        "groups": [
+          "E07"
+        ]
+      },
+      "serve-route": {
+        "path": "src/infrastructure/deployment/kubernetes_serving.py",
+        "line": 253,
+        "needle": "\"ports\": [{\"name\": \"http\", \"port\": 8001, \"targetPort\": 8001}]",
+        "source": "serve-svc",
+        "target": "serving",
+        "groups": [
+          "E11"
+        ]
+      },
+      "ensure-svc": {
+        "path": "src/infrastructure/deployment/kubernetes_serving.py",
+        "line": 293,
+        "needle": "for plural in (\"configmaps\", \"services\"):",
+        "source": "control",
+        "target": "serve-svc",
+        "groups": [
+          "E11"
+        ]
+      },
+      "ensure-spec": {
+        "path": "src/infrastructure/deployment/kubernetes_serving.py",
+        "line": 296,
+        "needle": "self.ensure(plural, resource)",
+        "source": "control",
+        "target": "spec",
+        "groups": [
+          "E11"
+        ]
+      },
+      "read-spec": {
+        "path": "src/infrastructure/deployment/kubernetes_serving.py",
+        "line": 178,
+        "needle": "{\"name\": \"spec\", \"mountPath\": \"/run/model\", \"readOnly\": True}",
+        "source": "serving",
+        "target": "spec",
+        "groups": [
+          "E11"
+        ]
+      },
+      "cache-fill": {
+        "path": "bootstrap/ml_serving.py",
+        "line": 54,
+        "needle": "directory = BundleMaterializer(settings.artifact_root, settings.tracking_uri).materialize(",
+        "source": "serving",
+        "target": "cache",
+        "groups": [
+          "E11"
+        ]
+      },
+      "observe-evidence": {
+        "path": "src/infrastructure/execution/pod_process.py",
+        "line": 167,
+        "needle": "receipt = Path(handle.directory) / \"stopped.json\"",
+        "source": "control",
+        "target": "runtime",
+        "groups": [
+          "E11"
+        ]
+      },
+      "ensure-deployment": {
+        "path": "src/infrastructure/deployment/kubernetes_serving.py",
+        "line": 284,
+        "needle": "native = self.ensure(\"deployments\", resources[\"deployments\"])",
+        "source": "control",
+        "target": "deployment",
+        "groups": [
+          "E11"
+        ]
+      },
+      "checkpoint": {
+        "path": "src/plugins/training/pytorch_trainer.py",
+        "line": 148,
+        "needle": "atomic_json(directory/\"result.json\", result)",
+        "source": "compute",
+        "target": "runtime",
+        "groups": [
+          "E11"
+        ]
+      },
+      "model-read": {
+        "path": "deploy/k8s/base/configmap.yaml",
+        "line": 10,
+        "needle": "  ML_TRACKING_URI: https://mlflow:8443",
+        "source": "serving",
+        "target": "tls",
+        "groups": [
+          "E11"
+        ]
+      },
+      "tls-upstream": {
+        "path": "deploy/k8s/infrastructure/minikube/files/nginx.conf",
+        "line": 18,
+        "needle": "proxy_pass http://127.0.0.1:5000;",
+        "source": "tls",
+        "target": "mlflow",
+        "groups": [
+          "E11"
+        ]
+      },
+      "artifact-store": {
+        "path": "deploy/k8s/infrastructure/minikube/mlflow.yaml",
+        "line": 83,
+        "needle": "value: http://minio:9000",
+        "source": "mlflow",
+        "target": "minio",
+        "groups": [
+          "E11"
+        ]
+      },
+      "create-bucket": {
+        "path": "deploy/k8s/infrastructure/minikube/minio-init-job.yaml",
+        "line": 31,
+        "needle": "mc mb --ignore-existing",
+        "source": "minio-init",
+        "target": "minio",
+        "groups": [
+          "E11"
+        ]
+      }
+    }
+  }
+}

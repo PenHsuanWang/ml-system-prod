@@ -1,0 +1,285 @@
+<svg aria-labelledby="svg-title svg-desc" xmlns="http://www.w3.org/2000/svg" role="img" width="1520" height="1154" viewBox="0 0 1520 1154">
+  <title id="svg-title">Native execution on a Linux host</title>
+  <desc id="svg-desc">Two execution modes · select one · arrows trace selected process and storage connections | 8c9023b00828000287e169ac760afe57102d7353</desc>
+  <defs>
+    <marker id="arrow-sync" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#3f6574" />
+    </marker>
+    <marker id="arrow-return" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#667c84" />
+    </marker>
+    <marker id="arrow-async" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#477366" />
+    </marker>
+    <marker id="arrow-data" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#706247" />
+    </marker>
+    <marker id="arrow-manual" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#915e40" />
+    </marker>
+    <marker id="arrow-observe" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#795e79" />
+    </marker>
+    <marker id="arrow-launch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#386c67" />
+    </marker>
+    <marker id="arrow-dependency" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#6b6785" />
+    </marker>
+    <marker id="arrow-wire" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#986f40" />
+    </marker>
+    <marker id="arrow-branch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#985953" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="100%" height="100%" fill="white" />
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="32" y="26" font-size="12" font-weight="bold" text-anchor="start" fill="#41585c">ML SYSTEM EBM   /   ARCHITECTURE GUIDE</text>
+    <text x="1488" y="26" font-size="12" font-weight="normal" text-anchor="end" fill="#41585c">06   /   8c9023b0</text>
+    <text x="32" y="61" font-size="28" font-weight="bold" text-anchor="start" fill="#223b40">Native execution on a Linux host</text>
+    <text x="32" y="88" font-size="15" font-weight="normal" text-anchor="start" fill="#41585c">Two execution modes · select one · arrows trace selected process and storage connections</text>
+    <g id="demo" data-parent="" data-kind="host">
+      <title>Training demo  /  one host | Documented default configuration · no external service processes</title>
+      <rect x="35" y="125" width="1450" height="205" rx="4" fill="#f7f7f3" stroke="#8e9384" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="47" y="145" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Training demo  /  one host</text>
+      <text x="47" y="162" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Documented default configuration · no external service processes</text>
+    </g>
+    <g id="host" data-parent="" data-kind="host">
+      <title>HTTP and worker roles  /  one host | Individual entrypoints · full host startup and shutdown remain unqualified</title>
+      <rect x="35" y="355" width="875" height="620" rx="4" fill="#f7f7f3" stroke="#8e9384" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="47" y="375" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">HTTP and worker roles  /  one host</text>
+      <text x="47" y="392" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Individual entrypoints · full host startup and shutdown remain unqualified</text>
+    </g>
+    <g id="endpoints" data-parent="" data-kind="external">
+      <title>Reachable dependencies | Example with PostgreSQL and MLflow · physical placement unspecified</title>
+      <rect x="960" y="355" width="525" height="620" rx="4" fill="#f4ebe0" stroke="#a18c70" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="972" y="375" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Reachable dependencies</text>
+      <text x="972" y="392" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Example with PostgreSQL and MLflow · physical placement unspecified</text>
+    </g>
+    <g id="demo-cli" data-parent="demo" data-kind="process">
+      <title>ml_cli demo  /  demo-ebm | CLI + Supervisor in the same process</title>
+      <rect x="62" y="205" width="295" height="66" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="209.5" y="235.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">ml_cli demo  /  demo-ebm</text>
+      <text x="209.5" y="252.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">CLI + Supervisor in the same process</text>
+    </g>
+    <g id="demo-runner" data-parent="demo" data-kind="process">
+      <title>Compute child | ml_training_runner</title>
+      <rect x="440" y="205" width="225" height="66" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="552.5" y="235.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Compute child</text>
+      <text x="552.5" y="252.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml_training_runner</text>
+    </g>
+    <g id="demo-dir" data-parent="demo" data-kind="storage">
+      <title>Execution directory | Per-attempt files and bundle</title>
+      <rect x="790" y="205" width="245" height="66" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="912.5" y="235.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Execution directory</text>
+      <text x="912.5" y="252.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Per-attempt files and bundle</text>
+    </g>
+    <g id="demo-state" data-parent="demo" data-kind="storage">
+      <title>SQLite + local tracker files | Durable job and model evidence</title>
+      <rect x="1170" y="205" width="265" height="66" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1302.5" y="235.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">SQLite + local tracker files</text>
+      <text x="1302.5" y="252.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Durable job and model evidence</text>
+    </g>
+    <g id="gateway" data-parent="host" data-kind="process">
+      <title>Prediction Gateway | uvicorn · :8001</title>
+      <rect x="65" y="472" width="225" height="60" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="177.5" y="499.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Prediction Gateway</text>
+      <text x="177.5" y="516.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">uvicorn · :8001</text>
+    </g>
+    <g id="serving" data-parent="host" data-kind="process">
+      <title>Serving child | ml_serving · loopback port</title>
+      <rect x="65" y="570" width="225" height="60" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="177.5" y="597.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Serving child</text>
+      <text x="177.5" y="614.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml_serving · loopback port</text>
+    </g>
+    <g id="control" data-parent="host" data-kind="process">
+      <title>Control | ml_cli control</title>
+      <rect x="370" y="570" width="210" height="60" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="475.0" y="597.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Control</text>
+      <text x="475.0" y="614.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml_cli control</text>
+    </g>
+    <g id="management" data-parent="host" data-kind="process">
+      <title>Management API | uvicorn · :8000</title>
+      <rect x="650" y="472" width="235" height="60" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="767.5" y="499.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Management API</text>
+      <text x="767.5" y="516.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">uvicorn · :8000</text>
+    </g>
+    <g id="relay" data-parent="host" data-kind="process">
+      <title>Outbox Relay | ml_cli relay · SQL lease</title>
+      <rect x="650" y="570" width="235" height="60" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="767.5" y="597.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Outbox Relay</text>
+      <text x="767.5" y="614.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml_cli relay · SQL lease</text>
+    </g>
+    <g id="worker" data-parent="host" data-kind="process">
+      <title>Training Supervisor | Taskiq · manual ACK</title>
+      <rect x="650" y="683" width="235" height="60" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="767.5" y="710.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Training Supervisor</text>
+      <text x="767.5" y="727.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Taskiq · manual ACK</text>
+    </g>
+    <g id="child" data-parent="host" data-kind="process">
+      <title>Compute child | ml_training_runner</title>
+      <rect x="370" y="683" width="210" height="60" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="475.0" y="710.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Compute child</text>
+      <text x="475.0" y="727.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml_training_runner</text>
+    </g>
+    <g id="ingest" data-parent="host" data-kind="process">
+      <title>Optional ingestion worker | ingestion_cli work · SQL polling</title>
+      <rect x="65" y="808" width="225" height="68" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="177.5" y="839.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Optional ingestion worker</text>
+      <text x="177.5" y="856.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ingestion_cli work · SQL polling</text>
+    </g>
+    <g id="files" data-parent="host" data-kind="storage">
+      <title>Runtime files | Datasets, raw and executions</title>
+      <rect x="370" y="808" width="210" height="68" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="475.0" y="839.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Runtime files</text>
+      <text x="475.0" y="856.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Datasets, raw and executions</text>
+    </g>
+    <g id="migrate" data-parent="host" data-kind="process">
+      <title>Migration CLI | ml_cli migrate · one-shot</title>
+      <rect x="650" y="808" width="235" height="68" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="767.5" y="839.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Migration CLI</text>
+      <text x="767.5" y="856.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml_cli migrate · one-shot</text>
+    </g>
+    <g id="sql" data-parent="endpoints" data-kind="external">
+      <title>Application SQL | Business state + outbox</title>
+      <rect x="980" y="472" width="220" height="60" rx="4" fill="#f4ebe0" stroke="#a18c70" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1090.0" y="499.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Application SQL</text>
+      <text x="1090.0" y="516.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Business state + outbox</text>
+    </g>
+    <g id="mongo" data-parent="endpoints" data-kind="external">
+      <title>MongoDB | Identity and sessions</title>
+      <rect x="1240" y="472" width="220" height="60" rx="4" fill="#f4ebe0" stroke="#a18c70" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1350.0" y="499.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">MongoDB</text>
+      <text x="1350.0" y="516.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Identity and sessions</text>
+    </g>
+    <g id="rabbit" data-parent="endpoints" data-kind="external">
+      <title>RabbitMQ | Durable command queue</title>
+      <rect x="980" y="570" width="220" height="60" rx="4" fill="#f4ebe0" stroke="#a18c70" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1090.0" y="597.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">RabbitMQ</text>
+      <text x="1090.0" y="614.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Durable command queue</text>
+    </g>
+    <g id="redis" data-parent="endpoints" data-kind="external">
+      <title>Redis | Technical result snapshot</title>
+      <rect x="980" y="683" width="220" height="60" rx="4" fill="#f4ebe0" stroke="#a18c70" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1090.0" y="710.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Redis</text>
+      <text x="1090.0" y="727.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Technical result snapshot</text>
+    </g>
+    <g id="tracker" data-parent="endpoints" data-kind="external">
+      <title>MLflow | Tracking and model registry</title>
+      <rect x="1240" y="683" width="220" height="60" rx="4" fill="#f4ebe0" stroke="#a18c70" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1350.0" y="710.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">MLflow</text>
+      <text x="1350.0" y="727.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Tracking and model registry</text>
+    </g>
+    <path d="M 357 234 L 440 234" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="demo-launch" d="M 357 234 L 440 234" fill="none" stroke="#386c67" stroke-width="1.8" marker-end="url(#arrow-launch)" data-source="demo-cli" data-target="demo-runner" data-kind="launch" data-evidence="E04">
+      <title>Launch one OS process per accepted attempt</title>
+    </path>
+    <path d="M 665 234 L 790 234" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="demo-output" d="M 665 234 L 790 234" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="demo-runner" data-target="demo-dir" data-kind="data" data-evidence="E04" stroke-dasharray="3 3">
+      <title>Write checkpoints, metrics and frozen bundle</title>
+    </path>
+    <path d="M 190 271 L 190 301 L 1295 301 L 1295 271" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="demo-persist" d="M 190 271 L 190 301 L 1295 301 L 1295 271" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="demo-cli" data-target="demo-state" data-kind="data" data-evidence="E09" stroke-dasharray="3 3">
+      <title>Migrate, persist job, lease command directly and register model evidence</title>
+    </path>
+    <path d="M 180 532 L 180 570" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="predict" d="M 180 532 L 180 570" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="gateway" data-target="serving" data-kind="sync" data-evidence="E07">
+      <title>Forward to the fixed process over loopback HTTP</title>
+    </path>
+    <path d="M 370 601 L 290 601" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="serve-launch" d="M 370 601 L 290 601" fill="none" stroke="#386c67" stroke-width="1.8" marker-end="url(#arrow-launch)" data-source="control" data-target="serving" data-kind="launch" data-evidence="E07">
+      <title>Start a fixed-model Serving child</title>
+    </path>
+    <path d="M 885 501 L 980 501" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="admit" d="M 885 501 L 980 501" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="management" data-target="sql" data-kind="data" data-evidence="E03" stroke-dasharray="3 3">
+      <title>Persist admitted jobs and governance state</title>
+    </path>
+    <path d="M 780 472 L 780 445 L 1350 445 L 1350 472" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="authenticate" d="M 780 472 L 780 445 L 1350 445 L 1350 472" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="management" data-target="mongo" data-kind="sync" data-evidence="E01">
+      <title>Resolve tenant and identity</title>
+    </path>
+    <path d="M 885 590 L 980 590" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="publish" d="M 885 590 L 980 590" fill="none" stroke="#477366" stroke-width="1.8" marker-end="url(#arrow-async)" data-source="relay" data-target="rabbit" data-kind="async" data-evidence="E03" stroke-dasharray="8 4">
+      <title>Publish a leased command with broker confirmation</title>
+    </path>
+    <path d="M 980 611 L 938 611 L 938 700 L 885 700" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="consume" d="M 980 611 L 938 611 L 938 700 L 885 700" fill="none" stroke="#477366" stroke-width="1.8" marker-end="url(#arrow-async)" data-source="rabbit" data-target="worker" data-kind="async" data-evidence="E03" stroke-dasharray="8 4">
+      <title>Deliver to the Supervisor for manual acknowledgement</title>
+    </path>
+    <path d="M 885 729 L 980 729" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="snapshot" d="M 885 729 L 980 729" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="worker" data-target="redis" data-kind="data" data-evidence="E03" stroke-dasharray="3 3">
+      <title>Store terminal technical result before AMQP acknowledgement</title>
+    </path>
+    <path d="M 815 683 L 815 655 L 1345 655 L 1345 683" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="register" d="M 815 683 L 815 655 L 1345 655 L 1345 683" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="worker" data-target="tracker" data-kind="data" data-evidence="E04" stroke-dasharray="3 3">
+      <title>Register the frozen model bundle using the selected tracker</title>
+    </path>
+    <path d="M 650 714 L 580 714" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="train-launch" d="M 650 714 L 580 714" fill="none" stroke="#386c67" stroke-width="1.8" marker-end="url(#arrow-launch)" data-source="worker" data-target="child" data-kind="launch" data-evidence="E04">
+      <title>Start isolated training compute</title>
+    </path>
+    <path d="M 480 743 L 480 808" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="train-files" d="M 480 743 L 480 808" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="child" data-target="files" data-kind="data" data-evidence="E04" stroke-dasharray="3 3">
+      <title>Read datasets and write attempt output</title>
+    </path>
+    <path d="M 290 842 L 370 842" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="publish-raw" d="M 290 842 L 370 842" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="ingest" data-target="files" data-kind="data" data-evidence="E05" stroke-dasharray="3 3">
+      <title>Publish immutable raw snapshots</title>
+    </path>
+    <path d="M 885 843 L 950 843 L 950 520 L 980 520" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="schema" d="M 885 843 L 950 843 L 950 520 L 980 520" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="migrate" data-target="sql" data-kind="data" data-evidence="E09" stroke-dasharray="3 3">
+      <title>Prepare SQL schema before starting the full roles</title>
+    </path>
+    <rect x="376" y="212" width="43" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="397.5" y="224" font-size="12" font-weight="normal" text-anchor="middle" fill="#386c67">Spawn</text>
+    <rect x="681" y="212" width="92" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="727.0" y="224" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Write bundle</text>
+    <rect x="647" y="279" width="190" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="742.0" y="291" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Lease job / store evidence</text>
+    <rect x="184" y="542" width="36" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="202.0" y="554" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">HTTP</text>
+    <rect x="308" y="579" width="43" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="329.5" y="591" font-size="12" font-weight="normal" text-anchor="middle" fill="#386c67">Spawn</text>
+    <rect x="907" y="479" width="50" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="932.0" y="491" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Commit</text>
+    <rect x="1036" y="423" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1064.5" y="435" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">Session</text>
+    <rect x="890" y="568" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="918.5" y="580" font-size="12" font-weight="normal" text-anchor="middle" fill="#477366">Publish</text>
+    <rect x="877" y="637" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="905.5" y="649" font-size="12" font-weight="normal" text-anchor="middle" fill="#477366">Deliver</text>
+    <rect x="890" y="707" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="918.5" y="719" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Persist</text>
+    <rect x="1024" y="633" width="113" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1080.5" y="645" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Register bundle</text>
+    <rect x="594" y="692" width="43" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="615.5" y="704" font-size="12" font-weight="normal" text-anchor="middle" fill="#386c67">Spawn</text>
+    <rect x="484" y="766" width="106" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="537.0" y="778" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Attempt output</text>
+    <rect x="302" y="820" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="330.5" y="832" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Publish</text>
+    <rect x="954" y="666" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="982.5" y="678" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Migrate</text>
+    <path d="M 32 999 H 1488" stroke="#bdc9c8" />
+    <path d="M 32 1023 h 25" stroke="#386c67" stroke-width="2" stroke-dasharray="none" marker-end="url(#arrow-launch)" />
+    <text x="64" y="1027" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Launch</text>
+    <path d="M 136 1023 h 25" stroke="#706247" stroke-width="2" stroke-dasharray="3 3" marker-end="url(#arrow-data)" />
+    <text x="168" y="1027" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">State / artifact I/O</text>
+    <path d="M 352 1023 h 25" stroke="#3f6574" stroke-width="2" stroke-dasharray="none" marker-end="url(#arrow-sync)" />
+    <text x="384" y="1027" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Call</text>
+    <path d="M 440 1023 h 25" stroke="#477366" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#arrow-async)" />
+    <text x="472" y="1027" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Message</text>
+    <rect x="32" y="1044" width="13" height="13" fill="#f7f7f3" stroke="#8e9384" />
+    <text x="52" y="1055" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Host</text>
+    <rect x="97" y="1044" width="13" height="13" fill="#f4ebe0" stroke="#a18c70" />
+    <text x="117" y="1055" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">External system</text>
+    <rect x="250" y="1044" width="13" height="13" fill="#e3edf1" stroke="#6e909b" />
+    <text x="270" y="1055" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">OS process / role</text>
+    <rect x="419" y="1044" width="13" height="13" fill="#e6edeb" stroke="#78918c" />
+    <text x="439" y="1055" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Store / volume</text>
+    <text x="32" y="1078" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Demo uses SQLite and local tracker defaults. The CLI leases its command and invokes the Supervisor directly.</text>
+    <text x="32" y="1101" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Full host requires coordinated SQL, identity, broker, Redis and durable paths. Tracker can instead use the dev local adapter.</text>
+    <text x="32" y="1124" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Linux /proc boot identity and POSIX process groups constrain recovery. Native macOS full-lifecycle execution is unqualified.</text>
+  </g>
+</svg>

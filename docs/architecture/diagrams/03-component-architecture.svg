@@ -1,0 +1,208 @@
+<svg aria-labelledby="svg-title svg-desc" xmlns="http://www.w3.org/2000/svg" role="img" width="1500" height="998" viewBox="0 0 1500 998">
+  <title id="svg-title">Management API | training admission</title>
+  <desc id="svg-desc">C4 Level 3  ·  One executable container  ·  POST /api/v1/training/jobs in the default Management factory | 8c9023b00828000287e169ac760afe57102d7353</desc>
+  <defs>
+    <marker id="arrow-sync" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#3f6574" />
+    </marker>
+    <marker id="arrow-return" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#667c84" />
+    </marker>
+    <marker id="arrow-async" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#477366" />
+    </marker>
+    <marker id="arrow-data" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#706247" />
+    </marker>
+    <marker id="arrow-manual" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#915e40" />
+    </marker>
+    <marker id="arrow-observe" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#795e79" />
+    </marker>
+    <marker id="arrow-launch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#386c67" />
+    </marker>
+    <marker id="arrow-dependency" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#6b6785" />
+    </marker>
+    <marker id="arrow-wire" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#986f40" />
+    </marker>
+    <marker id="arrow-branch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#985953" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="100%" height="100%" fill="white" />
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="32" y="26" font-size="12" font-weight="bold" text-anchor="start" fill="#41585c">ML SYSTEM EBM   /   ARCHITECTURE GUIDE</text>
+    <text x="1468" y="26" font-size="12" font-weight="normal" text-anchor="end" fill="#41585c">03   /   8c9023b0</text>
+    <text x="32" y="61" font-size="28" font-weight="bold" text-anchor="start" fill="#223b40">Management API | training admission</text>
+    <text x="32" y="88" font-size="15" font-weight="normal" text-anchor="start" fill="#41585c">C4 Level 3  ·  One executable container  ·  POST /api/v1/training/jobs in the default Management factory</text>
+    <g id="management" data-parent="" data-kind="process">
+      <title>Management API process | Logical components inside one FastAPI executable</title>
+      <rect x="32" y="126" width="1106" height="716" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="44" y="146" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Management API process</text>
+      <text x="44" y="163" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Logical components inside one FastAPI executable</text>
+    </g>
+    <g id="factory" data-parent="management" data-kind="logical">
+      <title>Management composition root | create_app + build_components</title>
+      <rect x="66" y="218" width="240" height="76" rx="4" fill="#e8eeea" stroke="#748b7a" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="186.0" y="253.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Management composition root</text>
+      <text x="186.0" y="270.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">create_app + build_components</text>
+    </g>
+    <g id="router" data-parent="management" data-kind="logical">
+      <title>Training HTTP router | submit · get_services · get_actor</title>
+      <rect x="405" y="218" width="284" height="76" rx="4" fill="#e8eeea" stroke="#748b7a" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="547.0" y="253.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Training HTTP router</text>
+      <text x="547.0" y="270.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">submit · get_services · get_actor</text>
+    </g>
+    <g id="identity" data-parent="management" data-kind="logical">
+      <title>Management identity | TemplateIdentity → IdentityService
+MongoIdentityRepository</title>
+      <rect x="786" y="218" width="311" height="76" rx="4" fill="#e8eeea" stroke="#748b7a" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="941.5" y="245.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Management identity</text>
+      <text x="941.5" y="262.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">TemplateIdentity → IdentityService</text>
+      <text x="941.5" y="277.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">MongoIdentityRepository</text>
+    </g>
+    <g id="mongo" data-parent="" data-kind="storage">
+      <title>MongoDB | Identity sessions and accounts</title>
+      <rect x="1202" y="218" width="243" height="76" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1323.5" y="253.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">MongoDB</text>
+      <text x="1323.5" y="270.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Identity sessions and accounts</text>
+    </g>
+    <g id="domain" data-parent="management" data-kind="logical">
+      <title>Domain types and rules | Actor, Job, TERMINAL, digest</title>
+      <rect x="66" y="414" width="240" height="76" rx="4" fill="#e8eeea" stroke="#748b7a" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="186.0" y="449.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Domain types and rules</text>
+      <text x="186.0" y="466.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Actor, Job, TERMINAL, digest</text>
+    </g>
+    <g id="service" data-parent="management" data-kind="logical">
+      <title>TrainingService | Application · submit / get / cancel</title>
+      <rect x="405" y="414" width="284" height="76" rx="4" fill="#e8eeea" stroke="#748b7a" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="547.0" y="449.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">TrainingService</text>
+      <text x="547.0" y="466.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Application · submit / get / cancel</text>
+    </g>
+    <g id="recipes" data-parent="management" data-kind="logical">
+      <title>ApprovedRecipeResolver | Infrastructure · freeze approved spec</title>
+      <rect x="786" y="414" width="311" height="76" rx="4" fill="#e8eeea" stroke="#748b7a" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="941.5" y="449.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">ApprovedRecipeResolver</text>
+      <text x="941.5" y="466.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Infrastructure · freeze approved spec</text>
+    </g>
+    <g id="catalog" data-parent="management" data-kind="logical">
+      <title>SQLDatasetCatalog | Infrastructure · resolve a dataset version</title>
+      <rect x="786" y="545" width="311" height="72" rx="4" fill="#e8eeea" stroke="#748b7a" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="941.5" y="578.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">SQLDatasetCatalog</text>
+      <text x="941.5" y="595.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Infrastructure · resolve a dataset version</text>
+    </g>
+    <g id="contracts" data-parent="management" data-kind="logical">
+      <title>Training use-case ports | TrainingRepository and RecipeResolver</title>
+      <rect x="405" y="695" width="284" height="76" rx="4" fill="#e8eeea" stroke="#748b7a" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="547.0" y="730.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Training use-case ports</text>
+      <text x="547.0" y="747.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">TrainingRepository and RecipeResolver</text>
+    </g>
+    <g id="repository" data-parent="management" data-kind="logical">
+      <title>SQLTrainingRepository | Infrastructure · atomic job acceptance</title>
+      <rect x="786" y="695" width="311" height="76" rx="4" fill="#e8eeea" stroke="#748b7a" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="941.5" y="730.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">SQLTrainingRepository</text>
+      <text x="941.5" y="747.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Infrastructure · atomic job acceptance</text>
+    </g>
+    <g id="sql" data-parent="" data-kind="storage">
+      <title>Application PostgreSQL | Dataset versions, jobs, attempts,
+idempotency, outbox and audit</title>
+      <rect x="1202" y="604" width="243" height="100" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1323.5" y="643.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Application PostgreSQL</text>
+      <text x="1323.5" y="660.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Dataset versions, jobs, attempts,</text>
+      <text x="1323.5" y="675.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">idempotency, outbox and audit</text>
+    </g>
+    <path d="M 306 250 L 405 250" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="wire-router" d="M 306 250 L 405 250" fill="none" stroke="#986f40" stroke-width="1.8" marker-end="url(#arrow-wire)" data-source="factory" data-target="router" data-kind="wire" data-evidence="E02" stroke-dasharray="10 4">
+      <title>Mount routers and expose services through app.state</title>
+    </path>
+    <path d="M 187 294 L 187 361 L 476 361 L 476 414" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="wire-service" d="M 187 294 L 187 361 L 476 361 L 476 414" fill="none" stroke="#986f40" stroke-width="1.8" marker-end="url(#arrow-wire)" data-source="factory" data-target="service" data-kind="wire" data-evidence="E02" stroke-dasharray="10 4">
+      <title>Construct TrainingService(training, recipes)</title>
+    </path>
+    <path d="M 689 256 L 786 256" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="actor" d="M 689 256 L 786 256" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="router" data-target="identity" data-kind="sync" data-evidence="E01">
+      <title>Resolve the caller's bearer token</title>
+    </path>
+    <path d="M 1097 256 L 1202 256" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="authenticate" d="M 1097 256 L 1202 256" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="identity" data-target="mongo" data-kind="sync" data-evidence="E01">
+      <title>Read active session and user through the repository</title>
+    </path>
+    <path d="M 545 294 L 545 414" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="submit" d="M 545 294 L 545 414" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="router" data-target="service" data-kind="sync" data-evidence="E01">
+      <title>Call training.submit with actor, key and intent</title>
+    </path>
+    <path d="M 405 452 L 306 452" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="domain-imports" d="M 405 452 L 306 452" fill="none" stroke="#6b6785" stroke-width="1.8" marker-end="url(#arrow-dependency)" data-source="service" data-target="domain" data-kind="dependency" data-evidence="E02" stroke-dasharray="2 4">
+      <title>Import domain types, digests and terminal-state rules</title>
+    </path>
+    <path d="M 689 444 L 786 444" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="resolve" d="M 689 444 L 786 444" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="service" data-target="recipes" data-kind="sync" data-evidence="E02">
+      <title>Dispatch recipes.resolve through the injected port</title>
+    </path>
+    <path d="M 947 490 L 947 545" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="dataset-version" d="M 947 490 L 947 545" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="recipes" data-target="catalog" data-kind="sync" data-evidence="E02">
+      <title>Resolve the approved dataset identity</title>
+    </path>
+    <path d="M 1097 580 L 1236 580 L 1236 604" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="catalog-read" d="M 1097 580 L 1236 580 L 1236 604" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="catalog" data-target="sql" data-kind="data" data-evidence="E02" stroke-dasharray="3 3">
+      <title>Read dataset metadata for admission</title>
+    </path>
+    <path d="M 689 471 L 741 471 L 741 728 L 786 728" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="persist" d="M 689 471 L 741 471 L 741 728 L 786 728" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="service" data-target="repository" data-kind="sync" data-evidence="E02">
+      <title>Call find_submission and submit on the concrete adapter</title>
+    </path>
+    <path d="M 545 490 L 545 695" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="imports" d="M 545 490 L 545 695" fill="none" stroke="#6b6785" stroke-width="1.8" marker-end="url(#arrow-dependency)" data-source="service" data-target="contracts" data-kind="dependency" data-evidence="E02" stroke-dasharray="2 4">
+      <title>Import Protocols for constructor annotations</title>
+    </path>
+    <path d="M 1097 733 L 1238 733 L 1238 704" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="transaction" d="M 1097 733 L 1238 733 L 1238 704" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="repository" data-target="sql" data-kind="data" data-evidence="E03" stroke-dasharray="3 3">
+      <title>Commit the job, attempt, idempotency, outbox and audit</title>
+    </path>
+    <rect x="334" y="228" width="43" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="355.5" y="240" font-size="12" font-weight="normal" text-anchor="middle" fill="#986f40">Mount</text>
+    <rect x="274" y="339" width="113" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="330.5" y="351" font-size="12" font-weight="normal" text-anchor="middle" fill="#986f40">Inject adapters</text>
+    <rect x="708" y="234" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="736.5" y="246" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">Resolve</text>
+    <rect x="1120" y="234" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1148.5" y="246" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">Session</text>
+    <rect x="549" y="345" width="64" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="581.0" y="357" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">submit()</text>
+    <rect x="331" y="430" width="50" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="356.0" y="442" font-size="12" font-weight="normal" text-anchor="middle" fill="#6b6785">Import</text>
+    <rect x="702" y="422" width="71" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="737.5" y="434" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">resolve()</text>
+    <rect x="951" y="508" width="113" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1007.5" y="520" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">Resolve version</text>
+    <rect x="1116" y="558" width="99" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1165.5" y="570" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Read metadata</text>
+    <rect x="673" y="590" width="64" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="705.0" y="602" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">submit()</text>
+    <rect x="549" y="583" width="92" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="595.0" y="595" font-size="12" font-weight="normal" text-anchor="middle" fill="#6b6785">Type imports</text>
+    <rect x="1142" y="711" width="50" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1167.0" y="723" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Commit</text>
+    <path d="M 32 866 H 1468" stroke="#bdc9c8" />
+    <path d="M 32 890 h 25" stroke="#986f40" stroke-width="2" stroke-dasharray="10 4" marker-end="url(#arrow-wire)" />
+    <text x="64" y="894" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Startup wiring</text>
+    <path d="M 200 890 h 25" stroke="#3f6574" stroke-width="2" stroke-dasharray="none" marker-end="url(#arrow-sync)" />
+    <text x="232" y="894" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Call</text>
+    <path d="M 288 890 h 25" stroke="#6b6785" stroke-width="2" stroke-dasharray="2 4" marker-end="url(#arrow-dependency)" />
+    <text x="320" y="894" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Declared dependency</text>
+    <path d="M 496 890 h 25" stroke="#706247" stroke-width="2" stroke-dasharray="3 3" marker-end="url(#arrow-data)" />
+    <text x="528" y="894" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">State / artifact I/O</text>
+    <rect x="32" y="911" width="13" height="13" fill="#e3edf1" stroke="#6e909b" />
+    <text x="52" y="922" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">OS process / role</text>
+    <rect x="201" y="911" width="13" height="13" fill="#e8eeea" stroke="#748b7a" />
+    <text x="221" y="922" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Logical component</text>
+    <rect x="370" y="911" width="13" height="13" fill="#e6edeb" stroke="#78918c" />
+    <text x="390" y="922" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Store / volume</text>
+    <text x="32" y="945" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Wire = automatic startup composition. Dependency = source-level import. Sync = request-time method call on the injected object.</text>
+    <text x="32" y="968" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Registry, deployment, dataset and optional ingestion routers share this executable. Scientific training plugins execute on the training path.</text>
+  </g>
+</svg>

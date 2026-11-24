@@ -1,0 +1,428 @@
+<svg aria-labelledby="svg-title svg-desc" xmlns="http://www.w3.org/2000/svg" role="img" width="1580" height="1583" viewBox="0 0 1580 1583">
+  <title id="svg-title">Kubernetes deployment on single-node Minikube</title>
+  <desc id="svg-desc">minikube-training overlay · native Serving and Pod-aware Training · single-container infra Pods identify their container in the subtitle | 8c9023b00828000287e169ac760afe57102d7353</desc>
+  <defs>
+    <marker id="arrow-sync" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#3f6574" />
+    </marker>
+    <marker id="arrow-return" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#667c84" />
+    </marker>
+    <marker id="arrow-async" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#477366" />
+    </marker>
+    <marker id="arrow-data" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#706247" />
+    </marker>
+    <marker id="arrow-manual" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#915e40" />
+    </marker>
+    <marker id="arrow-observe" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#795e79" />
+    </marker>
+    <marker id="arrow-launch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#386c67" />
+    </marker>
+    <marker id="arrow-dependency" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#6b6785" />
+    </marker>
+    <marker id="arrow-wire" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#986f40" />
+    </marker>
+    <marker id="arrow-branch" viewBox="0 0 8 8" refX="8" refY="4" markerWidth="7" markerHeight="7" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M 0 0 L 8 4 L 0 8 Z" fill="#985953" />
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="100%" height="100%" fill="white" />
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="32" y="26" font-size="12" font-weight="bold" text-anchor="start" fill="#41585c">ML SYSTEM EBM   /   ARCHITECTURE GUIDE</text>
+    <text x="1548" y="26" font-size="12" font-weight="normal" text-anchor="end" fill="#41585c">08   /   8c9023b0</text>
+    <text x="32" y="61" font-size="28" font-weight="bold" text-anchor="start" fill="#223b40">Kubernetes deployment on single-node Minikube</text>
+    <text x="32" y="88" font-size="15" font-weight="normal" text-anchor="start" fill="#41585c">minikube-training overlay · native Serving and Pod-aware Training · single-container infra Pods identify their container in the subtitle</text>
+    <g id="ns" data-parent="" data-kind="namespace">
+      <title>Application qualification namespace | Base resources + Minikube infrastructure + opt-in serving/training overlays</title>
+      <rect x="30" y="125" width="1520" height="1210" rx="4" fill="#f2f4f9" stroke="#8e9bae" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="42" y="145" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Application qualification namespace</text>
+      <text x="42" y="162" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Base resources + Minikube infrastructure + opt-in serving/training overlays</text>
+    </g>
+    <g id="mgmt-pod" data-parent="ns" data-kind="pod">
+      <title>ml-management  /  Pod | Init container: prepare-management</title>
+      <rect x="275" y="207" width="289" height="167" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="287" y="227" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">ml-management  /  Pod</text>
+      <text x="287" y="244" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Init container: prepare-management</text>
+    </g>
+    <g id="migration-pod" data-parent="ns" data-kind="pod">
+      <title>ml-migrate  /  Job Pod | Init container: prepare-migrate</title>
+      <rect x="918" y="207" width="245" height="167" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="930" y="227" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">ml-migrate  /  Job Pod</text>
+      <text x="930" y="244" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Init container: prepare-migrate</text>
+    </g>
+    <g id="ingestion-pod" data-parent="ns" data-kind="pod">
+      <title>ml-ingestion-worker  /  Pod | Init container: prepare-ingestion-worker</title>
+      <rect x="1190" y="207" width="330" height="167" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="1202" y="227" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">ml-ingestion-worker  /  Pod</text>
+      <text x="1202" y="244" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Init container: prepare-ingestion-worker</text>
+    </g>
+    <g id="relay-pod" data-parent="ns" data-kind="pod">
+      <title>ml-relay  /  Pod | Init container: prepare-relay</title>
+      <rect x="51" y="414" width="230" height="211" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="63" y="434" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">ml-relay  /  Pod</text>
+      <text x="63" y="451" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Init container: prepare-relay</text>
+    </g>
+    <g id="supervisor-pod" data-parent="ns" data-kind="pod">
+      <title>ml-supervisor  /  Pod | Init container: prepare-supervisor</title>
+      <rect x="555" y="414" width="700" height="234" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="567" y="434" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">ml-supervisor  /  Pod</text>
+      <text x="567" y="451" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Init container: prepare-supervisor</text>
+    </g>
+    <g id="sup-container" data-parent="supervisor-pod" data-kind="container">
+      <title>supervisor  /  container | One Taskiq worker · guardian and compute are child processes</title>
+      <rect x="571" y="479" width="666" height="152" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="583" y="499" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">supervisor  /  container</text>
+      <text x="583" y="516" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">One Taskiq worker · guardian and compute are child processes</text>
+    </g>
+    <g id="control-pod" data-parent="ns" data-kind="pod">
+      <title>ml-control  /  Pod | Init containers: prepare-control, prepare-gateway</title>
+      <rect x="300" y="706" width="340" height="294" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="312" y="726" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">ml-control  /  Pod</text>
+      <text x="312" y="743" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Init containers: prepare-control, prepare-gateway</text>
+    </g>
+    <g id="deployment" data-parent="ns" data-kind="workload">
+      <title>ml-serve-&lt;UUID&gt;  /  Kubernetes Deployment | One replica · fixed model, image and source revision</title>
+      <rect x="952" y="680" width="564" height="324" rx="4" fill="#f4f6ee" stroke="#899777" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="964" y="700" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">ml-serve-&lt;UUID&gt;  /  Kubernetes Deployment</text>
+      <text x="964" y="717" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">One replica · fixed model, image and source revision</text>
+    </g>
+    <g id="serve-pod" data-parent="deployment" data-kind="pod">
+      <title>Serving replica  /  Pod | Init container: prepare-serving</title>
+      <rect x="969" y="746" width="527" height="204" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="981" y="766" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">Serving replica  /  Pod</text>
+      <text x="981" y="783" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Init container: prepare-serving</text>
+    </g>
+    <g id="mlflow-pod" data-parent="ns" data-kind="pod">
+      <title>mlflow  /  Pod | Service :8443 → TLS sidecar · mlflow PVC for auth data</title>
+      <rect x="704" y="1060" width="443" height="232" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="6 4" />
+      <text x="716" y="1080" font-size="15" font-weight="bold" text-anchor="start" fill="#223b40">mlflow  /  Pod</text>
+      <text x="716" y="1097" font-size="12" font-weight="normal" text-anchor="start" fill="#41585c">Service :8443 → TLS sidecar · mlflow PVC for auth data</text>
+    </g>
+    <g id="management-svc" data-parent="ns" data-kind="resource">
+      <title>Service · ml-management | ClusterIP · :8000</title>
+      <rect x="50" y="288" width="198" height="66" rx="4" fill="#eaf1ee" stroke="#799187" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="149.0" y="318.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Service · ml-management</text>
+      <text x="149.0" y="335.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ClusterIP · :8000</text>
+    </g>
+    <g id="management" data-parent="mgmt-pod" data-kind="container">
+      <title>management | Container · uvicorn :8000</title>
+      <rect x="292" y="288" width="252" height="66" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="418.0" y="318.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">management</text>
+      <text x="418.0" y="335.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container · uvicorn :8000</text>
+    </g>
+    <g id="mongodb" data-parent="ns" data-kind="pod">
+      <title>Pod · mongodb | Container: mongodb · PVC · :27017</title>
+      <rect x="654" y="190" width="228" height="65" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="768.0" y="219.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Pod · mongodb</text>
+      <text x="768.0" y="236.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container: mongodb · PVC · :27017</text>
+    </g>
+    <g id="postgres" data-parent="ns" data-kind="pod">
+      <title>Pod · postgres | Container: postgres · PVC · :5432</title>
+      <rect x="654" y="288" width="228" height="66" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="768.0" y="318.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Pod · postgres</text>
+      <text x="768.0" y="335.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container: postgres · PVC · :5432</text>
+    </g>
+    <g id="migrate" data-parent="migration-pod" data-kind="container">
+      <title>migrate | Container · schema migration</title>
+      <rect x="933" y="288" width="215" height="66" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1040.5" y="318.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">migrate</text>
+      <text x="1040.5" y="335.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container · schema migration</text>
+    </g>
+    <g id="ingestion" data-parent="ingestion-pod" data-kind="container">
+      <title>ingestion-worker | Container · poll SQL / publish raw snapshots</title>
+      <rect x="1208" y="288" width="294" height="66" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1355.0" y="318.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">ingestion-worker</text>
+      <text x="1355.0" y="335.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container · poll SQL / publish raw snapshots</text>
+    </g>
+    <g id="relay" data-parent="relay-pod" data-kind="container">
+      <title>relay | Container · ml_cli relay</title>
+      <rect x="64" y="542" width="203" height="64" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="165.5" y="571.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">relay</text>
+      <text x="165.5" y="588.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container · ml_cli relay</text>
+    </g>
+    <g id="broker" data-parent="ns" data-kind="pod">
+      <title>Pod · rabbitmq | rabbitmq container · PVC · :5672</title>
+      <rect x="320" y="542" width="201" height="64" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="420.5" y="571.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Pod · rabbitmq</text>
+      <text x="420.5" y="588.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">rabbitmq container · PVC · :5672</text>
+    </g>
+    <g id="supervisor" data-parent="sup-container" data-kind="process">
+      <title>Taskiq Supervisor | Consumer process</title>
+      <rect x="586" y="547" width="169" height="63" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="670.5" y="575.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Taskiq Supervisor</text>
+      <text x="670.5" y="592.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Consumer process</text>
+    </g>
+    <g id="guardian" data-parent="sup-container" data-kind="process">
+      <title>Guardian | Stop receipt + deadline</title>
+      <rect x="809" y="547" width="165" height="63" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="891.5" y="575.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Guardian</text>
+      <text x="891.5" y="592.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Stop receipt + deadline</text>
+    </g>
+    <g id="compute" data-parent="sup-container" data-kind="process">
+      <title>Compute child | ml_training_runner</title>
+      <rect x="1029" y="547" width="191" height="63" rx="4" fill="#e3edf1" stroke="#6e909b" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1124.5" y="575.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Compute child</text>
+      <text x="1124.5" y="592.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ml_training_runner</text>
+    </g>
+    <g id="redis" data-parent="ns" data-kind="pod">
+      <title>Pod · redis | Container: redis · PVC · :6379</title>
+      <rect x="1303" y="547" width="217" height="63" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1411.5" y="575.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Pod · redis</text>
+      <text x="1411.5" y="592.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container: redis · PVC · :6379</text>
+    </g>
+    <g id="gateway-svc" data-parent="ns" data-kind="resource">
+      <title>Service · ml-gateway | Selects ml-control · :8001</title>
+      <rect x="50" y="800" width="198" height="68" rx="4" fill="#eaf1ee" stroke="#799187" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="149.0" y="831.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Service · ml-gateway</text>
+      <text x="149.0" y="848.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Selects ml-control · :8001</text>
+    </g>
+    <g id="gateway" data-parent="control-pod" data-kind="container">
+      <title>gateway | Container · uvicorn :8001</title>
+      <rect x="316" y="800" width="307" height="68" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="469.5" y="831.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">gateway</text>
+      <text x="469.5" y="848.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container · uvicorn :8001</text>
+    </g>
+    <g id="control" data-parent="control-pod" data-kind="container">
+      <title>control | Container · Kubernetes API client</title>
+      <rect x="316" y="909" width="307" height="68" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="469.5" y="940.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">control</text>
+      <text x="469.5" y="957.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container · Kubernetes API client</text>
+    </g>
+    <g id="serve-svc" data-parent="ns" data-kind="resource">
+      <title>Service · ml-serve-&lt;UUID&gt; | Per-deployment ClusterIP · :8001</title>
+      <rect x="680" y="800" width="230" height="68" rx="4" fill="#eaf1ee" stroke="#799187" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="795.0" y="831.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Service · ml-serve-&lt;UUID&gt;</text>
+      <text x="795.0" y="848.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Per-deployment ClusterIP · :8001</text>
+    </g>
+    <g id="spec" data-parent="ns" data-kind="resource">
+      <title>Immutable ConfigMap | spec.json for this deployment UUID</title>
+      <rect x="680" y="909" width="230" height="68" rx="4" fill="#eaf1ee" stroke="#799187" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="795.0" y="940.0" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Immutable ConfigMap</text>
+      <text x="795.0" y="957.0" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">spec.json for this deployment UUID</text>
+    </g>
+    <g id="serving" data-parent="serve-pod" data-kind="container">
+      <title>serving | Container · fixed model on :8001</title>
+      <rect x="985" y="811" width="215" height="65" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1092.5" y="840.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">serving</text>
+      <text x="1092.5" y="857.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container · fixed model on :8001</text>
+    </g>
+    <g id="cache" data-parent="serve-pod" data-kind="storage">
+      <title>Bounded emptyDir | Verified artifact cache · 2 GiB root</title>
+      <rect x="1260" y="811" width="216" height="65" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1368.0" y="840.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Bounded emptyDir</text>
+      <text x="1368.0" y="857.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Verified artifact cache · 2 GiB root</text>
+    </g>
+    <g id="runtime" data-parent="ns" data-kind="storage">
+      <title>PVC · ml-runtime | ReadWriteOnce · datasets, snapshots, executions</title>
+      <rect x="306" y="1138" width="305" height="75" rx="4" fill="#e6edeb" stroke="#78918c" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="458.5" y="1172.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">PVC · ml-runtime</text>
+      <text x="458.5" y="1189.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">ReadWriteOnce · datasets, snapshots, executions</text>
+    </g>
+    <g id="tls" data-parent="mlflow-pod" data-kind="container">
+      <title>tls | Container · nginx :8443</title>
+      <rect x="721" y="1142" width="166" height="65" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="804.0" y="1171.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">tls</text>
+      <text x="804.0" y="1188.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container · nginx :8443</text>
+    </g>
+    <g id="mlflow" data-parent="mlflow-pod" data-kind="container">
+      <title>mlflow | Container · server :5000</title>
+      <rect x="944" y="1142" width="185" height="65" rx="4" fill="#eaf0e3" stroke="#869274" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1036.5" y="1171.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">mlflow</text>
+      <text x="1036.5" y="1188.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container · server :5000</text>
+    </g>
+    <g id="minio" data-parent="ns" data-kind="pod">
+      <title>Pod · minio | Container: minio · PVC · S3 :9000</title>
+      <rect x="1207" y="1142" width="295" height="65" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1354.5" y="1171.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Pod · minio</text>
+      <text x="1354.5" y="1188.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container: minio · PVC · S3 :9000</text>
+    </g>
+    <g id="minio-init" data-parent="ns" data-kind="pod">
+      <title>Job Pod · minio-init | Container: initialize · bucket setup</title>
+      <rect x="1207" y="1240" width="295" height="65" rx="4" fill="#f0eaf1" stroke="#9c849d" stroke-width="1.2" stroke-dasharray="none" />
+      <text x="1354.5" y="1269.5" font-size="14" font-weight="bold" text-anchor="middle" fill="#223b40">Job Pod · minio-init</text>
+      <text x="1354.5" y="1286.5" font-size="12" font-weight="normal" text-anchor="middle" fill="#41585c">Container: initialize · bucket setup</text>
+    </g>
+    <path d="M 248 321 L 292 321" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="ingress-mgmt" d="M 248 321 L 292 321" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="management-svc" data-target="management" data-kind="sync" data-evidence="E11">
+      <title>Forward HTTP requests to the selected Management Pod</title>
+    </path>
+    <path d="M 544 304 L 608 304 L 608 222 L 654 222" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="identity" d="M 544 304 L 608 304 L 608 222 L 654 222" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="management" data-target="mongodb" data-kind="sync" data-evidence="E01">
+      <title>Read tenant identity and sessions using MongoDB</title>
+    </path>
+    <path d="M 544 339 L 654 339" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="app-sql" d="M 544 339 L 654 339" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="management" data-target="postgres" data-kind="data" data-evidence="E11" stroke-dasharray="3 3">
+      <title>Use application database in PostgreSQL</title>
+    </path>
+    <path d="M 933 321 L 882 321" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="migrate-sql" d="M 933 321 L 882 321" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="migrate" data-target="postgres" data-kind="data" data-evidence="E11" stroke-dasharray="3 3">
+      <title>Apply the application schema</title>
+    </path>
+    <path d="M 1208 336 L 1175 336 L 1175 392 L 817 392 L 817 354" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="poll-ingestion" d="M 1208 336 L 1175 336 L 1175 392 L 817 392 L 817 354" fill="none" stroke="#795e79" stroke-width="1.8" marker-end="url(#arrow-observe)" data-source="ingestion" data-target="postgres" data-kind="observe" data-evidence="E05" stroke-dasharray="7 3 2 3">
+      <title>Poll SQL for ingestion jobs independently of the training queue</title>
+    </path>
+    <path d="M 267 575 L 320 575" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="publish" d="M 267 575 L 320 575" fill="none" stroke="#477366" stroke-width="1.8" marker-end="url(#arrow-async)" data-source="relay" data-target="broker" data-kind="async" data-evidence="E03" stroke-dasharray="8 4">
+      <title>Publish command to RabbitMQ Service</title>
+    </path>
+    <path d="M 521 575 L 586 575" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="receive" d="M 521 575 L 586 575" fill="none" stroke="#477366" stroke-width="1.8" marker-end="url(#arrow-async)" data-source="broker" data-target="supervisor" data-kind="async" data-evidence="E03" stroke-dasharray="8 4">
+      <title>Deliver command over AMQP to the Supervisor</title>
+    </path>
+    <path d="M 755 577 L 809 577" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="start-guardian" d="M 755 577 L 809 577" fill="none" stroke="#386c67" stroke-width="1.8" marker-end="url(#arrow-launch)" data-source="supervisor" data-target="guardian" data-kind="launch" data-evidence="E11">
+      <title>Start the Pod-aware guardian inside the Supervisor container</title>
+    </path>
+    <path d="M 974 577 L 1029 577" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="start-runner" d="M 974 577 L 1029 577" fill="none" stroke="#386c67" stroke-width="1.8" marker-end="url(#arrow-launch)" data-source="guardian" data-target="compute" data-kind="launch" data-evidence="E11">
+      <title>Launch the runner in a new process group</title>
+    </path>
+    <path d="M 670 610 L 670 660 L 1410 660 L 1410 610" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="snapshot" d="M 670 610 L 670 660 L 1410 660 L 1410 610" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="supervisor" data-target="redis" data-kind="data" data-evidence="E03" stroke-dasharray="3 3">
+      <title>Store the terminal technical snapshot before manual ACK</title>
+    </path>
+    <path d="M 248 834 L 316 834" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="gateway-ingress" d="M 248 834 L 316 834" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="gateway-svc" data-target="gateway" data-kind="sync" data-evidence="E11">
+      <title>Forward requests to Gateway in the selected Control Pod</title>
+    </path>
+    <path d="M 623 834 L 680 834" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="forward" d="M 623 834 L 680 834" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="gateway" data-target="serve-svc" data-kind="sync" data-evidence="E07">
+      <title>Resolve the deployment Service name and forward prediction</title>
+    </path>
+    <path d="M 910 834 L 985 834" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="serve-route" d="M 910 834 L 985 834" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="serve-svc" data-target="serving" data-kind="sync" data-evidence="E11">
+      <title>Route to the ready replica on port 8001</title>
+    </path>
+    <path d="M 551 909 L 551 889 L 778 889 L 778 868" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="ensure-svc" d="M 551 909 L 551 889 L 778 889 L 778 868" fill="none" stroke="#795e79" stroke-width="1.8" marker-end="url(#arrow-observe)" data-source="control" data-target="serve-svc" data-kind="observe" data-evidence="E11" stroke-dasharray="7 3 2 3">
+      <title>Ensure or retire the per-deployment Service via Kubernetes API</title>
+    </path>
+    <path d="M 623 944 L 680 944" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="ensure-spec" d="M 623 944 L 680 944" fill="none" stroke="#795e79" stroke-width="1.8" marker-end="url(#arrow-observe)" data-source="control" data-target="spec" data-kind="observe" data-evidence="E11" stroke-dasharray="7 3 2 3">
+      <title>Ensure or retire the immutable spec ConfigMap via Kubernetes API</title>
+    </path>
+    <path d="M 1008 876 L 1008 945 L 910 945" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="read-spec" d="M 1008 876 L 1008 945 L 910 945" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="serving" data-target="spec" data-kind="data" data-evidence="E11" stroke-dasharray="3 3">
+      <title>Read the fixed spec through its read-only volume mount</title>
+    </path>
+    <path d="M 1200 844 L 1260 844" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="cache-fill" d="M 1200 844 L 1260 844" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="serving" data-target="cache" data-kind="data" data-evidence="E11" stroke-dasharray="3 3">
+      <title>Materialize and verify the startup bundle in Pod-local storage</title>
+    </path>
+    <path d="M 459 977 L 459 1138" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="observe-evidence" d="M 459 977 L 459 1138" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="control" data-target="runtime" data-kind="data" data-evidence="E11" stroke-dasharray="3 3">
+      <title>Read shared execution evidence during reconciliation</title>
+    </path>
+    <path d="M 567 977 L 567 990 L 952 990" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="ensure-deployment" d="M 567 977 L 567 990 L 952 990" fill="none" stroke="#795e79" stroke-width="1.8" marker-end="url(#arrow-observe)" data-source="control" data-target="deployment" data-kind="observe" data-evidence="E11" stroke-dasharray="7 3 2 3">
+      <title>Create, observe or retire the fixed-version Kubernetes Deployment via scoped API</title>
+    </path>
+    <path d="M 1090 610 L 1090 673 L 280 673 L 280 1195 L 306 1195" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="checkpoint" d="M 1090 610 L 1090 673 L 280 673 L 280 1195 L 306 1195" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="compute" data-target="runtime" data-kind="data" data-evidence="E11" stroke-dasharray="3 3">
+      <title>Write checkpoints and frozen output under the shared execution root</title>
+    </path>
+    <path d="M 1100 876 L 1100 1018 L 684 1018 L 684 1174 L 721 1174" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="model-read" d="M 1100 876 L 1100 1018 L 684 1018 L 684 1174 L 721 1174" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="serving" data-target="tls" data-kind="data" data-evidence="E11" stroke-dasharray="3 3">
+      <title>Read exact artifacts via the MLflow HTTPS Service at startup</title>
+    </path>
+    <path d="M 887 1174 L 944 1174" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="tls-upstream" d="M 887 1174 L 944 1174" fill="none" stroke="#3f6574" stroke-width="1.8" marker-end="url(#arrow-sync)" data-source="tls" data-target="mlflow" data-kind="sync" data-evidence="E11">
+      <title>Proxy HTTPS traffic to MLflow on loopback HTTP :5000</title>
+    </path>
+    <path d="M 1129 1174 L 1207 1174" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="artifact-store" d="M 1129 1174 L 1207 1174" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="mlflow" data-target="minio" data-kind="data" data-evidence="E11" stroke-dasharray="3 3">
+      <title>Proxy model artifacts to the MinIO S3 endpoint</title>
+    </path>
+    <path d="M 1350 1240 L 1350 1207" fill="none" stroke="white" stroke-width="4.5" />
+    <path id="create-bucket" d="M 1350 1240 L 1350 1207" fill="none" stroke="#706247" stroke-width="1.8" marker-end="url(#arrow-data)" data-source="minio-init" data-target="minio" data-kind="data" data-evidence="E11" stroke-dasharray="3 3">
+      <title>Initialize the ml-artifacts bucket</title>
+    </path>
+    <rect x="252" y="299" width="36" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="270.0" y="311" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">HTTP</text>
+    <rect x="547" y="254" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="575.5" y="266" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">Session</text>
+    <rect x="584" y="317" width="29" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="598.5" y="329" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">SQL</text>
+    <rect x="894" y="299" width="29" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="908.5" y="311" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">SQL</text>
+    <rect x="922" y="370" width="148" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="996.0" y="382" font-size="12" font-weight="normal" text-anchor="middle" fill="#795e79">Claim ingestion work</text>
+    <rect x="284" y="553" width="18" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="293.0" y="565" font-size="12" font-weight="normal" text-anchor="middle" fill="#477366">6</text>
+    <rect x="535" y="553" width="36" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="553.0" y="565" font-size="12" font-weight="normal" text-anchor="middle" fill="#477366">AMQP</text>
+    <rect x="764" y="555" width="36" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="782.0" y="567" font-size="12" font-weight="normal" text-anchor="middle" fill="#386c67">Fork</text>
+    <rect x="980" y="555" width="43" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1001.5" y="567" font-size="12" font-weight="normal" text-anchor="middle" fill="#386c67">Spawn</text>
+    <rect x="1012" y="638" width="57" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1040.5" y="650" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Persist</text>
+    <rect x="282" y="812" width="18" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="291.0" y="824" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">11</text>
+    <rect x="633" y="812" width="36" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="651.0" y="824" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">HTTP</text>
+    <rect x="929" y="812" width="36" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="947.0" y="824" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">HTTP</text>
+    <rect x="782" y="870" width="106" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="835.0" y="882" font-size="12" font-weight="normal" text-anchor="middle" fill="#795e79">Ensure Service</text>
+    <rect x="630" y="922" width="43" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="651.5" y="934" font-size="12" font-weight="normal" text-anchor="middle" fill="#795e79">Apply</text>
+    <rect x="924" y="923" width="71" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="959.5" y="935" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Read spec</text>
+    <rect x="1208" y="822" width="43" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1229.5" y="834" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Cache</text>
+    <rect x="463" y="1048" width="99" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="512.5" y="1060" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Read evidence</text>
+    <rect x="696" y="994" width="127" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="759.5" y="1006" font-size="12" font-weight="normal" text-anchor="middle" fill="#795e79">Ensure Deployment</text>
+    <rect x="646" y="677" width="78" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="685.0" y="689" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Checkpoint</text>
+    <rect x="825" y="996" width="134" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="892.0" y="1008" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Fetch pinned model</text>
+    <rect x="897" y="1152" width="36" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="915.0" y="1164" font-size="12" font-weight="normal" text-anchor="middle" fill="#3f6574">HTTP</text>
+    <rect x="1157" y="1152" width="22" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1168.0" y="1164" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">S3</text>
+    <rect x="1354" y="1215" width="78" height="16" rx="2" fill="white" fill-opacity="0.96" />
+    <text x="1393.0" y="1227" font-size="12" font-weight="normal" text-anchor="middle" fill="#706247">Initialize</text>
+    <text x="32" y="1359" font-size="14" font-weight="normal" text-anchor="start" fill="#223b40">6   Publish command to RabbitMQ Service</text>
+    <text x="32" y="1382" font-size="14" font-weight="normal" text-anchor="start" fill="#223b40">11   Forward requests to Gateway in the selected Control Pod</text>
+    <path d="M 32 1405 H 1548" stroke="#bdc9c8" />
+    <path d="M 32 1429 h 25" stroke="#3f6574" stroke-width="2" stroke-dasharray="none" marker-end="url(#arrow-sync)" />
+    <text x="64" y="1433" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Call</text>
+    <path d="M 120 1429 h 25" stroke="#706247" stroke-width="2" stroke-dasharray="3 3" marker-end="url(#arrow-data)" />
+    <text x="152" y="1433" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">State / artifact I/O</text>
+    <path d="M 336 1429 h 25" stroke="#795e79" stroke-width="2" stroke-dasharray="7 3 2 3" marker-end="url(#arrow-observe)" />
+    <text x="368" y="1433" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Observe / reconcile</text>
+    <path d="M 544 1429 h 25" stroke="#477366" stroke-width="2" stroke-dasharray="8 4" marker-end="url(#arrow-async)" />
+    <text x="576" y="1433" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Message</text>
+    <path d="M 656 1429 h 25" stroke="#386c67" stroke-width="2" stroke-dasharray="none" marker-end="url(#arrow-launch)" />
+    <text x="688" y="1433" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Launch</text>
+    <rect x="32" y="1450" width="13" height="13" fill="#f2f4f9" stroke="#8e9bae" />
+    <text x="52" y="1461" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Kubernetes namespace</text>
+    <rect x="225" y="1450" width="13" height="13" fill="#f0eaf1" stroke="#9c849d" />
+    <text x="245" y="1461" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Kubernetes Pod</text>
+    <rect x="370" y="1450" width="13" height="13" fill="#eaf0e3" stroke="#869274" />
+    <text x="390" y="1461" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Docker / OCI container</text>
+    <rect x="579" y="1450" width="13" height="13" fill="#f4f6ee" stroke="#899777" />
+    <text x="599" y="1461" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Kubernetes Deployment</text>
+    <rect x="780" y="1450" width="13" height="13" fill="#eaf1ee" stroke="#799187" />
+    <text x="800" y="1461" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Kubernetes API resource</text>
+    <rect x="997" y="1450" width="13" height="13" fill="#e3edf1" stroke="#6e909b" />
+    <text x="1017" y="1461" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">OS process / role</text>
+    <rect x="1166" y="1450" width="13" height="13" fill="#e6edeb" stroke="#78918c" />
+    <text x="1186" y="1461" font-size="13" font-weight="normal" text-anchor="start" fill="#41585c">Store / volume</text>
+    <text x="32" y="1484" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Control and Supervisor alone mount scoped Kubernetes API credentials. Serving has no API token or application DB.</text>
+    <text x="32" y="1507" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Application roles mount ml-runtime and use bounded artifact caches. Serving uses emptyDir. Minikube postgres hosts app and MLflow databases.</text>
+    <text x="32" y="1530" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Peer infra traffic uses Services. Role Secret / CA projections are copied to private files by role-specific init containers.</text>
+    <text x="32" y="1553" font-size="14" font-weight="normal" text-anchor="start" fill="#41585c">Singleton Recreate is implemented. Production CSI, multi-node recovery, network-policy enforcement and HA remain unqualified.</text>
+  </g>
+</svg>
