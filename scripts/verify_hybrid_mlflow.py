@@ -286,6 +286,7 @@ print('TLS, unauthenticated denial and dedicated reader configured')
         "scope": "isolated-external-style-mlflow-fixture",
         "production_accepted": False,
         "source_revision": args.code_revision,
+        "driver_revision": run(["git", "rev-parse", "HEAD"]).strip(),
         "image": args.image,
         "fixture_image": args.mlflow_image,
         "project": project,
@@ -367,6 +368,18 @@ print('TLS, unauthenticated denial and dedicated reader configured')
             (runtime / "mlflow-qualification.json").read_text()
         )
     finally:
+        log = output / "lifecycle.txt"
+        if log.exists():
+            sanitized = log.read_text()
+            for value in values.values():
+                sanitized = sanitized.replace(value, "[redacted-fixture]")
+            sanitized = re.sub(r"Bearer [A-Za-z0-9_.~-]+", "Bearer [redacted]", sanitized)
+            sanitized = re.sub(
+                r"\beyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b",
+                "[redacted-token]",
+                sanitized,
+            )
+            log.write_text(sanitized)
         # Stop only resources created by this invocation. Retain volumes/evidence.
         for command in (app, external):
             subprocess.run(
