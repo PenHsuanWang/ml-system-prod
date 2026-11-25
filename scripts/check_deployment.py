@@ -9,6 +9,7 @@ TESTS = [
     "tests/ml/test_deployment_entrypoint.py",
     "tests/ml/test_deployment_qualification.py",
     "tests/ml/test_hybrid_deployment.py",
+    "tests/ml/test_hybrid_compose.py",
     "scripts/verify_hybrid_mlflow.py",
 ]
 

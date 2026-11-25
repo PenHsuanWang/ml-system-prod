@@ -1134,8 +1134,8 @@
     },
     {
       "path": "scripts/check_deployment.py",
-      "bytes": 955,
-      "sha256": "4b66f6e2875eb56bc030f0c7b60f76a1bded7ac1ebde04284f2567056fce8e96"
+      "bytes": 994,
+      "sha256": "c381a37081842d02d0f1a1de24cf8fe5ffde9b890b406a8033dce6d58ae4eb97"
     },
     {
       "path": "scripts/check_docs.py",
@@ -1279,8 +1279,8 @@
     },
     {
       "path": "scripts/verify_ml_acceptance.py",
-      "bytes": 9941,
-      "sha256": "a00dd3aea802e72934cdd8e23b4d1db6c20dc29a5166a948bc5a704060152859"
+      "bytes": 10057,
+      "sha256": "5b337b936ba05ce26de7b41a0cbd004d64946999227f2a97c04b3b5c4cb8b504"
     },
     {
       "path": "scripts/verify_package.py",
@@ -2763,9 +2763,14 @@
       "sha256": "46bd952ea239d626c95f2d9c9f6d69a7a9e1b4539f00359f8aec5f054a302c42"
     },
     {
+      "path": "tests/ml/test_hybrid_compose.py",
+      "bytes": 2995,
+      "sha256": "139f798167bb10186659f00eb1471f0e3a455fddbb8b10608c91ae4dab66eb27"
+    },
+    {
       "path": "tests/ml/test_hybrid_deployment.py",
-      "bytes": 5141,
-      "sha256": "a9d037fa4cc02f8738503b288f745d40f6685bd52c7f528aaa31c8ec750e8891"
+      "bytes": 2292,
+      "sha256": "fdf87559e74a0559b348e877465de303cf86727561dd2a8325b2d76febe85f55"
     },
     {
       "path": "tests/ml/test_model_governance.py",
