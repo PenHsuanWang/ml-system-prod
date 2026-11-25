@@ -30,36 +30,41 @@ A means added, M modified; no deleted files. Full inventory is generated below.
 
 | File | Type | Purpose | Architecture impact |
 | --- | --- | --- | --- |
-| .dockerignore | M | Targeted private input exclusion | Build/test only; runtime contracts unchanged |
-| .github/workflows/ml-ci.yml | M | CI, operator or review documentation | Build/test only; runtime contracts unchanged |
-| .gitignore | M | Targeted private input exclusion | Build/test only; runtime contracts unchanged |
-| Dockerfile.minio | M | Optional verified build-only trust | Build/test only; runtime contracts unchanged |
-| Dockerfile.ml | M | Optional verified build-only trust | Build/test only; runtime contracts unchanged |
-| Dockerfile.mlflow | M | Optional verified build-only trust | Build/test only; runtime contracts unchanged |
-| FILE-MANIFEST.json | M | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| README.md | M | CI, operator or review documentation | Build/test only; runtime contracts unchanged |
-| docs/configuration-reference.md | M | CI, operator or review documentation | Build/test only; runtime contracts unchanged |
-| docs/deployment/day1-deployment-runbook.md | M | CI, operator or review documentation | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/apt-https.txt | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/go-final-head.txt | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/go-git.txt | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/go-unit.txt | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/invalid-ca.txt | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/no-leak.json | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/optional-api.txt | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/optional-apk.txt | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/qualification.json | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/regression-delivery.txt | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/regression-disk-failure.txt | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/regression.txt | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/evidence/corporate-network-20261126/standard-api.txt | A | Validation evidence/source inventory | Build/test only; runtime contracts unchanged |
-| docs/implementation-status.md | M | CI, operator or review documentation | Build/test only; runtime contracts unchanged |
-| docs/plans/optional-corporate-network.md | A | CI, operator or review documentation | Build/test only; runtime contracts unchanged |
-| docs/reviews/corporate-network-report.md | A | CI, operator or review documentation | Build/test only; runtime contracts unchanged |
-| scripts/build_trust/main.go | A | Optional verified build-only trust | Build/test only; runtime contracts unchanged |
-| scripts/build_trust/main_test.go | A | Trust safety and image contract validation | Build/test only; runtime contracts unchanged |
-| tests/ml/build_network/fixtures/Dockerfile | A | Trust safety and image contract validation | Build/test only; runtime contracts unchanged |
-| tests/ml/build_network/test_build_contract.py | A | Trust safety and image contract validation | Build/test only; runtime contracts unchanged |
+| .dockerignore | M | Optional trust launcher and image/test build contract | Build/test only; existing runtime contracts preserved |
+| .github/workflows/ml-ci.yml | M | Optional trust launcher and image/test build contract | Build/test only; existing runtime contracts preserved |
+| .gitignore | M | Optional trust launcher and image/test build contract | Build/test only; existing runtime contracts preserved |
+| Dockerfile.minio | M | Optional trust launcher and image/test build contract | Build/test only; existing runtime contracts preserved |
+| Dockerfile.ml | M | Optional trust launcher and image/test build contract | Build/test only; existing runtime contracts preserved |
+| Dockerfile.mlflow | M | Optional trust launcher and image/test build contract | Build/test only; existing runtime contracts preserved |
+| FILE-MANIFEST.json | M | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| README.md | M | Optional trust launcher and image/test build contract | Build/test only; existing runtime contracts preserved |
+| docs/configuration-reference.md | M | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/deployment/day1-deployment-runbook.md | M | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/apt-https.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/boundaries.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/go-final-head.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/go-git.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/go-unit.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/invalid-ca.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/k8s-contracts.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/k8s-static-final.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/k8s-static.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/no-leak.json | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/optional-api.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/optional-apk.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/qualification.json | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/regression-delivery.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/regression-disk-failure.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/regression.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/remote-success-steps.json | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/evidence/corporate-network-20261126/standard-api.txt | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/implementation-status.md | M | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/plans/optional-corporate-network.md | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| docs/reviews/corporate-network-report.md | A | Validation evidence and per-file review inventory | Build/test only; existing runtime contracts preserved |
+| scripts/build_trust/main.go | A | Optional trust launcher and image/test build contract | Build/test only; existing runtime contracts preserved |
+| scripts/build_trust/main_test.go | A | Optional trust launcher and image/test build contract | Build/test only; existing runtime contracts preserved |
+| tests/ml/build_network/fixtures/Dockerfile | A | Optional trust launcher and image/test build contract | Build/test only; existing runtime contracts preserved |
+| tests/ml/build_network/test_build_contract.py | A | Optional trust launcher and image/test build contract | Build/test only; existing runtime contracts preserved |
 
 ## D. Architecture impact
 
