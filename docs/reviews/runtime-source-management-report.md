@@ -267,7 +267,7 @@ No unexecuted gate is classified as passed.
 | AC-17 | PASS | Existing FileBatchAdapter | File, HTTP and publication regressions |
 | AC-18 | PASS | Existing jobs API and supervisor lifecycle | Ingestion, idempotency, recovery/fencing and downstream suites |
 | AC-19 | PASS | Existing transactional audit ledger | Registration and lifecycle digest audit assertions |
-| AC-20 | BLOCKED | Compose runtime and Kubernetes engineering gates | Compose FUNCTIONAL_BACKEND_ACCEPTED with 1,284 passed and zero skips. Minikube dynamic gate blocked by api.github.com 403 |
+| AC-20 | NOT VERIFIED for Kubernetes dynamic scope, deferred by user | Compose runtime and Kubernetes engineering gates | Compose FUNCTIONAL_BACKEND_ACCEPTED with 1,284 passed and zero skips. Kubernetes static contracts passed. User deferred Kubernetes dynamic acceptance for this code review on 2026-11-25. |
 | AC-21 | PASS | ADR-022, walkthrough and scoped documentation | Documentation links and tracked manifest validation |
 | AC-22 | PASS | Changes confined to source governance, setup, tests and docs | Baseline diff inventory and dependency boundary check |
 | AC-23 | PASS | external_qualification=not_verified | API response assertions |
@@ -286,10 +286,10 @@ Source operators can select fixed history within that scope, while mandatory
 predicates, column grants and budgets continue to constrain each definition.
 List pagination is bounded and can shift under concurrent registration.
 
-Kubernetes dynamic engineering regression is blocked by the version lookup
-network denial. api.github.com was added to the environment draft while preserving
-existing allowed domains. Draft persistence does not apply the running policy.
-Review/save/publish requirements belong to environment settings.
+The user deferred Kubernetes dynamic engineering acceptance for this code review
+on 2026-11-25. Its execution remains NOT VERIFIED. The previous version-lookup
+network denial is retained as historical evidence. api.github.com is saved in
+the environment draft, while the running network policy still excludes it.
 
 No new adapters, discovery frontend, general SQL execution, orchestration service,
 multi-stage approval workflow or ML runtime redesign is included. Those remain
@@ -297,20 +297,26 @@ outside this change.
 
 ## K. Release recommendation
 
-BLOCKED pending the required Kubernetes dynamic engineering regression.
-Compose functional backend acceptance passed with zero failures and skips. The feature is implemented and reviewable on its
-branch. Production acceptance remains false. Live Databricks and production
-release require independent qualification and approval.
+READY FOR REVIEW under the user's 2026-11-25 instruction to defer Kubernetes
+dynamic acceptance and open a Draft PR for code review.
 
-The feature branch was pushed successfully through the existing Git proxy.
-Draft PR creation was attempted with the requested title and a prepared body,
-using gh pr create --draft --base master --head feature/runtime-data-source-management
---title 'feat(ingestion): introduce governed runtime data source management API'
---body-file var/runtime-source-evidence/pr-body.md.
-It exited 1 with POST https://api.github.com/graphql Forbidden.
-No PR URL was returned. The branch is available for review.
+Compose functional backend acceptance passed with 1,284 cases, zero failures
+and zero skips. PostgreSQL runtime/security validation passed 21 cases.
+Kubernetes static manifest contracts passed for 40 resources. Dynamic Kubernetes
+acceptance remains NOT VERIFIED and is deferred for this review.
+Production acceptance remains false. Live Databricks and production release
+require their separate qualification and approval.
 
-The network grant for api.github.com is saved in the environment draft.
-Applying the grant is required to retry the Kubernetes and PR operations.
-The runtime/source APIs and external qualification contract require no further
-repository configuration changes to retry those engineering operations.
+The feature branch is published as feature/runtime-data-source-management.
+The requested Draft PR title is
+feat(ingestion): introduce governed runtime data source management API.
+
+GitHub API requests currently return 403 at api.github.com, including the
+GraphQL operation required by gh pr create. The prepared PR body is retained
+in var/runtime-source-evidence/pr-body.md. Draft PR creation will be retried
+after this scope update is pushed.
+
+The api.github.com domain grant is already saved in the environment draft.
+The available configuration tool saves drafts without applying the running
+network policy. That runtime setting is the prerequisite for retrying the
+GitHub API operation.

@@ -26,5 +26,10 @@
     "status": "BLOCKED",
     "exit_status": 1,
     "reason": "POST https://api.github.com/graphql returned Forbidden"
+  },
+  "review_scope": {
+    "date": "2026-11-25",
+    "kubernetes_dynamic": "Deferred by explicit user instruction for Draft PR code review. Execution remains NOT VERIFIED.",
+    "recommendation": "READY FOR REVIEW"
   }
 }

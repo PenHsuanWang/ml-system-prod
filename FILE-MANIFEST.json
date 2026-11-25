@@ -864,8 +864,8 @@
     },
     {
       "path": "docs/evidence/runtime-sources-20261125/qualification.json",
-      "bytes": 1586,
-      "sha256": "55ba207900d5700a6fd47398c37f7d7f393b972d2445e99a8cb40bbf0e8a49c7"
+      "bytes": 1803,
+      "sha256": "4ce9006f18361b2b6231fae056d643f61544a7affda03bfc434a564faa6af713"
     },
     {
       "path": "docs/glossary.md",
@@ -969,8 +969,8 @@
     },
     {
       "path": "docs/reviews/runtime-source-management-report.md",
-      "bytes": 24263,
-      "sha256": "b3a1721fd6ac610ab3b835ec2af52cc842dd6d9e90686187a16c4f12acafe7e2"
+      "bytes": 24513,
+      "sha256": "46a773e438e48902f6897ffd330a6da60a97eaa28f7408e7f2f518c21518cfe3"
     },
     {
       "path": "docs/runtime-source-management.md",
