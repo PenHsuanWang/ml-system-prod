@@ -808,6 +808,41 @@
       "sha256": "632bbaf40927c270d54bdea40f15e1f3d46c9193f8879a4291f2428fad2a1128"
     },
     {
+      "path": "docs/evidence/governed-discovery-20261126/boundaries.txt",
+      "bytes": 30,
+      "sha256": "696f9a58b43691031967c73d000d780b3a8af9ba63ab8a495f2654864112c156"
+    },
+    {
+      "path": "docs/evidence/governed-discovery-20261126/final-focused.txt",
+      "bytes": 99,
+      "sha256": "1776bafe76955d7f48dcfe76940c09301ef7a1070ec83a1f45187ca2ccd46025"
+    },
+    {
+      "path": "docs/evidence/governed-discovery-20261126/init-compose.txt",
+      "bytes": 316,
+      "sha256": "e4c4f7b7760e3e2e2c4eada538574775d79cd3b83e0a630db53fa9999099d063"
+    },
+    {
+      "path": "docs/evidence/governed-discovery-20261126/postgres-final.txt",
+      "bytes": 99,
+      "sha256": "da6d1d5547ae93561777c7649f0b9460b6120a5fbecfc79427c242489466d44e"
+    },
+    {
+      "path": "docs/evidence/governed-discovery-20261126/qualification.json",
+      "bytes": 3457,
+      "sha256": "caa69329c6b647df2bdaccdec5b9b9932ed1db2721877f326a739565da9fac8d"
+    },
+    {
+      "path": "docs/evidence/governed-discovery-20261126/quality.txt",
+      "bytes": 90,
+      "sha256": "59fea3f50b658d4b7a5110c613b6c07e2a85076ea95a5d4307e739b4c83a9257"
+    },
+    {
+      "path": "docs/evidence/governed-discovery-20261126/regression.txt",
+      "bytes": 2057,
+      "sha256": "27fedb252c6a0e958685c587d96e7c0a533ca56fb92adedcfaa1895080ccd08e"
+    },
+    {
       "path": "docs/evidence/k8s-acceptance-2026-11-18/compose.json",
       "bytes": 2007,
       "sha256": "1a69a4b90f793b9f88f8f6d7349e6872461b4174b20c06d8f16f32ac7f5c84b6"
@@ -966,6 +1001,11 @@
       "path": "docs/reviews/documentation-code-audit-2026-11-19.md",
       "bytes": 8134,
       "sha256": "041a8a93868affa2a2122187c3051b7b84378828b951861b1d4c68d7fb631dff"
+    },
+    {
+      "path": "docs/reviews/governed-discovery-report.md",
+      "bytes": 10088,
+      "sha256": "cfc616e6d80452d90b0639e32ce2cf72ece818ff1fa48eba28224c430f91a01d"
     },
     {
       "path": "docs/reviews/k8s-acceptance-2026-11-18.md",

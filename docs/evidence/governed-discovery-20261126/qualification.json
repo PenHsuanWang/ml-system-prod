@@ -1,0 +1,82 @@
+{
+  "baseline": "e1dc4234c32c6586b31aed5a73d977abaa13348f",
+  "implementation_commit": "bd651e055f9e6ced25303a3bef1f30c81da3a5c6",
+  "branch": "feature/governed-databricks-discovery",
+  "production_accepted": false,
+  "live_databricks": "EXTERNAL_ENVIRONMENT_NOT_VERIFIED",
+  "kubernetes": "DEFERRED",
+  "validations": [
+    {
+      "name": "quality",
+      "command": ".venv/bin/python scripts/check_ingestion.py",
+      "environment": "Isolated Cloud Linux Python 3.12; Docker Compose v2.40.3; synthetic PostgreSQL 17 on loopback 15441",
+      "exit_status": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "quality.txt",
+      "sha256": "59fea3f50b658d4b7a5110c613b6c07e2a85076ea95a5d4307e739b4c83a9257"
+    },
+    {
+      "name": "focused",
+      "command": ".venv/bin/python -m pytest tests/ml/catalog -q",
+      "environment": "Isolated Cloud Linux Python 3.12; Docker Compose v2.40.3; synthetic PostgreSQL 17 on loopback 15441",
+      "exit_status": 0,
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "final-focused.txt",
+      "sha256": "1776bafe76955d7f48dcfe76940c09301ef7a1070ec83a1f45187ca2ccd46025"
+    },
+    {
+      "name": "postgres",
+      "command": "ML_TEST_DATABASE_URL=<isolated PostgreSQL fixture> .venv/bin/python -m pytest tests/ml/catalog -q",
+      "environment": "Isolated Cloud Linux Python 3.12; Docker Compose v2.40.3; synthetic PostgreSQL 17 on loopback 15441",
+      "exit_status": 0,
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "postgres-final.txt",
+      "sha256": "da6d1d5547ae93561777c7649f0b9460b6120a5fbecfc79427c242489466d44e"
+    },
+    {
+      "name": "regression",
+      "command": ".venv/bin/python -m pytest tests/ml tests/test_boundaries.py -q",
+      "environment": "Isolated Cloud Linux Python 3.12; Docker Compose v2.40.3; synthetic PostgreSQL 17 on loopback 15441",
+      "exit_status": 0,
+      "passed": 1360,
+      "failed": 0,
+      "skipped": 5,
+      "evidence": "regression.txt",
+      "sha256": "27fedb252c6a0e958685c587d96e7c0a533ca56fb92adedcfaa1895080ccd08e"
+    },
+    {
+      "name": "boundaries",
+      "command": ".venv/bin/python scripts/check_boundaries.py",
+      "environment": "Isolated Cloud Linux Python 3.12; Docker Compose v2.40.3; synthetic PostgreSQL 17 on loopback 15441",
+      "exit_status": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "boundaries.txt",
+      "sha256": "696f9a58b43691031967c73d000d780b3a8af9ba63ab8a495f2654864112c156"
+    },
+    {
+      "name": "compose",
+      "command": ".venv/bin/python -m scripts.verify_init_compose",
+      "environment": "Isolated Cloud Linux Python 3.12; Docker Compose v2.40.3; synthetic PostgreSQL 17 on loopback 15441",
+      "exit_status": 0,
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "init-compose.txt",
+      "sha256": "e4c4f7b7760e3e2e2c4eada538574775d79cd3b83e0a630db53fa9999099d063"
+    }
+  ],
+  "notes": [
+    "Full regression ran the implementation working tree before final connection-reference DTO annotation; focused tests repeated on implementation commit.",
+    "PostgreSQL URL contains only synthetic fixture credentials; placeholder above intentionally omits them.",
+    "Five existing opt-in integration skips do not constitute live external qualification.",
+    "Compose evidence proves model rendering, not new live Databricks deployment."
+  ]
+}

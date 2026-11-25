@@ -1,0 +1,7 @@
+Generated Compose profile verified: local
+Generated Compose profile verified: file
+Generated Compose profile verified: oauth
+Generated Compose profile verified: token
+Generated Compose profile verified: external-oauth
+Generated Compose profile verified: external-token
+Compose literal environment values verified: 9
