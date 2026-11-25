@@ -64,8 +64,8 @@
     },
     {
       "path": "Dockerfile.ml",
-      "bytes": 5842,
-      "sha256": "ecafd2d00ddd6cc55662ff5077b5e0a48927b0485412d4ea3b4374e578372fa1"
+      "bytes": 5968,
+      "sha256": "9f4ada9c7b0a204ce3caba7c72270e9dd04a757d84a81841e2ad0dc4c18a868d"
     },
     {
       "path": "Dockerfile.mlflow",

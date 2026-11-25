@@ -51,7 +51,7 @@ RUN --mount=type=bind,from=build-trust,source=/tmp/build-trust,target=/tmp/build
 COPY tests ./tests
 COPY scripts ./scripts
 COPY deploy/k8s ./deploy/k8s
-COPY .gitignore .env.ml.production.example compose.ml*.yaml ./
+COPY .gitignore .dockerignore .env.ml.production.example Dockerfile.ml Dockerfile.mlflow Dockerfile.minio compose.ml*.yaml ./
 RUN --mount=type=bind,from=build-trust,source=/tmp/build-trust,target=/tmp/build-trust,ro \
     --mount=type=secret,id=corporate_ca,required=false \
     /tmp/build-trust pip install --no-cache-dir '.[dev,training,ebm,observability]'
@@ -87,7 +87,7 @@ RUN --mount=type=bind,from=build-trust,source=/tmp/build-trust,target=/tmp/build
 COPY tests ./tests
 COPY scripts ./scripts
 COPY deploy/k8s ./deploy/k8s
-COPY .gitignore .env.ml.production.example compose.ml*.yaml ./
+COPY .gitignore .dockerignore .env.ml.production.example Dockerfile.ml Dockerfile.mlflow Dockerfile.minio compose.ml*.yaml ./
 RUN --mount=type=bind,from=build-trust,source=/tmp/build-trust,target=/tmp/build-trust,ro \
     --mount=type=secret,id=corporate_ca,required=false \
     /tmp/build-trust pip install --no-cache-dir '.[dev]' 'PyYAML>=6,<7'
