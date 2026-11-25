@@ -39,8 +39,8 @@
     },
     {
       "path": ".github/workflows/ml-ci.yml",
-      "bytes": 17386,
-      "sha256": "db5502dc0dd1b96e2c4859e2e2f4d15d6f24f895c5661cc1f91ed18b2b3221c1"
+      "bytes": 17624,
+      "sha256": "97b920eee143ab6754cd7574c27c6a2751ea55a80adea85d09524d12f6a7be30"
     },
     {
       "path": ".gitignore",

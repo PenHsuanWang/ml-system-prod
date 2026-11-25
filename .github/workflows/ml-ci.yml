@@ -173,6 +173,8 @@ jobs:
           PYTHON
       - name: Build the separate serving target with standard public trust
         run: docker build --target serving --tag ml-serving-ci:test --file Dockerfile.ml .
+      - name: Build the Kubernetes acceptance target with standard public trust
+        run: docker build --target k8s-acceptance --build-arg "ML_RELEASE_CODE_REVISION=${GITHUB_SHA}" --tag ml-k8s-acceptance-ci:test --file Dockerfile.ml .
       - name: Verify the real image and private non-root entrypoint
         run: python scripts/verify_deployment_image.py --image ml-production-ci:test --code-revision "$GITHUB_SHA" --output-dir "$RUNNER_TEMP/deployment-image-evidence"
       - uses: actions/upload-artifact@v4
