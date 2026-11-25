@@ -12,10 +12,12 @@ from pathlib import Path
 from src.application.ingestion.ports import AdapterRegistration
 from src.application.ingestion.registry import ApprovedSourceAdapterRegistry
 from src.application.ingestion.service import IngestionService
+from src.application.ingestion.source_management import SourceManagementService
 from src.application.ingestion.supervisor import IngestionSupervisor
 from src.domain.ingestion.models import AdapterDescriptor
 from src.domain.ingestion.runtime_limits import validate_job_limits, validate_poll_seconds
 from src.infrastructure.ingestion.adapters.file_batch import FileBatchAdapter
+from src.infrastructure.ingestion.adapters.source_approval import DatabricksSourceApproval
 from src.infrastructure.ingestion.persistence.ingestion_jobs import SQLIngestionJobRepository
 from src.infrastructure.ingestion.persistence.source_catalog import SQLSourceCatalog
 from src.infrastructure.ingestion.storage.raw_snapshot_writer import (
@@ -78,6 +80,7 @@ class IngestionSettings:
     databricks_enabled: bool = False
     databricks_connections_file: Path | None = None
     databricks_sources_file: Path | None = None
+    databricks_policy_file: Path | None = None
 
     @classmethod
     def from_env(cls) -> IngestionSettings:
@@ -111,6 +114,11 @@ class IngestionSettings:
                 if os.environ.get("ML_DATABRICKS_CONNECTIONS_FILE")
                 else None
             ),
+            databricks_policy_file=(
+                Path(os.environ["ML_DATABRICKS_POLICY_FILE"])
+                if os.environ.get("ML_DATABRICKS_POLICY_FILE")
+                else None
+            ),
             databricks_sources_file=(
                 Path(os.environ["ML_DATABRICKS_SOURCES_FILE"])
                 if os.environ.get("ML_DATABRICKS_SOURCES_FILE")
@@ -130,14 +138,16 @@ class IngestionSettings:
         validate_poll_seconds(self.poll_seconds)
         if type(self.databricks_enabled) is not bool:
             raise ValueError("Databricks enablement must be boolean")
-        for path in (self.databricks_connections_file, self.databricks_sources_file):
+        for path in (
+            self.databricks_connections_file,
+            self.databricks_sources_file,
+            self.databricks_policy_file,
+        ):
             if path is not None and (
                 not isinstance(path, Path) or not path.is_absolute() or ".." in path.parts
             ):
                 raise ValueError("Databricks configuration requires approved absolute files")
-        if self.databricks_enabled and (
-            self.databricks_connections_file is None or self.databricks_sources_file is None
-        ):
+        if self.databricks_enabled and (self.databricks_connections_file is None):
             raise ValueError("Enabled Databricks requires approved configuration files")
         if (
             not isinstance(self.database_url, str)
@@ -175,6 +185,8 @@ class IngestionComponents:
     owns_database: bool
     approved_template_digests: tuple[tuple[str, str], ...] = ()
 
+    source_management: SourceManagementService | None = None
+
     def supervisor(self) -> IngestionSupervisor:
         return IngestionSupervisor(self.sources, self.registry, self.jobs, self.store)
 
@@ -190,6 +202,7 @@ def build_ingestion(
     additional_registrations: Iterable[AdapterRegistration] = (),
 ) -> IngestionComponents:
     registrations = []
+    approval = None
     template_digests: tuple[tuple[str, str], ...] = ()
     if settings.databricks_enabled:
         from src.infrastructure.ingestion.adapters.databricks_client import DatabricksSQLClient
@@ -200,9 +213,19 @@ def build_ingestion(
         from src.infrastructure.ingestion.adapters.databricks_sql import DatabricksSQLBatchAdapter
 
         assert settings.databricks_connections_file is not None
-        assert settings.databricks_sources_file is not None
         connections = parse_connections(_approved_mapping(settings.databricks_connections_file))
-        templates = parse_templates(_approved_mapping(settings.databricks_sources_file))
+        templates = (
+            parse_templates(_approved_mapping(settings.databricks_sources_file))
+            if settings.databricks_sources_file
+            else {}
+        )
+
+        def policy() -> dict[str, object]:
+            if settings.databricks_policy_file is None:
+                return {"contract": "databricks-access-v1", "grants": []}
+            return _approved_mapping(settings.databricks_policy_file)
+
+        approval = DatabricksSourceApproval(connections, templates, policy)
         if any(template.connection_ref not in connections for template in templates.values()):
             raise ValueError("Databricks template references an unknown approved connection")
         template_digests = tuple(
@@ -224,7 +247,7 @@ def build_ingestion(
         ]
     )
     db = database or Database(settings.database_url)
-    sources = SQLSourceCatalog(db)
+    sources = SQLSourceCatalog(db, approval.execution if approval else None)
     jobs = SQLIngestionJobRepository(
         db,
         lease_seconds=settings.lease_seconds,
@@ -236,5 +259,13 @@ def build_ingestion(
     )
     service = IngestionService(sources, registry, jobs)
     return IngestionComponents(
-        db, sources, jobs, store, registry, service, database is None, template_digests
+        db,
+        sources,
+        jobs,
+        store,
+        registry,
+        service,
+        database is None,
+        template_digests,
+        SourceManagementService(sources, approval) if approval else None,
     )
