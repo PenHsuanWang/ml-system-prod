@@ -1,0 +1,145 @@
+{
+  "report_version": "runtime-source-process-acceptance-v2",
+  "qualification": "synthetic-databricks-client",
+  "status": "PASS",
+  "source_count": 2,
+  "distinct_table_count": 2,
+  "initial_worker_pids": {
+    "worker-a": 174205,
+    "worker-b": 174206
+  },
+  "executions": [
+    {
+      "worker_id": "worker-a",
+      "pid": 174205,
+      "table": [
+        "synthetic",
+        "fdc",
+        "trace_a"
+      ],
+      "delta_version": 128,
+      "template_digest": "eb9bf2637f70bc48867a0360b2cc14973834f13657d5a0642cd86da41ebb3c0f",
+      "query": "SELECT `temperature` FROM `synthetic`.`fdc`.`trace_a` VERSION AS OF 128 WHERE `temperature` >= :predicate_0 ORDER BY `temperature` LIMIT :extract_limit",
+      "parameters": {
+        "extract_limit": 100001,
+        "predicate_0": 0
+      },
+      "source_id": "trace-first",
+      "snapshot": {
+        "snapshot_id": "3fed5bd3-1f95-468a-915e-bb40722fca21",
+        "job_id": "38440f6a-2c98-40cf-8085-31de8ba54454",
+        "source_id": "trace-first",
+        "source_version": "v1",
+        "source_configuration_digest": "538b761764cf6fe6fb5818d0b12072fc204323e0b1a3d107c315f070202935c1",
+        "content_digest": "daef69becace19fdb8eda880bb990d1c719db1b9081fb2b006631ffc7bf1ef1a",
+        "manifest_digest": "e751da793c5055c807a2e7cbdaf1aea251dae9c7c5b0601b5f3371f7f639be83",
+        "data_format": "jsonl",
+        "schema_version": "raw-json-object-v1",
+        "size_bytes": 21,
+        "record_count": 1,
+        "created_at": 1795615749.0725524,
+        "source_revision": "delta:eb9bf2637f70bc48867a0360b2cc14973834f13657d5a0642cd86da41ebb3c0f:128"
+      }
+    },
+    {
+      "worker_id": "worker-b",
+      "pid": 174206,
+      "table": [
+        "synthetic",
+        "fdc",
+        "trace_b"
+      ],
+      "delta_version": 128,
+      "template_digest": "b21402175e8510a2e63975103f0cc03aee4900cd55e806fb1c25ad1b732d5350",
+      "query": "SELECT `temperature` FROM `synthetic`.`fdc`.`trace_b` VERSION AS OF 128 WHERE `temperature` >= :predicate_0 ORDER BY `temperature` LIMIT :extract_limit",
+      "parameters": {
+        "extract_limit": 100001,
+        "predicate_0": 0
+      },
+      "source_id": "trace-second",
+      "snapshot": {
+        "snapshot_id": "f27b1c26-e5ad-445c-aed1-828dc045232c",
+        "job_id": "8bba0f35-7299-4c02-8f89-80ca2550ceb2",
+        "source_id": "trace-second",
+        "source_version": "v1",
+        "source_configuration_digest": "ab81e7b174d28492a08fdb1f9762d5a57893b6666dafe9e71dfd34dfa1075a95",
+        "content_digest": "efce4f66629c0c8e161f0e4649c45392aa7da3aa0e779c80b6e99e59c840f9d8",
+        "manifest_digest": "eff0c432dc1d111489b5d5531bda8bf7d8acfada4aad5ced77b69a68fa8621fe",
+        "data_format": "jsonl",
+        "schema_version": "raw-json-object-v1",
+        "size_bytes": 21,
+        "record_count": 1,
+        "created_at": 1795615749.2255661,
+        "source_revision": "delta:b21402175e8510a2e63975103f0cc03aee4900cd55e806fb1c25ad1b732d5350:128"
+      }
+    },
+    {
+      "worker_id": "worker-b",
+      "pid": 174206,
+      "table": [
+        "synthetic",
+        "fdc",
+        "trace_a"
+      ],
+      "delta_version": 128,
+      "template_digest": "eb9bf2637f70bc48867a0360b2cc14973834f13657d5a0642cd86da41ebb3c0f",
+      "query": "SELECT `temperature` FROM `synthetic`.`fdc`.`trace_a` VERSION AS OF 128 WHERE `temperature` >= :predicate_0 ORDER BY `temperature` LIMIT :extract_limit",
+      "parameters": {
+        "extract_limit": 100001,
+        "predicate_0": 0
+      },
+      "source_id": "trace-first",
+      "snapshot": {
+        "snapshot_id": "313021d1-4ecd-4dcf-aed5-5c92384b4d85",
+        "job_id": "a90d97b3-15e2-48c2-bb7b-1167aa71ac47",
+        "source_id": "trace-first",
+        "source_version": "v1",
+        "source_configuration_digest": "538b761764cf6fe6fb5818d0b12072fc204323e0b1a3d107c315f070202935c1",
+        "content_digest": "daef69becace19fdb8eda880bb990d1c719db1b9081fb2b006631ffc7bf1ef1a",
+        "manifest_digest": "dfff7d21726ed2fac84af8583b9b75b9e351cb094de241811269508a03770856",
+        "data_format": "jsonl",
+        "schema_version": "raw-json-object-v1",
+        "size_bytes": 21,
+        "record_count": 1,
+        "created_at": 1795615749.3035128,
+        "source_revision": "delta:eb9bf2637f70bc48867a0360b2cc14973834f13657d5a0642cd86da41ebb3c0f:128"
+      }
+    },
+    {
+      "worker_id": "worker-a",
+      "pid": 174224,
+      "table": [
+        "synthetic",
+        "fdc",
+        "trace_b"
+      ],
+      "delta_version": 128,
+      "template_digest": "b21402175e8510a2e63975103f0cc03aee4900cd55e806fb1c25ad1b732d5350",
+      "query": "SELECT `temperature` FROM `synthetic`.`fdc`.`trace_b` VERSION AS OF 128 WHERE `temperature` >= :predicate_0 ORDER BY `temperature` LIMIT :extract_limit",
+      "parameters": {
+        "extract_limit": 100001,
+        "predicate_0": 0
+      },
+      "source_id": "trace-second",
+      "snapshot": {
+        "snapshot_id": "46584325-f665-493e-a7e6-8452d933a507",
+        "job_id": "e832617f-b7e6-413c-a2f8-616d91375b31",
+        "source_id": "trace-second",
+        "source_version": "v1",
+        "source_configuration_digest": "ab81e7b174d28492a08fdb1f9762d5a57893b6666dafe9e71dfd34dfa1075a95",
+        "content_digest": "efce4f66629c0c8e161f0e4649c45392aa7da3aa0e779c80b6e99e59c840f9d8",
+        "manifest_digest": "503c9c3b22c82b45aee203f5408f7671d068d24438282ccb6b84a28e1aada599",
+        "data_format": "jsonl",
+        "schema_version": "raw-json-object-v1",
+        "size_bytes": 21,
+        "record_count": 1,
+        "created_at": 1795615750.1958263,
+        "source_revision": "delta:b21402175e8510a2e63975103f0cc03aee4900cd55e806fb1c25ad1b732d5350:128"
+      }
+    }
+  ],
+  "configuration_files_unchanged": true,
+  "legacy_templates_configured": false,
+  "tested_commit": "b0ea0b6d0658c3af05a8bc95c0648c7b5ccf7413",
+  "database": "disposable PostgreSQL 17 container ml-runtime-source-review2-pg"
+}

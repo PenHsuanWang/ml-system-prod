@@ -864,8 +864,18 @@
     },
     {
       "path": "docs/evidence/runtime-sources-20261125/qualification.json",
-      "bytes": 1803,
-      "sha256": "4ce9006f18361b2b6231fae056d643f61544a7affda03bfc434a564faa6af713"
+      "bytes": 2348,
+      "sha256": "5bb10202faaadf5813a4387f450d8ec72fa1bcffda71501ce2b367e0b6cabee7"
+    },
+    {
+      "path": "docs/evidence/runtime-sources-20261125/review2-checks.json",
+      "bytes": 2804,
+      "sha256": "9423e3e2a17a345cdbc7c71d0a28924f58ebe199e9f60fd540359336fce6f6c8"
+    },
+    {
+      "path": "docs/evidence/runtime-sources-20261125/review2-postgres-processes.json",
+      "bytes": 5917,
+      "sha256": "c71aaf7ba1588c6065a27f4ac97a32f2204e6b7ae20567bbc53c06b58fa0310d"
     },
     {
       "path": "docs/glossary.md",
@@ -969,8 +979,8 @@
     },
     {
       "path": "docs/reviews/runtime-source-management-report.md",
-      "bytes": 24617,
-      "sha256": "3b3d7de3720f27452d5e97e83251a628262afd0b9ebea7284a6f8558930ceead"
+      "bytes": 28005,
+      "sha256": "cc10f2b6f6b455c1aa08c3a0f22d3bc19c4c16bc4f494fd6789cdfa6ea7f4e2c"
     },
     {
       "path": "docs/runtime-source-management.md",
@@ -2484,8 +2494,8 @@
     },
     {
       "path": "tests/ml/ingestion/runtime_source_fixture.py",
-      "bytes": 1902,
-      "sha256": "f9369e52a7c322519dfeba03bfdc8f8ef30f5cc7a78e12c91dd3e69fef07bcc8"
+      "bytes": 3189,
+      "sha256": "24405f9d416906568c284d123a8e0019592deedf316cba1129aeaefff5647efc"
     },
     {
       "path": "tests/ml/ingestion/test_adapter_contracts.py",
@@ -2604,8 +2614,8 @@
     },
     {
       "path": "tests/ml/ingestion/test_runtime_source_processes.py",
-      "bytes": 5373,
-      "sha256": "294521ca2a6317963283cb147962b27774a82dede5875cf61c3c21ce944b704b"
+      "bytes": 10313,
+      "sha256": "df6d4152aaae3736065993f85bd4e857cb9b6e33e960140ee14bb18cd7aefcea"
     },
     {
       "path": "tests/ml/ingestion/test_service.py",

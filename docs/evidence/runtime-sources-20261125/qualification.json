@@ -23,13 +23,26 @@
     "reason": "Minikube pinned-version lookup to api.github.com returned Forbidden"
   },
   "draft_pr": {
-    "status": "BLOCKED",
-    "exit_status": 1,
-    "reason": "POST https://api.github.com/graphql returned Forbidden"
+    "status": "CONFIRMED_DRAFT_VIA_GITHUB_WEB",
+    "historical_creation_attempt": {
+      "status": "BLOCKED",
+      "exit_status": 1,
+      "reason": "POST https://api.github.com/graphql returned Forbidden"
+    },
+    "url": "https://github.com/PenHsuanWang/ml-system-prod/pull/14",
+    "observed_head_before_review2_push": "29b402c6f3e8f099303ef40aaae616c3ee8ab568"
   },
   "review_scope": {
     "date": "2026-11-25",
     "kubernetes_dynamic": "Deferred by explicit user instruction for Draft PR code review. Execution remains NOT VERIFIED.",
     "recommendation": "READY FOR REVIEW"
+  },
+  "review2": {
+    "test_commit": "b0ea0b6d0658c3af05a8bc95c0648c7b5ccf7413",
+    "distinct_tables": 2,
+    "execution_count": 4,
+    "worker_evidence": "review2-postgres-processes.json",
+    "checks": "review2-checks.json",
+    "supersedes_original_multi_table_and_worker_evidence": true
   }
 }

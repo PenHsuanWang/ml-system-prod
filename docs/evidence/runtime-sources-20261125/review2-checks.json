@@ -1,0 +1,88 @@
+{
+  "baseline_commit": "29b402c6f3e8f099303ef40aaae616c3ee8ab568",
+  "test_commit": "b0ea0b6d0658c3af05a8bc95c0648c7b5ccf7413",
+  "scope": "Tests and evidence only. Production implementation remains at 1290be7890a1836bea975f30aefc6b3d6edacb87.",
+  "records": [
+    {
+      "name": "sqlite-processes",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/ml/ingestion/test_runtime_source_processes.py",
+        "-q"
+      ],
+      "test_commit": "b0ea0b6d0658c3af05a8bc95c0648c7b5ccf7413",
+      "counts": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "exit_status": 0,
+      "log": "var/runtime-source-review2/sqlite-processes.log",
+      "log_sha256": "4635950151259d04456905f1f5db72a484d383137f57401879af09d5be7894ea"
+    },
+    {
+      "name": "postgres",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/ml/ingestion/test_source_management.py",
+        "tests/ml/ingestion/test_runtime_source_processes.py",
+        "-q",
+        "--junitxml=var/runtime-source-review2/postgres.xml"
+      ],
+      "test_commit": "b0ea0b6d0658c3af05a8bc95c0648c7b5ccf7413",
+      "counts": {
+        "passed": 21,
+        "failed": 0,
+        "skipped": 0
+      },
+      "exit_status": 0,
+      "log": "var/runtime-source-review2/postgres.log",
+      "log_sha256": "7e5ddd09c1e9d4bf90150060dcdeb2671ca8954facd5f17f04a8f447661da84c",
+      "environment": {
+        "ML_TEST_DATABASE_URL": "dedicated synthetic database on localhost:15439",
+        "ML_RUNTIME_SOURCE_E2E_REPORT": "var/runtime-source-review2/postgres-processes.json"
+      }
+    },
+    {
+      "name": "regressions",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/ml",
+        "tests/test_boundaries.py",
+        "-q",
+        "-rs",
+        "--junitxml=var/runtime-source-review2/regressions.xml"
+      ],
+      "test_commit": "b0ea0b6d0658c3af05a8bc95c0648c7b5ccf7413",
+      "counts": {
+        "passed": 1291,
+        "failed": 0,
+        "skipped": 5
+      },
+      "exit_status": 0,
+      "log": "var/runtime-source-review2/regressions.log",
+      "log_sha256": "7df5720694427c47ff68896767dd88cda46781f4af760cec87a2858b4ecbdbd7"
+    },
+    {
+      "name": "ingestion-quality-initial",
+      "command": [
+        ".venv/bin/python",
+        "scripts/check_ingestion.py"
+      ],
+      "test_commit": "b0ea0b6d0658c3af05a8bc95c0648c7b5ccf7413",
+      "counts": null,
+      "exit_status": 0,
+      "log": "var/runtime-source-review2/ingestion-quality-initial.log",
+      "log_sha256": "9466f5b4ca13a7f0fa73fd44fd6d27efc0cb9dfaf54ad5d47b2a9b23cd82ead1"
+    }
+  ],
+  "counts_overlap": true,
+  "production_accepted": false,
+  "kubernetes_dynamic": "DEFERRED by user for this review"
+}

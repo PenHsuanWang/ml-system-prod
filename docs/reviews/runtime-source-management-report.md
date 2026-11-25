@@ -13,7 +13,8 @@ approved catalog/schema scope need no deployment file changes or process restart
 - Baseline branch master.
 - Baseline commit 8c9023b00828000287e169ac760afe57102d7353, fetched from origin before changes.
 - Feature branch feature/runtime-data-source-management.
-- Final implementation code/test commit 1290be7890a1836bea975f30aefc6b3d6edacb87.
+- Production implementation commit 1290be7890a1836bea975f30aefc6b3d6edacb87.
+- Second-review acceptance test commit b0ea0b6d0658c3af05a8bc95c0648c7b5ccf7413.
 - Documentation and evidence commits follow the implementation commit.
 - No applicable AGENTS.md files were present in the workspace checkout ancestry.
 - Repository authority included module-spec, architecture, developer guidance,
@@ -98,6 +99,8 @@ and migration 0006 are preserved.
 | tests/ml/init_setup/test_cli.py | Modified | API, policy, concurrency, subprocess and profile regressions | Automated engineering evidence |
 | tests/ml/init_setup/test_config.py | Modified | API, policy, concurrency, subprocess and profile regressions | Automated engineering evidence |
 | docs/reviews/runtime-source-management-report.md | New | Required implementation report | Reviewer evidence |
+| docs/evidence/runtime-sources-20261125/review2-checks.json | New | Second-review commands and source revision | Non-additive acceptance evidence |
+| docs/evidence/runtime-sources-20261125/review2-postgres-processes.json | New | Observed tables, queries, worker PIDs and lineage | Multi-table and multi-worker proof |
 | FILE-MANIFEST.json | Modified | Regenerated tracked file hashes | Source/document integrity |
 
 No files were deleted. Existing recursive CI scopes already cover the new modules, so CI validation scopes required no changes. Session-only CA BuildKit mounts and readable copied-source
@@ -255,8 +258,8 @@ No unexecuted gate is classified as passed.
 | AC-05 | PASS | Canonical SourceDefinition and transactional tenant lock | Idempotency, conflict, concurrency and tamper tests |
 | AC-06 | PASS | Execution-time exact SQL catalog lookup | Independent workers start before HTTP registration |
 | AC-07 | PASS | Existing stager/publication pipeline | Snapshot payload, manifest, digest and source revision verification |
-| AC-08 | PASS | Runtime immutable config and schema policy scope | Two different tables registered without file changes/restarts |
-| AC-09 | PASS | Per-instance SQLSourceCatalog | Two workers and restarted API/worker processes |
+| AC-08 | PASS with second-review evidence | Runtime immutable config and schema policy scope | review2-postgres-processes.json verifies trace_a and trace_b, distinct SQL/fingerprints/payloads and unchanged configuration files |
+| AC-09 | PASS with second-review evidence | Per-instance SQLSourceCatalog | Two original worker PIDs execute the same source with identical SQL and digest, then all API/worker processes restart and resolve the second source again |
 | AC-10 | PASS | Legacy branch and unchanged snapshot contracts | Legacy contract, publication, DatasetBuilder and ML regressions |
 | AC-11 | PASS | Eight source management endpoints | Registration, listing, version, enable and disable tests |
 | AC-12 | PASS | Tenant-scoped repository and deployment-owned grants | Cross-tenant, ungranted manager, unknown connection and scope rejection |
@@ -311,13 +314,58 @@ The feature branch is published as feature/runtime-data-source-management.
 The requested Draft PR title is
 feat(ingestion): introduce governed runtime data source management API.
 
-GitHub API requests currently return 403 at api.github.com, including the
-GraphQL operation required by gh pr create. The prepared PR body is retained
-in var/runtime-source-evidence/pr-body.md. After pushing this review-scope
-update, gh pr create --draft was retried and exited 1 with
-POST https://api.github.com/graphql Forbidden. Draft PR creation remains blocked.
+GitHub API requests still return 403 at api.github.com. Read-only GitHub web
+pages confirm Draft PR #14 at
+https://github.com/PenHsuanWang/ml-system-prod/pull/14.
+Its observed head before this review update was
+29b402c6f3e8f099303ef40aaae616c3ee8ab568.
+The existing PR will receive these branch commits. The latest-head CI result
+must be checked after the final evidence commit is pushed.
 
-The api.github.com domain grant is already saved in the environment draft.
-The available configuration tool saves drafts without applying the running
-network policy. That runtime setting is the prerequisite for retrying the
-GitHub API operation.
+## L. Second-review corrections and acceptance evidence
+
+F-02 was valid for the previous head. The original subprocess test registered
+two source IDs against the same table and returned a constant fixture payload.
+Its earlier multi-table claim overstated that evidence. The new test commit
+b0ea0b6d0658c3af05a8bc95c0648c7b5ccf7413 replaces that scenario with two distinct tables
+and table-specific synthetic payloads. Production source, bootstrap and
+deployment behavior are unchanged in this review correction.
+
+The controlled byte-stream client now rejects unknown tables and records the
+resolved table, SQL, bound parameters, Delta version, public template digest,
+worker identity and PID. It uses the existing query builder and JSONL codec.
+The real HTTP API, SQL catalog, claims, bounded stager and immutable publication
+remain in the execution path.
+
+A single-use fixture permit controls which already-running worker may claim each
+test job. This verifies executor participation deterministically while exercising
+the existing supervisor and durable SQL lease boundary.
+
+| Execution | Worker | Table | Expected temperature | Verification |
+| --- | --- | --- | --- | --- |
+| 1 | Original worker-a | synthetic.fdc.trace_a | 11.0 | Exact resolved table, SQL, fingerprint, source/content/manifest digests |
+| 2 | Original worker-b | synthetic.fdc.trace_b | 22.0 | Different PID, table, SQL, fingerprint and payload digest |
+| 3 | Original worker-b | synthetic.fdc.trace_a | 11.0 | Same immutable source configuration, SQL and fingerprint as execution 1 |
+| 4 | Restarted worker-a | synthetic.fdc.trace_b | 22.0 | New PID after all API/worker restarts, original SQL and source digest retained |
+
+Connections and policy files are unchanged throughout these registrations and
+executions. No legacy template file is configured. The source responses assert
+the exact table submitted. Every snapshot is verified through the existing
+snapshot store.
+
+Local SQLite process acceptance passed one case. Disposable PostgreSQL runtime
+and security tests passed 21 cases. Local ML regressions passed 1,291 cases with
+five existing conditional skips. These suites overlap and their counts must not
+be added. Exact commands, log hashes and source revision are in
+docs/evidence/runtime-sources-20261125/review2-checks.json. Process observations
+and source/snapshot lineage are in review2-postgres-processes.json.
+
+The previous 1,284-case Compose report remains evidence for its original
+1290be7 implementation revision. It is not presented as a new execution of the
+expanded second-review process test. Final-head remote CI is tracked on PR #14.
+
+F-01 remains the documented deployment-policy representative Template design.
+F-03 remains the documented policy-file propagation limitation. Kubernetes
+dynamic acceptance remains deferred under the user's instruction. Historical
+automatic Kubernetes workflow failures remain visible and are not relabeled
+as passes. production_accepted remains false.
