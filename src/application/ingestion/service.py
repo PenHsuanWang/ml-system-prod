@@ -5,17 +5,28 @@ import json
 from src.application.ingestion.ports import (
     IngestionJobRepository,
     SourceAdapterResolver,
+    SourceCandidates,
     SourceResolver,
 )
-from src.domain.ingestion.models import IngestionJob, IngestionRequest, RawSnapshot
-from src.domain.ml import Actor, Conflict, Forbidden, MLError, NotFound, digest
+from src.domain.ingestion.models import (
+    IngestionJob,
+    IngestionRequest,
+    RawSnapshot,
+    SourceDefinition,
+)
+from src.domain.ml import Actor, Conflict, Forbidden, MLError, NotFound, Unavailable, digest
 
 
 class IngestionService:
     def __init__(
-        self, sources: SourceResolver, adapters: SourceAdapterResolver, jobs: IngestionJobRepository
+        self,
+        sources: SourceResolver,
+        adapters: SourceAdapterResolver,
+        jobs: IngestionJobRepository,
+        candidates: SourceCandidates | None = None,
     ) -> None:
         self.sources, self.adapters, self.jobs = sources, adapters, jobs
+        self.candidates = candidates
 
     def submit(self, actor: Actor, key: str, request: IngestionRequest) -> IngestionJob:
         actor.require("ml:ingest")
@@ -31,10 +42,38 @@ class IngestionService:
         previous = self.jobs.find_submission(actor, key, fingerprint)
         if previous is not None:
             return self.get(actor, previous.job_id)
-        source = self.sources.resolve(actor, request.source_id, request.source_version)
-        self.adapters.validate_source(source)
+        source = self.approved_source(actor, request.source_id, request.source_version)
         limits = request.bounded_by(source.limits)
         return self.jobs.submit(actor, key, fingerprint, source, limits)
+
+    def approved_source(self, actor: Actor, source_id: str, version: str) -> SourceDefinition:
+        actor.require("ml:ingest")
+        source = self.sources.resolve(actor, source_id, version)
+        self.adapters.validate_source(source)
+        return source
+
+    def available_sources(
+        self, actor: Actor, limit: int, offset: int
+    ) -> tuple[list[SourceDefinition], bool]:
+        actor.require("ml:ingest")
+        if (
+            type(limit) is not int
+            or not 1 <= limit <= 100
+            or type(offset) is not int
+            or not 0 <= offset <= 1_000_000
+        ):
+            raise MLError("Invalid source pagination")
+        if self.candidates is None:
+            raise Unavailable("Available source listing is not configured")
+        keys = self.candidates.candidate_keys(actor, limit + 1, offset)
+        items = []
+        for source_id, version in keys[:limit]:
+            try:
+                items.append(self.approved_source(actor, source_id, version))
+            except (MLError, ValueError, TypeError, KeyError):
+                # Unavailable, corrupt or unsupported definitions disclose no metadata.
+                continue
+        return items, len(keys) > limit
 
     def get(self, actor: Actor, job_id: str) -> IngestionJob:
         if not actor.permissions.intersection(

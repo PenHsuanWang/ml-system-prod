@@ -19,6 +19,7 @@ from src.api.ml_http import (
     registry_router,
     training_router,
 )
+from src.application.catalog.service import CatalogService
 from src.application.ingestion.service import IngestionService
 from src.application.ingestion.source_management import SourceManagementService
 from src.application.ml_services import ActorResolver, MLServices
@@ -32,6 +33,7 @@ def create_app(
     identity: ActorResolver | None = None,
     ingestion_service: IngestionService | None = None,
     source_management: SourceManagementService | None = None,
+    catalog_service: CatalogService | None = None,
 ) -> FastAPI:
     if services is not None:
         if identity is None:
@@ -47,6 +49,11 @@ def create_app(
         if source_management is not None:
             app.state.source_management = source_management
             app.include_router(source_router, prefix="/api/v1/ingestion")
+        if catalog_service is not None:
+            from src.api.catalog.routers import router as catalog_router
+
+            app.state.catalog_service = catalog_service
+            app.include_router(catalog_router, prefix="/api/v1/catalog")
         app.add_middleware(MLTraceMiddleware)
         return app
 
@@ -67,6 +74,10 @@ def create_app(
         if ingress_enabled()
         else None
     )
+    from bootstrap.catalog_wiring import build_catalog
+    from src.api.catalog.routers import router as catalog_router
+
+    catalog = build_catalog()
     definitions = [
         *build_modules(config),
         ModuleDefinition("training", requires=("identity",), routers=(training_router,)),
@@ -81,6 +92,10 @@ def create_app(
             ModuleDefinition(
                 "ingestion", requires=("identity",), routers=(ingestion_router, source_router)
             )
+        )
+    if catalog is not None:
+        definitions.append(
+            ModuleDefinition("catalog", requires=("identity",), routers=(catalog_router,))
         )
     app = template_factory(config, modules=definitions, include_default_readiness=False)
     original_lifespan = app.router.lifespan_context
@@ -99,6 +114,8 @@ def create_app(
             configure_telemetry("management")
             current.state.ml_services = components.services
             current.state.ml_identity = TemplateIdentity()
+            if catalog is not None:
+                current.state.catalog_service = catalog
             if ingress is not None:
                 current.state.ingestion_service = ingress.service
                 current.state.source_management = ingress.source_management

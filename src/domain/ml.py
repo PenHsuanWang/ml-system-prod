@@ -72,6 +72,7 @@ class Actor:
                 "ml.ingestion.cancel": "ml:ingestion:cancel",
                 "ml.ingestion.operate": "ml:ingestion:operate",
                 "ml.source.manage": "ml:source:manage",
+                "ml.catalog.read": "ml:catalog:read",
             }
         )
         return cls(

@@ -28,3 +28,21 @@ class IngestionSubmitRequest(BaseModel):
             self.max_records,
             self.timeout_seconds,
         )
+
+
+class AvailableSourceResponse(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    source_id: str
+    version: str
+    adapter_type: str
+    data_format: str
+    schema_version: str
+    limits: dict[str, int | float]
+
+
+class AvailableSourcePage(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+    items: list[AvailableSourceResponse]
+    limit: int
+    next_offset: int | None
+    has_more: bool

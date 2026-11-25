@@ -107,6 +107,20 @@ class SQLSourceCatalog:
             ).mappings()
             return [self._metadata(row) for row in rows]
 
+    def candidate_keys(self, actor: Actor, limit: int, offset: int) -> list[tuple[str, str]]:
+        actor.require("ml:ingest")
+        if not 1 <= limit <= 101 or not 0 <= offset <= 1_000_000:
+            raise IngestionError("Invalid source scan budget")
+        with self.db.transaction() as connection:
+            rows = connection.execute(
+                select(source_definitions.c.source_id, source_definitions.c.version)
+                .where(source_definitions.c.tenant_id == actor.tenant_id)
+                .order_by(source_definitions.c.source_id, source_definitions.c.version)
+                .limit(limit)
+                .offset(offset)
+            )
+            return [(row.source_id, row.version) for row in rows]
+
     def register(self, actor: Actor, definition: SourceDefinition) -> SourceDefinition:
         actor.require("ml:source:manage")
         if definition.tenant_id != actor.tenant_id:

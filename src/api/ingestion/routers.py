@@ -2,9 +2,13 @@
 
 from typing import Annotated, cast
 
-from fastapi import APIRouter, Depends, Header, Request
+from fastapi import APIRouter, Depends, Header, Query, Request
 
-from src.api.ingestion.schemas import IngestionSubmitRequest
+from src.api.ingestion.schemas import (
+    AvailableSourcePage,
+    AvailableSourceResponse,
+    IngestionSubmitRequest,
+)
 from src.api.ml_http import ActorDependency
 from src.application.ingestion.service import IngestionService
 from src.domain.ingestion.models import IngestionJob, RawSnapshot
@@ -94,3 +98,29 @@ def get_snapshot(
     snapshot_id: str, actor: ActorDependency, service: IngestionDependency
 ) -> dict[str, object]:
     return public_snapshot(service.snapshot(actor, snapshot_id))
+
+
+@router.get("/available-sources", response_model=AvailableSourcePage)
+def available_sources(
+    actor: ActorDependency,
+    service: IngestionDependency,
+    limit: Annotated[int, Query(ge=1, le=100)] = 50,
+    offset: Annotated[int, Query(ge=0, le=1_000_000)] = 0,
+) -> AvailableSourcePage:
+    sources, more = service.available_sources(actor, limit, offset)
+    return AvailableSourcePage(
+        items=[
+            AvailableSourceResponse(
+                source_id=s.source_id,
+                version=s.version,
+                adapter_type=s.adapter_type,
+                data_format=s.data_format,
+                schema_version=s.schema_version,
+                limits=s.limits.to_dict(),
+            )
+            for s in sources
+        ],
+        limit=limit,
+        next_offset=offset + limit if more else None,
+        has_more=more,
+    )

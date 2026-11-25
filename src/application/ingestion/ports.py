@@ -37,6 +37,10 @@ class SourceResolver(Protocol):
     def for_execution(self, job: IngestionJob) -> SourceDefinition: ...
 
 
+class SourceCandidates(Protocol):
+    def candidate_keys(self, actor: Actor, limit: int, offset: int) -> list[tuple[str, str]]: ...
+
+
 class SourceAdapterResolver(Protocol):
     def resolve(
         self, adapter_type: str, version: str, capability: str = "batch_extract"
