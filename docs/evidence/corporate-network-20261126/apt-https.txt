@@ -1,0 +1,57 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.corporate-apt
+#1 transferring dockerfile: 679B done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/golang:1.26.10-alpine
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 1.3s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 370B done
+#4 DONE 0.0s
+
+#5 [stage-1 1/3] FROM docker.io/library/python:3.12-slim@sha256:191083cdf6c7bda8c76158983163ead5d5cf7b77cf3033e805bb0f5296f51b4b
+#5 CACHED
+
+#6 [build-trust 1/3] FROM docker.io/library/golang:1.26.10-alpine
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 transferring context: 115B 0.0s done
+#7 DONE 0.0s
+
+#8 [build-trust 2/3] COPY scripts/build_trust/main.go /tmp/build-trust.go
+#8 CACHED
+
+#9 [build-trust 3/3] RUN CGO_ENABLED=0 GOTOOLCHAIN=local go build -trimpath -ldflags="-s -w" -o /tmp/build-trust /tmp/build-trust.go
+#9 CACHED
+
+#10 [stage-1 2/3] RUN sed -i 's|http://deb.debian.org|https://deb.debian.org|g' /etc/apt/sources.list.d/debian.sources
+#10 DONE 1.4s
+
+#11 [stage-1 3/3] RUN --mount=type=bind,from=build-trust,source=/tmp/build-trust,target=/tmp/build-trust,ro     --mount=type=secret,id=corporate_ca,required=false     /tmp/build-trust apt-get update && /tmp/build-trust apt-get install -y --no-install-recommends ca-certificates && rm -rf /var/lib/apt/lists/*
+#11 1.446 Hit:1 https://deb.debian.org/debian trixie InRelease
+#11 1.643 Get:2 https://deb.debian.org/debian trixie-updates InRelease [47.3 kB]
+#11 2.020 Get:3 https://deb.debian.org/debian-security trixie-security InRelease [43.4 kB]
+#11 2.577 Get:4 https://deb.debian.org/debian trixie/main amd64 Packages [9679 kB]
+#11 6.736 Get:5 https://deb.debian.org/debian trixie-updates/main amd64 Packages [1108 B]
+#11 6.913 Get:6 https://deb.debian.org/debian-security trixie-security/main amd64 Packages [311 kB]
+#11 6.960 Fetched 10.1 MB in 6s (1611 kB/s)
+#11 6.960 Reading package lists...
+#11 7.565 Reading package lists...
+#11 7.939 Building dependency tree...
+#11 8.028 Reading state information...
+#11 8.169 ca-certificates is already the newest version (20250419+deb13u1).
+#11 8.169 0 upgraded, 0 newly installed, 0 to remove and 3 not upgraded.
+#11 DONE 8.2s
+
+#12 exporting to image
+#12 exporting layers
+#12 exporting layers 0.8s done
+#12 writing image sha256:f6d49b772b1f46192c30187b4831ce58550a934240afa446390dfc6ed72bee49 done
+#12 naming to docker.io/library/ml-corporate-apt-qualification:20261126 done
+#12 DONE 0.8s

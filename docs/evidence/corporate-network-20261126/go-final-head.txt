@@ -1,0 +1,17 @@
+=== RUN   TestValidation
+--- PASS: TestValidation (0.00s)
+=== RUN   TestCAWithoutOptionalKeyUsage
+--- PASS: TestCAWithoutOptionalKeyUsage (0.00s)
+=== RUN   TestTLSChild
+--- PASS: TestTLSChild (0.00s)
+=== RUN   TestAdditionalTrustPreservesPublicRootsAndCleansUp
+--- PASS: TestAdditionalTrustPreservesPublicRootsAndCleansUp (0.04s)
+=== RUN   TestOptionalAndInvalidInputs
+build trust: invalid CA input
+build trust: invalid CA input
+build trust: invalid CA input
+--- PASS: TestOptionalAndInvalidInputs (0.00s)
+=== RUN   TestAPTUsesVerifiedScopedCA
+--- PASS: TestAPTUsesVerifiedScopedCA (0.00s)
+PASS
+ok  	command-line-arguments	0.050s

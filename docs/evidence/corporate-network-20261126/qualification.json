@@ -1,0 +1,380 @@
+{
+  "baseline": "e1dc4234c32c6586b31aed5a73d977abaa13348f",
+  "branch": "build/optional-corporate-network-support",
+  "implementation_commit": "bf69ef705091d4778e1ee87f7a4b21a5628401d6",
+  "production_accepted": false,
+  "environment": "Cloud Linux, Docker vfs, Compose v2.40.3, Python 3.12, Go 1.26.10 in disposable container",
+  "validations": [
+    {
+      "name": "standard-api",
+      "command": "docker build -f Dockerfile.ml --target api -t ml-corporate-api-standard:20261126 .",
+      "status": "BLOCKED",
+      "exit_status": 1,
+      "passed": null,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "evidence": "standard-api.txt",
+      "sha256": "9aef6ef2c4aaa382ee216147112c1e4e1ecb61e0ec6a56a5dd7bfddd0475e4fd",
+      "source_commit": null,
+      "source_note": "Executed the initial uncommitted build-only implementation before e1ab24f. The unchanged default-trust path failed verification under Cloud interception.",
+      "raw_sha256": "12777d60375c2dcb7010452940d47274d3c10b263b640ef8d28b639e82951b22",
+      "normalization": "Trailing whitespace only, for tracked evidence; original retained in local var logs."
+    },
+    {
+      "name": "optional-api",
+      "command": "docker build -f Dockerfile.ml --target api --secret id=corporate_ca,src=.local/corporate-network/combined-ca.pem -t ml-corporate-api-optional:20261126 .",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "evidence": "optional-api.txt",
+      "sha256": "1dfcd5bb94ab7f4c8df1d7fbc15852aa90ce896e606495656ed8c26248730974",
+      "source_commit": "e6691e6",
+      "source_note": "Exact per-run build source is e6691e6 for optional client builds; Python regression used the same Python tree before final build-only/CI changes. Final strict PEM parser is independently covered by final Go tests.",
+      "raw_sha256": "4d237e6ddac7a69f23951f10e86c06500399dbb619b984827f36513b85d02720",
+      "normalization": "Trailing whitespace only, for tracked evidence; original retained in local var logs."
+    },
+    {
+      "name": "optional-apk",
+      "command": "docker build -f Dockerfile.minio --target runtime --secret id=corporate_ca,src=.local/corporate-network/combined-ca.pem -t ml-corporate-alpine-optional:20261126 .",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "evidence": "optional-apk.txt",
+      "sha256": "fca0a6bb77bd8a41c87f8139d8b1109ba83d089cccf9a3d1f3c0128631a99ea6",
+      "source_commit": "e6691e6",
+      "source_note": "Exact per-run build source is e6691e6 for optional client builds; Python regression used the same Python tree before final build-only/CI changes. Final strict PEM parser is independently covered by final Go tests."
+    },
+    {
+      "name": "apt-https",
+      "command": "docker build -f /tmp/Dockerfile.corporate-apt --secret id=corporate_ca,src=.local/corporate-network/combined-ca.pem -t ml-corporate-apt-qualification:20261126 .",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "evidence": "apt-https.txt",
+      "sha256": "180c12728030e99e734fd366c92a8c0c0b24e3626f868443fbdf8c63ce525c14",
+      "source_commit": "e6691e6",
+      "source_note": "Exact per-run build source is e6691e6 for optional client builds; Python regression used the same Python tree before final build-only/CI changes. Final strict PEM parser is independently covered by final Go tests."
+    },
+    {
+      "name": "go-git",
+      "command": "docker build -f /tmp/Dockerfile.corporate-go-git --secret id=corporate_ca,src=.local/corporate-network/combined-ca.pem -t ml-corporate-go-git-qualification:20261126 .",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "evidence": "go-git.txt",
+      "sha256": "57bb5ef36d762aaae8b28a6d20b71d94e16be137b6a874e6ffcafe0208726fea",
+      "source_commit": "e6691e6",
+      "source_note": "Exact per-run build source is e6691e6 for optional client builds; Python regression used the same Python tree before final build-only/CI changes. Final strict PEM parser is independently covered by final Go tests."
+    },
+    {
+      "name": "invalid-ca",
+      "command": "docker build --no-cache -f Dockerfile.ml --target api --secret id=corporate_ca,src=.local/corporate-network/invalid.pem .",
+      "status": "PASS (expected rejection)",
+      "exit_status": 1,
+      "passed": 1,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 0,
+      "evidence": "invalid-ca.txt",
+      "sha256": "86a26956d149a1fc0afb25e24f618856003ff0b5b47ab31125663fb6e003a0c5",
+      "source_commit": "e6691e6",
+      "source_note": "Exact per-run build source is e6691e6 for optional client builds; Python regression used the same Python tree before final build-only/CI changes. Final strict PEM parser is independently covered by final Go tests."
+    },
+    {
+      "name": "regression",
+      "command": "/workspace/ml-system-prod/.venv/bin/python -m pytest tests/ml tests/test_boundaries.py -q",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 1326,
+      "failed": 0,
+      "errors": 0,
+      "skipped": 5,
+      "evidence": "regression.txt",
+      "sha256": "91b577d6cd88fdc68b7123df506fef85bf61ca0ab3a428a28953bd762edf09dc",
+      "source_commit": "e6691e6",
+      "source_note": "Exact per-run build source is e6691e6 for optional client builds; Python regression used the same Python tree before final build-only/CI changes. Final strict PEM parser is independently covered by final Go tests."
+    },
+    {
+      "name": "regression-disk-failure",
+      "command": "/workspace/ml-system-prod/.venv/bin/python -m pytest tests/ml tests/test_boundaries.py -q",
+      "status": "FAILED (Cloud disk exhausted; rerun passed)",
+      "exit_status": 1,
+      "passed": 1316,
+      "failed": 1,
+      "errors": 9,
+      "skipped": 5,
+      "evidence": "regression-disk-failure.txt",
+      "sha256": "ee5cd2bea416783a9624b712256f3cf5789ebed0ad5b271fb42b520926bd24de",
+      "source_commit": "e6691e6",
+      "source_note": "Exact per-run build source is e6691e6 for optional client builds; Python regression used the same Python tree before final build-only/CI changes. Final strict PEM parser is independently covered by final Go tests.",
+      "raw_sha256": "1ba1cadf6640ed1922b0ebb5192e20e7870d06add1bebe43669293f80ee9c686",
+      "normalization": "Trailing whitespace only, for tracked evidence; original retained in local var logs."
+    },
+    {
+      "name": "go-final-head",
+      "command": "docker run --rm -v /workspace/ml-build-support/scripts/build_trust:/source:ro golang:1.26.10-alpine sh -c 'adduser -D _apt && CGO_ENABLED=0 GOTOOLCHAIN=local go test -v /source/main.go /source/main_test.go'",
+      "source_commit": "bf69ef705091d4778e1ee87f7a4b21a5628401d6",
+      "environment": "Cloud Linux Python 3.12; Go 1.26.10 disposable container",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "go-final-head.txt",
+      "sha256": "eb95aab259db504ce974e2fc28faeaaff1d9fed050936de248176a8bd34a92da"
+    },
+    {
+      "name": "regression-delivery",
+      "command": "/workspace/ml-system-prod/.venv/bin/python -m pytest tests/ml tests/test_boundaries.py -q",
+      "source_commit": "bf69ef705091d4778e1ee87f7a4b21a5628401d6",
+      "environment": "Cloud Linux Python 3.12; Go 1.26.10 disposable container",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 1326,
+      "failed": 0,
+      "skipped": 5,
+      "evidence": "regression-delivery.txt",
+      "sha256": "a611476e100983634cbc0993f838eab266696f3f147ba16ad37892491ac0ffcf"
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/check_boundaries.py",
+      "source_commit": "bf69ef705091d4778e1ee87f7a4b21a5628401d6",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "boundaries.txt",
+      "sha256": "696f9a58b43691031967c73d000d780b3a8af9ba63ab8a495f2654864112c156"
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/check_k8s.py",
+      "source_commit": "bf69ef705091d4778e1ee87f7a4b21a5628401d6",
+      "status": "BLOCKED then corrected PATH",
+      "exit_status": 1,
+      "passed": null,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "k8s-static.txt",
+      "sha256": "fd3032f26cf19a67c540fc20ff24fdd39581cc1a4e70b5c479513001c099a0c6"
+    },
+    {
+      "command": "PATH=/workspace/runtime-source-tools:$PATH /workspace/ml-system-prod/.venv/bin/python scripts/check_k8s.py",
+      "source_commit": "bf69ef705091d4778e1ee87f7a4b21a5628401d6",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "k8s-static-final.txt",
+      "sha256": "66ce0d96dd430a0cc9b780b16f84d3cba737bca2cf8f8bb06ff23a414520a7a2"
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/check_k8s_acceptance.py",
+      "source_commit": "bf69ef705091d4778e1ee87f7a4b21a5628401d6",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "k8s-contracts.txt",
+      "sha256": "cd7f41cf1ad5ba8b6263217889865f18d2b85df5ad631a05d6d321f51fd1b7b2"
+    }
+  ],
+  "package_clients_qualified": [
+    "pip HTTPS",
+    "APK HTTPS",
+    "APT HTTPS with its unprivileged sandbox",
+    "Git HTTPS",
+    "Go module proxy and checksum verification"
+  ],
+  "standard_cloud_build": "BLOCKED without Cloud interception CA; verification remained enabled",
+  "enterprise_network": "EXTERNAL_ENVIRONMENT_NOT_VERIFIED",
+  "kubernetes_dynamic": "DEFERRED",
+  "notes": [
+    "Certificates and keys are generated privately and not tracked. Logs contain no CA PEM or credential values.",
+    "Default image builds are separately exercised on GitHub Actions with no corporate inputs.",
+    "Temporary package-manager Dockerfiles have equivalent retained targets in tests/ml/build_network/fixtures/Dockerfile.",
+    "Invalid CA build exit 1 is expected and counted as a passing negative qualification."
+  ],
+  "final_implementation_commit": "bf69ef705091d4778e1ee87f7a4b21a5628401d6",
+  "remote_ci_final_source": {
+    "source_commit": "bf69ef705091d4778e1ee87f7a4b21a5628401d6",
+    "status": "PASS",
+    "run": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45682995410",
+    "jobs": [
+      {
+        "name": "ingestion-container",
+        "url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45682995410/job/139448131296",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success"
+          },
+          {
+            "name": "Initialize containers",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Build the supported standalone ingestion image",
+            "conclusion": "success"
+          },
+          {
+            "name": "Require the supported Python and official OAuth connector",
+            "conclusion": "success"
+          },
+          {
+            "name": "Require the scoped ingestion quality gate",
+            "conclusion": "success"
+          },
+          {
+            "name": "Require migration, health and a real PostgreSQL worker process",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Stop containers",
+            "conclusion": "success"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "name": "deployment-image",
+        "url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45682995410/job/139448131792",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "conclusion": "success"
+          },
+          {
+            "name": "Build the unified production candidate",
+            "conclusion": "success"
+          },
+          {
+            "name": "Require optional valid CA, reject invalid CA and retain no build trust",
+            "conclusion": "success"
+          },
+          {
+            "name": "Build the separate serving target with standard public trust",
+            "conclusion": "success"
+          },
+          {
+            "name": "Build the Kubernetes acceptance target with standard public trust",
+            "conclusion": "success"
+          },
+          {
+            "name": "Verify the real image and private non-root entrypoint",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success"
+          }
+        ]
+      },
+      {
+        "name": "backend-stack",
+        "url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45682995410/job/139451002060",
+        "steps": [
+          {
+            "name": "Set up job",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Run actions/setup-python@v5",
+            "conclusion": "success"
+          },
+          {
+            "name": "Generate private disposable credentials",
+            "conclusion": "success"
+          },
+          {
+            "name": "Start isolated real Backend roles",
+            "conclusion": "success"
+          },
+          {
+            "name": "Require supported runtime and zero skipped integration cases",
+            "conclusion": "success"
+          },
+          {
+            "name": "Capture disposable stack diagnostics",
+            "conclusion": "skipped"
+          },
+          {
+            "name": "Run actions/upload-artifact@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Remove only this disposable stack",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/setup-python@v5",
+            "conclusion": "success"
+          },
+          {
+            "name": "Post Run actions/checkout@v4",
+            "conclusion": "success"
+          },
+          {
+            "name": "Complete job",
+            "conclusion": "success"
+          }
+        ]
+      }
+    ]
+  },
+  "standard_clean_builds": "PASS on clean GitHub-hosted runner, no corporate inputs required"
+}

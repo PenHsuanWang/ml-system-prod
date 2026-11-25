@@ -1,0 +1,1 @@
+Foundation manifest contracts passed: 40 resources; no cluster access

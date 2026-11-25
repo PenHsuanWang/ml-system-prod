@@ -668,6 +668,96 @@
       "sha256": "8dd9eb42f69842c8e0f33cbf35b564397f001f898cfe6731aebaa1db57f92f18"
     },
     {
+      "path": "docs/evidence/corporate-network-20261126/apt-https.txt",
+      "bytes": 2527,
+      "sha256": "180c12728030e99e734fd366c92a8c0c0b24e3626f868443fbdf8c63ce525c14"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/boundaries.txt",
+      "bytes": 30,
+      "sha256": "696f9a58b43691031967c73d000d780b3a8af9ba63ab8a495f2654864112c156"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/go-final-head.txt",
+      "bytes": 630,
+      "sha256": "eb95aab259db504ce974e2fc28faeaaff1d9fed050936de248176a8bd34a92da"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/go-git.txt",
+      "bytes": 3503,
+      "sha256": "57bb5ef36d762aaae8b28a6d20b71d94e16be137b6a874e6ffcafe0208726fea"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/go-unit.txt",
+      "bytes": 630,
+      "sha256": "534b9d28e55feb777676e7ad409737398b0b77c1f214a4bd2e72d5a53e6d2094"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/invalid-ca.txt",
+      "bytes": 3173,
+      "sha256": "86a26956d149a1fc0afb25e24f618856003ff0b5b47ab31125663fb6e003a0c5"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/k8s-contracts.txt",
+      "bytes": 45,
+      "sha256": "cd7f41cf1ad5ba8b6263217889865f18d2b85df5ad631a05d6d321f51fd1b7b2"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/k8s-static-final.txt",
+      "bytes": 70,
+      "sha256": "66ce0d96dd430a0cc9b780b16f84d3cba737bca2cf8f8bb06ff23a414520a7a2"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/k8s-static.txt",
+      "bytes": 915,
+      "sha256": "fd3032f26cf19a67c540fc20ff24fdd39581cc1a4e70b5c479513001c099a0c6"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/no-leak.json",
+      "bytes": 546,
+      "sha256": "c9885277795563b2ef4cb916ea3728c4d3b860e643616ff1376fc13d3ef89137"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/optional-api.txt",
+      "bytes": 24136,
+      "sha256": "1dfcd5bb94ab7f4c8df1d7fbc15852aa90ce896e606495656ed8c26248730974"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/optional-apk.txt",
+      "bytes": 1868,
+      "sha256": "fca0a6bb77bd8a41c87f8139d8b1109ba83d089cccf9a3d1f3c0128631a99ea6"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/qualification.json",
+      "bytes": 15400,
+      "sha256": "9878fb28943ff0f7f74639f3fe349f792c127f2ebf5f5aa9ef85aaf2938caed4"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/regression-delivery.txt",
+      "bytes": 2075,
+      "sha256": "a611476e100983634cbc0993f838eab266696f3f147ba16ad37892491ac0ffcf"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/regression-disk-failure.txt",
+      "bytes": 22934,
+      "sha256": "ee5cd2bea416783a9624b712256f3cf5789ebed0ad5b271fb42b520926bd24de"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/regression.txt",
+      "bytes": 2075,
+      "sha256": "91b577d6cd88fdc68b7123df506fef85bf61ca0ab3a428a28953bd762edf09dc"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/remote-success-steps.json",
+      "bytes": 4565,
+      "sha256": "b9dbf2492fea5fdeba1f6c32625ed449c9c248ccba0ca895b1469840ea18ce44"
+    },
+    {
+      "path": "docs/evidence/corporate-network-20261126/standard-api.txt",
+      "bytes": 7143,
+      "sha256": "9aef6ef2c4aaa382ee216147112c1e4e1ecb61e0ec6a56a5dd7bfddd0475e4fd"
+    },
+    {
       "path": "docs/evidence/developer-guide-2026-10-24/README.md",
       "bytes": 1731,
       "sha256": "822c8c5b45b5518bff51663214b7d9ad6789657944f56974b3f698d2f85206e1"
@@ -941,6 +1031,11 @@
       "path": "docs/references/pdm-solution-kernel-original.svg",
       "bytes": 32763,
       "sha256": "aeb74970cff7a5c4b1b3b558b46ba0b6315a864bc160f43f38451279c8b2017a"
+    },
+    {
+      "path": "docs/reviews/corporate-network-report.md",
+      "bytes": 11678,
+      "sha256": "b56d16a783007caa325d5ff127219b61663ee40698a10834633f5873e74d9ce1"
     },
     {
       "path": "docs/reviews/day1-deployment-2026-11-10.md",

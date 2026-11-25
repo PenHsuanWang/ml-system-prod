@@ -1,0 +1,51 @@
+#0 building with "default" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.minio
+#1 transferring dockerfile: 3.62kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/golang:1.26.10-alpine
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/alpine:3.23
+#3 DONE 1.8s
+
+#4 [build-trust 1/3] FROM docker.io/library/golang:1.26.10-alpine
+#4 CACHED
+
+#5 [internal] load .dockerignore
+#5 transferring context: 370B done
+#5 DONE 0.0s
+
+#6 [runtime 1/2] FROM docker.io/library/alpine:3.23@sha256:469c9ea410b9215eaee7976ba6c0639039b444be8e5d638f7abbada189971eb2
+#6 CACHED
+
+#7 [internal] load build context
+#7 transferring context: 4.81kB done
+#7 DONE 0.0s
+
+#8 [build-trust 2/3] COPY scripts/build_trust/main.go /tmp/build-trust.go
+#8 DONE 3.3s
+
+#9 [build-trust 3/3] RUN CGO_ENABLED=0 GOTOOLCHAIN=local go build -trimpath -ldflags="-s -w" -o /tmp/build-trust /tmp/build-trust.go
+#9 DONE 7.3s
+
+#10 [build-trust 2/3] COPY scripts/build_trust/main.go /tmp/build-trust.go
+#10 CACHED
+
+#11 [build-trust 3/3] RUN CGO_ENABLED=0 GOTOOLCHAIN=local go build -trimpath -ldflags="-s -w" -o /tmp/build-trust /tmp/build-trust.go
+#11 CACHED
+
+#12 [runtime 2/2] RUN --mount=type=bind,from=build-trust,source=/tmp/build-trust,target=/tmp/build-trust,ro     --mount=type=secret,id=corporate_ca,required=false     /tmp/build-trust apk add --no-cache ca-certificates
+#12 3.989 (1/1) Installing ca-certificates (20261020-r0)
+#12 5.146 Executing busybox-1.37.0-r30.trigger
+#12 5.150 Executing ca-certificates-20261020-r0.trigger
+#12 5.171 OK: 8415 KiB in 17 packages
+#12 DONE 5.2s
+
+#13 exporting to image
+#13 exporting layers
+#13 exporting layers 0.2s done
+#13 writing image sha256:4ce122fa23d923ffbe1c9319c24113527236f4fe294c20e7c81f40b803c145fe done
+#13 naming to docker.io/library/ml-corporate-alpine-optional:20261126 done
+#13 DONE 0.3s

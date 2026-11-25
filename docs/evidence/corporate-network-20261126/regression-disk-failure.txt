@@ -1,0 +1,444 @@
+........................................................................ [  5%]
+........................................................................ [ 10%]
+........................................................................ [ 16%]
+...............................................s........................ [ 21%]
+........................................................................ [ 27%]
+........................................................................ [ 32%]
+....................s................................................... [ 37%]
+........................................................................ [ 43%]
+................FEEEEEEEEE.............................................. [ 48%]
+........................................................................ [ 54%]
+........................................................................ [ 59%]
+.................................................sss.................... [ 64%]
+........................................................................ [ 70%]
+........................................................................ [ 75%]
+........................................................................ [ 81%]
+........................................................................ [ 86%]
+........................................................................ [ 91%]
+........................................................................ [ 97%]
+...................................                                      [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_committed_terminal_result_survives_lost_finish_response _
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-40/test_committed_terminal_result19')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           OSError: [Errno 28] No space left on device: '/tmp/pytest-of-agent/pytest-40/test_committed_terminal_result19'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1311: OSError
+
+The above exception was the direct cause of the following exception:
+
+fixturedef = <FixtureDef argname='tmp_path' scope='function' baseid=''>
+request = <SubRequest 'tmp_path' for <Function test_committed_terminal_result_survives_lost_finish_response>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        if (
+            fixturedef.argname == "event_loop_policy"
+            and fixturedef.func.__module__ != __name__
+        ):
+            warnings.warn(
+                PytestDeprecationWarning(_EVENT_LOOP_POLICY_FIXTURE_DEPRECATION_WARNING),
+            )
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+                return (yield)
+            if not _is_coroutine_or_asyncgen(fixturedef.func):
+>               return (yield)
+                        ^^^^^
+E               OSError: could not create numbered dir with prefix test_committed_terminal_result in /tmp/pytest-of-agent/pytest-40 after 20 tries
+
+../ml-system-prod/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:936: OSError
+___ ERROR at setup of test_register_after_workers_start_publish_and_restart ____
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-40/test_register_after_workers_st19')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           OSError: [Errno 28] No space left on device: '/tmp/pytest-of-agent/pytest-40/test_register_after_workers_st19'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1311: OSError
+
+The above exception was the direct cause of the following exception:
+
+fixturedef = <FixtureDef argname='tmp_path' scope='function' baseid=''>
+request = <SubRequest 'tmp_path' for <Function test_register_after_workers_start_publish_and_restart>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        if (
+            fixturedef.argname == "event_loop_policy"
+            and fixturedef.func.__module__ != __name__
+        ):
+            warnings.warn(
+                PytestDeprecationWarning(_EVENT_LOOP_POLICY_FIXTURE_DEPRECATION_WARNING),
+            )
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+                return (yield)
+            if not _is_coroutine_or_asyncgen(fixturedef.func):
+>               return (yield)
+                        ^^^^^
+E               OSError: could not create numbered dir with prefix test_register_after_workers_st in /tmp/pytest-of-agent/pytest-40 after 20 tries
+
+../ml-system-prod/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:936: OSError
+_ ERROR at setup of test_real_file_ingestion_publishes_raw_snapshot_without_registering_ml_dataset _
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-40/test_real_file_ingestion_publi19')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           OSError: [Errno 28] No space left on device: '/tmp/pytest-of-agent/pytest-40/test_real_file_ingestion_publi19'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1311: OSError
+
+The above exception was the direct cause of the following exception:
+
+fixturedef = <FixtureDef argname='tmp_path' scope='function' baseid=''>
+request = <SubRequest 'tmp_path' for <Function test_real_file_ingestion_publishes_raw_snapshot_without_registering_ml_dataset>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        if (
+            fixturedef.argname == "event_loop_policy"
+            and fixturedef.func.__module__ != __name__
+        ):
+            warnings.warn(
+                PytestDeprecationWarning(_EVENT_LOOP_POLICY_FIXTURE_DEPRECATION_WARNING),
+            )
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+                return (yield)
+            if not _is_coroutine_or_asyncgen(fixturedef.func):
+>               return (yield)
+                        ^^^^^
+E               OSError: could not create numbered dir with prefix test_real_file_ingestion_publi in /tmp/pytest-of-agent/pytest-40 after 20 tries
+
+../ml-system-prod/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:936: OSError
+_ ERROR at setup of test_concurrent_idempotent_submissions_commit_one_durable_job _
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-40/test_concurrent_idempotent_sub19')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           OSError: [Errno 28] No space left on device: '/tmp/pytest-of-agent/pytest-40/test_concurrent_idempotent_sub19'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1311: OSError
+
+The above exception was the direct cause of the following exception:
+
+fixturedef = <FixtureDef argname='tmp_path' scope='function' baseid=''>
+request = <SubRequest 'tmp_path' for <Function test_concurrent_idempotent_submissions_commit_one_durable_job>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        if (
+            fixturedef.argname == "event_loop_policy"
+            and fixturedef.func.__module__ != __name__
+        ):
+            warnings.warn(
+                PytestDeprecationWarning(_EVENT_LOOP_POLICY_FIXTURE_DEPRECATION_WARNING),
+            )
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+                return (yield)
+            if not _is_coroutine_or_asyncgen(fixturedef.func):
+>               return (yield)
+                        ^^^^^
+E               OSError: could not create numbered dir with prefix test_concurrent_idempotent_sub in /tmp/pytest-of-agent/pytest-40 after 20 tries
+
+../ml-system-prod/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:936: OSError
+_ ERROR at setup of test_concurrent_different_keys_same_source_create_distinct_snapshot_identities _
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-40/test_concurrent_different_keys19')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           OSError: [Errno 28] No space left on device: '/tmp/pytest-of-agent/pytest-40/test_concurrent_different_keys19'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1311: OSError
+
+The above exception was the direct cause of the following exception:
+
+fixturedef = <FixtureDef argname='tmp_path' scope='function' baseid=''>
+request = <SubRequest 'tmp_path' for <Function test_concurrent_different_keys_same_source_create_distinct_snapshot_identities>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        if (
+            fixturedef.argname == "event_loop_policy"
+            and fixturedef.func.__module__ != __name__
+        ):
+            warnings.warn(
+                PytestDeprecationWarning(_EVENT_LOOP_POLICY_FIXTURE_DEPRECATION_WARNING),
+            )
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+                return (yield)
+            if not _is_coroutine_or_asyncgen(fixturedef.func):
+>               return (yield)
+                        ^^^^^
+E               OSError: could not create numbered dir with prefix test_concurrent_different_keys in /tmp/pytest-of-agent/pytest-40 after 20 tries
+
+../ml-system-prod/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:936: OSError
+___ ERROR at setup of test_terminal_redelivery_never_acquires_or_republishes ___
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-40/test_terminal_redelivery_never19')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           OSError: [Errno 28] No space left on device: '/tmp/pytest-of-agent/pytest-40/test_terminal_redelivery_never19'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1311: OSError
+
+The above exception was the direct cause of the following exception:
+
+fixturedef = <FixtureDef argname='tmp_path' scope='function' baseid=''>
+request = <SubRequest 'tmp_path' for <Function test_terminal_redelivery_never_acquires_or_republishes>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        if (
+            fixturedef.argname == "event_loop_policy"
+            and fixturedef.func.__module__ != __name__
+        ):
+            warnings.warn(
+                PytestDeprecationWarning(_EVENT_LOOP_POLICY_FIXTURE_DEPRECATION_WARNING),
+            )
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+                return (yield)
+            if not _is_coroutine_or_asyncgen(fixturedef.func):
+>               return (yield)
+                        ^^^^^
+E               OSError: could not create numbered dir with prefix test_terminal_redelivery_never in /tmp/pytest-of-agent/pytest-40 after 20 tries
+
+../ml-system-prod/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:936: OSError
+_ ERROR at setup of test_worker_rechecks_source_revocation_before_acquisition __
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-40/test_worker_rechecks_source_re19')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           OSError: [Errno 28] No space left on device: '/tmp/pytest-of-agent/pytest-40/test_worker_rechecks_source_re19'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1311: OSError
+
+The above exception was the direct cause of the following exception:
+
+fixturedef = <FixtureDef argname='tmp_path' scope='function' baseid=''>
+request = <SubRequest 'tmp_path' for <Function test_worker_rechecks_source_revocation_before_acquisition>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        if (
+            fixturedef.argname == "event_loop_policy"
+            and fixturedef.func.__module__ != __name__
+        ):
+            warnings.warn(
+                PytestDeprecationWarning(_EVENT_LOOP_POLICY_FIXTURE_DEPRECATION_WARNING),
+            )
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+                return (yield)
+            if not _is_coroutine_or_asyncgen(fixturedef.func):
+>               return (yield)
+                        ^^^^^
+E               OSError: could not create numbered dir with prefix test_worker_rechecks_source_re in /tmp/pytest-of-agent/pytest-40 after 20 tries
+
+../ml-system-prod/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:936: OSError
+_ ERROR at setup of test_transient_acquisition_is_bounded_and_uses_a_new_attempt _
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-40/test_transient_acquisition_is_19')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           OSError: [Errno 28] No space left on device: '/tmp/pytest-of-agent/pytest-40/test_transient_acquisition_is_19'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1311: OSError
+
+The above exception was the direct cause of the following exception:
+
+fixturedef = <FixtureDef argname='tmp_path' scope='function' baseid=''>
+request = <SubRequest 'tmp_path' for <Function test_transient_acquisition_is_bounded_and_uses_a_new_attempt>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        if (
+            fixturedef.argname == "event_loop_policy"
+            and fixturedef.func.__module__ != __name__
+        ):
+            warnings.warn(
+                PytestDeprecationWarning(_EVENT_LOOP_POLICY_FIXTURE_DEPRECATION_WARNING),
+            )
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+                return (yield)
+            if not _is_coroutine_or_asyncgen(fixturedef.func):
+>               return (yield)
+                        ^^^^^
+E               OSError: could not create numbered dir with prefix test_transient_acquisition_is_ in /tmp/pytest-of-agent/pytest-40 after 20 tries
+
+../ml-system-prod/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:936: OSError
+_ ERROR at setup of test_service_enforces_permission_tenant_owner_and_operator_scope _
+
+self = PosixPath('/tmp/pytest-of-agent/pytest-40/test_service_enforces_permissi19')
+mode = 448, parents = False, exist_ok = False
+
+    def mkdir(self, mode=0o777, parents=False, exist_ok=False):
+        """
+        Create a new directory at this given path.
+        """
+        try:
+>           os.mkdir(self, mode)
+E           OSError: [Errno 28] No space left on device: '/tmp/pytest-of-agent/pytest-40/test_service_enforces_permissi19'
+
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pathlib.py:1311: OSError
+
+The above exception was the direct cause of the following exception:
+
+fixturedef = <FixtureDef argname='tmp_path' scope='function' baseid=''>
+request = <SubRequest 'tmp_path' for <Function test_service_enforces_permission_tenant_owner_and_operator_scope>>
+
+    @pytest.hookimpl(wrapper=True)
+    def pytest_fixture_setup(fixturedef: FixtureDef, request) -> object | None:
+        if (
+            fixturedef.argname == "event_loop_policy"
+            and fixturedef.func.__module__ != __name__
+        ):
+            warnings.warn(
+                PytestDeprecationWarning(_EVENT_LOOP_POLICY_FIXTURE_DEPRECATION_WARNING),
+            )
+        asyncio_mode = _get_asyncio_mode(request.config)
+        if not _is_asyncio_fixture_function(fixturedef.func):
+            if asyncio_mode == Mode.STRICT:
+                # Ignore async fixtures without explicit asyncio mark in strict mode
+                # This applies to pytest_trio fixtures, for example
+                return (yield)
+            if not _is_coroutine_or_asyncgen(fixturedef.func):
+>               return (yield)
+                        ^^^^^
+E               OSError: could not create numbered dir with prefix test_service_enforces_permissi in /tmp/pytest-of-agent/pytest-40 after 20 tries
+
+../ml-system-prod/.venv/lib/python3.12/site-packages/pytest_asyncio/plugin.py:936: OSError
+=================================== FAILURES ===================================
+__ test_failed_background_heartbeat_retains_post_intent_evidence_for_recovery __
+
+runtime_env = (IngestionComponents(database=<src.infrastructure.persistence.ml_database.Database object at 0x7fa4117f1310>, sources=...ids=('scientist',)), PosixPath('/tmp/pytest-of-agent/pytest-40/test_failed_background_heartbe0/incoming/events.jsonl'))
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x7fa3fc90ac30>
+
+    def test_failed_background_heartbeat_retains_post_intent_evidence_for_recovery(
+        runtime_env, monkeypatch
+    ):
+        ingress, _, actor, _, _ = runtime_env
+        original_heartbeat = ingress.jobs.heartbeat
+        original_publish = ingress.store.publish
+        publishing, lost = Event(), Event()
+        main_thread = get_ident()
+
+        def heartbeat(claim):
+            if get_ident() != main_thread and publishing.is_set():
+                lost.set()
+                raise Unavailable("Safe heartbeat outage")
+            return original_heartbeat(claim)
+
+        def interrupted(intent):
+            publishing.set()
+            assert lost.wait(5), "The renewal failure was not observed"
+            return original_publish(intent)
+
+        monkeypatch.setattr(ingress.jobs, "heartbeat", heartbeat)
+        monkeypatch.setattr(ingress.store, "publish", interrupted)
+        job = ingress.service.submit(actor, "heartbeat-outage", IngestionRequest("events", "v1"))
+        result = ingress.supervisor().run_once(job_id=job.job_id)
+>       assert result.state == "NEEDS_RECONCILIATION"
+E       AssertionError: assert 'RETRY_WAIT' == 'NEEDS_RECONCILIATION'
+E
+E         - NEEDS_RECONCILIATION
+E         + RETRY_WAIT
+
+tests/ml/ingestion/test_runtime_fencing.py:227: AssertionError
+=============================== warnings summary ===============================
+../ml-system-prod/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /workspace/ml-system-prod/.venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED tests/ml/ingestion/test_runtime_fencing.py::test_failed_background_heartbeat_retains_post_intent_evidence_for_recovery
+ERROR tests/ml/ingestion/test_runtime_fencing.py::test_committed_terminal_result_survives_lost_finish_response
+ERROR tests/ml/ingestion/test_runtime_source_processes.py::test_register_after_workers_start_publish_and_restart
+ERROR tests/ml/ingestion/test_service.py::test_real_file_ingestion_publishes_raw_snapshot_without_registering_ml_dataset
+ERROR tests/ml/ingestion/test_service.py::test_concurrent_idempotent_submissions_commit_one_durable_job
+ERROR tests/ml/ingestion/test_service.py::test_concurrent_different_keys_same_source_create_distinct_snapshot_identities
+ERROR tests/ml/ingestion/test_service.py::test_terminal_redelivery_never_acquires_or_republishes
+ERROR tests/ml/ingestion/test_service.py::test_worker_rechecks_source_revocation_before_acquisition
+ERROR tests/ml/ingestion/test_service.py::test_transient_acquisition_is_bounded_and_uses_a_new_attempt
+ERROR tests/ml/ingestion/test_service.py::test_service_enforces_permission_tenant_owner_and_operator_scope
+1 failed, 1316 passed, 5 skipped, 1 warning, 9 errors in 81.45s (0:01:21)

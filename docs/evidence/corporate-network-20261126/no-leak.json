@@ -1,0 +1,16 @@
+[
+  {
+    "image": "ml-corporate-api-optional:20261126",
+    "image_id": "sha256:d82e9e934079d41fcce103e444c187ba6a8c5ab95cc3250db80f712defdbb21f",
+    "certificate_in_any_layer": false,
+    "trust_override_in_runtime_environment": false,
+    "export_exit_status": 0
+  },
+  {
+    "image": "ml-corporate-alpine-optional:20261126",
+    "image_id": "sha256:4ce122fa23d923ffbe1c9319c24113527236f4fe294c20e7c81f40b803c145fe",
+    "certificate_in_any_layer": false,
+    "trust_override_in_runtime_environment": false,
+    "export_exit_status": 0
+  }
+]

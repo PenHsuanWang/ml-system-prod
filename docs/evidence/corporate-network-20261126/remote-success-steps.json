@@ -1,0 +1,165 @@
+{
+  "source_commit": "bf69ef705091d4778e1ee87f7a4b21a5628401d6",
+  "status": "PASS",
+  "run": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45682995410",
+  "jobs": [
+    {
+      "name": "ingestion-container",
+      "url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45682995410/job/139448131296",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Initialize containers",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build the supported standalone ingestion image",
+          "conclusion": "success"
+        },
+        {
+          "name": "Require the supported Python and official OAuth connector",
+          "conclusion": "success"
+        },
+        {
+          "name": "Require the scoped ingestion quality gate",
+          "conclusion": "success"
+        },
+        {
+          "name": "Require migration, health and a real PostgreSQL worker process",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Stop containers",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "deployment-image",
+      "url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45682995410/job/139448131792",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build the unified production candidate",
+          "conclusion": "success"
+        },
+        {
+          "name": "Require optional valid CA, reject invalid CA and retain no build trust",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build the separate serving target with standard public trust",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build the Kubernetes acceptance target with standard public trust",
+          "conclusion": "success"
+        },
+        {
+          "name": "Verify the real image and private non-root entrypoint",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "name": "backend-stack",
+      "url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45682995410/job/139451002060",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Generate private disposable credentials",
+          "conclusion": "success"
+        },
+        {
+          "name": "Start isolated real Backend roles",
+          "conclusion": "success"
+        },
+        {
+          "name": "Require supported runtime and zero skipped integration cases",
+          "conclusion": "success"
+        },
+        {
+          "name": "Capture disposable stack diagnostics",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Remove only this disposable stack",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@v5",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@v4",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ]
+}
