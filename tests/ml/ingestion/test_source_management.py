@@ -14,7 +14,7 @@ from bootstrap.ingestion_wiring import IngestionSettings, build_ingestion
 from bootstrap.ml_api import create_app
 from src.domain.ingestion.errors import IngestionError, SourceRejected
 from src.domain.ingestion.models import ExtractionLimits, IngestionRequest
-from src.domain.ml import Actor, Conflict, Forbidden
+from src.domain.ml import Actor, Conflict, Forbidden, canonical_json
 from src.infrastructure.ingestion.adapters.databricks_contract import (
     build_query,
     validate_source,
