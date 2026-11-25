@@ -9,6 +9,7 @@ from fastapi.responses import JSONResponse, PlainTextResponse
 from bootstrap.ml_config import MLSettings
 from bootstrap.ml_telemetry import configure_telemetry
 from bootstrap.ml_wiring import build_components
+from src.api.ingestion.source_routers import router as source_router
 from src.api.ml_http import (
     ActorDependency,
     dataset_router,
@@ -19,6 +20,7 @@ from src.api.ml_http import (
     training_router,
 )
 from src.application.ingestion.service import IngestionService
+from src.application.ingestion.source_management import SourceManagementService
 from src.application.ml_services import ActorResolver, MLServices
 from src.domain.ml import Actor
 from src.infrastructure.ml_tracing import MLTraceMiddleware
@@ -29,6 +31,7 @@ def create_app(
     services: MLServices | None = None,
     identity: ActorResolver | None = None,
     ingestion_service: IngestionService | None = None,
+    source_management: SourceManagementService | None = None,
 ) -> FastAPI:
     if services is not None:
         if identity is None:
@@ -41,6 +44,9 @@ def create_app(
 
             app.state.ingestion_service = ingestion_service
             app.include_router(ingestion_router, prefix="/api/v1/ingestion")
+        if source_management is not None:
+            app.state.source_management = source_management
+            app.include_router(source_router, prefix="/api/v1/ingestion")
         app.add_middleware(MLTraceMiddleware)
         return app
 
@@ -72,7 +78,9 @@ def create_app(
         from src.api.ingestion.routers import router as ingestion_router
 
         definitions.append(
-            ModuleDefinition("ingestion", requires=("identity",), routers=(ingestion_router,))
+            ModuleDefinition(
+                "ingestion", requires=("identity",), routers=(ingestion_router, source_router)
+            )
         )
     app = template_factory(config, modules=definitions, include_default_readiness=False)
     original_lifespan = app.router.lifespan_context
@@ -93,6 +101,7 @@ def create_app(
             current.state.ml_identity = TemplateIdentity()
             if ingress is not None:
                 current.state.ingestion_service = ingress.service
+                current.state.source_management = ingress.source_management
             try:
                 yield
             finally:

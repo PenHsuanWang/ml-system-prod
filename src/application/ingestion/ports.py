@@ -83,3 +83,28 @@ class IngestionJobRepository(Protocol):
 # Registration is explicit at Bootstrap; validators never come from request strings.
 SourceValidator = Callable[[SourceDefinition], None]
 AdapterRegistration = tuple[AdapterDescriptor, BatchSourceAdapter, SourceValidator]
+
+
+class SourceManagementRepository(Protocol):
+    def register(self, actor: Actor, definition: SourceDefinition) -> SourceDefinition: ...
+    def metadata(
+        self, actor: Actor, source_id: str, version: str
+    ) -> tuple[SourceDefinition, bool]: ...
+    def list_metadata(
+        self, actor: Actor, source_id: str | None, limit: int, offset: int
+    ) -> list[tuple[SourceDefinition, bool]]: ...
+    def set_enabled(self, actor: Actor, source_id: str, version: str, enabled: bool) -> None: ...
+
+
+class SourceApproval(Protocol):
+    def connections(self, actor: Actor) -> list[str]: ...
+    def create(
+        self,
+        actor: Actor,
+        source_id: str,
+        version: str,
+        configuration: dict[str, object],
+        limits: ExtractionLimits,
+        allowed_actor_ids: tuple[str, ...],
+    ) -> SourceDefinition: ...
+    def authorize(self, actor: Actor, source: SourceDefinition) -> None: ...

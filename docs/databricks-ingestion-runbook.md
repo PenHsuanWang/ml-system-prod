@@ -249,3 +249,12 @@ Backend stack 驗收明確分開這個外部 Warehouse gate；其成功不代表
 已完成 qualification。Backend report 會列出獨立驗收範圍與原因。
 Kafka、incremental extraction、Parquet publisher、remote Spark Jobs、Dataset Builder
 及 Raw-to-Feature／Training orchestration 均不在本次 MVP 範圍。
+
+## Runtime source management
+
+Databricks initialization supports connection-only setup. Authorized operators
+register immutable, policy-governed source versions through the Management API.
+Workers resolve exact SQL catalog definitions at execution. Legacy templates
+and worker-only credentials retain their existing contracts.
+See [runtime source management](runtime-source-management.md) for permissions,
+lifecycle behavior and separate external qualification requirements.

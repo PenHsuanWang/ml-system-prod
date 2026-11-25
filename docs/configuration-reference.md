@@ -128,3 +128,12 @@ idempotency 不套用 Training 的 86400 秒 TTL。
 Builder 必須使用相同 tenant／App DB／Raw root／Dataset root 與受信任 operator UID，
 以 snapshot ID／manifest digest 解析已發布資料，輸出 immutable DatasetVersion 與 receipt。
 它不輪詢來源、不啟動訓練、不核准模型；[完整輸入與 CLI](ebm-implementation-status.md#rawsnapshot-datasetbuilder)。
+
+## Runtime source management
+
+Databricks initialization supports connection-only setup. Authorized operators
+register immutable, policy-governed source versions through the Management API.
+Workers resolve exact SQL catalog definitions at execution. Legacy templates
+and worker-only credentials retain their existing contracts.
+See [runtime source management](runtime-source-management.md) for permissions,
+lifecycle behavior and separate external qualification requirements.

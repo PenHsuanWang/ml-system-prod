@@ -166,3 +166,12 @@ python -m scripts.verify_init_compose
 只做真實 Compose 離線 rendering；不存取 Docker daemon、不啟動服務。它涵蓋本地、
 File、Databricks OAuth／Token 及外部 OAuth／Token 六種組合，以及 literal 特殊字元。
 CI 另以隔離 base/dev venv 驗證 console entrypoint、隱藏輸入與故障回復。
+
+## Runtime source management
+
+Databricks initialization supports connection-only setup. Authorized operators
+register immutable, policy-governed source versions through the Management API.
+Workers resolve exact SQL catalog definitions at execution. Legacy templates
+and worker-only credentials retain their existing contracts.
+See [runtime source management](../runtime-source-management.md) for permissions,
+lifecycle behavior and separate external qualification requirements.

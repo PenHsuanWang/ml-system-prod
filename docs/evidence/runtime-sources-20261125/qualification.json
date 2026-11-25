@@ -1,0 +1,48 @@
+{
+  "source_commit": "1290be7890a1836bea975f30aefc6b3d6edacb87",
+  "compose_project": "ml-runtime-source-final",
+  "command": "bash /tmp/runtime-source-compose/run.sh run --rm --no-deps acceptance python scripts/verify_ml_acceptance.py --require-stack --output-dir /app/var/acceptance",
+  "environment": "Isolated Docker Compose on Cloud Linux, Python 3.12.16, Torch 2.6.0+cpu",
+  "exit_status": 0,
+  "scope": "Full functional backend and synthetic EBM. External Databricks and production qualification remain separate.",
+  "session_adaptations": [
+    "BuildKit secret supplied the Cloud CA while retaining TLS and Go/APK verification.",
+    "Copied application files were made readable by the non-root container user.",
+    "Latest source was overlaid on the installed test images to reuse valid dependencies.",
+    "Compose service DNS names were appended to inherited NO_PROXY values for internal HTTP."
+  ],
+  "artifacts": {
+    "junit.xml": "ae5c7af2b9b58304a92dcd93fd202fcb4c3c1c9486eaf1dedab0914e17225bbe",
+    "ebm-junit.xml": "1fa0bc4d54716a8211e36b11ddc093655f2a390f0d0b768a2a889f6fd558bc29",
+    "result.json": "232d81272afcaae9b309d5ab5e1df2e5b7b6e829a84402794515b8740eb70345",
+    "ebm-e2e.json": "6a0cb83b49d2cebaa8b3e64b3df4f95285551a7a6d3e353a39a23f1bf055aedb"
+  },
+  "kubernetes_dynamic": {
+    "status": "BLOCKED",
+    "exit_status": 40,
+    "reason": "Minikube pinned-version lookup to api.github.com returned Forbidden"
+  },
+  "draft_pr": {
+    "status": "CONFIRMED_DRAFT_VIA_GITHUB_WEB",
+    "historical_creation_attempt": {
+      "status": "BLOCKED",
+      "exit_status": 1,
+      "reason": "POST https://api.github.com/graphql returned Forbidden"
+    },
+    "url": "https://github.com/PenHsuanWang/ml-system-prod/pull/14",
+    "observed_head_before_review2_push": "29b402c6f3e8f099303ef40aaae616c3ee8ab568"
+  },
+  "review_scope": {
+    "date": "2026-11-25",
+    "kubernetes_dynamic": "Deferred by explicit user instruction for Draft PR code review. Execution remains NOT VERIFIED.",
+    "recommendation": "READY FOR REVIEW"
+  },
+  "review2": {
+    "test_commit": "b0ea0b6d0658c3af05a8bc95c0648c7b5ccf7413",
+    "distinct_tables": 2,
+    "execution_count": 4,
+    "worker_evidence": "review2-postgres-processes.json",
+    "checks": "review2-checks.json",
+    "supersedes_original_multi_table_and_worker_evidence": true
+  }
+}

@@ -459,3 +459,12 @@ ml_release_compose stop ingestion-worker relay supervisor control gateway manage
 Production 不使用 `down --volumes`，不刪除未確定的 publication／execution，也不
 手改資料庫來宣告成功。更完整的 Day-2 recovery／backup 操作見
 [ML runtime runbook](../ml-runbook.md)。
+
+## Runtime source management
+
+Databricks initialization supports connection-only setup. Authorized operators
+register immutable, policy-governed source versions through the Management API.
+Workers resolve exact SQL catalog definitions at execution. Legacy templates
+and worker-only credentials retain their existing contracts.
+See [runtime source management](../runtime-source-management.md) for permissions,
+lifecycle behavior and separate external qualification requirements.

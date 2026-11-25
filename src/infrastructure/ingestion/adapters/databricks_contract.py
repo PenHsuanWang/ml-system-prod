@@ -18,6 +18,7 @@ from src.domain.ingestion.errors import IngestionError, SourceRejected
 from src.domain.ingestion.models import SourceDefinition, identifier, sha256
 from src.domain.ml import digest as content_digest
 
+RUNTIME_CONTRACT = "databricks-runtime-v1"
 SERIALIZATION_VERSION = "dbx-jsonl-v1"
 _IDENTIFIER = re.compile(r"[A-Za-z_][A-Za-z0-9_]{0,127}")
 _KINDS = frozenset(
@@ -274,8 +275,24 @@ def validate_source(
         or source.schema_version != "raw-json-object-v1"
     ):
         raise SourceRejected("Unsupported approved Databricks source contract")
+    configuration = json.loads(source.configuration_json)
+    if "contract" in configuration:
+        data = _object(
+            configuration, {"contract", "template", "template_digest", "serialization_version"}
+        )
+        if data["contract"] != RUNTIME_CONTRACT:
+            raise SourceRejected("Unsupported Databricks configuration contract")
+        runtime_template = parse_templates({"runtime": data["template"]})["runtime"]
+        connection = connections.get(runtime_template.connection_ref)
+        if (
+            connection is None
+            or data["serialization_version"] != SERIALIZATION_VERSION
+            or runtime_template.digest(connection) != data["template_digest"]
+        ):
+            raise SourceRejected("Databricks source approval does not match its connection")
+        return runtime_template
     data = _object(
-        json.loads(source.configuration_json),
+        configuration,
         {"template_ref", "template_digest", "serialization_version"},
     )
     _reference(data["template_ref"])

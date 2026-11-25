@@ -516,3 +516,12 @@ Circuit breaker、retry 與 fallback 都放在 remote adapter／platform policy 
 - [RFC 8725 — JWT Best Current Practices](https://www.rfc-editor.org/rfc/rfc8725.html)、[RFC 7517 — JWK](https://www.rfc-editor.org/rfc/rfc7517.html)、[RFC 7662 — OAuth Token Introspection](https://www.rfc-editor.org/rfc/rfc7662.html)：token 驗證、key distribution 與 introspection。
 
 本文的 package 落點與一般 application 實作方式仍以[模組規範](module-spec.md)及[開發手冊](developer-guide.md)為準；現行 runtime、任務與 failure semantics 以[軟體設計規格](software-design.md)為準。
+
+## Runtime source management
+
+Databricks initialization supports connection-only setup. Authorized operators
+register immutable, policy-governed source versions through the Management API.
+Workers resolve exact SQL catalog definitions at execution. Legacy templates
+and worker-only credentials retain their existing contracts.
+See [runtime source management](runtime-source-management.md) for permissions,
+lifecycle behavior and separate external qualification requirements.

@@ -106,3 +106,12 @@ CI 守門應依新分層攔截 domain 反向 import、application 選擇具體 a
 ## ADR-014：ML CPU implementation baseline（2026-10-29）
 
 ML implementation decisions and review resolutions are recorded separately in [ADR-014](014-implementation-baseline.md). Historical template evidence above does not qualify the ML runtime.
+
+## Runtime source management
+
+Databricks initialization supports connection-only setup. Authorized operators
+register immutable, policy-governed source versions through the Management API.
+Workers resolve exact SQL catalog definitions at execution. Legacy templates
+and worker-only credentials retain their existing contracts.
+See [runtime source management](022-runtime-data-source-management.md) for permissions,
+lifecycle behavior and separate external qualification requirements.

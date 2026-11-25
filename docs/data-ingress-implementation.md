@@ -311,3 +311,12 @@ python -m pytest tests/ml tests/test_boundaries.py -q
 新增測試涵蓋 registry／DTO／permissions、real File FD／JSONL、原子發布與 collision、SQL ownership、失敗後恢復、獨立 worker subprocess／HTTP、三種 Adapter 的 OCP Contract。實際命令、版本與結果集中於 [實作狀態](implementation-status.md)，不在本指南複製逐次測試數。
 
 PostgreSQL、RabbitMQ、Databricks、Kafka、真實 credentials、目標 image／filesystem 若不可用，須標示 NOT VERIFIED。本輪 SQL polling 不依賴 RabbitMQ；既有 Training broker 路徑的資格不因此自動提升。正式使用前仍需 retention／GC、resource profile、吞吐／延遲、migration／backup-restore、multi-host clock／lease 及故障注入的部署級驗證。
+
+## Runtime source management
+
+Databricks initialization supports connection-only setup. Authorized operators
+register immutable, policy-governed source versions through the Management API.
+Workers resolve exact SQL catalog definitions at execution. Legacy templates
+and worker-only credentials retain their existing contracts.
+See [runtime source management](runtime-source-management.md) for permissions,
+lifecycle behavior and separate external qualification requirements.
