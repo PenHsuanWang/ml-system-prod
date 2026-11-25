@@ -1004,8 +1004,8 @@
     },
     {
       "path": "docs/reviews/governed-discovery-report.md",
-      "bytes": 10088,
-      "sha256": "cfc616e6d80452d90b0639e32ce2cf72ece818ff1fa48eba28224c430f91a01d"
+      "bytes": 10482,
+      "sha256": "32c8a12f233129cda34df8439e1d1bda025a1096486d46c693e0048e6a1f3561"
     },
     {
       "path": "docs/reviews/k8s-acceptance-2026-11-18.md",
@@ -1319,8 +1319,8 @@
     },
     {
       "path": "scripts/verify_ml_acceptance.py",
-      "bytes": 9941,
-      "sha256": "a00dd3aea802e72934cdd8e23b4d1db6c20dc29a5166a948bc5a704060152859"
+      "bytes": 10080,
+      "sha256": "7053bc85616db31c3c7d479d2a83806a50cae611878ab515bf0a553faa4ccc1c"
     },
     {
       "path": "scripts/verify_package.py",
@@ -2534,8 +2534,8 @@
     },
     {
       "path": "tests/ml/catalog/conftest.py",
-      "bytes": 1511,
-      "sha256": "7a87cb2c41cf3566cabe701878f1ad2fd13742260d1c81ed022bcfce2918ec23"
+      "bytes": 1535,
+      "sha256": "d0e448f23412c7f00f1133c0af4627693b308cae5405f0bf4b27bd6c03da3dbb"
     },
     {
       "path": "tests/ml/catalog/test_available_sources.py",

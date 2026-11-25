@@ -10,6 +10,9 @@ from src.infrastructure.ingestion.adapters.databricks_contract import Connection
 from tests.ml.ingestion.test_source_management import runtime as runtime
 
 
+__all__ = ["runtime"]
+
+
 @pytest.fixture
 def discovery():
     actor = Actor.from_identity("tenant", "browser", frozenset({"ml.catalog.read"}))

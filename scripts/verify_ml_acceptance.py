@@ -23,6 +23,8 @@ CORE = ["src/domain/ml.py", "src/domain/training", "src/domain/deployments",
 # These cases have independent execution environments and qualification gates.
 # Excluding them from the Backend stack scope does not count them as accepted.
 SEPARATE_QUALIFICATIONS = {
+    "tests/ml/catalog/test_catalog_deployment.py":
+        "Contracts jobs run discovery Compose model checks on the Docker-enabled host",
     "tests/ml/ingestion/test_databricks_live.py":
         "Protected databricks-live job requires an approved external Warehouse fixture",
     "tests/ml/ingestion/test_ingestion_deployment.py":

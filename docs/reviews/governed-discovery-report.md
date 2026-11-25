@@ -134,3 +134,9 @@ qualification must be completed before production deployment.
 READY FOR REVIEW for the engineering change set. No merge or production approval
 is implied. Proposed PR title: feat(catalog): add governed Databricks metadata and
 available source discovery. This report supplies the proposed PR description.
+
+Remote CI initially caught the reusable pytest fixture import missing an explicit
+export for Pyflakes. Added __all__ and reran Pyflakes. Discovery Compose-rendering
+tests now use the existing separate host qualification scope because the Backend
+acceptance image has no Docker CLI; the contracts jobs execute both cases on the
+Docker-enabled host. No assertion or CI test coverage is removed.
