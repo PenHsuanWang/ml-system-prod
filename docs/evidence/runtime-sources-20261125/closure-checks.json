@@ -1,0 +1,102 @@
+{
+  "baseline_commit": "3075110b94d88b13ce27ccfc8cea6b2b228df5ca",
+  "source_commit": "7493c05f809f1b05d24dde7b4f78763a19c7c1c5",
+  "change": "Exact value type required alongside existing Predicate equality for each mandatory predicate match.",
+  "scope": [
+    "src/infrastructure/ingestion/adapters/source_approval.py",
+    "tests/ml/ingestion/test_source_approval_predicates.py"
+  ],
+  "records": [
+    {
+      "name": "predicate-tests",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/ml/ingestion/test_source_approval_predicates.py",
+        "-q"
+      ],
+      "source_commit": "7493c05f809f1b05d24dde7b4f78763a19c7c1c5",
+      "passed": 29,
+      "failed": 0,
+      "skipped": 0,
+      "exit_status": 0,
+      "log_sha256": "bd3e48b99d672adab31b2b1d696bf3b2aaf9b8c55b615a18440056a59b5e4930"
+    },
+    {
+      "name": "ingestion",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/ml/ingestion",
+        "-q",
+        "-rs",
+        "--junitxml=var/runtime-source-closure/ingestion.xml"
+      ],
+      "source_commit": "7493c05f809f1b05d24dde7b4f78763a19c7c1c5",
+      "passed": 452,
+      "failed": 0,
+      "skipped": 1,
+      "exit_status": 0,
+      "log_sha256": "65ee1a37f8152ae7abe76c60513e7d867cf9367bfd1e840e7a9f37a24b00983a"
+    },
+    {
+      "name": "postgres",
+      "command": [
+        ".venv/bin/python",
+        "-m",
+        "pytest",
+        "tests/ml/ingestion/test_source_approval_predicates.py",
+        "tests/ml/ingestion/test_source_management.py",
+        "tests/ml/ingestion/test_runtime_source_processes.py",
+        "-q",
+        "--junitxml=var/runtime-source-closure/postgres.xml"
+      ],
+      "source_commit": "7493c05f809f1b05d24dde7b4f78763a19c7c1c5",
+      "passed": 50,
+      "failed": 0,
+      "skipped": 0,
+      "exit_status": 0,
+      "log_sha256": "afeb3e9ef4da5171750571f2089bd80f55c1b260b84892abea485e9fb6483371",
+      "database": "Disposable PostgreSQL 17 at localhost:15440, synthetic runtime_test database",
+      "environment": {
+        "ML_TEST_DATABASE_URL": "postgresql+psycopg://runtime_test:runtime_test_only@127.0.0.1:15440/runtime_test"
+      }
+    }
+  ],
+  "quality_checks": [
+    {
+      "command": [
+        ".venv/bin/python",
+        "scripts/check_ingestion.py"
+      ],
+      "exit_status": 0,
+      "scope": "Ruff, formatting and strict Mypy"
+    },
+    {
+      "command": [
+        ".venv/bin/python",
+        "scripts/check_boundaries.py"
+      ],
+      "exit_status": 0
+    }
+  ],
+  "preserved_contracts": [
+    "Predicate equality",
+    "Canonical JSON numeric normalization",
+    "Template and SourceDefinition digests",
+    "Legacy execution/CLI paths"
+  ],
+  "qualification": "Authorization of resolved typed predicates. Integral runtime floats retain the existing canonical numeric normalization.",
+  "postgres_initial_attempt": {
+    "passed": 47,
+    "setup_errors": 3,
+    "cause": "Fresh PostgreSQL initialization was still replacing its initial server.",
+    "resolution": "pg_isready confirmed readiness, then all 50 cases passed."
+  },
+  "counts_overlap": true,
+  "production_accepted": false,
+  "external_databricks_qualification": "Separate production deployment requirement",
+  "final_head_ci": "Pending final evidence commit push and observation"
+}

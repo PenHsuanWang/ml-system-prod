@@ -853,6 +853,11 @@
       "sha256": "ca3e826cb695ac0fa95829499f29158d0ec5879a38fb1a3c4005f480dbc35765"
     },
     {
+      "path": "docs/evidence/runtime-sources-20261125/closure-checks.json",
+      "bytes": 3330,
+      "sha256": "3f16714bfe4b60a8cab6bf786050bcd10b6db7ade3af1ec787aa10d8fb6294bd"
+    },
+    {
       "path": "docs/evidence/runtime-sources-20261125/compose-result.json",
       "bytes": 2009,
       "sha256": "232d81272afcaae9b309d5ab5e1df2e5b7b6e829a84402794515b8740eb70345"
@@ -979,8 +984,8 @@
     },
     {
       "path": "docs/reviews/runtime-source-management-report.md",
-      "bytes": 28005,
-      "sha256": "cc10f2b6f6b455c1aa08c3a0f22d3bc19c4c16bc4f494fd6789cdfa6ea7f4e2c"
+      "bytes": 31220,
+      "sha256": "b2ccd51f1c162545ea5699188c002d07110607cae9d8721188b79acf4a3c5a71"
     },
     {
       "path": "docs/runtime-source-management.md",
@@ -1989,8 +1994,8 @@
     },
     {
       "path": "src/infrastructure/ingestion/adapters/source_approval.py",
-      "bytes": 6285,
-      "sha256": "00a082032a0da4dd95f2f020e84b288317ecc2c08cc5fffd194a39088be05a76"
+      "bytes": 6509,
+      "sha256": "c2b690c11ebc5d462e09cadbb6f3a18736fc4342ef9990329beb439ad493a7be"
     },
     {
       "path": "src/infrastructure/ingestion/persistence/__init__.py",
@@ -2631,6 +2636,11 @@
       "path": "tests/ml/ingestion/test_snapshot_publication.py",
       "bytes": 14298,
       "sha256": "6acfb5b13d7d3ca07e86e0015e5016e400bb21a240bcac747bbb6a3f053f0433"
+    },
+    {
+      "path": "tests/ml/ingestion/test_source_approval_predicates.py",
+      "bytes": 5654,
+      "sha256": "94d44a7a4d330f8cded67078c8e9fd85cfae90b51cdc8e940a561001e1a434f3"
     },
     {
       "path": "tests/ml/ingestion/test_source_management.py",

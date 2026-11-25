@@ -13,7 +13,8 @@ approved catalog/schema scope need no deployment file changes or process restart
 - Baseline branch master.
 - Baseline commit 8c9023b00828000287e169ac760afe57102d7353, fetched from origin before changes.
 - Feature branch feature/runtime-data-source-management.
-- Production implementation commit 1290be7890a1836bea975f30aefc6b3d6edacb87.
+- Runtime feature implementation baseline 1290be7890a1836bea975f30aefc6b3d6edacb87.
+- Merge-closure authorization fix and focused test commit 7493c05f809f1b05d24dde7b4f78763a19c7c1c5.
 - Second-review acceptance test commit b0ea0b6d0658c3af05a8bc95c0648c7b5ccf7413.
 - Documentation and evidence commits follow the implementation commit.
 - No applicable AGENTS.md files were present in the workspace checkout ancestry.
@@ -101,6 +102,8 @@ and migration 0006 are preserved.
 | docs/reviews/runtime-source-management-report.md | New | Required implementation report | Reviewer evidence |
 | docs/evidence/runtime-sources-20261125/review2-checks.json | New | Second-review commands and source revision | Non-additive acceptance evidence |
 | docs/evidence/runtime-sources-20261125/review2-postgres-processes.json | New | Observed tables, queries, worker PIDs and lineage | Multi-table and multi-worker proof |
+| tests/ml/ingestion/test_source_approval_predicates.py | New | Focused mandatory-predicate type authorization tests | Equality, digest and legacy regression protection |
+| docs/evidence/runtime-sources-20261125/closure-checks.json | New | Completed merge-closure validation | Exact commands, revision and non-additive counts |
 | FILE-MANIFEST.json | Modified | Regenerated tracked file hashes | Source/document integrity |
 
 No files were deleted. Existing recursive CI scopes already cover the new modules, so CI validation scopes required no changes. Session-only CA BuildKit mounts and readable copied-source
@@ -369,3 +372,52 @@ F-03 remains the documented policy-file propagation limitation. Kubernetes
 dynamic acceptance remains deferred under the user's instruction. Historical
 automatic Kubernetes workflow failures remain visible and are not relabeled
 as passes. production_accepted remains false.
+
+## M. Final merge-closure predicate authorization
+
+The user accepted the architecture and functionality at Head 3075110 and requested
+only type-sensitive mandatory predicate authorization, focused validation, final
+CI observation, an updated PR description and ready-for-review status.
+
+Commit 7493c05f809f1b05d24dde7b4f78763a19c7c1c5 changes the mandatory predicate membership
+condition to require both existing Predicate equality and identical value types.
+Predicate equality, canonical serialization, template fingerprints and source
+digest algorithms remain under their existing contracts. Legacy ingestion and
+CLI paths are covered explicitly. No new abstraction or feature is introduced.
+
+The authorization check operates on the resolved Template's scalar values.
+Existing runtime canonical numeric normalization remains in effect. Typed integral
+float comparisons are exercised through legacy template resolution, which retains
+those scalar types. Runtime acceptance covers identical retained Boolean, Integer,
+nonintegral Float, String and Null values. Persisted runtime tests also verify
+admission and queued execution rejection when a mandatory policy literal changes
+to a Python-equal scalar of another type, with the stored source digest unchanged.
+
+Focused tests cover both directions of Boolean/Integer and Integer/Float mismatch,
+including true/1, false/0, 1/1.0 and 0/0.0. Matching typed values remain accepted.
+Existing Predicate equality assertions and canonical digest equivalence assertions
+continue to pass independently of authorization.
+
+Completed local validation is recorded in
+docs/evidence/runtime-sources-20261125/closure-checks.json.
+
+| Validation | Passed | Failed | Skipped |
+| --- | --- | --- | --- |
+| Focused predicate cases | 29 | 0 | 0 |
+| Complete ingestion regression | 452 | 0 | 1 |
+| Isolated PostgreSQL predicate/source/process cases | 50 | 0 | 0 |
+
+These suites overlap. The ingestion skip is the existing live external Databricks
+qualification gate. The first PostgreSQL attempt had three setup errors while
+the fresh database was initializing. After readiness verification the rerun passed
+all 50 cases. Ruff, formatting, strict ingestion typing and dependency boundaries
+passed.
+
+The final Head's four GitHub Actions workflows must complete successfully before
+closure. PR description and ready-for-review updates require GitHub API write
+access. Current source evidence does not claim those operations have completed.
+The final observed CI and PR state will be recorded separately after those actions.
+
+production_accepted remains false. External Databricks qualification remains
+a separate production deployment requirement. Other previously accepted
+technical debt is non-blocking under the user's final merge-closure instruction.
