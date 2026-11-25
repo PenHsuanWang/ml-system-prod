@@ -19,7 +19,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def private(path, value, uid):
-    path.parent.mkdir(parents=True, exist_ok=True)
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    if os.geteuid() == 0:
+        os.chown(path.parent, uid, uid)
     path.write_text(value)
     path.chmod(0o600)
     if os.geteuid() == 0:
