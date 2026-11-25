@@ -859,8 +859,8 @@
     },
     {
       "path": "docs/evidence/hybrid-mlflow-20261126/qualification.json",
-      "bytes": 9763,
-      "sha256": "efd199969ba632bb4e550b76a2a4e44c6ec0aee973d2fe3dace4fc45dfb4c053"
+      "bytes": 10039,
+      "sha256": "6ca0921452b5581c29e5a1c5dba160821ebc36335f6110b9fc48d616380533b3"
     },
     {
       "path": "docs/evidence/hybrid-mlflow-20261126/quality-delivery.txt",
@@ -1049,8 +1049,8 @@
     },
     {
       "path": "docs/reviews/hybrid-mlflow-report.md",
-      "bytes": 12885,
-      "sha256": "7d993129efaddc92c1738a3c801b687e921cb5c38bad3add71bf8bbfdd3db02d"
+      "bytes": 13293,
+      "sha256": "043b700b76a7cefa02bb81361ec942184e5d86561a4d9b0b280c68b2cbb269ff"
     },
     {
       "path": "docs/reviews/k8s-acceptance-2026-11-18.md",

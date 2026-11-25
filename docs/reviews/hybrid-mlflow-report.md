@@ -159,3 +159,9 @@ The 40-resource Kubernetes foundation rendering and K8s acceptance static gate
 also pass without accessing a cluster. Dynamic acceptance remains DEFERRED.
 Concurrent integration of these independent branches must combine shared
 documentation/CI/host-qualification entries and regenerate FILE-MANIFEST.json.
+
+The complete final-code [CI run 45684878854](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45684878854)
+on 4f053be also completed successfully, including the separate real hybrid
+fixture lifecycle and all preceding reference Backend regressions. The source-code
+recommendation is READY FOR REVIEW. Documentation-only branch-head checks follow
+independently; production_accepted remains false.

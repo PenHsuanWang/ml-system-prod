@@ -196,7 +196,7 @@
       }
     ]
   },
-  "hybrid_lifecycle": "COMPOSE_QUALIFIED on clean hosted runner at ac4d18f; final 4f053be fixture directory ownership is independently verified. Later branch-head CI is reported separately.",
+  "hybrid_lifecycle": "COMPOSE_QUALIFIED on clean hosted runners at ac4d18f and final implementation 4f053be; no enterprise qualification is implied.",
   "enterprise_mlflow": "EXTERNAL_ENVIRONMENT_NOT_VERIFIED",
   "kubernetes_dynamic": "DEFERRED",
   "local_attempts": [
@@ -232,5 +232,11 @@
     "Successful hosted qualification uses independent projects, synthetic private credentials, verified TLS, writer/reader denial checks and the real distributed lifecycle.",
     "Root-created private fixture directories were corrected to belong to the intended nonroot runtime UID; public/private ownership contract verified in a disposable root container."
   ],
-  "evidence_observed_utc": "2026-11-25T19:39:00Z"
+  "evidence_observed_utc": "2026-11-25T19:39:00Z",
+  "remote_ci_final_source": {
+    "source_commit": "4f053be31d17f6d5f181a7e82e1fe6a1fead1e3f",
+    "status": "PASS",
+    "url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45684878854",
+    "scope": "Final fixture ownership revision, all required workflow jobs including real hybrid lifecycle"
+  }
 }
