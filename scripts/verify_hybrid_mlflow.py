@@ -168,7 +168,7 @@ print('TLS, unauthenticated denial and dedicated reader configured')
     private(tls / "setup.py", setup, args.uid)
     fixture = {
         "services": {
-            "tracking": {
+            "tracking-backend": {
                 "image": args.mlflow_image,
                 "user": f"{args.uid}:{args.uid}",
                 "entrypoint": ["mlflow", "server"],
@@ -176,7 +176,7 @@ print('TLS, unauthenticated denial and dedicated reader configured')
                     "--host",
                     "0.0.0.0",
                     "--port",
-                    "8443",
+                    "5000",
                     "--backend-store-uri",
                     "sqlite:////data/mlflow.db",
                     "--artifacts-destination",
@@ -186,8 +186,8 @@ print('TLS, unauthenticated denial and dedicated reader configured')
                     "basic-auth",
                     "--allowed-hosts",
                     "tracking,tracking:8443,localhost,127.0.0.1",
-                    "--gunicorn-opts",
-                    "--certfile=/run/tls/ca.pem --keyfile=/run/tls/server.key --workers=1",
+                    "--uvicorn-opts",
+                    "--workers 1",
                 ],
                 "environment": {
                     "MLFLOW_AUTH_CONFIG_PATH": "/run/tls/basic_auth.ini",
@@ -197,6 +197,22 @@ print('TLS, unauthenticated denial and dedicated reader configured')
             }
         },
         "networks": {"default": {"name": project + "-tracking"}},
+    }
+    nginx = (
+        "events {}\nhttp { server { listen 8443 ssl; server_name tracking;\n"
+        "ssl_certificate /run/tls/ca.pem; ssl_certificate_key /run/tls/server.key;\n"
+        "client_max_body_size 64m; location / { proxy_pass http://tracking-backend:5000;\n"
+        "proxy_set_header Host $host; proxy_set_header X-Forwarded-Proto https;\n"
+        "proxy_read_timeout 30s; } } }\n"
+    )
+    private(tls / "nginx.conf", nginx, args.uid)
+    fixture["services"]["tracking"] = {
+        "image": "nginx:1.28-alpine",
+        "volumes": [
+            str(tls) + ":/run/tls:ro",
+            str(tls / "nginx.conf") + ":/etc/nginx/nginx.conf:ro",
+        ],
+        "depends_on": ["tracking-backend"],
     }
     fixture_path = private_root / "tracking-compose.json"
     private(fixture_path, json.dumps(fixture), args.uid)
@@ -283,12 +299,18 @@ print('TLS, unauthenticated denial and dedicated reader configured')
         from bootstrap.deployment_cli import preflight
 
         report["preflight"] = preflight(model, inspection, hybrid=True)
+        report["stage"] = "tracking-fixture"
         run(external + ["up", "-d"], timeout=180)
         (output / "tls-auth.txt").write_text(
-            run(external + ["exec", "-T", "tracking", "python", "/run/tls/setup.py"], timeout=120)
+            run(
+                external + ["exec", "-T", "tracking-backend", "python", "/run/tls/setup.py"],
+                timeout=120,
+            )
         )
+        report["stage"] = "application-startup"
         run(app + ["up", "-d", "--no-build"], timeout=180)
         operator = app + ["--profile", "ops", "run", "--rm", "-T", "operator"]
+        report["stage"] = "dependency-qualification"
         run(
             operator
             + [
@@ -320,6 +342,7 @@ print('TLS, unauthenticated denial and dedicated reader configured')
             ML_TEST_MODEL_ENVIRONMENT="prod",
             ML_TEST_OPERATOR_COMMAND_JSON=json.dumps(operator + ["python", "manage.py"]),
         )
+        report["stage"] = "governed-lifecycle"
         result = subprocess.run(
             [
                 sys.executable,
