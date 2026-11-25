@@ -56,6 +56,7 @@ x-runtime: &runtime
 x-ingestion-environment: &ingestion-environment
   ML_INGESTION_ENABLED: "true"
   ML_DATABRICKS_ENABLED: "true"
+  ML_DATABRICKS_POLICY_FILE: ${ML_DATABRICKS_POLICY_FILE:-}
   ML_RAW_SNAPSHOT_ROOT: /app/var/raw-snapshots
   ML_INGESTION_FILE_ROOTS_JSON: '{}'
   ML_DATABRICKS_CONNECTIONS_FILE: /app/config/databricks-connections.json
@@ -72,6 +73,13 @@ x-databricks-sources: &databricks-sources
   type: bind
   source: ${ML_DATABRICKS_SOURCES_CONFIG:?set approved source JSON file}
   target: /app/config/databricks-sources.json
+  read_only: true
+  bind: {create_host_path: false}
+
+x-databricks-policy: &databricks-policy
+  type: bind
+  source: ${ML_DATABRICKS_POLICY_CONFIG:-/dev/null}
+  target: /app/config/databricks-policy.json
   read_only: true
   bind: {create_host_path: false}
 
@@ -102,6 +110,7 @@ services:
         bind: {create_host_path: false}
       - *databricks-connections
       - *databricks-sources
+      - *databricks-policy
     command: [uvicorn, "bootstrap.ml_api:create_app", --factory, --host, 0.0.0.0, --port, "8000", --limit-concurrency, "${ML_API_CONCURRENCY:?set approved API concurrency}"]
     ports: ["127.0.0.1:${ML_MANAGEMENT_PORT:?set local management port}:8000"]
     depends_on: {migrate: {condition: service_completed_successfully}}
@@ -156,6 +165,7 @@ services:
         bind: {create_host_path: false}
       - *databricks-connections
       - *databricks-sources
+      - *databricks-policy
     command: [python, -m, bootstrap.ingestion_cli, work]
     depends_on: {migrate: {condition: service_completed_successfully}}
     healthcheck:
@@ -180,6 +190,7 @@ services:
         bind: {create_host_path: false}
       - *databricks-connections
       - *databricks-sources
+      - *databricks-policy
       - *operator-definitions
     command: [python, -m, bootstrap.deployment_cli, preflight, --help]
     cpus: ${ML_OPERATOR_CPUS:?set approved operator CPU limit}

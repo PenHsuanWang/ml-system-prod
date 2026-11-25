@@ -88,6 +88,12 @@ def test_databricks_wizard_outputs_compatible_secret_references(project, monkeyp
     assert token not in captured.out and "oauth-test-only" not in captured.out
     assert "Invalid value" in captured.err
     assert plan.pending_sources
+    assert json.loads((project / ".local/ml-system/databricks/sources.json").read_text()) == {}
+    assert json.loads((project / ".local/ml-system/databricks/access-policy.json").read_text()) == {
+        "contract": "databricks-access-v1",
+        "grants": [],
+    }
+    assert env["ML_DATABRICKS_POLICY_FILE"] == "/app/config/databricks-policy.json"
     if mode == "token":
         assert env["DATABRICKS_TOKEN"] == token
         assert connection["access_token_env"] == "DATABRICKS_TOKEN"

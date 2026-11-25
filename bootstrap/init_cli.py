@@ -132,8 +132,12 @@ def _saved_json(files: PrivateFiles, path: Path, alternate: str | None = None) -
 
 def _sources(prompt: Prompt, alias: str, previous: dict[str, Any]) -> dict[str, Any]:
     mode = prompt.choose(
-        "Source templates", ("keep", "import", "create", "empty"), "keep" if previous else "empty"
+        "Source templates",
+        ("runtime", "keep", "import", "create", "empty"),
+        "keep" if previous else "runtime",
     )
+    if mode == "runtime":
+        return previous
     if mode == "keep":
         return previous
     if mode == "empty":
@@ -274,6 +278,11 @@ def _databricks(
         files, spec.private / "databricks/sources.json", saved.get("ML_DATABRICKS_SOURCES_CONFIG")
     )
     spec.templates = _sources(prompt, alias, prior_sources)
+    spec.source_policy = _saved_json(
+        files,
+        spec.private / "databricks/access-policy.json",
+        saved.get("ML_DATABRICKS_POLICY_CONFIG"),
+    ) or {"contract": "databricks-access-v1", "grants": []}
     if spec.profile == "compose":
         spec.environment["ML_INGESTION_INPUT_DIR"] = str(
             absolute_path(
@@ -533,7 +542,8 @@ def configure(project: Path, private: Path, profile: str, prompt: Prompt) -> Set
     if plan.pending_sources:
         print(
             "Connection configured; no extraction source is configured. "
-            "Source review/registration is pending."
+            "Register sources through the Management API after startup. "
+            "Deployment-owned access grants must be configured first."
         )
     if spec.connections is not None or "ML_INGESTION_INPUT_DIR" in spec.environment:
         print("Next: register a reviewed SourceDefinition before submitting ingestion.")

@@ -5,9 +5,14 @@ services:
   management:
     environment:
       ML_DATABRICKS_ENABLED: "true"
+      ML_DATABRICKS_POLICY_FILE: ${ML_DATABRICKS_POLICY_FILE:-}
       ML_DATABRICKS_CONNECTIONS_FILE: /app/config/databricks-connections.json
       ML_DATABRICKS_SOURCES_FILE: /app/config/databricks-sources.json
     volumes:
+      - type: bind
+        source: ${ML_DATABRICKS_POLICY_CONFIG:-/dev/null}
+        target: /app/config/databricks-policy.json
+        read_only: true
       - type: bind
         source: ${ML_DATABRICKS_CONNECTIONS_CONFIG:?set approved connection JSON file}
         target: /app/config/databricks-connections.json
@@ -19,9 +24,14 @@ services:
   ingestion-worker:
     environment:
       ML_DATABRICKS_ENABLED: "true"
+      ML_DATABRICKS_POLICY_FILE: ${ML_DATABRICKS_POLICY_FILE:-}
       ML_DATABRICKS_CONNECTIONS_FILE: /app/config/databricks-connections.json
       ML_DATABRICKS_SOURCES_FILE: /app/config/databricks-sources.json
     volumes:
+      - type: bind
+        source: ${ML_DATABRICKS_POLICY_CONFIG:-/dev/null}
+        target: /app/config/databricks-policy.json
+        read_only: true
       - type: bind
         source: ${ML_DATABRICKS_CONNECTIONS_CONFIG:?set approved connection JSON file}
         target: /app/config/databricks-connections.json

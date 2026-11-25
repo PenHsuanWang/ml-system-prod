@@ -145,6 +145,9 @@ class SetupSpec:
     environment: dict[str, str] = field(default_factory=dict, repr=False)
     connections: dict[str, Any] | None = field(default=None, repr=False)
     templates: dict[str, Any] = field(default_factory=dict, repr=False)
+    source_policy: dict[str, Any] = field(
+        default_factory=lambda: {"contract": "databricks-access-v1", "grants": []}, repr=False
+    )
     oauth_secret: str | None = field(default=None, repr=False)
     private_values: dict[str, str] = field(default_factory=dict, repr=False)
     existing_roles: dict[str, dict[str, str]] = field(default_factory=dict, repr=False)
@@ -318,9 +321,12 @@ def build_plan(spec: SetupSpec, files: PrivateFiles) -> SetupPlan:
         paths = {
             "ML_DATABRICKS_CONNECTIONS_CONFIG": spec.private / "databricks/connections.json",
             "ML_DATABRICKS_SOURCES_CONFIG": spec.private / "databricks/sources.json",
+            "ML_DATABRICKS_POLICY_CONFIG": spec.private / "databricks/access-policy.json",
         }
         outputs[paths["ML_DATABRICKS_CONNECTIONS_CONFIG"]] = json_bytes(spec.connections)
         outputs[paths["ML_DATABRICKS_SOURCES_CONFIG"]] = json_bytes(spec.templates)
+        outputs[paths["ML_DATABRICKS_POLICY_CONFIG"]] = json_bytes(spec.source_policy)
+        environment["ML_DATABRICKS_POLICY_FILE"] = "/app/config/databricks-policy.json"
         environment.update({k: str(v) for k, v in paths.items()})
         if any(c.access_token_env for c in connections.values()):
             credential(environment["DATABRICKS_TOKEN"])
