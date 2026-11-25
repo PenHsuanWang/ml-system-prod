@@ -32,6 +32,9 @@ func validateCA(data []byte) error {
 			return errors.New("invalid additional CA")
 		}
 		end += len(marker)
+		if bytes.Count(data[:end], []byte("-----BEGIN ")) != 1 {
+			return errors.New("invalid additional CA")
+		}
 		block, extra := pem.Decode(data[:end])
 		if block == nil || block.Type != "CERTIFICATE" || len(block.Headers) != 0 || len(bytes.TrimSpace(extra)) != 0 {
 			return errors.New("invalid additional CA")

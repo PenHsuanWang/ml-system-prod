@@ -43,7 +43,7 @@ func TestValidation(t *testing.T) {
 	valid, _ := fixtureCA(t, true, false)
 	leaf, _ := fixtureCA(t, false, false)
 	expired, _ := fixtureCA(t, true, true)
-	for _, data := range [][]byte{nil, []byte("invalid-private-input"), leaf, expired, append(valid, []byte("garbage")...), append([]byte("garbage"), valid...), append([]byte("-----BEGIN CERTIFICATE-----\nbad\n-----END CERTIFICATE-----\n"), valid...)} {
+	for _, data := range [][]byte{nil, []byte("invalid-private-input"), leaf, expired, append(valid, []byte("garbage")...), append([]byte("garbage"), valid...), append([]byte("-----BEGIN CERTIFICATE-----\nbad\n-----END CERTIFICATE-----\n"), valid...), append([]byte("-----BEGIN CERTIFICATE-----\nbad\n"), valid...)} {
 		if validateCA(data) == nil {
 			t.Fatal("invalid input accepted")
 		}

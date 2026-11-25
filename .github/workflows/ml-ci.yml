@@ -152,6 +152,8 @@ jobs:
           mkdir -p "$RUNNER_TEMP/build-trust"
           openssl req -x509 -newkey rsa:2048 -nodes -days 2 -subj /CN=synthetic-build-trust-only -keyout "$RUNNER_TEMP/build-trust/key.pem" -out "$RUNNER_TEMP/build-trust/ca.pem" >/dev/null 2>&1
           docker build --no-cache --target api --secret "id=corporate_ca,src=$RUNNER_TEMP/build-trust/ca.pem" --tag ml-build-trust-ci:test --file Dockerfile.ml .
+          docker build --target apt --secret "id=corporate_ca,src=$RUNNER_TEMP/build-trust/ca.pem" --tag ml-build-trust-apt-ci:test --file tests/ml/build_network/fixtures/Dockerfile .
+          docker build --target go-git --secret "id=corporate_ca,src=$RUNNER_TEMP/build-trust/ca.pem" --tag ml-build-trust-go-ci:test --file tests/ml/build_network/fixtures/Dockerfile .
           printf 'invalid synthetic CA' > "$RUNNER_TEMP/build-trust/invalid.pem"
           if docker build --no-cache --target api --secret "id=corporate_ca,src=$RUNNER_TEMP/build-trust/invalid.pem" --file Dockerfile.ml . > "$RUNNER_TEMP/build-trust/invalid.log" 2>&1; then exit 1; fi
           grep -q 'build trust: invalid CA input' "$RUNNER_TEMP/build-trust/invalid.log"

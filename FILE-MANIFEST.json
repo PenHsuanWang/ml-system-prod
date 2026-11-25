@@ -39,8 +39,8 @@
     },
     {
       "path": ".github/workflows/ml-ci.yml",
-      "bytes": 17016,
-      "sha256": "af2960a4a16424ee568535d9efb5bf9c27699e247c7c5d9d7c3bf87bb30c3e1c"
+      "bytes": 17386,
+      "sha256": "db5502dc0dd1b96e2c4859e2e2f4d15d6f24f895c5661cc1f91ed18b2b3221c1"
     },
     {
       "path": ".gitignore",
@@ -1119,13 +1119,13 @@
     },
     {
       "path": "scripts/build_trust/main.go",
-      "bytes": 4680,
-      "sha256": "f8d2f1f33d56d9c6e7f0118b30c2403a199db96d9bbe8a33c9c2e65e2b132277"
+      "bytes": 4789,
+      "sha256": "7a82dcaf2576459dde42aaeef164f54b05ff002890a377226e9b18216cbbe84f"
     },
     {
       "path": "scripts/build_trust/main_test.go",
-      "bytes": 5956,
-      "sha256": "537829b1f39a46be17390db9ca7e16f09ef30bf6fcd770c04ac3e4066567b027"
+      "bytes": 6020,
+      "sha256": "a9523a6d4a26fd7d8d2df37965cdddda7ca1c39bbb37a8fc850797056c010677"
     },
     {
       "path": "scripts/check_boundaries.py",
@@ -2431,6 +2431,11 @@
       "path": "tests/ml/__init__.py",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/ml/build_network/fixtures/Dockerfile",
+      "bytes": 1394,
+      "sha256": "e9468cee32a5e68b88ab97e7d87bfee5d83f007a8e03f94c7be835504f79ca22"
     },
     {
       "path": "tests/ml/build_network/test_build_contract.py",
