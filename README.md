@@ -199,3 +199,10 @@ Workers resolve exact SQL catalog definitions at execution. Legacy templates
 and worker-only credentials retain their existing contracts.
 See [runtime source management](docs/runtime-source-management.md) for permissions,
 lifecycle behavior and separate external qualification requirements.
+
+## Hybrid external MLflow
+
+Standalone compose.ml.hybrid-mlflow.yaml runs local application infrastructure
+and uses explicit external HTTPS MLflow with existing strict role files and
+separate writer/reader credentials. See [setup, qualification and cutover](docs/deployment/day1-deployment-runbook.md#hybrid-development-with-external-mlflow).
+Fixture evidence does not qualify an enterprise endpoint; production_accepted remains false.

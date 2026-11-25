@@ -468,3 +468,108 @@ Workers resolve exact SQL catalog definitions at execution. Legacy templates
 and worker-only credentials retain their existing contracts.
 See [runtime source management](../runtime-source-management.md) for permissions,
 lifecycle behavior and separate external qualification requirements.
+
+## Hybrid development with external MLflow
+
+Use standalone `compose.ml.hybrid-mlflow.yaml` when application infrastructure is
+local and MLflow Tracking/Registry/artifact proxy is external. Do not combine it
+with the reference or external production Compose file. It has local PostgreSQL,
+MongoDB, RabbitMQ and Redis, and the existing application roles. It contains no
+MLflow, MLflow database, MinIO or MinIO initialization services or dependencies.
+It uses ordinary Compose v2 features, without reset/override extensions.
+
+This topology reuses the strict production role loader and pinned release/source,
+verified HTTPS and separate writer/reader identities described above. Its `prod`
+model environment enforces those contracts; it does not imply production
+qualification. Existing local development and external production profiles and
+init wizard modes remain unchanged. Hybrid setup is an explicit operator step.
+
+Copy `.env.ml.hybrid.example` to a private ignored `.env.ml.hybrid` and fill its
+public paths, actual release image RepoDigest/source and external HTTPS endpoint.
+Prepare the same private role JSON files and CA as above. All role connection
+URLs must point to the local service names `postgres`, `mongo`, `rabbitmq`, `redis`
+and match the separately configured infrastructure credentials. Use the existing
+Day-1 matrix: Management, migrate, relay and gateway have no MLflow credentials;
+Supervisor has writer only; Control has writer and reader; spawned Serving gets
+reader only through its existing explicit environment allowlist. Operator uses
+its reviewed qualification identities. No new runtime credential aliases exist.
+
+Create a private `ML_HYBRID_INFRA_CONFIG_DIR`, outside the shared runtime root,
+with separate files. These examples specify keys only; supply synthetic or
+approved private values locally, never commit them:
+
+- `postgres.env`: POSTGRES_DB=ml, POSTGRES_USER=ml, POSTGRES_PASSWORD.
+- `mongo.env`: MONGO_INITDB_ROOT_USERNAME=root, MONGO_INITDB_ROOT_PASSWORD.
+- `rabbitmq.env`: RABBITMQ_DEFAULT_USER=ml, RABBITMQ_DEFAULT_PASS.
+- `redis.conf`: appendonly yes and an approved requirepass value.
+
+The env files belong only to their infrastructure service. Keep host directories
+private and files accessible only to the operator. Redis must be able to read its
+read-only mounted config as the Redis image UID. In the disposable fixture this
+single file is readable within that container and protected by its private host
+parent. No infrastructure ports are published. Redis health accepts an explicit
+NOAUTH response as liveness; the actual supervisor URL still needs its password.
+Rendered Compose models can contain expanded infrastructure credentials, so save
+them privately and publish only sanitized qualification reports.
+
+~~~sh
+docker compose --env-file .env.ml.hybrid -f compose.ml.hybrid-mlflow.yaml \
+  --profile '*' config --format json > /private/release/hybrid-model.json
+docker image inspect --format '{{json .}}' "$ML_RELEASE_IMAGE" \
+  > /private/release/image.json
+python -m bootstrap.deployment_cli preflight --profile hybrid \
+  --compose-config /private/release/hybrid-model.json \
+  --image-inspect /private/release/image.json --output /private/release/preflight.json
+
+docker compose --env-file .env.ml.hybrid -f compose.ml.hybrid-mlflow.yaml up -d
+
+docker compose --env-file .env.ml.hybrid -f compose.ml.hybrid-mlflow.yaml \
+  --profile ops run --rm operator python -m bootstrap.deployment_cli qualify-mlflow \
+  --experiment-name APPROVED_QUALIFICATION_EXPERIMENT \
+  --registered-model-prefix APPROVED_PREFIX --output /app/var/mlflow-qualification.json
+~~~
+
+Use shell `umask 077` before capturing the model. The preflight is offline and
+validates the pinned image/source, private inputs, local infrastructure, namespace
+and migration ordering. Default preflight remains external-only; `--profile
+hybrid` is explicit and permits only the four specified local infrastructure
+services. Dependency qualification proves HTTPS/authenticated tracking, registry,
+artifact upload/download and separate reader write denial. It does not replace
+the complete governed training-to-prediction test or enterprise acceptance.
+
+Ingestion is disabled by default. Set ML_INGESTION_ENABLED=true and add `--profile
+ingestion` when starting its worker. Databricks additionally requires
+ML_DATABRICKS_ENABLED=true and the existing approved connection, optional legacy
+template placeholder, access policy and worker-only OAuth/PAT configuration.
+Unused mounts default to /dev/null. File Batch uses existing approved roots and
+an explicitly reviewed read-only input mount; source registration is unchanged.
+
+For a disposable engineering qualification, build/pull a production-compatible
+runtime with an actual repository digest and run:
+
+~~~sh
+python -m scripts.verify_hybrid_mlflow \
+  --image "$QUALIFICATION_IMAGE_AT_DIGEST" --code-revision "$QUALIFICATION_SOURCE_SHA" \
+  --mlflow-image "$QUALIFIED_MLFLOW_FIXTURE_IMAGE" \
+  --output-dir var/hybrid-qualification-UNIQUE
+~~~
+
+The helper creates two unique Compose projects, fresh synthetic private files,
+TLS trust, MLflow auth/artifact storage and runtime data. MLflow is outside the
+application dependency graph. It invokes the existing qualification CLI and the
+real HTTP/Identity/SQL/outbox/RabbitMQ/training/evaluation/approval/controller/
+Serving/gateway lifecycle, including rollout, rollback and revoked tokens.
+It requires free loopback ports 18040/18041. It stops only its own containers and
+retains volumes and evidence. The supplied image must already be available to the
+Docker daemon. A fixture result does not qualify an enterprise MLflow deployment.
+
+Changing MLflow endpoints with existing application state is unsupported without
+an explicit qualified migration. ModelBindings and runs refer to the originating
+registry; a new endpoint may resolve the same names/versions to unrelated objects.
+For an endpoint change, stop submissions, drain work, take coordinated backups,
+then use fresh isolated application SQL, runtime, datasets and route state, or a
+separately approved migration. Verify writer/reader/artifacts and requalify the
+full lifecycle. Recreate containers after environment/configuration changes;
+`docker compose restart` does not reload environment configuration. Rollback must
+restore the matching old endpoint, state, credentials and release together. There
+is no runtime endpoint-switch API or automatic registry migration.

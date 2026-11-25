@@ -38,6 +38,12 @@ REQUIRED_ROLES = frozenset(
         "operator",
     }
 )
+HYBRID_INFRASTRUCTURE = {
+    "postgres": "postgres:17",
+    "mongo": "mongo:7",
+    "rabbitmq": "rabbitmq:4.4-management",
+    "redis": "redis:7",
+}
 INTERNAL_TRACKING = frozenset({"mlflow", "mlflow-db", "minio", "minio-init"})
 DIGEST = re.compile(r"sha256:[a-f0-9]{64}\Z")
 CODE = re.compile(r"[a-f0-9]{40}\Z")
@@ -158,15 +164,38 @@ def host_path(value: Any) -> Path:
     return Path(value).resolve()
 
 
-def preflight(model: dict[str, Any], inspection: dict[str, Any]) -> dict[str, Any]:
+def preflight(
+    model: dict[str, Any], inspection: dict[str, Any], *, hybrid: bool = False
+) -> dict[str, Any]:
     """Compare the captured Compose model and Docker image inspection, without network I/O."""
     services = model.get("services")
     if not isinstance(services, dict) or not REQUIRED_ROLES <= set(services):
         raise QualificationError("REQUIRED_RUNTIME_ROLES_MISSING")
     if INTERNAL_TRACKING & set(services):
         raise QualificationError("INTERNAL_TRACKING_SERVICES_PRESENT")
-    if set(services) != REQUIRED_ROLES:
+    expected = REQUIRED_ROLES | set(HYBRID_INFRASTRUCTURE) if hybrid else REQUIRED_ROLES
+    if set(services) != expected:
         raise QualificationError("UNAPPROVED_SERVICES_PRESENT")
+    if hybrid:
+        for name, image in HYBRID_INFRASTRUCTURE.items():
+            service = services[name]
+            if service.get("image") != image or service.get("build") or service.get("ports"):
+                raise QualificationError("PRIVATE_HYBRID_INFRASTRUCTURE_REQUIRED")
+            if not service.get("healthcheck"):
+                raise QualificationError("HYBRID_INFRASTRUCTURE_HEALTHCHECK_REQUIRED")
+        if services["gateway"].get("network_mode") != "service:control":
+            raise QualificationError("SHARED_CONTROL_GATEWAY_NETWORK_REQUIRED")
+        if (
+            services["migrate"].get("depends_on", {}).get("postgres", {}).get("condition")
+            != "service_healthy"
+        ):
+            raise QualificationError("HYBRID_MIGRATION_DEPENDENCY_REQUIRED")
+        for role in REQUIRED_ROLES - {"migrate", "gateway"}:
+            if (
+                services[role].get("depends_on", {}).get("migrate", {}).get("condition")
+                != "service_completed_successfully"
+            ):
+                raise QualificationError("HYBRID_MIGRATION_ORDER_REQUIRED")
     image_refs: set[str] = set()
     code_revisions: set[str] = set()
     declared_digests: set[str] = set()
@@ -322,6 +351,7 @@ def preflight(model: dict[str, Any], inspection: dict[str, Any]) -> dict[str, An
     return {
         "status": "CONFIGURATION_PREFLIGHT_PASSED",
         "scope": "offline-release-configuration",
+        "profile": "hybrid" if hybrid else "external",
         "roles": sorted(REQUIRED_ROLES),
         "image_ref": image_ref,
         "code_revision": code_revision,
@@ -628,6 +658,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="operation", required=True)
     check = commands.add_parser("preflight", help="Offline Compose/image metadata checks")
+    check.add_argument("--profile", choices=["external", "hybrid"], default="external")
     check.add_argument("--compose-config", type=Path, required=True)
     check.add_argument("--image-inspect", type=Path, required=True)
     check.add_argument("--output", type=Path, required=True)
@@ -646,7 +677,9 @@ def main(argv: list[str] | None = None) -> int:
             if args.operation == "preflight":
                 model = load_object(args.compose_config)
                 # `docker image inspect --format '{{json .}}' IMAGE` emits one object.
-                report = preflight(model, load_object(args.image_inspect))
+                report = preflight(
+                    model, load_object(args.image_inspect), hybrid=args.profile == "hybrid"
+                )
             elif args.operation == "qualify-mlflow":
                 MLSettings.from_env()
                 report = qualify_mlflow(args.experiment_name, args.registered_model_prefix)

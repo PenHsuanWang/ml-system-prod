@@ -5,7 +5,12 @@ import sys
 from pathlib import Path
 
 PRODUCTION = ["bootstrap/deployment_entrypoint.py", "bootstrap/deployment_cli.py"]
-TESTS = ["tests/ml/test_deployment_entrypoint.py", "tests/ml/test_deployment_qualification.py"]
+TESTS = [
+    "tests/ml/test_deployment_entrypoint.py",
+    "tests/ml/test_deployment_qualification.py",
+    "tests/ml/test_hybrid_deployment.py",
+    "scripts/verify_hybrid_mlflow.py",
+]
 
 
 def main() -> int:

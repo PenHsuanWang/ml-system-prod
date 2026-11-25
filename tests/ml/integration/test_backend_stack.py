@@ -42,7 +42,8 @@ async def wait_for_ready(client, *, timeout=90):
 async def provision(tenant, username, password):
     permissions = ("ml.train", "ml.cancel", "ml.model.read", "ml.model.approve",
                    "ml.deploy", "ml.predict", "ml.jobs.read_all")
-    command = [sys.executable, "manage.py", "create-admin", "--tenant-id", tenant,
+    prefix = json.loads(os.environ.get("ML_TEST_OPERATOR_COMMAND_JSON", "null"))
+    command = (prefix or [sys.executable, "manage.py"]) + ["create-admin", "--tenant-id", tenant,
                "--username", username, "--password-stdin"]
     for permission in permissions:
         command.extend(["--permission", permission])
@@ -99,7 +100,7 @@ async def test_live_backend_train_approve_predict_rollout_rollback_and_revoke():
             assert evaluation["decision"] == "APPROVED_BY_POLICY"
             assert json.loads(evaluation["metrics_json"])["accuracy"] >= 0.75
             approved = await manager.post(f"/api/v1/model_registry/bindings/{binding}/approvals", headers=owner,
-                                          json={"evaluation_id": evaluation["evaluation_id"], "environment": "dev"})
+                                          json={"evaluation_id": evaluation["evaluation_id"], "environment": os.environ.get("ML_TEST_MODEL_ENVIRONMENT", "dev")})
             assert approved.status_code == 201
             deployment = await manager.post("/api/v1/deployments", headers=owner, json={"endpoint_id": endpoint,
                                                                                         "model_binding_id": binding, "approval_id": approved.json()["approval_id"]})

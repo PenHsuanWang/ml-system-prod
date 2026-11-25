@@ -241,6 +241,19 @@ jobs:
         run: docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" up --build -d management relay supervisor control gateway redis
       - name: Require supported runtime and zero skipped integration cases
         run: docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" run --build --rm --no-deps acceptance
+      - name: Qualify the isolated hybrid external-style MLflow lifecycle
+        run: |
+          docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" stop
+          python -m pip install -e '.[dev]'
+          docker run -d --name "ml-hybrid-registry-${GITHUB_RUN_ID}" -p 127.0.0.1:15500:5000 registry:2
+          cat > "$RUNNER_TEMP/Dockerfile.hybrid-fixture" <<EOF
+          FROM ml-acceptance-${GITHUB_RUN_ID}-acceptance:latest
+          LABEL org.opencontainers.image.revision="${GITHUB_SHA}"
+          EOF
+          docker build -f "$RUNNER_TEMP/Dockerfile.hybrid-fixture" -t localhost:15500/hybrid-runtime:fixture .
+          docker push localhost:15500/hybrid-runtime:fixture
+          HYBRID_IMAGE=$(docker image inspect localhost:15500/hybrid-runtime:fixture --format '{{index .RepoDigests 0}}')
+          python -m scripts.verify_hybrid_mlflow --image "$HYBRID_IMAGE" --code-revision "$GITHUB_SHA" --mlflow-image "ml-acceptance-${GITHUB_RUN_ID}-mlflow:latest" --uid "$(id -u)" --output-dir var/hybrid-ci
       - name: Capture disposable stack diagnostics
         if: failure()
         run: |
@@ -257,6 +270,12 @@ jobs:
             var/acceptance-stack-data/acceptance/ebm-e2e.json
             var/acceptance-stack-data/acceptance/ebm-junit.xml
             var/acceptance-stack-data/acceptance/*.log
+            var/hybrid-ci/qualification.json
+            var/hybrid-ci/lifecycle.xml
+            var/hybrid-ci/lifecycle.txt
+            var/hybrid-ci/tls-auth.txt
       - name: Remove only this disposable stack
         if: always()
-        run: docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" down --volumes --remove-orphans
+        run: |
+          docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.yaml -p "ml-acceptance-${GITHUB_RUN_ID}" down --volumes --remove-orphans
+          docker rm -f "ml-hybrid-registry-${GITHUB_RUN_ID}" 2>/dev/null || true

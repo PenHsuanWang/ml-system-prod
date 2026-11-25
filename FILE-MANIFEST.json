@@ -13,6 +13,11 @@
       "sha256": "cf3b827f8a133f1003282ad3014a5fe5e5477bc1c51d59f90ea1a973d3c2496c"
     },
     {
+      "path": ".env.ml.hybrid.example",
+      "bytes": 2835,
+      "sha256": "4f0ab8d489c4d7bccbe46778bb50808da3e6c8e21ac3cb6a091cf6b497bb169c"
+    },
+    {
       "path": ".env.ml.ingestion.example",
       "bytes": 1312,
       "sha256": "00d4b21678172461bcc601939e59a4648bc1f0b60a8523c6834cc917600a0925"
@@ -39,8 +44,8 @@
     },
     {
       "path": ".github/workflows/ml-ci.yml",
-      "bytes": 14701,
-      "sha256": "430884a0b0d0224eb496c228457522fc41a2a7b6b65e2674840ce850689b9f1f"
+      "bytes": 16039,
+      "sha256": "938ac70b5bbac79c0447e000d975565ba81b782f230967fa8d72bb90f5ee1dfc"
     },
     {
       "path": ".gitignore",
@@ -74,8 +79,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 15553,
-      "sha256": "d0d65de2abd452e9387c59a8f5ffa489878a947f6a3f27e3b5865b562af6b336"
+      "bytes": 15989,
+      "sha256": "5a23cb775360e3f3b30355964910a4c876e95a3e79e19c048788cd1365c3c037"
     },
     {
       "path": "REVIEW-P1-P2-REMEDIATION.md",
@@ -119,8 +124,8 @@
     },
     {
       "path": "bootstrap/deployment_cli.py",
-      "bytes": 28686,
-      "sha256": "615eb368002554b50bd05422bf76f90fe22035318bf253d8a260c4454f2221d9"
+      "bytes": 30273,
+      "sha256": "1b244188cafe4748dcad21a8829d9d49c29a94ae358eed433a1a074f780493af"
     },
     {
       "path": "bootstrap/deployment_entrypoint.py",
@@ -261,6 +266,11 @@
       "path": "compose.ml.external-mlflow.yaml",
       "bytes": 10013,
       "sha256": "fcc59e591346185461781610123d9641507237e7454e6e813ec78b18ce4e703d"
+    },
+    {
+      "path": "compose.ml.hybrid-mlflow.yaml",
+      "bytes": 11774,
+      "sha256": "93c4a9b99acdf256e223e0a6a35d84b167b22d8a9f3f20dabf082e29ab21d634"
     },
     {
       "path": "compose.ml.ingestion.yaml",
@@ -509,8 +519,8 @@
     },
     {
       "path": "docs/configuration-reference.md",
-      "bytes": 11518,
-      "sha256": "ede908cab9b98a3f27a0b8ac9d43b338bfb26f6e41e32364c25b2ef7b3ae838b"
+      "bytes": 11949,
+      "sha256": "b064d2a2c4cdff089e10437353d29ccea28277e5dc7921dea9cfb2ba57014b1f"
     },
     {
       "path": "docs/data-ingress-implementation.md",
@@ -524,8 +534,8 @@
     },
     {
       "path": "docs/deployment/day1-deployment-runbook.md",
-      "bytes": 28064,
-      "sha256": "31f2ef6b01d6462af05fdb505891afa094f9e204fdb6cf8391c804a26c988f39"
+      "bytes": 34514,
+      "sha256": "929a8c12a33c9335ecfcc29f27f3b39ab5ddb788c4bf2feccffcb10fcb646ba8"
     },
     {
       "path": "docs/deployment/interactive-setup.md",
@@ -889,8 +899,8 @@
     },
     {
       "path": "docs/implementation-status.md",
-      "bytes": 4965,
-      "sha256": "11e9cb1280f4217434d07fcf61c64290509281a5b573dfdf8cf2aec4ba4f23a0"
+      "bytes": 5396,
+      "sha256": "722c829b50f2c6efbacb455e6cd87fde14e097caa13313a3c10a6e334ef0b56d"
     },
     {
       "path": "docs/microservice-contracts.md",
@@ -911,6 +921,11 @@
       "path": "docs/module-spec.md",
       "bytes": 27047,
       "sha256": "f59bad0c243161147eee9d6c4c01918cb1d0301d3ce70117f7075f10f7adcf31"
+    },
+    {
+      "path": "docs/plans/hybrid-external-mlflow.md",
+      "bytes": 3353,
+      "sha256": "25e4067c13bb9409859d2036c47de6b72c84b9306a9c37626736dec7393a043f"
     },
     {
       "path": "docs/pytorch-ml-system-hld.md",
@@ -1119,8 +1134,8 @@
     },
     {
       "path": "scripts/check_deployment.py",
-      "bytes": 863,
-      "sha256": "49449c1b82fdc42259a9b6bafbd4c3f4f458032afcbba8efba716a1b9dca8525"
+      "bytes": 955,
+      "sha256": "4b66f6e2875eb56bc030f0c7b60f76a1bded7ac1ebde04284f2567056fce8e96"
     },
     {
       "path": "scripts/check_docs.py",
@@ -1231,6 +1246,11 @@
       "path": "scripts/verify_guide.py",
       "bytes": 7840,
       "sha256": "733d0d2cb31cce74c2586c2c400b889b232a9e5f6c0e790b58a11743ab002efe"
+    },
+    {
+      "path": "scripts/verify_hybrid_mlflow.py",
+      "bytes": 13721,
+      "sha256": "4d1a447dcd6104f65e433350a1f36a3b4e0b2ec30184f98395e7367ced076dbf"
     },
     {
       "path": "scripts/verify_init_compose.py",
@@ -2669,8 +2689,8 @@
     },
     {
       "path": "tests/ml/integration/test_backend_stack.py",
-      "bytes": 7533,
-      "sha256": "876f2d3400baad7a7946129590fadc5961794cb52f70f289cb5619b2ca66229e"
+      "bytes": 7674,
+      "sha256": "599a1cfc56e1b8b82f9aabae3c5668e05e044870987fe2dbe28d4f893721275d"
     },
     {
       "path": "tests/ml/integration/test_receiver.py",
@@ -2741,6 +2761,11 @@
       "path": "tests/ml/test_deployment_qualification.py",
       "bytes": 21037,
       "sha256": "46bd952ea239d626c95f2d9c9f6d69a7a9e1b4539f00359f8aec5f054a302c42"
+    },
+    {
+      "path": "tests/ml/test_hybrid_deployment.py",
+      "bytes": 5141,
+      "sha256": "a9d037fa4cc02f8738503b288f745d40f6685bd52c7f528aaa31c8ec750e8891"
     },
     {
       "path": "tests/ml/test_model_governance.py",
