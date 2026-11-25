@@ -14,13 +14,13 @@
     },
     {
       "path": ".env.ml.ingestion.example",
-      "bytes": 1123,
-      "sha256": "95076159093343dbae83119cd3c29a16a81b170a754790597597701990568077"
+      "bytes": 1312,
+      "sha256": "00d4b21678172461bcc601939e59a4648bc1f0b60a8523c6834cc917600a0925"
     },
     {
       "path": ".env.ml.production.example",
-      "bytes": 2372,
-      "sha256": "d0da44817278a737985e31e557f1b2a32209d4c285240e79ed8e9a84c7756307"
+      "bytes": 2561,
+      "sha256": "2e09e443f3f9fbdc5554f7cbc68fa49b2d743fbafcf24646c6dd899263d35ba8"
     },
     {
       "path": ".github/workflows/documentation.yml",
@@ -74,8 +74,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 15072,
-      "sha256": "58dd7317f748eb9129848786cd3ab265b6d03d5739a19ba31549e5765e7d1f97"
+      "bytes": 15553,
+      "sha256": "d0d65de2abd452e9387c59a8f5ffa489878a947f6a3f27e3b5865b562af6b336"
     },
     {
       "path": "REVIEW-P1-P2-REMEDIATION.md",
@@ -149,18 +149,18 @@
     },
     {
       "path": "bootstrap/ingestion_wiring.py",
-      "bytes": 10235,
-      "sha256": "b3aeb3de683d3b7acce063551347a6d1e24d8f9b63ac8535c553227f7988aa57"
+      "bytes": 11337,
+      "sha256": "9c4a32f2b3ebf1a00833fcd1a4e114ae0970e9c7004a2c6fd65b1fb8c93133cf"
     },
     {
       "path": "bootstrap/init_cli.py",
-      "bytes": 22423,
-      "sha256": "b4477d9f6535526d5d18d7f26d4cb499fb87495727c405d1fb9f18c433fb0549"
+      "bytes": 22814,
+      "sha256": "a95d6299dd01c47cbaa8adc4280dab0c4e58109be402a62085516985ba3d8189"
     },
     {
       "path": "bootstrap/init_config.py",
-      "bytes": 17438,
-      "sha256": "d66121a5731fee8745d7c856303e41de9a3f936398e7af0ed3b8671f8ee9f958"
+      "bytes": 17924,
+      "sha256": "f98611bdeb979b92be3a0a771f1ce9bd83297e110c0b7576505b04b7c89b756d"
     },
     {
       "path": "bootstrap/init_files.py",
@@ -169,8 +169,8 @@
     },
     {
       "path": "bootstrap/ml_api.py",
-      "bytes": 5237,
-      "sha256": "6e3075b62c312b55641660ab47537cdfc5b298c6173a327b34fbdc8989511c92"
+      "bytes": 5744,
+      "sha256": "ea806e38ee02c0500c6d4be4e88f88fdaf5a8309daf7b6f5ad45592c375f7822"
     },
     {
       "path": "bootstrap/ml_cli.py",
@@ -249,18 +249,18 @@
     },
     {
       "path": "compose.ml.databricks-token.yaml",
-      "bytes": 1412,
-      "sha256": "01fd391f4e3ec704dfd9b961ec0d373cb09f1d675571a5a42c8e79cdde7b0647"
+      "bytes": 1844,
+      "sha256": "816e87b6ef0c58f96bb4522588a8bbcb1774d4d584ae12c87ae204d1f84b9f5c"
     },
     {
       "path": "compose.ml.databricks.yaml",
-      "bytes": 1644,
-      "sha256": "f6fbebb7daa03cb64b17b06c62479ba50a957d79599aa902e6c62b1d6fecf29e"
+      "bytes": 2076,
+      "sha256": "dd0718ba75cd0e0b2155739d3d20cfde145602ed8f79a6cb8af51de59056e73e"
     },
     {
       "path": "compose.ml.external-mlflow.yaml",
-      "bytes": 9669,
-      "sha256": "b85ccf6a47d070b32b7619dc569cfc5d28d2a7d1f711acb7a06b9c6c0d5a2620"
+      "bytes": 10013,
+      "sha256": "fcc59e591346185461781610123d9641507237e7454e6e813ec78b18ce4e703d"
     },
     {
       "path": "compose.ml.ingestion.yaml",
@@ -493,39 +493,44 @@
       "sha256": "937859534dcbf5830827c364c2d8511c836697f2eb9729c72c50db58c274e7b4"
     },
     {
+      "path": "docs/adr/022-runtime-data-source-management.md",
+      "bytes": 5486,
+      "sha256": "f60a04fc5dda17884bf6ab69824c704aca2696602cc952d090bdd05c41ec387b"
+    },
+    {
       "path": "docs/adr/README.md",
-      "bytes": 13963,
-      "sha256": "6bcc46b71cde2aa4b897139c9df0c610dfeb984512cea3e69a774416e83d8bf3"
+      "bytes": 14448,
+      "sha256": "07843facc5808de2730d9b646fce08b5e7a993aef3fce90725449b0eb4d46420"
     },
     {
       "path": "docs/architecture.md",
-      "bytes": 3881,
-      "sha256": "c170af1ffd15a01a1b96d27228b24970a6c946f70d5bf0a12ef6e826c15f59eb"
+      "bytes": 4370,
+      "sha256": "f7c0d1af73c3332ce3efd74ecbb6c4c52bd90d05f55878a9c80dc39156aa3013"
     },
     {
       "path": "docs/configuration-reference.md",
-      "bytes": 11042,
-      "sha256": "5f51ec82d1646613e9b136ecb5f91fab197d66f96f0fbd165e1dcc2ce9f9fc51"
+      "bytes": 11518,
+      "sha256": "ede908cab9b98a3f27a0b8ac9d43b338bfb26f6e41e32364c25b2ef7b3ae838b"
     },
     {
       "path": "docs/data-ingress-implementation.md",
-      "bytes": 24410,
-      "sha256": "863bc23557fb53b9946075f8ac7f9952d5cbf396bfc080d17ff219308195d5b0"
+      "bytes": 24886,
+      "sha256": "e9b37e4c5fefd8da9b4ba1db5806b79d55f7dc1112511014c53661610413e995"
     },
     {
       "path": "docs/databricks-ingestion-runbook.md",
-      "bytes": 13458,
-      "sha256": "41f40de5f2e30250dcb950d04b96dcc38a4f5990bfa7eeb3cc1c4625b01bde6b"
+      "bytes": 13934,
+      "sha256": "c446001f7f59d2c02ab3b11e0bac65750cbb31ac6fb4e147c8508927f1d5cbbe"
     },
     {
       "path": "docs/deployment/day1-deployment-runbook.md",
-      "bytes": 27585,
-      "sha256": "6ea93f3c9b007859a672a82c608323261b93fe6fb6cc50d4d016acba27ca173a"
+      "bytes": 28064,
+      "sha256": "31f2ef6b01d6462af05fdb505891afa094f9e204fdb6cf8391c804a26c988f39"
     },
     {
       "path": "docs/deployment/interactive-setup.md",
-      "bytes": 10873,
-      "sha256": "8b4f9f8bc15057d1d3b4e3f9131b0d6a62a5dcbafd8526d314d995574e9f1b9b"
+      "bytes": 11352,
+      "sha256": "7a2f745a11f3745d026a008bd5438ce785ab0d97fa1e506c2f62791a3bdf0ea0"
     },
     {
       "path": "docs/deployment/kubernetes-acceptance.md",
@@ -843,24 +848,44 @@
       "sha256": "150909eb87dbae7189724c09310bfffe464a19b6f1844ddea66464cefffa96d1"
     },
     {
+      "path": "docs/evidence/runtime-sources-20261125/checks.json",
+      "bytes": 4158,
+      "sha256": "ca3e826cb695ac0fa95829499f29158d0ec5879a38fb1a3c4005f480dbc35765"
+    },
+    {
+      "path": "docs/evidence/runtime-sources-20261125/compose-result.json",
+      "bytes": 2009,
+      "sha256": "232d81272afcaae9b309d5ab5e1df2e5b7b6e829a84402794515b8740eb70345"
+    },
+    {
+      "path": "docs/evidence/runtime-sources-20261125/ebm-e2e.json",
+      "bytes": 9589,
+      "sha256": "6a0cb83b49d2cebaa8b3e64b3df4f95285551a7a6d3e353a39a23f1bf055aedb"
+    },
+    {
+      "path": "docs/evidence/runtime-sources-20261125/qualification.json",
+      "bytes": 1586,
+      "sha256": "55ba207900d5700a6fd47398c37f7d7f393b972d2445e99a8cb40bbf0e8a49c7"
+    },
+    {
       "path": "docs/glossary.md",
       "bytes": 4561,
       "sha256": "a5920df302522122b9cc2a0927aae288cad0847e66823db773333dbe6a09eef3"
     },
     {
       "path": "docs/implementation-status.md",
-      "bytes": 4489,
-      "sha256": "5e4d979be9438dffc639bf1327a0deca7b87d420453b10c74e24302849022590"
+      "bytes": 4965,
+      "sha256": "11e9cb1280f4217434d07fcf61c64290509281a5b573dfdf8cf2aec4ba4f23a0"
     },
     {
       "path": "docs/microservice-contracts.md",
-      "bytes": 30319,
-      "sha256": "399e0117db110b25def45b431369a98207cc094b8be4db3c3ca43408fde0c217"
+      "bytes": 30795,
+      "sha256": "8714afc8beb0a2a32b3643e43808c0cee9b20e5717b66bc11b1374c8d6f863ad"
     },
     {
       "path": "docs/ml-runbook.md",
-      "bytes": 11684,
-      "sha256": "a5d6520d4acaa965aede278f75f1c395c7c4691841bc9a8a51f7ac7104b8fcf1"
+      "bytes": 12160,
+      "sha256": "ba30a89bab870fca8629e8956d91df5f3381d62d9b9341877167540079682ba4"
     },
     {
       "path": "docs/ml-runtime-compatibility.md",
@@ -936,6 +961,21 @@
       "path": "docs/reviews/production-profile-check.json",
       "bytes": 1312,
       "sha256": "09b59cc73b5431a499bd5d291a6cf6e27a3120cbd62256f5f3364745dfaf82c1"
+    },
+    {
+      "path": "docs/reviews/runtime-source-management-plan.md",
+      "bytes": 2448,
+      "sha256": "ec4f3e5af8b86972e6c37da9381214cc92607d543ec789643ffb561eabf56840"
+    },
+    {
+      "path": "docs/reviews/runtime-source-management-report.md",
+      "bytes": 24263,
+      "sha256": "b3a1721fd6ac610ab3b835ec2af52cc842dd6d9e90686187a16c4f12acafe7e2"
+    },
+    {
+      "path": "docs/runtime-source-management.md",
+      "bytes": 11567,
+      "sha256": "d4089eaec9a9dec91627ee8693ac5a08ff5feda926f8f57c0bdb5de4aed129e1"
     },
     {
       "path": "docs/software-design.md",
@@ -1323,6 +1363,16 @@
       "sha256": "4bd424fc5f1efa5dad55ee03ea45148759dea38a489959ca9f6b496fba21ae7b"
     },
     {
+      "path": "src/api/ingestion/source_routers.py",
+      "bytes": 4388,
+      "sha256": "908052fc7818896b198c0dbb125b079afcc42323b75c8965cc17cfbbe198ce71"
+    },
+    {
+      "path": "src/api/ingestion/source_schemas.py",
+      "bytes": 2438,
+      "sha256": "549ab77b04403b9cfa7ae51cd3f0057654c09c7ca4ece772dc44ea40020971c3"
+    },
+    {
       "path": "src/api/jobs/__init__.py",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -1454,8 +1504,8 @@
     },
     {
       "path": "src/application/ingestion/ports.py",
-      "bytes": 3261,
-      "sha256": "e536f92f3b4821000488ab84efc0cadbb4a91b627cf7e3a168355b8b3e0e7498"
+      "bytes": 4182,
+      "sha256": "637e71e27083a062fcc31aef6da458686411ca1dace93313f9079d6edd629b24"
     },
     {
       "path": "src/application/ingestion/registry.py",
@@ -1466,6 +1516,11 @@
       "path": "src/application/ingestion/service.py",
       "bytes": 3735,
       "sha256": "cce2ed441c94188ee0c5ead238a8b94e63bfa6f2001645703afafa8d7613510d"
+    },
+    {
+      "path": "src/application/ingestion/source_management.py",
+      "bytes": 2700,
+      "sha256": "602635a2dafc002ad8243a09114ec86b654a971734ce5ea20c0e3ff0d1366c41"
     },
     {
       "path": "src/application/ingestion/supervisor.py",
@@ -1909,8 +1964,8 @@
     },
     {
       "path": "src/infrastructure/ingestion/adapters/databricks_contract.py",
-      "bytes": 15929,
-      "sha256": "e8ea912742cf01a8fe5819f271013ad89bd317830ff4b0b7e61581d82168776b"
+      "bytes": 16786,
+      "sha256": "59b0faae7bbfbd896f3a20fa06690b691f437d4c605d45ea50b63d7dab3ae4bb"
     },
     {
       "path": "src/infrastructure/ingestion/adapters/databricks_sql.py",
@@ -1921,6 +1976,11 @@
       "path": "src/infrastructure/ingestion/adapters/file_batch.py",
       "bytes": 4818,
       "sha256": "6da65c99d4854502627350c5e12db4d9cc8eb6f87b7a2853614faf6446e14b03"
+    },
+    {
+      "path": "src/infrastructure/ingestion/adapters/source_approval.py",
+      "bytes": 6285,
+      "sha256": "00a082032a0da4dd95f2f020e84b288317ecc2c08cc5fffd194a39088be05a76"
     },
     {
       "path": "src/infrastructure/ingestion/persistence/__init__.py",
@@ -1944,8 +2004,8 @@
     },
     {
       "path": "src/infrastructure/ingestion/persistence/source_catalog.py",
-      "bytes": 5620,
-      "sha256": "3e8c6d86d23ce99fdbc0854f9b1d695f2531d4e6d5010eedeb20f86b4675bef0"
+      "bytes": 8762,
+      "sha256": "02faa289557627e3cedb45b5e1f52a3671260e561555cd71a445f642cd62a2ac"
     },
     {
       "path": "src/infrastructure/ingestion/storage/__init__.py",
@@ -2423,6 +2483,11 @@
       "sha256": "5840720fd9785a9367e43239bcddad0e847dd777b16ac2acf870adb0ce02c267"
     },
     {
+      "path": "tests/ml/ingestion/runtime_source_fixture.py",
+      "bytes": 1902,
+      "sha256": "f9369e52a7c322519dfeba03bfdc8f8ef30f5cc7a78e12c91dd3e69fef07bcc8"
+    },
+    {
       "path": "tests/ml/ingestion/test_adapter_contracts.py",
       "bytes": 2928,
       "sha256": "c4c0440a3d207cdc68ce089f75e27d49c70edd205298b3c23cad00782dea6770"
@@ -2494,8 +2559,8 @@
     },
     {
       "path": "tests/ml/ingestion/test_ingestion_deployment.py",
-      "bytes": 15559,
-      "sha256": "6b9364765f9b1bd1e6fdb8c51cbea7e11774677f30017965b65d0fe6ab9ecb20"
+      "bytes": 16014,
+      "sha256": "cb8e57b3703e5f927260534c361a9807dda24974f26fde99682b9bcb06a70544"
     },
     {
       "path": "tests/ml/ingestion/test_ingestion_metrics.py",
@@ -2538,6 +2603,11 @@
       "sha256": "30e0f789aa48f6767c36f68952518379052e8e146a6e0b6cb43750b5d8b54ce1"
     },
     {
+      "path": "tests/ml/ingestion/test_runtime_source_processes.py",
+      "bytes": 5373,
+      "sha256": "294521ca2a6317963283cb147962b27774a82dede5875cf61c3c21ce944b704b"
+    },
+    {
       "path": "tests/ml/ingestion/test_service.py",
       "bytes": 10691,
       "sha256": "bb49c059e67212c14a5c29b0c1d4b4ce284413a940fea1791af2ed3455d664ac"
@@ -2553,19 +2623,24 @@
       "sha256": "6acfb5b13d7d3ca07e86e0015e5016e400bb21a240bcac747bbb6a3f053f0433"
     },
     {
+      "path": "tests/ml/ingestion/test_source_management.py",
+      "bytes": 13198,
+      "sha256": "2098b2de38af884f3d26bc657fee14349235a6abcd398ad03793753a5b0199ba"
+    },
+    {
       "path": "tests/ml/init_setup/conftest.py",
       "bytes": 2818,
       "sha256": "c02bfee84376b1347fe79197d4b881ce808ea44ccd4499b9efcb834f617d8502"
     },
     {
       "path": "tests/ml/init_setup/test_cli.py",
-      "bytes": 17014,
-      "sha256": "b8b6ad208ca9e12e56f7fb991e83a236b2d31b7555a5969edd7ef5ee7ef63167"
+      "bytes": 17367,
+      "sha256": "cd65dfbd29b755599daa0673a3b9686a91daa98d74d2097340e0a7629243cf87"
     },
     {
       "path": "tests/ml/init_setup/test_config.py",
-      "bytes": 9102,
-      "sha256": "4d45850bb89abf0c329e2b10daf3bba2568440ac01ca577118502f053cc2cd08"
+      "bytes": 10044,
+      "sha256": "53784393e31d34d7dc567af071e4c75e3ae5ac73381c1ab19fc07bce698cec8e"
     },
     {
       "path": "tests/ml/init_setup/test_files.py",

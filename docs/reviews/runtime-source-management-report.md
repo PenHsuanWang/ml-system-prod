@@ -13,7 +13,7 @@ approved catalog/schema scope need no deployment file changes or process restart
 - Baseline branch master.
 - Baseline commit 8c9023b00828000287e169ac760afe57102d7353, fetched from origin before changes.
 - Feature branch feature/runtime-data-source-management.
-- Final implementation code/test commit 517e12fe1080fb38a8d1d34693e1c35c3eb0aee6.
+- Final implementation code/test commit 1290be7890a1836bea975f30aefc6b3d6edacb87.
 - Documentation and evidence commits follow the implementation commit.
 - No applicable AGENTS.md files were present in the workspace checkout ancestry.
 - Repository authority included module-spec, architecture, developer guidance,
@@ -75,6 +75,10 @@ and migration 0006 are preserved.
 | docs/databricks-ingestion-runbook.md | Modified | Capability documentation and qualification scope | Operator/reviewer guidance |
 | docs/deployment/day1-deployment-runbook.md | Modified | Capability documentation and qualification scope | Operator/reviewer guidance |
 | docs/deployment/interactive-setup.md | Modified | Capability documentation and qualification scope | Operator/reviewer guidance |
+| docs/evidence/runtime-sources-20261125/checks.json | New | Capability documentation and qualification scope | Operator/reviewer guidance |
+| docs/evidence/runtime-sources-20261125/compose-result.json | New | Capability documentation and qualification scope | Operator/reviewer guidance |
+| docs/evidence/runtime-sources-20261125/ebm-e2e.json | New | Capability documentation and qualification scope | Operator/reviewer guidance |
+| docs/evidence/runtime-sources-20261125/qualification.json | New | Capability documentation and qualification scope | Operator/reviewer guidance |
 | docs/implementation-status.md | Modified | Capability documentation and qualification scope | Operator/reviewer guidance |
 | docs/microservice-contracts.md | Modified | Capability documentation and qualification scope | Operator/reviewer guidance |
 | docs/ml-runbook.md | Modified | Capability documentation and qualification scope | Operator/reviewer guidance |
@@ -96,7 +100,7 @@ and migration 0006 are preserved.
 | docs/reviews/runtime-source-management-report.md | New | Required implementation report | Reviewer evidence |
 | FILE-MANIFEST.json | Modified | Regenerated tracked file hashes | Source/document integrity |
 
-No files were deleted. Session-only CA BuildKit mounts and readable copied-source
+No files were deleted. Existing recursive CI scopes already cover the new modules, so CI validation scopes required no changes. Session-only CA BuildKit mounts and readable copied-source
 permissions adapt Docker builds to the Cloud host. Those adaptations are outside
 the checkout and are recorded as qualification limitations.
 
@@ -147,7 +151,7 @@ profiles continue using their existing contracts.
 - Immutable configuration fingerprints bind the public connection identity.
   Host/Warehouse/client identity drift fails validation. Credential rotation paths
   and secret values remain outside fingerprints.
-- Registration uses existing transactional tenant locks. Same-version conflicts
+- API and operator CLI runtime registration/lifecycle operations both enforce deployment policy. Registration uses existing transactional tenant locks. Same-version conflicts
   and concurrent registration retain one immutable resource.
 - Admission and acquisition recheck actor grants, current policy, enablement and
   source digest. Persisted content tampering fails closed.
@@ -162,7 +166,7 @@ profiles continue using their existing contracts.
 ## H. Test evidence
 
 The final command matrix below uses implementation commit
-517e12fe1080fb38a8d1d34693e1c35c3eb0aee6. Structural gates have N/A test counts.
+1290be7890a1836bea975f30aefc6b3d6edacb87. Structural gates have N/A test counts.
 Full local logs and JUnit files are under var/runtime-source-evidence.
 The checked-in evidence JSON preserves command, source revision, environment,
 status and counts.
@@ -184,13 +188,13 @@ status and counts.
 Additional executed checks and integration evidence are recorded below.
 
 - PASS, PATH=/workspace/runtime-source-tools:$PATH .venv/bin/python scripts/check_k8s.py,
-  Cloud host with checksum-verified kubectl v1.37.2, 40 rendered resources,
+  Cloud host with checksum-verified kubectl v1.37.2, 40 rendered resources at implementation revision 1290be7890a1836bea975f30aefc6b3d6edacb87,
   test counts N/A, exit 0, k8s-foundation.log.
 - BLOCKED, MINIKUBE_HOME=/workspace/runtime-source-kube
   KUBECONFIG=/workspace/runtime-source-kube/config
   /workspace/runtime-source-tools/minikube -p minikube start --driver=docker
   --container-runtime=containerd --kubernetes-version=v1.37.2 --cpus=2 --memory=6144.
-  Cloud host, checksum-verified Minikube v1.39.0, exit 20,
+  Cloud host, checksum-verified Minikube v1.39.0, exit 40,
   k8s-start.log. Version lookup at api.github.com returned Forbidden.
 - NOT VERIFIED, real external Databricks OAuth/token/table qualification.
   Automated runtime integration replaces only the external SQL byte-stream client
@@ -212,8 +216,33 @@ exports, and the full suite caught two deployment tests expecting the old mount
 inventory. These were corrected at source. Final gates preserve all security
 assertions and require the explicit third read-only policy mount.
 
-Compose acceptance and documentation/manifest evidence are finalized after their
-current runs. No unexecuted gate is classified as passed.
+PASS, bash /tmp/runtime-source-compose/run.sh run --rm --no-deps acceptance
+python scripts/verify_ml_acceptance.py --require-stack --output-dir /app/var/acceptance.
+The ml-runtime-source-final disposable project used the implementation code/test
+revision 1290be7890a1836bea975f30aefc6b3d6edacb87. Python 3.12.16 and Torch 2.6.0+cpu
+executed 1,284 cases with zero failures, errors or skips, exit 0.
+The main suite passed 1,283 cases and deliberately deselected the single EBM case
+for the runner's separate ordered EBM invocation, which passed one case.
+Result FUNCTIONAL_BACKEND_ACCEPTED, production_accepted=false.
+Full logs and JUnit reports are under var/runtime-source-compose-final/acceptance.
+Checked-in compose-result.json, ebm-e2e.json and qualification.json include scope,
+source revision and artifact checksums.
+
+Session-only Docker adaptation supplied the Cloud CA through BuildKit secrets,
+made copied source readable to non-root users and overlaid final source onto
+valid installed images. Compose DNS names were appended to inherited NO_PROXY.
+An initial stack start failed during bucket creation because internal HTTP used
+the Cloud proxy, then succeeded after the internal proxy exclusion.
+Two overlapping acceptance attempts were stopped with exit 143 and are
+NOT VERIFIED. Their shared output was excluded. The accepted run used a new
+project, new database volumes and a separate report directory with one runner.
+
+PASS, .venv/bin/python scripts/check_docs.py, final staged documentation tree,
+111 tracked documentation artifacts with valid links/fragments/SVG/JSON, exit 0.
+PASS, .venv/bin/python scripts/update_manifest.py --check, final staged tree,
+test counts N/A, exit 0. The manifest contains 569 tracked entries and identifies those exact file bytes.
+
+No unexecuted gate is classified as passed.
 
 ## I. Acceptance criteria traceability
 
@@ -238,7 +267,7 @@ current runs. No unexecuted gate is classified as passed.
 | AC-17 | PASS | Existing FileBatchAdapter | File, HTTP and publication regressions |
 | AC-18 | PASS | Existing jobs API and supervisor lifecycle | Ingestion, idempotency, recovery/fencing and downstream suites |
 | AC-19 | PASS | Existing transactional audit ledger | Registration and lifecycle digest audit assertions |
-| AC-20 | BLOCKED | Compose runtime and Kubernetes engineering gates | Compose result pending. Minikube blocked by api.github.com 403 |
+| AC-20 | BLOCKED | Compose runtime and Kubernetes engineering gates | Compose FUNCTIONAL_BACKEND_ACCEPTED with 1,284 passed and zero skips. Minikube dynamic gate blocked by api.github.com 403 |
 | AC-21 | PASS | ADR-022, walkthrough and scoped documentation | Documentation links and tracked manifest validation |
 | AC-22 | PASS | Changes confined to source governance, setup, tests and docs | Baseline diff inventory and dependency boundary check |
 | AC-23 | PASS | external_qualification=not_verified | API response assertions |
@@ -268,10 +297,20 @@ outside this change.
 
 ## K. Release recommendation
 
-BLOCKED pending the required Kubernetes engineering regression and final
-Compose acceptance evidence. The feature is implemented and reviewable on its
+BLOCKED pending the required Kubernetes dynamic engineering regression.
+Compose functional backend acceptance passed with zero failures and skips. The feature is implemented and reviewable on its
 branch. Production acceptance remains false. Live Databricks and production
 release require independent qualification and approval.
 
-Draft PR publication status will be recorded after the final documentation,
-manifest and GitHub operation checks.
+The feature branch was pushed successfully through the existing Git proxy.
+Draft PR creation was attempted with the requested title and a prepared body,
+using gh pr create --draft --base master --head feature/runtime-data-source-management
+--title 'feat(ingestion): introduce governed runtime data source management API'
+--body-file var/runtime-source-evidence/pr-body.md.
+It exited 1 with POST https://api.github.com/graphql Forbidden.
+No PR URL was returned. The branch is available for review.
+
+The network grant for api.github.com is saved in the environment draft.
+Applying the grant is required to retry the Kubernetes and PR operations.
+The runtime/source APIs and external qualification contract require no further
+repository configuration changes to retry those engineering operations.

@@ -1,0 +1,162 @@
+[
+  {
+    "name": "ingestion-quality",
+    "command": [
+      ".venv/bin/python",
+      "scripts/check_ingestion.py"
+    ],
+    "commit": "1290be7890a1836bea975f30aefc6b3d6edacb87",
+    "environment": "Cloud Python 3.12 / isolated SQLite",
+    "exit_status": 0,
+    "counts": {},
+    "seconds": 0.46,
+    "log": "ingestion-quality.log"
+  },
+  {
+    "name": "init-quality",
+    "command": [
+      ".venv/bin/python",
+      "scripts/check_init.py"
+    ],
+    "commit": "1290be7890a1836bea975f30aefc6b3d6edacb87",
+    "environment": "Cloud Python 3.12 / isolated SQLite",
+    "exit_status": 0,
+    "counts": {},
+    "seconds": 0.37,
+    "log": "init-quality.log"
+  },
+  {
+    "name": "boundaries",
+    "command": [
+      ".venv/bin/python",
+      "scripts/check_boundaries.py"
+    ],
+    "commit": "1290be7890a1836bea975f30aefc6b3d6edacb87",
+    "environment": "Cloud Python 3.12 / isolated SQLite",
+    "exit_status": 0,
+    "counts": {},
+    "seconds": 0.49,
+    "log": "boundaries.log"
+  },
+  {
+    "name": "deployment-quality",
+    "command": [
+      ".venv/bin/python",
+      "scripts/check_deployment.py"
+    ],
+    "commit": "1290be7890a1836bea975f30aefc6b3d6edacb87",
+    "environment": "Cloud Python 3.12 / isolated SQLite",
+    "exit_status": 0,
+    "counts": {},
+    "seconds": 0.46,
+    "log": "deployment-quality.log"
+  },
+  {
+    "name": "training-quality",
+    "command": [
+      ".venv/bin/python",
+      "scripts/check_training_runtime.py"
+    ],
+    "commit": "1290be7890a1836bea975f30aefc6b3d6edacb87",
+    "environment": "Cloud Python 3.12 / isolated SQLite",
+    "exit_status": 0,
+    "counts": {},
+    "seconds": 0.24,
+    "log": "training-quality.log"
+  },
+  {
+    "name": "serving-quality",
+    "command": [
+      ".venv/bin/python",
+      "scripts/check_serving_runtime.py"
+    ],
+    "commit": "1290be7890a1836bea975f30aefc6b3d6edacb87",
+    "environment": "Cloud Python 3.12 / isolated SQLite",
+    "exit_status": 0,
+    "counts": {},
+    "seconds": 0.25,
+    "log": "serving-quality.log"
+  },
+  {
+    "name": "ebm-quality",
+    "command": [
+      ".venv/bin/python",
+      "scripts/check_ebm_typing.py"
+    ],
+    "commit": "1290be7890a1836bea975f30aefc6b3d6edacb87",
+    "environment": "Cloud Python 3.12 / isolated SQLite",
+    "exit_status": 0,
+    "counts": {},
+    "seconds": 0.35,
+    "log": "ebm-quality.log"
+  },
+  {
+    "name": "k8s-acceptance-contracts",
+    "command": [
+      ".venv/bin/python",
+      "scripts/check_k8s_acceptance.py"
+    ],
+    "commit": "1290be7890a1836bea975f30aefc6b3d6edacb87",
+    "environment": "Cloud Python 3.12 / isolated SQLite",
+    "exit_status": 0,
+    "counts": {},
+    "seconds": 0.15,
+    "log": "k8s-acceptance-contracts.log"
+  },
+  {
+    "name": "compose-init-render",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "scripts.verify_init_compose"
+    ],
+    "commit": "1290be7890a1836bea975f30aefc6b3d6edacb87",
+    "environment": "Cloud Python 3.12 / isolated SQLite",
+    "exit_status": 0,
+    "counts": {},
+    "seconds": 7.56,
+    "log": "compose-init-render.log"
+  },
+  {
+    "name": "regressions",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/ml",
+      "tests/test_boundaries.py",
+      "-q",
+      "-rs",
+      "--junitxml=var/runtime-source-evidence/regressions.xml"
+    ],
+    "commit": "1290be7890a1836bea975f30aefc6b3d6edacb87",
+    "environment": "Cloud Python 3.12 / isolated SQLite",
+    "exit_status": 0,
+    "counts": {
+      "passed": 1291,
+      "skipped": 5
+    },
+    "seconds": 84.02,
+    "log": "regressions.log"
+  },
+  {
+    "name": "postgres-runtime",
+    "command": [
+      ".venv/bin/python",
+      "-m",
+      "pytest",
+      "tests/ml/ingestion/test_source_management.py",
+      "tests/ml/ingestion/test_runtime_source_processes.py",
+      "-q",
+      "--junitxml=var/runtime-source-evidence/postgres-final.xml"
+    ],
+    "commit": "1290be7890a1836bea975f30aefc6b3d6edacb87",
+    "environment": "Cloud API and two worker processes / disposable PostgreSQL 17 Docker container",
+    "exit_status": 0,
+    "counts": {
+      "passed": 21
+    },
+    "seconds": 8.62,
+    "log": "postgres-runtime.log"
+  }
+]
