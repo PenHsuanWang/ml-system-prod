@@ -313,8 +313,9 @@ feat(ingestion): introduce governed runtime data source management API.
 
 GitHub API requests currently return 403 at api.github.com, including the
 GraphQL operation required by gh pr create. The prepared PR body is retained
-in var/runtime-source-evidence/pr-body.md. Draft PR creation will be retried
-after this scope update is pushed.
+in var/runtime-source-evidence/pr-body.md. After pushing this review-scope
+update, gh pr create --draft was retried and exited 1 with
+POST https://api.github.com/graphql Forbidden. Draft PR creation remains blocked.
 
 The api.github.com domain grant is already saved in the environment draft.
 The available configuration tool saves drafts without applying the running
