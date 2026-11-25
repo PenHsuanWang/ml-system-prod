@@ -33,7 +33,7 @@ proxy, CA and registry mirror setup remain outside this repository's runtime.
 ## File scope and compatibility
 
 Modify only the three Dockerfiles, targeted ignore rules, existing CI validation
-and documentation. Add scripts/build_trust and focused tests/qualification tool.
+and documentation. Add scripts/build_trust and focused tests/CI qualification.
 No runtime generic trust facility is introduced. Existing read-only MLflow CA
 mounts and verified production entrypoint remain authoritative. Operators mount
 an approved combined bundle for existing external runtime clients when required.

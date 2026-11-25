@@ -10,7 +10,9 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"os/user"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -120,6 +122,18 @@ func execute(args []string, secret string) (code int) {
 			environment = append(filtered, key+"="+bundle)
 		}
 		if filepath.Base(args[0]) == "apt-get" || filepath.Base(args[0]) == "apt" {
+			// Keep APT's unprivileged HTTPS fetch sandbox and a private CA file.
+			identity, lookupErr := user.Lookup("_apt")
+			if lookupErr != nil {
+				fmt.Fprintln(os.Stderr, "build trust: APT sandbox identity unavailable")
+				return 2
+			}
+			uid, uidErr := strconv.Atoi(identity.Uid)
+			gid, gidErr := strconv.Atoi(identity.Gid)
+			if uidErr != nil || gidErr != nil || os.Chown(directory, uid, gid) != nil || os.Chown(bundle, uid, gid) != nil {
+				fmt.Fprintln(os.Stderr, "build trust: APT sandbox CA access unavailable")
+				return 2
+			}
 			args = append([]string{args[0], "-o", "Acquire::https::CaInfo=" + bundle}, args[1:]...)
 		}
 	}

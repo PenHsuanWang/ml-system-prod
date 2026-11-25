@@ -71,7 +71,7 @@ jobs:
         run: |
           python -m ruff check tests/ml/build_network
           python -m ruff format --check tests/ml/build_network
-          docker run --rm -v "$PWD/scripts/build_trust:/source:ro" golang:1.26.10-alpine sh -c 'test -z "$(gofmt -l /source/main.go /source/main_test.go)" && CGO_ENABLED=0 GOTOOLCHAIN=local go test -v /source/main.go /source/main_test.go'
+          docker run --rm -v "$PWD/scripts/build_trust:/source:ro" golang:1.26.10-alpine sh -c 'adduser -D _apt && test -z "$(gofmt -l /source/main.go /source/main_test.go)" && CGO_ENABLED=0 GOTOOLCHAIN=local go test -v /source/main.go /source/main_test.go'
       - name: Ingestion source typing and formatting
         run: python scripts/check_ingestion.py
       - name: Deployment configuration and qualification boundaries
@@ -147,6 +147,30 @@ jobs:
         with: {python-version: '3.12'}
       - name: Build the unified production candidate
         run: docker build --target production --build-arg "ML_RELEASE_CODE_REVISION=${GITHUB_SHA}" --tag ml-production-ci:test --file Dockerfile.ml .
+      - name: Require optional valid CA, reject invalid CA and retain no build trust
+        run: |
+          mkdir -p "$RUNNER_TEMP/build-trust"
+          openssl req -x509 -newkey rsa:2048 -nodes -days 2 -subj /CN=synthetic-build-trust-only -keyout "$RUNNER_TEMP/build-trust/key.pem" -out "$RUNNER_TEMP/build-trust/ca.pem" >/dev/null 2>&1
+          docker build --no-cache --target api --secret "id=corporate_ca,src=$RUNNER_TEMP/build-trust/ca.pem" --tag ml-build-trust-ci:test --file Dockerfile.ml .
+          printf 'invalid synthetic CA' > "$RUNNER_TEMP/build-trust/invalid.pem"
+          if docker build --no-cache --target api --secret "id=corporate_ca,src=$RUNNER_TEMP/build-trust/invalid.pem" --file Dockerfile.ml . > "$RUNNER_TEMP/build-trust/invalid.log" 2>&1; then exit 1; fi
+          grep -q 'build trust: invalid CA input' "$RUNNER_TEMP/build-trust/invalid.log"
+          python - "$RUNNER_TEMP/build-trust/ca.pem" <<'PYTHON'
+          import pathlib, ssl, subprocess, sys
+          pem = pathlib.Path(sys.argv[1]).read_bytes()
+          needles = (pem, ssl.PEM_cert_to_DER_cert(pem.decode()))
+          overlap = max(map(len, needles))
+          export = subprocess.Popen(["docker", "save", "ml-build-trust-ci:test"], stdout=subprocess.PIPE)
+          tail = b""
+          while chunk := export.stdout.read(1024 * 1024):
+              data = tail + chunk
+              assert not any(needle in data for needle in needles), "Build-only CA found in image layers"
+              tail = data[-overlap:]
+          assert export.wait() == 0
+          print("No synthetic build CA in exported runtime image layers")
+          PYTHON
+      - name: Build the separate serving target with standard public trust
+        run: docker build --target serving --tag ml-serving-ci:test --file Dockerfile.ml .
       - name: Verify the real image and private non-root entrypoint
         run: python scripts/verify_deployment_image.py --image ml-production-ci:test --code-revision "$GITHUB_SHA" --output-dir "$RUNNER_TEMP/deployment-image-evidence"
       - uses: actions/upload-artifact@v4

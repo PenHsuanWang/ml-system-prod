@@ -39,8 +39,8 @@
     },
     {
       "path": ".github/workflows/ml-ci.yml",
-      "bytes": 15190,
-      "sha256": "bb6ca9416b15cdb4e5b75c86e48cfb69ab7489eadc816645192eb1da6a8d38b5"
+      "bytes": 17016,
+      "sha256": "af2960a4a16424ee568535d9efb5bf9c27699e247c7c5d9d7c3bf87bb30c3e1c"
     },
     {
       "path": ".gitignore",
@@ -914,8 +914,8 @@
     },
     {
       "path": "docs/plans/optional-corporate-network.md",
-      "bytes": 3365,
-      "sha256": "92adf25789808443f88d8b21fa1db52f8b771ffb61d01efaa75dfc8f2de904b5"
+      "bytes": 3363,
+      "sha256": "f8e46ecd4b51600622614a8eec4ec779aaa4a0015667a7c1d470213fdb2600c6"
     },
     {
       "path": "docs/pytorch-ml-system-hld.md",
@@ -1119,8 +1119,8 @@
     },
     {
       "path": "scripts/build_trust/main.go",
-      "bytes": 4117,
-      "sha256": "90528cf0efd5c149b22cde3562128dae7e2181379fb8c8198352e4607a88a2a6"
+      "bytes": 4680,
+      "sha256": "f8d2f1f33d56d9c6e7f0118b30c2403a199db96d9bbe8a33c9c2e65e2b132277"
     },
     {
       "path": "scripts/build_trust/main_test.go",
