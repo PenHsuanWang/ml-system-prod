@@ -30,43 +30,54 @@ review artifacts; manifest records every tracked file.
 
 | File | Type | Purpose | Architecture impact |
 | --- | --- | --- | --- |
-| FILE-MANIFEST.json | M | Documentation and reproducible inventory | Narrow additive capability |
-| README.md | M | Documentation and reproducible inventory | Narrow additive capability |
-| bootstrap/catalog_wiring.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| bootstrap/ingestion_wiring.py | M | Eligible-source admission/listing | Narrow additive capability |
-| bootstrap/ml_api.py | M | Documentation and reproducible inventory | Narrow additive capability |
-| compose.ml.catalog.yaml | A | Management-only optional Discovery Identity deployment | Narrow additive capability |
-| docs/adr/023-governed-metadata-discovery.md | A | Documentation and reproducible inventory | Narrow additive capability |
-| docs/adr/README.md | M | Documentation and reproducible inventory | Narrow additive capability |
-| docs/architecture.md | M | Documentation and reproducible inventory | Narrow additive capability |
-| docs/configuration-reference.md | M | Documentation and reproducible inventory | Narrow additive capability |
-| docs/implementation-status.md | M | Documentation and reproducible inventory | Narrow additive capability |
-| docs/plans/governed-discovery.md | A | Documentation and reproducible inventory | Narrow additive capability |
-| docs/runtime-source-management.md | M | Documentation and reproducible inventory | Narrow additive capability |
-| scripts/check_ingestion.py | M | Eligible-source admission/listing | Narrow additive capability |
-| src/api/catalog/__init__.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| src/api/catalog/routers.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| src/api/catalog/schemas.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| src/api/ingestion/routers.py | M | Eligible-source admission/listing | Narrow additive capability |
-| src/api/ingestion/schemas.py | M | Eligible-source admission/listing | Narrow additive capability |
-| src/application/catalog/__init__.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| src/application/catalog/ports.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| src/application/catalog/service.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| src/application/ingestion/ports.py | M | Eligible-source admission/listing | Narrow additive capability |
-| src/application/ingestion/service.py | M | Eligible-source admission/listing | Narrow additive capability |
-| src/domain/catalog/__init__.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| src/domain/catalog/models.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| src/domain/ml.py | M | Documentation and reproducible inventory | Narrow additive capability |
-| src/infrastructure/catalog/__init__.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| src/infrastructure/catalog/databricks_metadata.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| src/infrastructure/catalog/policy.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| src/infrastructure/ingestion/persistence/source_catalog.py | M | Eligible-source admission/listing | Narrow additive capability |
-| tests/ml/catalog/conftest.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| tests/ml/catalog/test_available_sources.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| tests/ml/catalog/test_catalog_api.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| tests/ml/catalog/test_catalog_authorization.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| tests/ml/catalog/test_catalog_deployment.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
-| tests/ml/catalog/test_databricks_metadata.py | A | Metadata contracts, policy, bounded adapter and API | Narrow additive capability |
+| FILE-MANIFEST.json | M | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
+| README.md | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
+| bootstrap/catalog_wiring.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| bootstrap/ingestion_wiring.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
+| bootstrap/ml_api.py | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
+| compose.ml.catalog.yaml | A | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
+| docs/adr/023-governed-metadata-discovery.md | A | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
+| docs/adr/README.md | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
+| docs/architecture.md | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
+| docs/configuration-reference.md | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/boundaries.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/final-focused.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/init-compose.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/postgres-final-head.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/postgres-final.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/qualification.json | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/quality.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/regression-final-head.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/regression.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
+| docs/implementation-status.md | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
+| docs/plans/governed-discovery.md | A | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
+| docs/reviews/governed-discovery-report.md | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
+| docs/runtime-source-management.md | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
+| scripts/check_ingestion.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
+| scripts/verify_ml_acceptance.py | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
+| src/api/catalog/__init__.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| src/api/catalog/routers.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| src/api/catalog/schemas.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| src/api/ingestion/routers.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
+| src/api/ingestion/schemas.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
+| src/application/catalog/__init__.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| src/application/catalog/ports.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| src/application/catalog/service.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| src/application/ingestion/ports.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
+| src/application/ingestion/service.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
+| src/domain/catalog/__init__.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| src/domain/catalog/models.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| src/domain/ml.py | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
+| src/infrastructure/catalog/__init__.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| src/infrastructure/catalog/databricks_metadata.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| src/infrastructure/catalog/policy.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| src/infrastructure/ingestion/persistence/source_catalog.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
+| tests/ml/catalog/conftest.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| tests/ml/catalog/test_available_sources.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| tests/ml/catalog/test_catalog_api.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| tests/ml/catalog/test_catalog_authorization.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| tests/ml/catalog/test_catalog_deployment.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| tests/ml/catalog/test_databricks_metadata.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
 
 ## D. Architecture impact
 
@@ -140,3 +151,21 @@ export for Pyflakes. Added __all__ and reran Pyflakes. Discovery Compose-renderi
 tests now use the existing separate host qualification scope because the Backend
 acceptance image has no Docker CLI; the contracts jobs execute both cases on the
 Docker-enabled host. No assertion or CI test coverage is removed.
+
+## Final source validation update
+
+Final implementation source b6699d412ff3a6f7c99a6eb2c83c4a79ff081360. Native table formats are returned directly
+from DATA_SOURCE_FORMAT, including null for views; no Delta version is inferred.
+The final PostgreSQL catalog/API suite passed 42/0/0, and full local regression
+passed 1362/0/5. Earlier 40/1360 results above describe earlier source snapshots;
+they are retained for traceability and must not be summed. Final Ruff/format/mypy,
+Pyflakes and boundary checks pass. The ML/Compose workflow on 8a3890f passed;
+final-source workflow results are recorded separately when observed. No new
+external Databricks or Kubernetes qualification is claimed.
+
+The final implementation workflow on b6699d4 completed successfully, including
+SQLite/PostgreSQL contracts, initialization, ingestion container, production image
+and full real Backend/Compose regression. See
+[Actions run 45680956121](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45680956121).
+This qualifies the engineering fixture boundaries, not enterprise Databricks or
+new live Kubernetes discovery. Final code recommendation is READY FOR REVIEW.

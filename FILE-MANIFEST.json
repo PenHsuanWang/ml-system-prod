@@ -808,6 +808,11 @@
       "sha256": "632bbaf40927c270d54bdea40f15e1f3d46c9193f8879a4291f2428fad2a1128"
     },
     {
+      "path": "docs/evidence/governed-discovery-20261126/boundaries-final-head.txt",
+      "bytes": 30,
+      "sha256": "696f9a58b43691031967c73d000d780b3a8af9ba63ab8a495f2654864112c156"
+    },
+    {
       "path": "docs/evidence/governed-discovery-20261126/boundaries.txt",
       "bytes": 30,
       "sha256": "696f9a58b43691031967c73d000d780b3a8af9ba63ab8a495f2654864112c156"
@@ -823,19 +828,34 @@
       "sha256": "e4c4f7b7760e3e2e2c4eada538574775d79cd3b83e0a630db53fa9999099d063"
     },
     {
+      "path": "docs/evidence/governed-discovery-20261126/postgres-final-head.txt",
+      "bytes": 99,
+      "sha256": "1a5f7f1582fad378348b60f4e2396c18eabc9f5a8f10d4b18db2ae3bbc8d45b7"
+    },
+    {
       "path": "docs/evidence/governed-discovery-20261126/postgres-final.txt",
       "bytes": 99,
       "sha256": "da6d1d5547ae93561777c7649f0b9460b6120a5fbecfc79427c242489466d44e"
     },
     {
       "path": "docs/evidence/governed-discovery-20261126/qualification.json",
-      "bytes": 3457,
-      "sha256": "caa69329c6b647df2bdaccdec5b9b9932ed1db2721877f326a739565da9fac8d"
+      "bytes": 5321,
+      "sha256": "3b61a3dff789ea68dd3af0b9e9a3ea1e30cce0290a5bc85bc8a4b967aaddbb56"
+    },
+    {
+      "path": "docs/evidence/governed-discovery-20261126/quality-final-head.txt",
+      "bytes": 90,
+      "sha256": "59fea3f50b658d4b7a5110c613b6c07e2a85076ea95a5d4307e739b4c83a9257"
     },
     {
       "path": "docs/evidence/governed-discovery-20261126/quality.txt",
       "bytes": 90,
       "sha256": "59fea3f50b658d4b7a5110c613b6c07e2a85076ea95a5d4307e739b4c83a9257"
+    },
+    {
+      "path": "docs/evidence/governed-discovery-20261126/regression-final-head.txt",
+      "bytes": 2075,
+      "sha256": "88178ed4686eae294ec6a30a01b0b75d0d5adef4e67449c178b8f7e33941d703"
     },
     {
       "path": "docs/evidence/governed-discovery-20261126/regression.txt",
@@ -1004,8 +1024,8 @@
     },
     {
       "path": "docs/reviews/governed-discovery-report.md",
-      "bytes": 10482,
-      "sha256": "32c8a12f233129cda34df8439e1d1bda025a1096486d46c693e0048e6a1f3561"
+      "bytes": 14739,
+      "sha256": "7973ca6a8c661d81ff97021bffcb3682c88767632ae817eaa1e5a6d7ea73aac9"
     },
     {
       "path": "docs/reviews/k8s-acceptance-2026-11-18.md",

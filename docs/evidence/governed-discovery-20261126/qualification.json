@@ -71,6 +71,30 @@
       "skipped": 0,
       "evidence": "init-compose.txt",
       "sha256": "e4c4f7b7760e3e2e2c4eada538574775d79cd3b83e0a630db53fa9999099d063"
+    },
+    {
+      "name": "postgres-final-head",
+      "command": "ML_TEST_DATABASE_URL=<isolated PostgreSQL fixture> /workspace/ml-system-prod/.venv/bin/python -m pytest tests/ml/catalog -q",
+      "source_commit": "b6699d412ff3a6f7c99a6eb2c83c4a79ff081360",
+      "environment": "Cloud Linux Python 3.12; isolated synthetic PostgreSQL 17 where specified",
+      "passed": 42,
+      "failed": 0,
+      "skipped": 0,
+      "exit_status": 0,
+      "evidence": "postgres-final-head.txt",
+      "sha256": "1a5f7f1582fad378348b60f4e2396c18eabc9f5a8f10d4b18db2ae3bbc8d45b7"
+    },
+    {
+      "name": "regression-final-head",
+      "command": "/workspace/ml-system-prod/.venv/bin/python -m pytest tests/ml tests/test_boundaries.py -q",
+      "source_commit": "b6699d412ff3a6f7c99a6eb2c83c4a79ff081360",
+      "environment": "Cloud Linux Python 3.12; isolated synthetic PostgreSQL 17 where specified",
+      "passed": 1362,
+      "failed": 0,
+      "skipped": 5,
+      "exit_status": 0,
+      "evidence": "regression-final-head.txt",
+      "sha256": "88178ed4686eae294ec6a30a01b0b75d0d5adef4e67449c178b8f7e33941d703"
     }
   ],
   "notes": [
@@ -78,5 +102,19 @@
     "PostgreSQL URL contains only synthetic fixture credentials; placeholder above intentionally omits them.",
     "Five existing opt-in integration skips do not constitute live external qualification.",
     "Compose evidence proves model rendering, not new live Databricks deployment."
-  ]
+  ],
+  "final_implementation_commit": "b6699d412ff3a6f7c99a6eb2c83c4a79ff081360",
+  "remote_ci_completed": {
+    "source_commit": "8a3890fd44d0d53ecd196ef0b6cb06dd5d47e82a",
+    "status": "PASS",
+    "url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45676039320",
+    "scope": "Earlier implementation including complete Backend/Compose, before native table format addition"
+  },
+  "remote_ci_final_source": {
+    "source_commit": "b6699d412ff3a6f7c99a6eb2c83c4a79ff081360",
+    "status": "PASS",
+    "workflow": "ML contracts and CPU lifecycle",
+    "url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45680956121",
+    "counts": "Hosted JUnit counts not downloaded; successful required job status observed directly."
+  }
 }
