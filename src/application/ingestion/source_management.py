@@ -3,7 +3,7 @@
 from src.application.ingestion.ports import SourceApproval, SourceManagementRepository
 from src.domain.ingestion.errors import IngestionError
 from src.domain.ingestion.models import ExtractionLimits, SourceDefinition
-from src.domain.ml import Actor
+from src.domain.ml import Actor, Forbidden
 
 
 class SourceManagementService:
@@ -50,8 +50,6 @@ class SourceManagementService:
         # The SQL page is bounded before authorization filtering. Clients advance by
         # limit even when policy filtering produces an empty page.
         values = self.repository.list_metadata(actor, source_id, limit, offset)
-        from src.domain.ml import Forbidden
-
         result = []
         for value in values:
             try:

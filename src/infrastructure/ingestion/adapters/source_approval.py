@@ -43,6 +43,7 @@ class DatabricksSourceApproval:
                 if (
                     not isinstance(ids, list)
                     or not 1 <= len(ids) <= 256
+                    or any(not isinstance(value, str) for value in ids)
                     or len(set(ids)) != len(ids)
                 ):
                     raise Forbidden("Invalid source access policy")
