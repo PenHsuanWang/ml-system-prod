@@ -104,8 +104,8 @@
       "skipped": 5,
       "evidence": "regression.txt",
       "sha256": "91b577d6cd88fdc68b7123df506fef85bf61ca0ab3a428a28953bd762edf09dc",
-      "source_commit": "e6691e6",
-      "source_note": "Exact per-run build source is e6691e6 for optional client builds; Python regression used the same Python tree before final build-only/CI changes. Final strict PEM parser is independently covered by final Go tests."
+      "source_commit": "e1ab24f9d40893fdc962a27aed18a64e2eb4c397",
+      "source_note": "Python tree at e1ab24f with then-uncommitted build-only/CI changes. Final bf69ef7 Python/Go checks are recorded separately."
     },
     {
       "name": "regression-disk-failure",
@@ -118,8 +118,8 @@
       "skipped": 5,
       "evidence": "regression-disk-failure.txt",
       "sha256": "ee5cd2bea416783a9624b712256f3cf5789ebed0ad5b271fb42b520926bd24de",
-      "source_commit": "e6691e6",
-      "source_note": "Exact per-run build source is e6691e6 for optional client builds; Python regression used the same Python tree before final build-only/CI changes. Final strict PEM parser is independently covered by final Go tests.",
+      "source_commit": "e1ab24f9d40893fdc962a27aed18a64e2eb4c397",
+      "source_note": "Python tree at e1ab24f with then-uncommitted build-only/CI changes. Final bf69ef7 Python/Go checks are recorded separately.",
       "raw_sha256": "1ba1cadf6640ed1922b0ebb5192e20e7870d06add1bebe43669293f80ee9c686",
       "normalization": "Trailing whitespace only, for tracked evidence; original retained in local var logs."
     },
@@ -192,6 +192,19 @@
       "skipped": 0,
       "evidence": "k8s-contracts.txt",
       "sha256": "cd7f41cf1ad5ba8b6263217889865f18d2b85df5ad631a05d6d321f51fd1b7b2"
+    },
+    {
+      "name": "go-unit-historical",
+      "source_commit": null,
+      "source_note": "Working tree subsequently committed as edad69e; final exact-head Go test is go-final-head. Overlapping runs must not be summed.",
+      "command": "Docker Go 1.26.10 unit run with a temporary _apt account and gofmt",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 7,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "go-unit.txt",
+      "sha256": "534b9d28e55feb777676e7ad409737398b0b77c1f214a4bd2e72d5a53e6d2094"
     }
   ],
   "package_clients_qualified": [
