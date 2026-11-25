@@ -122,7 +122,13 @@ class DatabricksSourceApproval:
                 and template.table[: len(grant.get("table_scope", approved.table))]
                 == tuple(grant.get("table_scope", approved.table))
                 and set(template.projection) <= set(approved.projection)
-                and all(p in template.predicates for p in approved.predicates)
+                and all(
+                    any(
+                        required == candidate and type(required.value) is type(candidate.value)
+                        for candidate in template.predicates
+                    )
+                    for required in approved.predicates
+                )
                 and source.allowed_actor_ids
                 and set(source.allowed_actor_ids) <= set(grant["actor_ids"])
                 and source.limits.max_bytes <= bounds.max_bytes
