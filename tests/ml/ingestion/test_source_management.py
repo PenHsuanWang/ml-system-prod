@@ -256,3 +256,63 @@ def test_concurrent_conflicting_registration_is_atomic(runtime):
     with ThreadPoolExecutor(max_workers=2) as pool:
         results = list(pool.map(attempt, bodies))
     assert sum(r is not None for r in results) == 1
+
+
+def test_manager_permission_does_not_grant_infrastructure_access(runtime):
+    ingress, owner, body, _, _ = runtime
+    source, _ = register(runtime)
+    stranger = replace(owner, actor_id="unapproved-manager")
+    assert ingress.source_management.connections(stranger) == []
+    assert ingress.source_management.list(stranger, None, 50, 0) == []
+    with pytest.raises(Forbidden):
+        ingress.source_management.get(stranger, source.source_id, source.version)
+    with pytest.raises(Forbidden):
+        ingress.source_management.register(
+            stranger,
+            "another",
+            "v1",
+            {
+                k: body[k]
+                for k in ("connection_ref", "table", "delta_version", "projection", "predicates")
+            },
+            source.limits,
+            source.allowed_actor_ids,
+        )
+    from src.domain.ml import NotFound
+
+    with pytest.raises(NotFound):
+        ingress.source_management.get(replace(owner, tenant_id="different-tenant"), "trace", "v1")
+
+
+def test_disabled_registration_replay_does_not_reenable(runtime):
+    ingress, owner, _, _, _ = runtime
+    source, _ = register(runtime)
+    ingress.source_management.set_enabled(owner, "trace", "v1", False)
+    replay, enabled = register(runtime)
+    assert replay == source and not enabled
+
+
+def test_tampered_persisted_configuration_is_rejected(runtime):
+    from sqlalchemy import update
+
+    from src.infrastructure.ingestion.persistence.schema import source_definitions
+
+    ingress, owner, _, _, _ = runtime
+    source, _ = register(runtime)
+    altered = source.to_dict()
+    altered["configuration_json"] = source.configuration_json.replace(
+        '"delta_version":128', '"delta_version":129'
+    )
+    with ingress.database.transaction() as connection:
+        connection.execute(
+            update(source_definitions)
+            .where(
+                source_definitions.c.tenant_id == owner.tenant_id,
+                source_definitions.c.source_id == "trace",
+            )
+            .values(definition_json=canonical_json(altered))
+        )
+    with pytest.raises(SourceRejected):
+        ingress.sources.resolve(owner, "trace", "v1")
+    with pytest.raises(SourceRejected):
+        ingress.source_management.get(owner, "trace", "v1")
