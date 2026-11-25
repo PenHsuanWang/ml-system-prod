@@ -1,0 +1,236 @@
+{
+  "baseline": "e1dc4234c32c6586b31aed5a73d977abaa13348f",
+  "branch": "feature/hybrid-external-mlflow",
+  "implementation_commit": "4f053be31d17f6d5f181a7e82e1fe6a1fead1e3f",
+  "production_accepted": false,
+  "validations": [
+    {
+      "command": ".venv/bin/python -m pytest tests/ml/test_hybrid_deployment.py tests/ml/test_deployment_entrypoint.py tests/ml/test_deployment_qualification.py -q",
+      "environment": "Cloud Linux Python 3.12, Docker vfs, Compose v2.40.3; isolated fixture inputs",
+      "source_commit": "104fdd594540a916ad829d7b50006218470444f5",
+      "source_note": "Root ownership check executed the working tree committed as the final source; Python regression ran ac4d18f before the fixture-only directory ownership correction.",
+      "passed": 108,
+      "failed": 0,
+      "skipped": 0,
+      "exit_status": 0,
+      "evidence": "focused-final.txt",
+      "sha256": "0f2303a1afa260f769ff56a736e99a757cd149653d82530102636e26a4ed8393"
+    },
+    {
+      "command": ".venv/bin/python -m pytest tests/ml tests/test_boundaries.py -q",
+      "environment": "Cloud Linux Python 3.12, Docker vfs, Compose v2.40.3; isolated fixture inputs",
+      "source_commit": "ac4d18fcb2a449467c40be960d3f4b8a6a2a5e80",
+      "source_note": "Root ownership check executed the working tree committed as the final source; Python regression ran ac4d18f before the fixture-only directory ownership correction.",
+      "passed": 1329,
+      "failed": 0,
+      "skipped": 5,
+      "exit_status": 0,
+      "evidence": "regression-delivery.txt",
+      "sha256": "711e5167bbd6ffec0dabda8976cf761e7eef966566b4b3ff31b4f64dd404fc04"
+    },
+    {
+      "command": ".venv/bin/python scripts/check_deployment.py",
+      "environment": "Cloud Linux Python 3.12, Docker vfs, Compose v2.40.3; isolated fixture inputs",
+      "source_commit": "104fdd594540a916ad829d7b50006218470444f5",
+      "source_note": "Root ownership check executed the working tree committed as the final source; Python regression ran ac4d18f before the fixture-only directory ownership correction.",
+      "passed": null,
+      "failed": 0,
+      "skipped": 0,
+      "exit_status": 0,
+      "evidence": "quality-final.txt",
+      "sha256": "0936f641191c1b992948b7fa88578aea108bf9a742fd550ae65457591a507933"
+    },
+    {
+      "command": ".venv/bin/python -m scripts.verify_init_compose",
+      "environment": "Cloud Linux Python 3.12, Docker vfs, Compose v2.40.3; isolated fixture inputs",
+      "source_commit": "104fdd594540a916ad829d7b50006218470444f5",
+      "source_note": "Root ownership check executed the working tree committed as the final source; Python regression ran ac4d18f before the fixture-only directory ownership correction.",
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0,
+      "exit_status": 0,
+      "evidence": "init-compose.txt",
+      "sha256": "e4c4f7b7760e3e2e2c4eada538574775d79cd3b83e0a630db53fa9999099d063"
+    },
+    {
+      "command": "Disposable root container calls private(), drops to UID/GID 10001 and reads the generated mode-0700 directory/mode-0600 file",
+      "environment": "Cloud Linux Python 3.12, Docker vfs, Compose v2.40.3; isolated fixture inputs",
+      "source_commit": "4f053be31d17f6d5f181a7e82e1fe6a1fead1e3f",
+      "source_note": "Root ownership check executed the working tree committed as the final source; Python regression ran ac4d18f before the fixture-only directory ownership correction.",
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "exit_status": 0,
+      "evidence": "root-ownership.txt",
+      "sha256": "177ce31ebdc3c0536261f7257c8aaff695987ad59090c267d02f1359272fcfb0"
+    },
+    {
+      "command": ".venv/bin/python scripts/check_boundaries.py",
+      "source_commit": "4f053be31d17f6d5f181a7e82e1fe6a1fead1e3f",
+      "exit_status": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "boundaries.txt",
+      "sha256": "696f9a58b43691031967c73d000d780b3a8af9ba63ab8a495f2654864112c156"
+    },
+    {
+      "command": ".venv/bin/python scripts/check_deployment.py",
+      "source_commit": "4f053be31d17f6d5f181a7e82e1fe6a1fead1e3f",
+      "exit_status": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "quality-delivery.txt",
+      "sha256": "77a8cf0325df65cf1b05bf1fe55f70456d78c01f147e7cee22fc6205ff258a15"
+    },
+    {
+      "command": ".venv/bin/python -m pytest tests/ml/test_hybrid_deployment.py tests/ml/test_hybrid_compose.py tests/ml/test_deployment_entrypoint.py tests/ml/test_deployment_qualification.py -q",
+      "source_commit": "4f053be31d17f6d5f181a7e82e1fe6a1fead1e3f",
+      "exit_status": 0,
+      "passed": 108,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "focused-delivery.txt",
+      "sha256": "729f735f13c136e0dc4bea88e915ad238984c2b349e4634301961795b592347d"
+    },
+    {
+      "command": ".venv/bin/python -m pytest tests/ml tests/test_boundaries.py -q",
+      "source_commit": "ac4d18fcb2a449467c40be960d3f4b8a6a2a5e80",
+      "exit_status": 0,
+      "passed": 1329,
+      "failed": 0,
+      "skipped": 5,
+      "evidence": "regression-delivery.txt"
+    },
+    {
+      "command": ".venv/bin/python scripts/check_init.py",
+      "source_commit": "4f053be31d17f6d5f181a7e82e1fe6a1fead1e3f",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "init-quality.txt",
+      "sha256": "8147f0130d7257905c964d08e185077ee75ba6951d7b6c53f3287e028337950e"
+    },
+    {
+      "command": "PATH=/workspace/runtime-source-tools:$PATH .venv/bin/python scripts/check_k8s.py",
+      "source_commit": "4f053be31d17f6d5f181a7e82e1fe6a1fead1e3f",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 40,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "k8s-static.txt",
+      "sha256": "66ce0d96dd430a0cc9b780b16f84d3cba737bca2cf8f8bb06ff23a414520a7a2"
+    },
+    {
+      "command": ".venv/bin/python scripts/check_k8s_acceptance.py",
+      "source_commit": "4f053be31d17f6d5f181a7e82e1fe6a1fead1e3f",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": null,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "k8s-contracts.txt",
+      "sha256": "cd7f41cf1ad5ba8b6263217889865f18d2b85df5ad631a05d6d321f51fd1b7b2"
+    }
+  ],
+  "remote_ci": {
+    "source_commit": "ac4d18fcb2a449467c40be960d3f4b8a6a2a5e80",
+    "run": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45681888981",
+    "job_url": "https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45681888981/job/139446621928",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/setup-python@v5",
+        "conclusion": "success"
+      },
+      {
+        "name": "Generate private disposable credentials",
+        "conclusion": "success"
+      },
+      {
+        "name": "Start isolated real Backend roles",
+        "conclusion": "success"
+      },
+      {
+        "name": "Require supported runtime and zero skipped integration cases",
+        "conclusion": "success"
+      },
+      {
+        "name": "Qualify the isolated hybrid external-style MLflow lifecycle",
+        "conclusion": "success"
+      },
+      {
+        "name": "Capture disposable stack diagnostics",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Run actions/upload-artifact@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Remove only this disposable stack",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/setup-python@v5",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@v4",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "hybrid_lifecycle": "COMPOSE_QUALIFIED on clean hosted runner at ac4d18f; final 4f053be fixture directory ownership is independently verified. Later branch-head CI is reported separately.",
+  "enterprise_mlflow": "EXTERNAL_ENVIRONMENT_NOT_VERIFIED",
+  "kubernetes_dynamic": "DEFERRED",
+  "local_attempts": [
+    {
+      "attempt": "01",
+      "status": "FAILED (development fixture configuration; corrected)",
+      "stage": "tracking-fixture",
+      "execution_status": "FAILED"
+    },
+    {
+      "attempt": "02",
+      "status": "FAILED (development fixture configuration; corrected)",
+      "stage": "tracking-fixture",
+      "execution_status": "FAILED"
+    },
+    {
+      "attempt": "03",
+      "status": "BLOCKED",
+      "stage": "application-startup",
+      "execution_status": "FAILED"
+    },
+    {
+      "attempt": "04",
+      "status": "BLOCKED",
+      "stage": "application-startup",
+      "execution_status": "FAILED"
+    }
+  ],
+  "notes": [
+    "Cloud Docker vfs exhausted the 63-GiB workspace while cloning runtime images. No existing application or volume was deleted to obtain a pass.",
+    "Local failed startup does not qualify the lifecycle. The clean remote Backend job explicitly passed the separate hybrid fixture step.",
+    "Local fixture image used cached compute dependencies with current application source and a real loopback registry RepoDigest; this test-only packaging is not a published production release.",
+    "Successful hosted qualification uses independent projects, synthetic private credentials, verified TLS, writer/reader denial checks and the real distributed lifecycle.",
+    "Root-created private fixture directories were corrected to belong to the intended nonroot runtime UID; public/private ownership contract verified in a disposable root container."
+  ],
+  "evidence_observed_utc": "2026-11-25T19:39:00Z"
+}

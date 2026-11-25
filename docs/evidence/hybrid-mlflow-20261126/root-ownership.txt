@@ -1,0 +1,1 @@
+Root-created fixture directory and file readable by intended nonroot UID

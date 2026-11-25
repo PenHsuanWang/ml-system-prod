@@ -1,0 +1,29 @@
+{
+  "scope": "isolated-external-style-mlflow-fixture",
+  "production_accepted": false,
+  "source_revision": "104fdd594540a916ad829d7b50006218470444f5",
+  "image": "localhost:15500/hybrid-compute-runtime@sha256:375a86518e7b9daf78fbb39ec3ced84ba147f1051ed40b99d152e09dbed848fb",
+  "fixture_image": "ml-runtime-source-acceptance-mlflow:latest",
+  "project": "ml-hybrid-414b63a8c997",
+  "status": "FAILED",
+  "preflight": {
+    "status": "CONFIGURATION_PREFLIGHT_PASSED",
+    "scope": "offline-release-configuration",
+    "profile": "hybrid",
+    "roles": [
+      "control",
+      "gateway",
+      "ingestion-worker",
+      "management",
+      "migrate",
+      "operator",
+      "relay",
+      "supervisor"
+    ],
+    "image_ref": "localhost:15500/hybrid-compute-runtime@sha256:375a86518e7b9daf78fbb39ec3ced84ba147f1051ed40b99d152e09dbed848fb",
+    "code_revision": "104fdd594540a916ad829d7b50006218470444f5",
+    "connectivity_qualified": false,
+    "production_accepted": false
+  },
+  "stage": "application-startup"
+}

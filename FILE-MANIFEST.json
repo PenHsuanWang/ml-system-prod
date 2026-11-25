@@ -803,6 +803,91 @@
       "sha256": "632bbaf40927c270d54bdea40f15e1f3d46c9193f8879a4291f2428fad2a1128"
     },
     {
+      "path": "docs/evidence/hybrid-mlflow-20261126/boundaries.txt",
+      "bytes": 30,
+      "sha256": "696f9a58b43691031967c73d000d780b3a8af9ba63ab8a495f2654864112c156"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/focused-delivery.txt",
+      "bytes": 180,
+      "sha256": "729f735f13c136e0dc4bea88e915ad238984c2b349e4634301961795b592347d"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/focused-final.txt",
+      "bytes": 180,
+      "sha256": "0f2303a1afa260f769ff56a736e99a757cd149653d82530102636e26a4ed8393"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/init-compose.txt",
+      "bytes": 316,
+      "sha256": "e4c4f7b7760e3e2e2c4eada538574775d79cd3b83e0a630db53fa9999099d063"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/init-quality.txt",
+      "bytes": 88,
+      "sha256": "8147f0130d7257905c964d08e185077ee75ba6951d7b6c53f3287e028337950e"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/k8s-contracts.txt",
+      "bytes": 45,
+      "sha256": "cd7f41cf1ad5ba8b6263217889865f18d2b85df5ad631a05d6d321f51fd1b7b2"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/k8s-static.txt",
+      "bytes": 70,
+      "sha256": "66ce0d96dd430a0cc9b780b16f84d3cba737bca2cf8f8bb06ff23a414520a7a2"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/local-attempt-01.json",
+      "bytes": 966,
+      "sha256": "c8275b3ffd380091b71606e0162842d3f692c3338202063e04bb210ec2b14afc"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/local-attempt-02.json",
+      "bytes": 997,
+      "sha256": "c95e634fd80ea4a7c71cee17fbc1f3727d5737b7743840e177543c268ccc4c6d"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/local-attempt-03.json",
+      "bytes": 1000,
+      "sha256": "1b5d421ab2f68c6b755ce83eb1fa341d9aebcb2250c4dd2b37832e9c8d42bba8"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/local-attempt-04.json",
+      "bytes": 1016,
+      "sha256": "870ab5999dda1fcb641eb01d5d41afa0a3f977845ba7d4b474e5b09e0ccc362d"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/qualification.json",
+      "bytes": 9763,
+      "sha256": "efd199969ba632bb4e550b76a2a4e44c6ec0aee973d2fe3dace4fc45dfb4c053"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/quality-delivery.txt",
+      "bytes": 88,
+      "sha256": "77a8cf0325df65cf1b05bf1fe55f70456d78c01f147e7cee22fc6205ff258a15"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/quality-final.txt",
+      "bytes": 88,
+      "sha256": "0936f641191c1b992948b7fa88578aea108bf9a742fd550ae65457591a507933"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/regression-delivery.txt",
+      "bytes": 2057,
+      "sha256": "711e5167bbd6ffec0dabda8976cf761e7eef966566b4b3ff31b4f64dd404fc04"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/remote-success-steps.json",
+      "bytes": 1487,
+      "sha256": "15f444c3030bdd395761f20beefdba7fc431292f125c72fd90af5865b27cf424"
+    },
+    {
+      "path": "docs/evidence/hybrid-mlflow-20261126/root-ownership.txt",
+      "bytes": 73,
+      "sha256": "177ce31ebdc3c0536261f7257c8aaff695987ad59090c267d02f1359272fcfb0"
+    },
+    {
       "path": "docs/evidence/k8s-acceptance-2026-11-18/compose.json",
       "bytes": 2007,
       "sha256": "1a69a4b90f793b9f88f8f6d7349e6872461b4174b20c06d8f16f32ac7f5c84b6"
@@ -961,6 +1046,11 @@
       "path": "docs/reviews/documentation-code-audit-2026-11-19.md",
       "bytes": 8134,
       "sha256": "041a8a93868affa2a2122187c3051b7b84378828b951861b1d4c68d7fb631dff"
+    },
+    {
+      "path": "docs/reviews/hybrid-mlflow-report.md",
+      "bytes": 12885,
+      "sha256": "7d993129efaddc92c1738a3c801b687e921cb5c38bad3add71bf8bbfdd3db02d"
     },
     {
       "path": "docs/reviews/k8s-acceptance-2026-11-18.md",
