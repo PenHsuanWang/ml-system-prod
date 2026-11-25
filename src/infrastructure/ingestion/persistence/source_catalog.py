@@ -61,9 +61,11 @@ class SQLSourceCatalog:
         self,
         database: Database,
         authorize_execution: Callable[[SourceDefinition, str], None] | None = None,
+        authorize_registration: Callable[[Actor, SourceDefinition], None] | None = None,
     ) -> None:
         self.db = database
         self.authorize_execution = authorize_execution
+        self.authorize_registration = authorize_registration
 
     def metadata(self, actor: Actor, source_id: str, version: str) -> tuple[SourceDefinition, bool]:
         actor.require("ml:source:manage")
@@ -109,6 +111,8 @@ class SQLSourceCatalog:
         actor.require("ml:source:manage")
         if definition.tenant_id != actor.tenant_id:
             raise NotFound("Source not found")
+        if self.authorize_registration is not None:
+            self.authorize_registration(actor, definition)
         frozen = canonical_json(definition.to_dict())
         with self.db.transaction() as connection:
             lock_tenant(connection, actor.tenant_id)
@@ -191,6 +195,8 @@ class SQLSourceCatalog:
             if row is None:
                 raise NotFound("Source not found")
             source, _ = self._metadata(row)
+            if self.authorize_registration is not None:
+                self.authorize_registration(actor, source)
             changed = connection.execute(
                 update(source_definitions)
                 .where(

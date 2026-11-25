@@ -247,7 +247,9 @@ def build_ingestion(
         ]
     )
     db = database or Database(settings.database_url)
-    sources = SQLSourceCatalog(db, approval.execution if approval else None)
+    sources = SQLSourceCatalog(
+        db, approval.execution if approval else None, approval.registration if approval else None
+    )
     jobs = SQLIngestionJobRepository(
         db,
         lease_seconds=settings.lease_seconds,

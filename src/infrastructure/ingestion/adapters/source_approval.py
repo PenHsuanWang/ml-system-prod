@@ -144,3 +144,9 @@ class DatabricksSourceApproval:
             source.configuration_json
         ):
             self._check(source, actor_id, management=False)
+
+    def registration(self, actor: Actor, source: SourceDefinition) -> None:
+        if source.adapter_type == "databricks-sql" and "contract" in json.loads(
+            source.configuration_json
+        ):
+            self.authorize(actor, source)

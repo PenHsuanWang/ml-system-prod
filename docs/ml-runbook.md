@@ -140,3 +140,12 @@ docker compose --env-file .env.ml -f compose.ml.yaml -f compose.ml.acceptance.ya
 
 K8s 完整回歸使用 [Acceptance 手冊](deployment/kubernetes-acceptance.md)，兩套結果
 互不替代。最新已執行結果集中於 [實作狀態](implementation-status.md)。
+
+## Runtime source management
+
+Databricks initialization supports connection-only setup. Authorized operators
+register immutable, policy-governed source versions through the Management API.
+Workers resolve exact SQL catalog definitions at execution. Legacy templates
+and worker-only credentials retain their existing contracts.
+See [runtime source management](runtime-source-management.md) for permissions,
+lifecycle behavior and separate external qualification requirements.

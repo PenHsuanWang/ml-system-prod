@@ -68,3 +68,12 @@ K8s 的 C4 Container／Deployment 視圖、Pods／Services／Volumes／NetworkPo
 底層 Backend 的通用契約另見 [substrate 設計](software-design.md)、
 [通用擴充教學](developer-guide.md) 與 [術語](glossary.md)。原始範本設計不再用來
 宣稱 ML／K8s 尚未實作；企業環境、模型品質與 production 核准仍須獨立證據。
+
+## Runtime source management
+
+Databricks initialization supports connection-only setup. Authorized operators
+register immutable, policy-governed source versions through the Management API.
+Workers resolve exact SQL catalog definitions at execution. Legacy templates
+and worker-only credentials retain their existing contracts.
+See [runtime source management](adr/022-runtime-data-source-management.md) for permissions,
+lifecycle behavior and separate external qualification requirements.

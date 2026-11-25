@@ -190,3 +190,12 @@ contracts with the full ML lifecycle and fault suite. Their operating instructio
 
 The independent Compose Backend regression remains required. Actual company-environment
 Production Operations is the final work package. Local qualification is not production approval.
+
+## Runtime source management
+
+Databricks initialization supports connection-only setup. Authorized operators
+register immutable, policy-governed source versions through the Management API.
+Workers resolve exact SQL catalog definitions at execution. Legacy templates
+and worker-only credentials retain their existing contracts.
+See [runtime source management](docs/runtime-source-management.md) for permissions,
+lifecycle behavior and separate external qualification requirements.

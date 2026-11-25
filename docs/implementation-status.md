@@ -68,3 +68,12 @@ python scripts/verify_ml_acceptance.py --output-dir var/acceptance/local
 本機檢查不等同完整服務驗收。完整 Compose 命令與判讀見
 [維運／回歸手冊](ml-runbook.md#完整-compose-回歸)，K8s 命令見
 [Acceptance 手冊](deployment/kubernetes-acceptance.md)。不得對 production 資料執行合成驗收。
+
+## Runtime source management
+
+Databricks initialization supports connection-only setup. Authorized operators
+register immutable, policy-governed source versions through the Management API.
+Workers resolve exact SQL catalog definitions at execution. Legacy templates
+and worker-only credentials retain their existing contracts.
+See [runtime source management](runtime-source-management.md) for permissions,
+lifecycle behavior and separate external qualification requirements.

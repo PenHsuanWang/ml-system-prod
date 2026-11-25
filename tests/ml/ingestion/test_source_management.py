@@ -262,6 +262,10 @@ def test_manager_permission_does_not_grant_infrastructure_access(runtime):
     ingress, owner, body, _, _ = runtime
     source, _ = register(runtime)
     stranger = replace(owner, actor_id="unapproved-manager")
+    with pytest.raises(Forbidden):
+        ingress.sources.register(stranger, replace(source, source_id="cli-bypass"))
+    with pytest.raises(Forbidden):
+        ingress.sources.set_enabled(stranger, source.source_id, source.version, False)
     assert ingress.source_management.connections(stranger) == []
     assert ingress.source_management.list(stranger, None, 50, 0) == []
     with pytest.raises(Forbidden):
