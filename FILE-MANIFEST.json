@@ -2534,8 +2534,8 @@
     },
     {
       "path": "tests/ml/catalog/conftest.py",
-      "bytes": 1535,
-      "sha256": "d0e448f23412c7f00f1133c0af4627693b308cae5405f0bf4b27bd6c03da3dbb"
+      "bytes": 1534,
+      "sha256": "bd27d78466373abd2bf4806b736c4634ec887570a5e2abe234872829f5357e26"
     },
     {
       "path": "tests/ml/catalog/test_available_sources.py",

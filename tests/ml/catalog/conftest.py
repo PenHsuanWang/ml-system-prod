@@ -9,7 +9,6 @@ from src.infrastructure.catalog.policy import DatabricksDiscoveryPolicy
 from src.infrastructure.ingestion.adapters.databricks_contract import ConnectionConfig
 from tests.ml.ingestion.test_source_management import runtime as runtime
 
-
 __all__ = ["runtime"]
 
 
