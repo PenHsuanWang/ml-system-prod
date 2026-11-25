@@ -30,54 +30,56 @@ review artifacts; manifest records every tracked file.
 
 | File | Type | Purpose | Architecture impact |
 | --- | --- | --- | --- |
-| FILE-MANIFEST.json | M | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
-| README.md | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
-| bootstrap/catalog_wiring.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| bootstrap/ingestion_wiring.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
-| bootstrap/ml_api.py | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
-| compose.ml.catalog.yaml | A | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
-| docs/adr/023-governed-metadata-discovery.md | A | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
-| docs/adr/README.md | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
-| docs/architecture.md | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
-| docs/configuration-reference.md | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
-| docs/evidence/governed-discovery-20261126/boundaries.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
-| docs/evidence/governed-discovery-20261126/final-focused.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
-| docs/evidence/governed-discovery-20261126/init-compose.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
-| docs/evidence/governed-discovery-20261126/postgres-final-head.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
-| docs/evidence/governed-discovery-20261126/postgres-final.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
-| docs/evidence/governed-discovery-20261126/qualification.json | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
-| docs/evidence/governed-discovery-20261126/quality.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
-| docs/evidence/governed-discovery-20261126/regression-final-head.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
-| docs/evidence/governed-discovery-20261126/regression.txt | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
-| docs/implementation-status.md | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
-| docs/plans/governed-discovery.md | A | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
-| docs/reviews/governed-discovery-report.md | A | Validation evidence / review / source inventory | Additive capability; existing core contracts preserved |
-| docs/runtime-source-management.md | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
-| scripts/check_ingestion.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
-| scripts/verify_ml_acceptance.py | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
-| src/api/catalog/__init__.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| src/api/catalog/routers.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| src/api/catalog/schemas.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| src/api/ingestion/routers.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
-| src/api/ingestion/schemas.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
-| src/application/catalog/__init__.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| src/application/catalog/ports.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| src/application/catalog/service.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| src/application/ingestion/ports.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
-| src/application/ingestion/service.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
-| src/domain/catalog/__init__.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| src/domain/catalog/models.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| src/domain/ml.py | M | Deployment configuration and operator documentation | Additive capability; existing core contracts preserved |
-| src/infrastructure/catalog/__init__.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| src/infrastructure/catalog/databricks_metadata.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| src/infrastructure/catalog/policy.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| src/infrastructure/ingestion/persistence/source_catalog.py | M | Common ingestion admission and bounded SQL listing | Additive capability; existing core contracts preserved |
-| tests/ml/catalog/conftest.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| tests/ml/catalog/test_available_sources.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| tests/ml/catalog/test_catalog_api.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| tests/ml/catalog/test_catalog_authorization.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| tests/ml/catalog/test_catalog_deployment.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
-| tests/ml/catalog/test_databricks_metadata.py | A | Catalog contracts, policy, adapter and transport | Additive capability; existing core contracts preserved |
+| FILE-MANIFEST.json | M | Recorded validation and review | Additive feature; existing core contracts preserved |
+| README.md | M | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| bootstrap/catalog_wiring.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| bootstrap/ingestion_wiring.py | M | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| bootstrap/ml_api.py | M | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| compose.ml.catalog.yaml | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| docs/adr/023-governed-metadata-discovery.md | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/adr/README.md | M | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/architecture.md | M | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/configuration-reference.md | M | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/boundaries-final-head.txt | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/boundaries.txt | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/final-focused.txt | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/init-compose.txt | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/postgres-final-head.txt | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/postgres-final.txt | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/qualification.json | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/quality-final-head.txt | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/quality.txt | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/regression-final-head.txt | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/evidence/governed-discovery-20261126/regression.txt | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/implementation-status.md | M | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/plans/governed-discovery.md | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/reviews/governed-discovery-report.md | A | Recorded validation and review | Additive feature; existing core contracts preserved |
+| docs/runtime-source-management.md | M | Recorded validation and review | Additive feature; existing core contracts preserved |
+| scripts/check_ingestion.py | M | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| scripts/verify_ml_acceptance.py | M | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/api/catalog/__init__.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/api/catalog/routers.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/api/catalog/schemas.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/api/ingestion/routers.py | M | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/api/ingestion/schemas.py | M | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/application/catalog/__init__.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/application/catalog/ports.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/application/catalog/service.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/application/ingestion/ports.py | M | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/application/ingestion/service.py | M | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/domain/catalog/__init__.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/domain/catalog/models.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/domain/ml.py | M | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/infrastructure/catalog/__init__.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/infrastructure/catalog/databricks_metadata.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/infrastructure/catalog/policy.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| src/infrastructure/ingestion/persistence/source_catalog.py | M | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| tests/ml/catalog/conftest.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| tests/ml/catalog/test_available_sources.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| tests/ml/catalog/test_catalog_api.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| tests/ml/catalog/test_catalog_authorization.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| tests/ml/catalog/test_catalog_deployment.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
+| tests/ml/catalog/test_databricks_metadata.py | A | Catalog/ingestion discovery capability and validation | Additive feature; existing core contracts preserved |
 
 ## D. Architecture impact
 

@@ -1024,8 +1024,8 @@
     },
     {
       "path": "docs/reviews/governed-discovery-report.md",
-      "bytes": 14739,
-      "sha256": "7973ca6a8c661d81ff97021bffcb3682c88767632ae817eaa1e5a6d7ea73aac9"
+      "bytes": 14705,
+      "sha256": "ee1caa2ae6a28dcd49ae4bec8f92f6fada5ce7f0340b7ef0c03213205af121ff"
     },
     {
       "path": "docs/reviews/k8s-acceptance-2026-11-18.md",
