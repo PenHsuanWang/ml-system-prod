@@ -66,6 +66,12 @@ jobs:
       - run: python scripts/check_boundaries.py
       - run: python -m pyflakes bootstrap src tests/ml
       - run: python -m mypy --follow-imports=skip src/domain/ml.py src/domain/training src/domain/deployments src/domain/model_registry src/domain/prediction src/domain/datasets src/application/training src/application/deployments src/application/model_registry src/application/prediction src/application/datasets src/application/ml_services.py
+      - name: Verify optional build trust with synthetic CA and default roots
+        if: matrix.database == 'sqlite'
+        run: |
+          python -m ruff check tests/ml/build_network
+          python -m ruff format --check tests/ml/build_network
+          docker run --rm -v "$PWD/scripts/build_trust:/source:ro" golang:1.26.10-alpine sh -c 'test -z "$(gofmt -l /source/main.go /source/main_test.go)" && CGO_ENABLED=0 GOTOOLCHAIN=local go test -v /source/main.go /source/main_test.go'
       - name: Ingestion source typing and formatting
         run: python scripts/check_ingestion.py
       - name: Deployment configuration and qualification boundaries

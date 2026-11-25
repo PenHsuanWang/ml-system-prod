@@ -468,3 +468,74 @@ Workers resolve exact SQL catalog definitions at execution. Legacy templates
 and worker-only credentials retain their existing contracts.
 See [runtime source management](../runtime-source-management.md) for permissions,
 lifecycle behavior and separate external qualification requirements.
+
+## Optional corporate build network
+
+Standard Docker builds use the base image's public roots and require no local CA
+file. Corporate builds can supply one optional BuildKit secret, `corporate_ca`,
+with approved additional PEM CA certificates. Keep all local CA, proxy environment
+and private-key inputs under ignored `.local/corporate-network/` or outside the
+checkout. Both .gitignore and .dockerignore exclude that specific directory; they
+do not exclude certificate fixtures elsewhere. Never pass a private key as CA.
+
+~~~sh
+# Standard build; no corporate input.
+docker build -f Dockerfile.ml --target api -t ml-api:review .
+docker build -f Dockerfile.mlflow -t mlflow:review .
+docker build -f Dockerfile.minio --target server -t minio:review .
+docker build -f Dockerfile.minio --target client -t mc:review .
+
+# Optional approved CA. Apply the same secret to any network-performing target.
+docker build -f Dockerfile.ml --target production \
+  --build-arg ML_RELEASE_CODE_REVISION="$APPROVED_SOURCE_SHA" \
+  --secret id=corporate_ca,src=.local/corporate-network/ca.pem \
+  --build-arg HTTP_PROXY --build-arg HTTPS_PROXY --build-arg NO_PROXY \
+  -t ml-runtime:review .
+~~~
+
+Set proxy variables using the site's private process/environment mechanism.
+Docker's predefined proxy build arguments are used without declaring them as
+Dockerfile ARG/ENV, preserving Docker's exclusion from history/cache keys. Do not
+paste credential-bearing URLs into shell history, enable shell tracing or publish
+unreviewed build logs. No proxy endpoint or company CA is hard-coded.
+
+BuildKit is required for secret and read-only stage bind mounts. Each package
+network step uses a small offline-compiled Go standard-library launcher, mounted
+from a build-only tool stage. With no secret it runs the original command and
+default trust. With a secret it validates bounded PEM CA certificates (including
+CA constraints, applicable signing usage and validity dates), combines them with
+the base public roots in a private temporary bundle, and scopes that bundle to
+the child command. CA certificates without an optional KeyUsage extension are
+valid. Malformed, expired, non-CA, private-key and oversized input fails before
+package access. A base without public roots fails safely and requires an approved
+base-image trust bootstrap; verification is never disabled.
+
+pip, Git, Go module/checksum requests and APK use verified scoped trust variables.
+APT HTTPS additionally receives its explicit scoped CaInfo option; APT signatures
+remain enabled. All subsequent network-performing stages receive the same optional
+secret. The temporary bundle is removed before a successful layer completes;
+cleanup failure fails the build. The launcher binary and build-only corporate CA
+are never copied into runtime targets. MinIO/MC pins, source licenses, labels,
+Go module sums and server/client targets are unchanged.
+
+BuildKit secret contents do not invalidate cache. When rotating/testing trust,
+run a clean build or use the build system's approved cache invalidation. Invalid
+CA qualification must use `--no-cache` so a prior dependency layer cannot hide a
+validation failure. Do not pass CA material through build arguments or COPY it
+into a public layer.
+
+This mechanism starts at RUN instructions. Failures pulling FROM images require
+operator configuration of Docker daemon/BuildKit proxy, registry CA trust and an
+approved registry mirror. The Python application does not manage daemon trust,
+firewalls or registry settings. HTTP 403 from an egress policy needs approved
+network access; a CA cannot authorize a blocked host. Diagnose trust errors,
+access denials and missing packages separately, preserving TLS and checksum checks.
+
+Build trust does not configure runtime trust. Keep using approved read-only
+MLflow CA mounts and MLFLOW_TRACKING_SERVER_CERT_PATH with TLS verification.
+For Databricks or other existing clients, deployment operators may mount an
+approved **combined public and corporate** bundle and configure that client through
+its existing trust settings, scoped only to the required role. Do not replace
+public roots with a lone company CA or bake it into every image. No new generic
+runtime trust loader, privilege change, writable root requirement or Kubernetes
+topology is introduced here.

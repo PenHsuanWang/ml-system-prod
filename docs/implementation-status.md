@@ -77,3 +77,10 @@ Workers resolve exact SQL catalog definitions at execution. Legacy templates
 and worker-only credentials retain their existing contracts.
 See [runtime source management](runtime-source-management.md) for permissions,
 lifecycle behavior and separate external qualification requirements.
+
+## Optional corporate build network
+
+The three Dockerfiles accept the optional BuildKit corporate_ca secret while
+standard builds retain public trust and require no enterprise files. See
+[build trust, proxy responsibilities and runtime separation](deployment/day1-deployment-runbook.md#optional-corporate-build-network).
+TLS verification, Go checksums and MinIO/MC source pins remain enabled.

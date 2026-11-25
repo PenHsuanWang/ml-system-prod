@@ -22,3 +22,6 @@ var/
 .codex/
 .aws/
 *:Zone.Identifier
+
+# Optional build CA / proxy inputs; never send these in the build context.
+/.local/corporate-network/

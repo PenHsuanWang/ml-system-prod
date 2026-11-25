@@ -1,5 +1,11 @@
+FROM golang:1.26.10-alpine AS build-trust
+COPY scripts/build_trust/main.go /tmp/build-trust.go
+RUN CGO_ENABLED=0 GOTOOLCHAIN=local go build -trimpath -ldflags="-s -w" -o /tmp/build-trust /tmp/build-trust.go
+
 FROM python:3.12-slim
-RUN pip install --no-cache-dir 'mlflow[auth]==3.6.0' 'SQLAlchemy>=2.0.44,<2.1' 'psycopg[binary]>=3.2,<4' boto3
+RUN --mount=type=bind,from=build-trust,source=/tmp/build-trust,target=/tmp/build-trust,ro \
+    --mount=type=secret,id=corporate_ca,required=false \
+    /tmp/build-trust pip install --no-cache-dir 'mlflow[auth]==3.6.0' 'SQLAlchemy>=2.0.44,<2.1' 'psycopg[binary]>=3.2,<4' boto3
 RUN python -c 'import sqlalchemy; from mlflow.store.tracking.sqlalchemy_store import SqlAlchemyStore as TrackingStore; from mlflow.store.model_registry.sqlalchemy_store import SqlAlchemyStore as RegistryStore; print({"sqlalchemy": sqlalchemy.__version__, "tracking_store": TrackingStore.__module__, "registry_store": RegistryStore.__module__})'
 RUN useradd --uid 10001 --create-home mlflow
 USER mlflow

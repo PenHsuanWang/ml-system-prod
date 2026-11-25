@@ -4,8 +4,8 @@
   "files": [
     {
       "path": ".dockerignore",
-      "bytes": 225,
-      "sha256": "ec9c84990d230b0fb9737bfa3592d103457a2c067cfc598dfe09781f837f1b59"
+      "bytes": 328,
+      "sha256": "fd2ec43543654e35838dfd6516d086b06f3c86f157e4ff3e7707a45fa452be12"
     },
     {
       "path": ".env.ml.example",
@@ -39,13 +39,13 @@
     },
     {
       "path": ".github/workflows/ml-ci.yml",
-      "bytes": 14701,
-      "sha256": "430884a0b0d0224eb496c228457522fc41a2a7b6b65e2674840ce850689b9f1f"
+      "bytes": 15190,
+      "sha256": "bb6ca9416b15cdb4e5b75c86e48cfb69ab7489eadc816645192eb1da6a8d38b5"
     },
     {
       "path": ".gitignore",
-      "bytes": 1021,
-      "sha256": "ca965a0b84d975acd9c6be1bb9ccea65627a953888276016171805a96521051a"
+      "bytes": 1124,
+      "sha256": "91cc87e9287da80c83033e46a14d2bd1601587df8c7cde16279e5a0358e395ec"
     },
     {
       "path": ".gitleaks.toml",
@@ -59,23 +59,23 @@
     },
     {
       "path": "Dockerfile.minio",
-      "bytes": 2682,
-      "sha256": "273f04ad165e085c97553658834c5a88a33156f6dce4b076f1e156fd27c3c513"
+      "bytes": 3578,
+      "sha256": "8a1797991aca1c61cc240fe9dbd6503d3c290e252be1ee79fe931848694e2ec2"
     },
     {
       "path": "Dockerfile.ml",
-      "bytes": 3740,
-      "sha256": "361f1f8dc916e72b0a3ca66969a4947537908d6e2ec13ccdbb67f400d79e6044"
+      "bytes": 5842,
+      "sha256": "ecafd2d00ddd6cc55662ff5077b5e0a48927b0485412d4ea3b4374e578372fa1"
     },
     {
       "path": "Dockerfile.mlflow",
-      "bytes": 751,
-      "sha256": "e5b5b381b08b40a56655c340fa97a20875a36b667a6f8f9a8fab0ae68cd759a4"
+      "bytes": 1125,
+      "sha256": "776aee7a012164fb6581f499bd095905312611145b852649e9acc1a095ee261d"
     },
     {
       "path": "README.md",
-      "bytes": 15553,
-      "sha256": "d0d65de2abd452e9387c59a8f5ffa489878a947f6a3f27e3b5865b562af6b336"
+      "bytes": 15952,
+      "sha256": "eb50f0223e1c9934ed3cfcce6b2f7966593fdf5cea56fcac8474c9d42588779a"
     },
     {
       "path": "REVIEW-P1-P2-REMEDIATION.md",
@@ -509,8 +509,8 @@
     },
     {
       "path": "docs/configuration-reference.md",
-      "bytes": 11518,
-      "sha256": "ede908cab9b98a3f27a0b8ac9d43b338bfb26f6e41e32364c25b2ef7b3ae838b"
+      "bytes": 11912,
+      "sha256": "80077d7fe897f8e4145b8c6bb90e7a7489cd14e5b38dffa9a4a8c42326301f3b"
     },
     {
       "path": "docs/data-ingress-implementation.md",
@@ -524,8 +524,8 @@
     },
     {
       "path": "docs/deployment/day1-deployment-runbook.md",
-      "bytes": 28064,
-      "sha256": "31f2ef6b01d6462af05fdb505891afa094f9e204fdb6cf8391c804a26c988f39"
+      "bytes": 32353,
+      "sha256": "b2ceb0415e8692f2134c3a014d7d1259410dea9b43d84de8836b973e23d5c223"
     },
     {
       "path": "docs/deployment/interactive-setup.md",
@@ -889,8 +889,8 @@
     },
     {
       "path": "docs/implementation-status.md",
-      "bytes": 4965,
-      "sha256": "11e9cb1280f4217434d07fcf61c64290509281a5b573dfdf8cf2aec4ba4f23a0"
+      "bytes": 5359,
+      "sha256": "32f709a85ad347e9895c7f46a0c06a20299e5ac70122f8ae19eb7cc7dc278633"
     },
     {
       "path": "docs/microservice-contracts.md",
@@ -911,6 +911,11 @@
       "path": "docs/module-spec.md",
       "bytes": 27047,
       "sha256": "f59bad0c243161147eee9d6c4c01918cb1d0301d3ce70117f7075f10f7adcf31"
+    },
+    {
+      "path": "docs/plans/optional-corporate-network.md",
+      "bytes": 3365,
+      "sha256": "92adf25789808443f88d8b21fa1db52f8b771ffb61d01efaa75dfc8f2de904b5"
     },
     {
       "path": "docs/pytorch-ml-system-hld.md",
@@ -1111,6 +1116,16 @@
       "path": "scripts/__init__.py",
       "bytes": 81,
       "sha256": "dbcbed8643c46ae28f7879a7dc76bc40d7eb7f4c25689b300b49267ee181ba38"
+    },
+    {
+      "path": "scripts/build_trust/main.go",
+      "bytes": 4117,
+      "sha256": "90528cf0efd5c149b22cde3562128dae7e2181379fb8c8198352e4607a88a2a6"
+    },
+    {
+      "path": "scripts/build_trust/main_test.go",
+      "bytes": 5956,
+      "sha256": "537829b1f39a46be17390db9ca7e16f09ef30bf6fcd770c04ac3e4066567b027"
     },
     {
       "path": "scripts/check_boundaries.py",
@@ -2416,6 +2431,11 @@
       "path": "tests/ml/__init__.py",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "tests/ml/build_network/test_build_contract.py",
+      "bytes": 3622,
+      "sha256": "f7b9465508a72791ccb94b868af5c25b1011702c299ff8717209b2cf3333b7cc"
     },
     {
       "path": "tests/ml/conftest.py",

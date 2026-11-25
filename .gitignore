@@ -82,3 +82,6 @@ Desktop.ini
 
 # Local macOS bookmark for the external CSV archive
 /CSV_ZIP
+
+# Optional build CA / proxy inputs; never send these in the build context.
+/.local/corporate-network/
