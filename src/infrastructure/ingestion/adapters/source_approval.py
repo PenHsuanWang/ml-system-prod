@@ -11,6 +11,7 @@ from src.infrastructure.ingestion.adapters.databricks_contract import (
     SERIALIZATION_VERSION,
     ConnectionConfig,
     Template,
+    _name,
     _object,
     parse_templates,
     validate_source,
@@ -36,7 +37,11 @@ class DatabricksSourceApproval:
             raise Forbidden("Source access policy is unavailable")
         grants = []
         for item in envelope["grants"]:
-            grant = _object(item, {"tenant_id", "manager_ids", "actor_ids", "template", "limits"})
+            grant = _object(
+                item,
+                {"tenant_id", "manager_ids", "actor_ids", "template", "limits"},
+                {"table_scope"},
+            )
             identifier(grant["tenant_id"])
             for name in ("manager_ids", "actor_ids"):
                 ids = grant[name]
@@ -51,6 +56,13 @@ class DatabricksSourceApproval:
                     identifier(value)
             parse_templates({"grant": grant["template"]})
             ExtractionLimits.parse(grant["limits"])
+            scope = grant.get("table_scope", grant["template"]["table"])
+            if not isinstance(scope, list) or not 1 <= len(scope) <= 3:
+                raise Forbidden("Invalid source table scope")
+            for part in scope:
+                _name(part)
+            if grant["template"]["table"][: len(scope)] != scope:
+                raise Forbidden("Invalid source table scope")
             grants.append(grant)
         return grants
 
@@ -107,7 +119,8 @@ class DatabricksSourceApproval:
                 grant["tenant_id"] == source.tenant_id
                 and actor_id in grant["manager_ids" if management else "actor_ids"]
                 and template.connection_ref == approved.connection_ref
-                and template.table == approved.table
+                and template.table[: len(grant.get("table_scope", approved.table))]
+                == tuple(grant.get("table_scope", approved.table))
                 and set(template.projection) <= set(approved.projection)
                 and all(p in template.predicates for p in approved.predicates)
                 and source.allowed_actor_ids

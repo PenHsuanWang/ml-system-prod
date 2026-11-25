@@ -51,6 +51,7 @@ def runtime(components, actor, tmp_path):
                 "manager_ids": [owner.actor_id],
                 "actor_ids": [owner.actor_id],
                 "template": template,
+                "table_scope": ["synthetic", "fdc"],
                 "limits": ExtractionLimits().to_dict(),
             }
         ],
@@ -117,7 +118,7 @@ def test_runtime_contract_identity_limits_and_connection_drift(runtime):
     "change",
     [
         {"table": ["synthetic", "fdc", "trace;DROP"]},
-        {"table": ["synthetic", "fdc", "private"]},
+        {"table": ["synthetic", "private", "trace"]},
         {"connection_ref": "unknown"},
         {"projection": [{"name": "secret", "type": "string"}]},
         {"projection": [{"name": "temperature", "type": "sql_expression"}]},
