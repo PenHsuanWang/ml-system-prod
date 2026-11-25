@@ -117,7 +117,12 @@ def test_worker_and_management_share_raw_storage_with_least_privilege_mounts(tmp
                 for volume in service["volumes"]
                 if volume["target"].startswith("/app/config/")
             ]
-            assert len(configs) == 2 and all(volume["read_only"] for volume in configs)
+            assert len(configs) == 3 and all(volume["read_only"] for volume in configs)
+            assert {v["target"] for v in configs} == {
+                "/app/config/databricks-connections.json",
+                "/app/config/databricks-sources.json",
+                "/app/config/databricks-policy.json",
+            }
     else:
         assert worker["environment"]["ML_DATABRICKS_ENABLED"] == "false"
         assert not worker.get("secrets")
@@ -322,7 +327,12 @@ def test_external_production_mounts_role_secrets_and_operator_inputs_without_oau
     for role in ("management", "ingestion-worker", "operator"):
         service = model["services"][role]
         approved = [v for v in service["volumes"] if v["target"].startswith("/app/config/")]
-        assert len(approved) == 2 and all(v["read_only"] for v in approved)
+        assert len(approved) == 3 and all(v["read_only"] for v in approved)
+        assert {v["target"] for v in approved} == {
+            "/app/config/databricks-connections.json",
+            "/app/config/databricks-sources.json",
+            "/app/config/databricks-policy.json",
+        }
         assert service["environment"]["ML_DATABRICKS_ENABLED"] == "true"
     operator = model["services"]["operator"]
     definitions = next(
