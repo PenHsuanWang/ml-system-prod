@@ -226,3 +226,18 @@ def test_wrong_database_driver_and_duplicate_json_rejected():
     with pytest.raises(SetupError):
         load_object(b'{"name":1,"name":2}')
     assert b"NaN" not in json_bytes({"ok": 1})
+
+
+def test_runtime_policy_is_preserved_in_both_profiles(spec, external, files):
+    policy = {"contract": "databricks-access-v1", "grants": []}
+    for target in (spec, external):
+        target.connections = external.connections
+        target.environment["DATABRICKS_TOKEN"] = "synthetic-test-token"
+        target.environment["ML_INGESTION_INPUT_DIR"] = str(target.private / "input")
+        target.source_policy = policy
+        plan = build_plan(target, files)
+        assert json.loads(plan.outputs[target.private / "databricks/access-policy.json"]) == policy
+        env_path = ".env.ml.ingestion" if target.profile == "compose" else ".env.ml.production"
+        environment = env_values(plan.outputs[target.project / env_path].decode())
+        assert environment["ML_DATABRICKS_POLICY_FILE"] == "/app/config/databricks-policy.json"
+        assert environment["ML_DATABRICKS_POLICY_CONFIG"].endswith("/databricks/access-policy.json")

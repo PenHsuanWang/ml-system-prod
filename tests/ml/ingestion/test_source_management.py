@@ -153,6 +153,7 @@ def test_policy_revocation_disable_and_queued_execution(runtime):
     with pytest.raises(Forbidden):
         ingress.service.submit(owner, "revoked", IngestionRequest("trace", "v1"))
     # Neither registration nor policy revocation touched the connection/template files.
+    assert ingress.supervisor().run_once(job_id=job.job_id).state == "FAILED"
     assert not settings.databricks_sources_file
 
 
@@ -161,6 +162,7 @@ def test_concurrent_versions_and_restart_resolution(runtime):
     with ThreadPoolExecutor(max_workers=4) as pool:
         sources = list(pool.map(lambda _: register(runtime)[0], range(4)))
     assert len({s.configuration_digest for s in sources}) == 1
+    job = ingress.service.submit(owner, "pinned-v1", IngestionRequest("trace", "v1"))
     changed = {**body, "delta_version": 129}
     with pytest.raises(Conflict):
         register(runtime, changed)
@@ -168,6 +170,7 @@ def test_concurrent_versions_and_restart_resolution(runtime):
     other = build_ingestion(settings)
     assert other.sources.resolve(owner, "trace", "v1") == sources[0]
     assert other.sources.resolve(owner, "trace", "v2") == v2
+    assert other.sources.for_execution(job) == sources[0]
     other.close()
 
 
