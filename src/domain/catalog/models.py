@@ -47,6 +47,7 @@ class MetadataQuery:
 class MetadataItem:
     name: str
     table_type: str | None = None
+    data_format: str | None = None
     native_type: str | None = None
     nullable: bool | None = None
     ingestion_type: str | None = None

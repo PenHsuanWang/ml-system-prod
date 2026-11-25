@@ -44,7 +44,11 @@ def build_metadata_query(
     relations = {
         "catalogs": ("catalogs", "catalog_name", "catalog_name"),
         "schemas": ("schemata", "schema_name", "catalog_name,schema_name"),
-        "tables": ("tables", "table_name,table_type", "table_catalog,table_schema,table_name"),
+        "tables": (
+            "tables",
+            "table_name,table_type,data_source_format",
+            "table_catalog,table_schema,table_name",
+        ),
         "columns": (
             "columns",
             "column_name,full_data_type,is_nullable",
@@ -85,14 +89,16 @@ def build_metadata_query(
 
 
 def _item(query: MetadataQuery, row: Any) -> MetadataItem:
-    expected = 1 if query.kind in {"catalogs", "schemas"} else 2 if query.kind == "tables" else 3
+    expected = 1 if query.kind in {"catalogs", "schemas"} else 3
     if not isinstance(row, (tuple, list)) or len(row) != expected:
         raise ValueError("Invalid metadata shape")
     name = metadata_name(row[0])
     if query.kind == "tables":
         if not isinstance(row[1], str) or len(row[1]) > 128:
             raise ValueError("Invalid table metadata")
-        return MetadataItem(name, table_type=row[1])
+        if row[2] is not None and (not isinstance(row[2], str) or len(row[2]) > 128):
+            raise ValueError("Invalid table format metadata")
+        return MetadataItem(name, table_type=row[1], data_format=row[2])
     if query.kind == "columns":
         native, nullable = row[1:]
         if (

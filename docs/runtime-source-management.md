@@ -312,14 +312,14 @@ curl --fail-with-body -H "Authorization: Bearer $CATALOG_TOKEN" \
 
 All operations are GET. Responses contain `items`, `limit`, nullable `next_offset`
 and `has_more`. Connections are reference strings. Metadata items contain `name`
-and applicable `table_type`, `native_type`, `nullable`, `ingestion_type`, `supported`
+and applicable `table_type`, `data_format`, `native_type`, `nullable`, `ingestion_type`, `supported`
 fields; inapplicable fields are null. Unsupported native types remain visible with
 `supported=false` and no ingestion type. Names unsupported by the source identifier
 contract produce a sanitized invalid-metadata response. No locations, comments,
 properties or row values are returned. Example column item:
 
 ~~~json
-{"name":"temperature","table_type":null,"native_type":"DOUBLE","nullable":true,"ingestion_type":"float","supported":true}
+{"name":"temperature","table_type":null,"data_format":null,"native_type":"DOUBLE","nullable":true,"ingestion_type":"float","supported":true}
 ~~~
 
 The primary implementation uses fixed parameterized SQL Connector 4.2.6 queries

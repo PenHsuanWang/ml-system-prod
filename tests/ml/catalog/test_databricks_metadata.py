@@ -57,7 +57,7 @@ class Connection:
     [
         ("catalogs", (), [("synthetic",)], ["synthetic"]),
         ("schemas", ("synthetic",), [("fdc",)], ["fdc"]),
-        ("tables", ("synthetic", "fdc"), [("trace", "MANAGED")], ["trace"]),
+        ("tables", ("synthetic", "fdc"), [("trace", "MANAGED", "DELTA")], ["trace"]),
         (
             "columns",
             ("synthetic", "fdc", "trace"),
@@ -163,7 +163,21 @@ def test_hard_timeout_capacity_and_physical_cleanup(discovery):
 def test_no_unbounded_or_arbitrary_relation_query():
     sql, params = build_metadata_query(MetadataQuery("tables", ("synthetic", "fdc")), SCOPES)
     assert sql.startswith(
-        "SELECT DISTINCT table_name,table_type FROM system.information_schema.tables"
+        "SELECT DISTINCT table_name,table_type,data_source_format "
+        "FROM system.information_schema.tables"
     )
     assert params["scope_0_0"] == "synthetic"
     assert "LIMIT :page_size OFFSET :page_offset" in sql
+
+
+@pytest.mark.parametrize("native", ["DELTA", None])
+def test_table_format_is_metadata_and_does_not_invent_delta_history(discovery, native):
+    connection = Connection([("trace", "MANAGED" if native else "VIEW", native)])
+    values = fetch_sql_metadata(
+        discovery[-1],
+        MetadataQuery("tables", ("synthetic", "fdc")),
+        SCOPES,
+        connect=lambda *a: connection,
+    )
+    assert values[0].data_format == native
+    assert values[0].table_type == ("MANAGED" if native else "VIEW")

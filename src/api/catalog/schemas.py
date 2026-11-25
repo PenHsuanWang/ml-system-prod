@@ -33,6 +33,7 @@ class MetadataResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     name: str
     table_type: str | None = None
+    data_format: str | None = None
     native_type: str | None = None
     nullable: bool | None = None
     ingestion_type: str | None = None

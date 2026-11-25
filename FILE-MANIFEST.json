@@ -1049,8 +1049,8 @@
     },
     {
       "path": "docs/runtime-source-management.md",
-      "bytes": 18723,
-      "sha256": "44b99c3c0decb8b7a34b70f01575431044454ec33f2d9d50520e6a159ae784e7"
+      "bytes": 18757,
+      "sha256": "76ffe56326041796c57aad5a26e4674e0ebb511ce98f7b9664cd0c4cb26f3a3f"
     },
     {
       "path": "docs/software-design.md",
@@ -1389,8 +1389,8 @@
     },
     {
       "path": "src/api/catalog/schemas.py",
-      "bytes": 1574,
-      "sha256": "a0fcd1c50d422af64c205b951ca18a938621ab541fff349edb2a64c5d7c3d2c2"
+      "bytes": 1609,
+      "sha256": "425a0aa776ab2cabb15aae66e3c2ed5dbc92f3f29587786f1a83ef41961a8c6f"
     },
     {
       "path": "src/api/dependencies.py",
@@ -1769,8 +1769,8 @@
     },
     {
       "path": "src/domain/catalog/models.py",
-      "bytes": 1940,
-      "sha256": "c36ca6a07bdc0623cb07f2dbb4612cdec4a73526f42123759468eb0dc2c34049"
+      "bytes": 1975,
+      "sha256": "18441c016f04ff263aaf747a28c1d211a1fa31de73ef0aad1ca16e04ff7e4165"
     },
     {
       "path": "src/domain/datasets/__init__.py",
@@ -1994,8 +1994,8 @@
     },
     {
       "path": "src/infrastructure/catalog/databricks_metadata.py",
-      "bytes": 9283,
-      "sha256": "1e04bb43376de593c6122161e91b1ea5318b57436fd2d677f72bdf83c7f5477f"
+      "bytes": 9484,
+      "sha256": "d325f5501a9fa57abc4d5a8959f9836e341f5d793be4c45e7c0ef01ed674d92d"
     },
     {
       "path": "src/infrastructure/catalog/policy.py",
@@ -2559,8 +2559,8 @@
     },
     {
       "path": "tests/ml/catalog/test_databricks_metadata.py",
-      "bytes": 5877,
-      "sha256": "d0d0e85b03bd8ff6d0076865164a332d65060acd132aace5e22d512f11d6eba0"
+      "bytes": 6424,
+      "sha256": "4af05034ab8b7f53cde6332a6367a7715c3cbddac185262f9be21cec9cdd1801"
     },
     {
       "path": "tests/ml/conftest.py",
