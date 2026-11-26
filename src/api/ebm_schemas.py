@@ -16,15 +16,30 @@ SignalFeatures = Annotated[list[PadFeatures], Field(min_length=7, max_length=7)]
 
 
 class EBMInstance(StrictModel):
-    features: SignalFeatures
+    features: SignalFeatures = Field(
+        description="Finite spectrogram values in [signal, pad, frequency, time] shape [7,4,9,31]."
+    )
 
 
 class EBMPredictionRequest(StrictModel):
-    schema_version: Literal["ebm-spectrogram-input-v1"]
-    endpoint_id: str = Field(pattern=r"^[a-z][a-z0-9-]{0,63}$")
-    signal_order: list[str] = Field(min_length=7, max_length=7)
-    pad_order: list[str] = Field(min_length=4, max_length=4)
-    instances: list[EBMInstance] = Field(min_length=1, max_length=16)
+    schema_version: Literal["ebm-spectrogram-input-v1"] = Field(
+        description="EBM input contract version."
+    )
+    endpoint_id: str = Field(
+        pattern=r"^[a-z][a-z0-9-]{0,63}$",
+        description="Deployed EBM endpoint assigned to your tenant.",
+    )
+    signal_order: list[str] = Field(
+        min_length=7, max_length=7, description=f"Required order: {list(EBM_SIGNAL_ORDER)}"
+    )
+    pad_order: list[str] = Field(
+        min_length=4, max_length=4, description=f"Required order: {list(EBM_PAD_ORDER)}"
+    )
+    instances: list[EBMInstance] = Field(
+        min_length=1,
+        max_length=16,
+        description="Batch of 1–16 precomputed spectrograms in response order.",
+    )
 
     @model_validator(mode="after")
     def validate_orders(self) -> "EBMPredictionRequest":
@@ -33,7 +48,11 @@ class EBMPredictionRequest(StrictModel):
         return self
 
     def to_domain(self) -> EBMPredictionBatch:
-        values = tuple(tuple(tuple(tuple(tuple(time) for time in frequency)
-                     for frequency in pads) for pads in instance.features)
-                     for instance in self.instances)
+        values = tuple(
+            tuple(
+                tuple(tuple(tuple(time) for time in frequency) for frequency in pads)
+                for pads in instance.features
+            )
+            for instance in self.instances
+        )
         return EBMPredictionBatch(values, tuple(self.signal_order), tuple(self.pad_order))

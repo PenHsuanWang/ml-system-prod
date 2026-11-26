@@ -189,8 +189,8 @@
     },
     {
       "path": "bootstrap/ml_gateway.py",
-      "bytes": 5549,
-      "sha256": "e06dd4543d438038bdc8f9df29219fce34694788ab8bc2bbf60860a5d18bfe59"
+      "bytes": 7146,
+      "sha256": "180b07f4feaf0502d0bc5be06719223ce6ee657de0a91341fbe947bc0af21d42"
     },
     {
       "path": "bootstrap/ml_serving.py",
@@ -464,8 +464,8 @@
     },
     {
       "path": "docs/README.md",
-      "bytes": 5224,
-      "sha256": "764e8c1102fb1a01eb1f4a2f0f731ac49b3de8afda1ce7f584518705b63acc2c"
+      "bytes": 5610,
+      "sha256": "8467f023abd7f6389d7f59dd9ae317b6484ed25ad6ed98d3602f51a35d0886e3"
     },
     {
       "path": "docs/adr/014-implementation-baseline.md",
@@ -969,8 +969,8 @@
     },
     {
       "path": "docs/ml-runbook.md",
-      "bytes": 12160,
-      "sha256": "ba30a89bab870fca8629e8956d91df5f3381d62d9b9341877167540079682ba4"
+      "bytes": 12596,
+      "sha256": "13906db4da6aa57912ea8bc293fb2d941a8fa0c87051df7db2d986122b0f302d"
     },
     {
       "path": "docs/ml-runtime-compatibility.md",
@@ -986,6 +986,16 @@
       "path": "docs/plans/governed-discovery.md",
       "bytes": 4160,
       "sha256": "2a9de449f9ad533ce20954312d499ec3f130a53935070db7e8d330d273dc336f"
+    },
+    {
+      "path": "docs/plans/prediction-endpoint-discovery.md",
+      "bytes": 15390,
+      "sha256": "c72aed8f1dbf37f479aa8f6fefbf015d559d9b9e18badd34b990e4765943c67e"
+    },
+    {
+      "path": "docs/plans/self-service-api-inventory.md",
+      "bytes": 17664,
+      "sha256": "44967d9874baf5b0560ff9c78698ec6d086d9d24b6f0b2fcce508e2a51ccc5b6"
     },
     {
       "path": "docs/pytorch-ml-system-hld.md",
@@ -1068,6 +1078,11 @@
       "sha256": "b2ccd51f1c162545ea5699188c002d07110607cae9d8721188b79acf4a3c5a71"
     },
     {
+      "path": "docs/reviews/wp1-api-foundation-report.md",
+      "bytes": 10744,
+      "sha256": "85754a90ee2df96d4fc0d4f518e7358fa0e2b4db0a60ea057206194f7e137039"
+    },
+    {
       "path": "docs/runtime-source-management.md",
       "bytes": 18757,
       "sha256": "76ffe56326041796c57aad5a26e4674e0ebb511ce98f7b9664cd0c4cb26f3a3f"
@@ -1076,6 +1091,11 @@
       "path": "docs/software-design.md",
       "bytes": 34444,
       "sha256": "d1322ec14f24d522250a492f1a8e80337a67b45b38396bd026ef528f2a853364"
+    },
+    {
+      "path": "docs/standards/api-design-standard.md",
+      "bytes": 4650,
+      "sha256": "8cf3d2ee081c0bb844a8e5cc1a7f2d524a89185195205743450df2622b042460"
     },
     {
       "path": "docs/template-baseline.txt",
@@ -1419,8 +1439,8 @@
     },
     {
       "path": "src/api/ebm_schemas.py",
-      "bytes": 1749,
-      "sha256": "54ed2c765ccd325b025cd56876cb8f9d1a72bab4479e2a3d601cea2d9b1a3499"
+      "bytes": 2297,
+      "sha256": "cd0fd8be104836fd9605925f41298b6fdcc00b6d4661fbd9ca4f899d826d3a38"
     },
     {
       "path": "src/api/exceptions.py",
@@ -1519,8 +1539,13 @@
     },
     {
       "path": "src/api/ml_schemas.py",
-      "bytes": 5694,
-      "sha256": "9ff3b0ec7a32b023647632ef4f2d5ec534967b06ae7770e85de32da5b8bb933a"
+      "bytes": 6126,
+      "sha256": "2a964eb56a01f169368b1a46fda54d6cdfc4862ba011f3fd05deaceb275eb3b2"
+    },
+    {
+      "path": "src/api/prediction_docs.py",
+      "bytes": 8551,
+      "sha256": "5bbaa00d160387d74cece61f343a6c086638ea43d08c8f03146966c05cd618e0"
     },
     {
       "path": "src/api/routers.py",
@@ -2928,14 +2953,19 @@
       "sha256": "cae90652d6ac4d40b2f39adace8cb265fe10279992ab50c2309474b28998e142"
     },
     {
+      "path": "tests/ml/test_prediction_gateway_docs.py",
+      "bytes": 13617,
+      "sha256": "c1c621d670c2dccd315a675e42aa53ce5d82faa81ee80967793d05e8fdf372fb"
+    },
+    {
       "path": "tests/ml/test_pytorch_e2e.py",
       "bytes": 4059,
       "sha256": "44deaa45195b7dfedeb54428b2357a15865d68ccfb2194e200b5b58680e11c25"
     },
     {
       "path": "tests/ml/test_serving_runtime.py",
-      "bytes": 13456,
-      "sha256": "f26998361a52dd79cdaa9cd0d030bbd768aa7f7064f7dfa69152eabd724eb778"
+      "bytes": 13587,
+      "sha256": "49cffd8bfd87cab2983e82e6313b9caf13e44580b1ccbd55e27e623ea8992f10"
     },
     {
       "path": "tests/ml/test_tracing.py",

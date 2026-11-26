@@ -326,7 +326,11 @@ def test_gateway_verifies_health_response_and_current_route(deployment, failure)
         assert request.headers["authorization"] == "Bearer scoped-token"
         return httpx.Response(
             302 if failure == "redirect" else 200,
-            json={"predictions": [], "provenance": provenance},
+            json={
+                "predictions": [],
+                "provenance": {**provenance, "input_schema_version": "1"},
+                "request_id": "synthetic-request",
+            },
         )
 
     app = create_app(
