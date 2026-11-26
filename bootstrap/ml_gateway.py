@@ -2,16 +2,25 @@
 
 import asyncio
 import os
+from typing import Annotated
 
 import httpx
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
+from fastapi import Body, Depends, FastAPI, Request
+from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from bootstrap.ml_config import MLSettings
 from bootstrap.ml_wiring import build_components
 from bootstrap.ml_telemetry import configure_telemetry
 from src.infrastructure.ml_tracing import MLTraceMiddleware, capture_context
 from src.api.ml_http import install_errors
+from src.api.prediction_docs import (
+    GATEWAY_DESCRIPTION,
+    PREDICT_DESCRIPTION,
+    PREDICT_EXAMPLES,
+    PREDICTION_ERRORS,
+    GatewayPredictionResult,
+)
 from src.api.ml_schemas import PredictionRequest
 from src.api.ebm_schemas import EBMPredictionRequest
 from bootstrap.ml_serving_wiring import endpoint_resolver
@@ -45,15 +54,24 @@ def create_app(*, components=None, identity=None, resolver=None, transport=None)
                 if components is None:
                     runtime.database.close()
 
-    app = FastAPI(title="ML prediction ingress", lifespan=lifespan)
+    bearer = HTTPBearer(
+        auto_error=False, bearerFormat="JWT", description="Management Identity access_token"
+    )
+    app = FastAPI(title="ML prediction ingress", description=GATEWAY_DESCRIPTION, lifespan=lifespan)
     install_errors(app, maximum_body_bytes=8 * 1024 * 1024)
     app.add_middleware(MLTraceMiddleware)
 
-    @app.get("/health/live")
+    @app.get("/", include_in_schema=False)
+    async def documentation(request: Request) -> RedirectResponse:
+        return RedirectResponse(request.url_for("swagger_ui_html").path)
+
+    @app.get("/health/live", summary="檢查 Gateway 程序是否存活")
     def live() -> dict[str, bool]:
         return {"live": True}
 
-    @app.get("/health/ready")
+    @app.get("/health/ready", summary="檢查 Gateway 的 SQL 與身分服務連線",
+             description="此檢查僅回報 Gateway 相依服務的狀態。個別模型的就緒狀態在預測時檢查。",
+             response_model=dict[str, bool], responses={503: {"model": dict[str, bool]}})
     async def ready() -> JSONResponse:
         try:
             await asyncio.to_thread(state["components"].database.ready)
@@ -62,13 +80,17 @@ def create_app(*, components=None, identity=None, resolver=None, transport=None)
         except Exception:
             return JSONResponse({"ready": False}, status_code=503)
 
-    @app.post("/api/v1/prediction/predict")
-    async def predict(body: PredictionRequest | EBMPredictionRequest, request: Request) -> JSONResponse:
+    @app.post("/api/v1/prediction/predict", summary="執行端點預測", description=PREDICT_DESCRIPTION,
+              response_model=GatewayPredictionResult, responses=PREDICTION_ERRORS)
+    async def predict(
+        body: Annotated[PredictionRequest | EBMPredictionRequest, Body(openapi_examples=PREDICT_EXAMPLES)],
+        credentials: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer)],
+    ) -> JSONResponse:
         from src.infrastructure.ml_identity import AuthenticationRequired
-        authorization = request.headers.get("authorization", "")
-        if not authorization.startswith("Bearer "):
+        if credentials is None or credentials.scheme != "Bearer":
             raise AuthenticationRequired("Authentication required")
-        actor = await state["identity"].resolve(authorization[7:])
+        actor = await state["identity"].resolve(credentials.credentials)
+        authorization = f"Bearer {credentials.credentials}"
         actor.require("ml:predict")
         route = await asyncio.to_thread(state["components"].deployments.route,
                                         actor.tenant_id, body.endpoint_id)

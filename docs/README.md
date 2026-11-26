@@ -13,6 +13,7 @@
 | 已完成能力、證據與剩餘工作 | [實作狀態](implementation-status.md) |
 | Runtime、映像與相容性邊界 | [Runtime 相容性](ml-runtime-compatibility.md) |
 | 實際環境鍵、預設值、角色與 timeout 限制 | [設定參考](configuration-reference.md) |
+| 8001 預測端點、模型版本與探索 API 提案 | [使用者流程與全段整合規劃](plans/prediction-endpoint-discovery.md) |
 | API 權限、冪等、取消與錯誤 | [ML 操作契約](ml-runbook.md#api-與-client-契約) |
 | 新增受核准 ML workload | [Workload Extension Contract v1](workload-extension-contract.md) |
 | EBM DatasetBuilder、訓練與品質政策 | [EBM 使用說明](ebm-implementation-status.md) |
