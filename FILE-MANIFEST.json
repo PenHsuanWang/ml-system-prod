@@ -1274,8 +1274,8 @@
     },
     {
       "path": "scripts/check_ingestion.py",
-      "bytes": 1485,
-      "sha256": "58e704cf380ec0d2fdb7e1fcc825200cd42921d78f1207afe081e30c520d78d1"
+      "bytes": 1522,
+      "sha256": "9319906aae1d12d6a559553d86aa640ad61474bd7758c8cc50ddf1ed2280d379"
     },
     {
       "path": "scripts/check_init.py",
@@ -2094,13 +2094,23 @@
     },
     {
       "path": "src/infrastructure/catalog/databricks_metadata.py",
-      "bytes": 9484,
-      "sha256": "d325f5501a9fa57abc4d5a8959f9836e341f5d793be4c45e7c0ef01ed674d92d"
+      "bytes": 9452,
+      "sha256": "3e201af9c6d61458e741339319a50cdef610badea373cfa17cff7c4442fa8b2b"
     },
     {
       "path": "src/infrastructure/catalog/policy.py",
-      "bytes": 3092,
-      "sha256": "42d7930e8fffe2bbebf7e5cd2404c330e657141b634af5c3a9d7b34d2471a715"
+      "bytes": 3586,
+      "sha256": "f7f0569fc9f4bfb71de01bee4bf55e0633f53e37dc38cf8f76cc88ff6f779037"
+    },
+    {
+      "path": "src/infrastructure/databricks/__init__.py",
+      "bytes": 72,
+      "sha256": "0e872ecad8274d3a0c3e4019a8c29805561dca9675e989a69c1350a893487bcb"
+    },
+    {
+      "path": "src/infrastructure/databricks/sql_runtime.py",
+      "bytes": 7078,
+      "sha256": "86bacbd7527129778c3ab1c4981558f7b5d3eb5feb33780500b5e092496bd7df"
     },
     {
       "path": "src/infrastructure/datasets/__init__.py",
@@ -2189,8 +2199,8 @@
     },
     {
       "path": "src/infrastructure/ingestion/adapters/databricks_client.py",
-      "bytes": 15122,
-      "sha256": "3d68bba82477504bb9fe58311bb07ad31ef1b66e4902510babfb92fb42099d89"
+      "bytes": 9326,
+      "sha256": "4c729697fae07f0673389c6c3272ed365d717d245749002dd66da188c41cad26"
     },
     {
       "path": "src/infrastructure/ingestion/adapters/databricks_contract.py",
@@ -2209,8 +2219,8 @@
     },
     {
       "path": "src/infrastructure/ingestion/adapters/source_approval.py",
-      "bytes": 6509,
-      "sha256": "c2b690c11ebc5d462e09cadbb6f3a18736fc4342ef9990329beb439ad493a7be"
+      "bytes": 7136,
+      "sha256": "667722ac9b955f1af0d64c6741954d076a5774a0d5edf00911e7c1c62416d7b6"
     },
     {
       "path": "src/infrastructure/ingestion/persistence/__init__.py",
