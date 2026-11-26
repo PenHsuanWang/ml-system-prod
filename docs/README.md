@@ -38,6 +38,12 @@
 CI 與重跑指令以 [實作狀態](implementation-status.md#驗證入口) 及
 [workflow 原始碼](../.github/workflows/) 為準。部署命令不等同已執行的驗收結果。
 
+## API foundation
+
+- [ML lifecycle inventory and WP1–WP7 roadmap](plans/self-service-api-inventory.md)
+- [API documentation and contract standard](standards/api-design-standard.md)
+- [WP1 delivery evidence](reviews/wp1-api-foundation-report.md)
+
 ## 設計與開發參考
 
 - [HLD](pytorch-ml-system-hld.md)、[LLD](pytorch-ml-system-lld.md)：ML 設計契約；

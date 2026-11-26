@@ -2,6 +2,25 @@
 
 **交付界線。** 基準為 master `a5b1767`。本次補齊現有 Gateway 的 Swagger、ReDoc 與 OpenAPI 說明，並將 Gateway 首頁導向 Swagger。以下兩個 GET 是後續開發提案。今天的使用者可以開啟 `/docs`，依指引登入，並對部署負責人提供的端點發出預測。
 
+## Current implementation and WP1 scope
+
+Phase 0 + WP1 improves the existing Gateway documentation, authentication declaration,
+field semantics, MLP/EBM examples and success/error contract verification.
+Gateway validates successful upstream JSON before returning the original body.
+The shared 422 body/header correlation difference and transport-timeout 503 mapping
+are documented. This phase creates no endpoint discovery service, router, contract storage,
+database table or migration. Management domains are read-only investigation subjects.
+English wire documentation follows the [API standard](../standards/api-design-standard.md).
+The complete lifecycle inventory and WP1–WP7 roadmap are in the
+[implementation plan](self-service-api-inventory.md).
+
+## WP2 proposed implementation — authorization required
+
+The two GET operations below, model contract persistence, legacy backfill and their
+acceptance criteria belong to WP2 on a separately authorized feature branch after WP1 review.
+The permissions, schema, pagination and compatibility below are proposed contracts.
+WP3–WP7 are deferred to their own sessions.
+
 ## 使用者從哪裡開始
 
 第一次整合時，使用者想回答三個問題：「哪個端點能解決我的問題？我手上的資料能不能送？這次結果是哪一版算的？」理想流程是從同一個公開 Gateway 網址打開 `/docs`，取得部署指定的 Identity 登入位置，以 Bearer token 授權，瀏覽自己可使用的端點，照該端點的範例發出預測，最後保留 `request_id` 與回應中的模型版本。

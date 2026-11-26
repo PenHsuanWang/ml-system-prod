@@ -65,12 +65,14 @@ def create_app(*, components=None, identity=None, resolver=None, transport=None)
     async def documentation(request: Request) -> RedirectResponse:
         return RedirectResponse(request.url_for("swagger_ui_html").path)
 
-    @app.get("/health/live", summary="檢查 Gateway 程序是否存活")
+    @app.get("/health/live", summary="Check Gateway liveness", operation_id="live_health_live_get",
+             description="Reports whether the Gateway HTTP process is responding.")
     def live() -> dict[str, bool]:
         return {"live": True}
 
-    @app.get("/health/ready", summary="檢查 Gateway 的 SQL 與身分服務連線",
-             description="此檢查僅回報 Gateway 相依服務的狀態。個別模型的就緒狀態在預測時檢查。",
+    @app.get("/health/ready", summary="Check Gateway dependency readiness",
+             operation_id="ready_health_ready_get",
+             description="Checks SQL and Identity connectivity. Model readiness is checked during prediction.",
              response_model=dict[str, bool], responses={503: {"model": dict[str, bool]}})
     async def ready() -> JSONResponse:
         try:
@@ -80,7 +82,8 @@ def create_app(*, components=None, identity=None, resolver=None, transport=None)
         except Exception:
             return JSONResponse({"ready": False}, status_code=503)
 
-    @app.post("/api/v1/prediction/predict", summary="執行端點預測", description=PREDICT_DESCRIPTION,
+    @app.post("/api/v1/prediction/predict", summary="Predict with an active endpoint", description=PREDICT_DESCRIPTION,
+              operation_id="predict_api_v1_prediction_predict_post",
               response_model=GatewayPredictionResult, responses=PREDICTION_ERRORS)
     async def predict(
         body: Annotated[PredictionRequest | EBMPredictionRequest, Body(openapi_examples=PREDICT_EXAMPLES)],
@@ -117,6 +120,8 @@ def create_app(*, components=None, identity=None, resolver=None, transport=None)
                     or not matches_identity(deployment, value.get("provenance"))
                     or value["provenance"].get("pod_uid", "") != actual.get("pod_uid", "")):
                 raise Unavailable("Serving response identity mismatch")
+            if response.is_success:
+                GatewayPredictionResult.model_validate_json(response.content, strict=True)
             current = await asyncio.to_thread(state["components"].deployments.route,
                                               actor.tenant_id, body.endpoint_id)
             if current != route or response.is_redirect:

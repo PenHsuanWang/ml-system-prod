@@ -136,15 +136,17 @@ class DeploymentRequest(StrictModel):
 
 
 class Features(StrictModel):
-    sensor_a: float = Field(ge=-100, le=100)
-    sensor_b: float = Field(ge=-100, le=100)
+    sensor_a: float = Field(ge=-100, le=100, description="First finite sensor value, in [-100, 100].")
+    sensor_b: float = Field(ge=-100, le=100, description="Second finite sensor value, in [-100, 100].")
 
 
 class Instance(StrictModel):
-    features: Features
+    features: Features = Field(description="Named sensor values for one MLP sample.")
 
 
 class PredictionRequest(StrictModel):
-    schema_version: Literal["1"] = "1"
-    endpoint_id: str = Field(pattern=r"^[a-z][a-z0-9-]{0,63}$")
-    instances: list[Instance] = Field(min_length=1, max_length=128)
+    schema_version: Literal["1"] = Field(default="1", description="MLP input contract version.")
+    endpoint_id: str = Field(pattern=r"^[a-z][a-z0-9-]{0,63}$",
+                             description="Deployed logical endpoint assigned to your tenant.")
+    instances: list[Instance] = Field(min_length=1, max_length=128,
+                                      description="Batch of 1–128 instances in response order.")

@@ -9,49 +9,62 @@ from src.domain.prediction.ebm import EBMNeuralPrediction
 from src.domain.prediction.models import Prediction
 
 GATEWAY_DESCRIPTION = """
-此入口對指定的邏輯端點執行預測。從這裡開始：
+Run inference using a logical endpoint assigned to your tenant.
 
-1. 向部署負責人取得你的 `endpoint_id`、輸入規格及 Management 的網址。參考 Compose 使用 port 8000。
-2. 在 Management 的 `POST /api/v1/identity/login` 以 `tenant_id`、`username`、`password`
-   登入。帳號需要 `ml:predict`。複製回傳的 `access_token`，在本頁 **Authorize** 貼入 token。
-3. 展開 **執行端點預測**，按 **Try it out**，將範例端點換成你的端點並填入資料。
-4. 成功後以 `provenance.registered_model`、`model_version` 和 `generation` 核對這次實際使用的模型。
+1. Obtain your endpoint ID, its input contract, and the Management URL from the deployment owner.
+   The reference Compose Management URL uses port 8000.
+2. Sign in at Management `POST /api/v1/identity/login` with `tenant_id`, `username`, and `password`.
+   Your account needs `ml:predict`. Paste the returned `access_token` into **Authorize**.
+3. Open **Predict with an active endpoint**, choose **Try it out**, replace the synthetic endpoint
+   in an example with your assigned endpoint, and supply your data.
+4. Record `request_id` and `provenance` to identify the model version used for that request.
 
-目前 Gateway 沒有端點清單。若有 `ml:model:read`，可在 Management 查詢
-`GET /api/v1/model_registry/models` 和 `GET /api/v1/model_registry/models/{name}/versions`。
-這些是平台為租戶登錄的版本。要呼叫預測，仍須取得已啟用的端點 ID。
+Synthetic endpoint IDs illustrate request structure. Ask the deployment owner for a deployed ID.
+Endpoint discovery is planned. Users with `ml:model:read` can inspect platform-registered versions
+through Management `GET /api/v1/model_registry/models` and
+`GET /api/v1/model_registry/models/{name}/versions`.
+A registry listing describes registered bindings and requires the deployed endpoint mapping
+before prediction. The Gateway derives tenant identity from the authenticated session.
 """
 
 PREDICT_DESCRIPTION = f"""
-依登入租戶和 `endpoint_id` 選擇當下的有效部署。相同端點在更新或回滾後可能使用不同模型版本。
-每個請求上限為 8 MiB。
+Requires a current Bearer session and `ml:predict`. Resolves `endpoint_id` within your tenant.
+Model updates and rollback can change the version behind that endpoint between requests.
+The Gateway checks runtime readiness, response provenance, and the route again before replying.
 
-* **MLP** 使用 `schema_version="1"`。每次 1–128 筆，每筆包含 `sensor_a`、`sensor_b`，
-  各為 −100 到 100 的有限數值。回傳類別、標籤與未校準的 softmax 分數。
-* **EBM** 使用 `schema_version="ebm-spectrogram-input-v1"`。每次 1–16 筆已計算的頻譜。
-  每筆形狀為 `[7,4,9,31]`（signal、pad、frequency、time），依下方順序排列。
-  回傳 `mu`、`sigma`、`latent` 和未校準的 `raw_nn_score`。
+**MLP input** uses `schema_version="1"`, 1–128 instances, and finite numeric `sensor_a` and
+`sensor_b` values in [-100, 100]. Each result contains `class_id`, `label`, `score`, and
+`score_kind="uncalibrated_softmax"`. The score is an uncalibrated classification score.
 
-以下 Python 產生一筆格式有效的合成 EBM 請求。將端點與頻譜換成部署提供的值：
+**EBM input** uses `schema_version="ebm-spectrogram-input-v1"` and 1–16 precomputed spectrograms.
+Each instance has shape [7, 4, 9, 31], ordered as signal, pad, frequency, time.
+The required signal order is `{list(EBM_SIGNAL_ORDER)!r}` and pad order is
+`{list(EBM_PAD_ORDER)!r}`. Supply finite numeric values using the deployed preprocessing contract.
+Results contain `mu`, `sigma`, `latent`, `raw_nn_score`, and
+`score_kind="uncalibrated_latent_mean_plus_std"`.
+Here `sigma` describes latent-feature standard deviation. The score is uncalibrated.
 
-```python
-spectrum = [[[[0.0] * 31 for _ in range(9)] for _ in range(4)] for _ in range(7)]
-ebm_body = {{
-    "endpoint_id": "synthetic-ebm",
-    "schema_version": "ebm-spectrogram-input-v1",
-    "signal_order": {list(EBM_SIGNAL_ORDER)!r},
-    "pad_order": {list(EBM_PAD_ORDER)!r},
-    "instances": [{{"features": spectrum}}],
-}}
-```
+The body limit is 8 MiB. Unknown fields and invalid shapes are rejected with 422.
+A successful response includes the actual registered model/version, deployment ID, generation,
+input schema version, and immutable specification/manifest digests in `provenance`.
+With an MLflow backend, the registered name/version identifies the bound MLflow model version.
 
-模型註冊名稱與固定版本記錄於成功回應的 `provenance`。使用 MLflow 時，
-這是該部署綁定的 MLflow 註冊版本。`request_id` 可供維運人員追查。
+Send a valid `X-Request-ID` for correlation, or use the generated response header.
+Gateway-generated domain errors echo it in their body. Validation errors (422) currently generate
+a separate body request ID; correlate those using the response header. Proxied responses keep the
+upstream body request ID. The Gateway forwards its request ID to Serving.
+
+For 401, sign in again. For 403, request the required permission. For 404, confirm your endpoint.
+For 413/422, correct the payload. For 429/503/504, use bounded backoff and contact the owner if
+failures persist. A forwarded Serving deadline can produce 504; an HTTP transport timeout produces
+503. An unparseable upstream error also produces 503.
+Prediction has no idempotency-key or replay contract. A retry can execute inference again and can
+use a newer generation. Keep the provenance returned by each successful request.
 """
 
 _signals, _pads, _frequencies, _times = EBM_FEATURE_SHAPE
 MLP_EXAMPLE = {
-    "summary": "MLP 合成範例，請換成你的端點",
+    "summary": "Synthetic MLP input; replace the endpoint with your assigned ID",
     "value": {
         "endpoint_id": "synthetic-quality",
         "schema_version": "1",
@@ -63,7 +76,7 @@ MLP_EXAMPLE = {
 PREDICT_EXAMPLES = {
     "mlp": MLP_EXAMPLE,
     "ebm": {
-        "summary": "EBM 單筆合成頻譜，請換成你的端點與實際頻譜",
+        "summary": "Synthetic EBM spectrogram; replace the endpoint and feature values",
         "value": {
             "endpoint_id": "synthetic-ebm",
             "schema_version": "ebm-spectrogram-input-v1",
@@ -76,15 +89,17 @@ PREDICT_EXAMPLES = {
 
 
 class PredictionProvenance(BaseModel):
-    endpoint_id: str
-    deployment_id: str
-    generation: int = Field(description="實際服務請求的部署世代，回滾也會建立新世代。")
-    registered_model: str
-    model_version: str = Field(description="該次部署所綁定的固定註冊版本。")
-    input_schema_version: str
-    spec_digest: str
-    manifest_digest: str
-    pod_uid: str = Field(description="Kubernetes Serving Pod 的 UID，本機 Serving 為空字串。")
+    endpoint_id: str = Field(description="Logical endpoint used for this request.")
+    deployment_id: str = Field(description="Immutable deployment selected by the route.")
+    generation: int = Field(description="Deployment generation; rollback creates a new generation.")
+    registered_model: str = Field(description="Registered model name bound to the deployment.")
+    model_version: str = Field(description="Fixed registered version bound to this deployment.")
+    input_schema_version: str = Field(description="Input contract used by the Serving runtime.")
+    spec_digest: str = Field(description="Digest of the immutable deployment specification.")
+    manifest_digest: str = Field(description="Digest of the verified model bundle manifest.")
+    pod_uid: str = Field(
+        description="Serving Pod UID on Kubernetes; an empty string for local processes."
+    )
 
 
 class GatewayPredictionResult(BaseModel):
@@ -116,34 +131,39 @@ class GatewayPredictionResult(BaseModel):
             ]
         }
     )
-    predictions: list[Prediction] | list[EBMNeuralPrediction]
-    provenance: PredictionProvenance
-    request_id: str
+    predictions: list[Prediction] | list[EBMNeuralPrediction] = Field(
+        description="One result per input, in input order; MLP classification or EBM neural output."
+    )
+    provenance: PredictionProvenance = Field(description="Identity of the actual serving model.")
+    request_id: str = Field(description="Request identifier for support and tracing.")
 
 
 class PayloadTooLarge(BaseModel):
     code: Literal["PAYLOAD_TOO_LARGE"]
-    message: str
-    retryable: bool
+    message: str = Field(description="Sanitized explanation of the failure.")
+    retryable: bool = Field(description="Whether a bounded retry may be appropriate.")
 
 
 class PredictionError(BaseModel):
-    code: str
-    message: str
-    request_id: str
-    retryable: bool
+    code: str = Field(description="Stable machine-readable domain error code.")
+    message: str = Field(description="Sanitized explanation of the failure.")
+    request_id: str = Field(description="Request identifier for support and tracing.")
+    retryable: bool = Field(description="Whether a bounded retry may be appropriate.")
 
 
 PREDICTION_ERRORS = {
     code: {"description": description, "model": PredictionError}
     for code, description in (
-        (401, "請登入或更新已失效的 Bearer token。"),
-        (403, "請確認帳號具備 ml:predict。"),
-        (404, "此租戶找不到端點，請確認部署提供的 endpoint_id。"),
-        (422, "請核對 schema_version、欄位、數值範圍、批次大小或頻譜順序。"),
-        (429, "Serving 已達容量限制，請稍後退避重試。"),
-        (503, "相依服務、有效路由或實例尚不可用，或預測期間路由已變更。"),
-        (504, "預測逾時，請以 request_id 追查。"),
+        (401, "Missing, invalid, expired, or revoked Bearer session. Sign in again."),
+        (403, "The authenticated account lacks ml:predict."),
+        (404, "The endpoint or deployment is unavailable to this tenant."),
+        (422, "Invalid fields, schema version, value range, batch size, or signal/pad order."),
+        (429, "Serving capacity is occupied. Retry with bounded backoff."),
+        (503, "Identity, SQL route, runtime identity, or HTTP transport is unavailable."),
+        (504, "Serving returned PREDICTION_DEADLINE. Retry with bounded backoff."),
     )
 }
-PREDICTION_ERRORS[413] = {"description": "請縮小批次至 8 MiB 內。", "model": PayloadTooLarge}
+PREDICTION_ERRORS[413] = {
+    "description": "Body exceeds 8 MiB. Reduce the batch. Use the request ID header.",
+    "model": PayloadTooLarge,
+}
