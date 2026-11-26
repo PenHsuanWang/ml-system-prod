@@ -983,6 +983,11 @@
       "sha256": "c71aaf7ba1588c6065a27f4ac97a32f2204e6b7ae20567bbc53c06b58fa0310d"
     },
     {
+      "path": "docs/evidence/wp2-review-closure-20261127/qualification.json",
+      "bytes": 10819,
+      "sha256": "3dfb49d6dfe9c65982fac6acf11926f42c01ca761707f05c34f92f7361d49e23"
+    },
+    {
       "path": "docs/glossary.md",
       "bytes": 4561,
       "sha256": "a5920df302522122b9cc2a0927aae288cad0847e66823db773333dbe6a09eef3"
@@ -1114,8 +1119,8 @@
     },
     {
       "path": "docs/reviews/wp2-prediction-endpoints-report.md",
-      "bytes": 15416,
-      "sha256": "e3d9770ffd7ac31171b675d2aea76d35505c38b2e8c22c0136c7d2ce874edf8b"
+      "bytes": 15533,
+      "sha256": "960887b9bbc6cec9bbacd01f59374e50663efa6afeb24017a2efe07050dbdba5"
     },
     {
       "path": "docs/runtime-source-management.md",

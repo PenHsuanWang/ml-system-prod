@@ -119,8 +119,8 @@ excluded. No changes were made to either Serving runtime, approval rules or qual
 Reference PR head: `75802fd6c8f0f8cc2b8f5f3348e775dfd80730cf`.
 Latest fetched master: `651ce174c247a7873eaf533b9ee44716d7bc9268`.
 Synchronization merge: `f16d9ce2347c23cc76496fc8d2c495b78e7bd593`.
-Corrections were tested on that merge plus the WP2 closure worktree; the implementation commit
-is recorded in the final evidence refresh. A separate worktree preserves the WP3 branch unchanged.
+Correction implementation commit: `0615ff57a9cbe0da90142d4bbae6d7ef09aae407`. Tests ran on the synchronized
+WP2 closure worktree; production/test files were committed unchanged in that commit. A separate worktree preserves the WP3 branch unchanged.
 
 ### Finding 1 — historical bundle backfill
 
@@ -177,7 +177,7 @@ random per-test schemas. No production resources or private configuration were a
 | `PY -m bootstrap.prediction_contract_cli --help` | PASS, exit 0; no external authentication requested. |
 
 Final docs/manifest validation and exact commands/log hashes are recorded in the closure
-qualification evidence. Counts overlap; do not add them. The five full-suite skips still require
+[qualification evidence](../evidence/wp2-review-closure-20261127/qualification.json). Counts overlap; do not add them. The five full-suite skips still require
 real backend/Databricks/broker fixtures, and the existing Starlette TestClient warning remains.
 Full Compose/K8s and external enterprise qualification were not executed for this closure.
 GitHub PR/CI inspection with `gh pr view 18` returned HTTP 403 from GraphQL, so remote checks are
