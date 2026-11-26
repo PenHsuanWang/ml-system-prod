@@ -988,6 +988,11 @@
       "sha256": "c71aaf7ba1588c6065a27f4ac97a32f2204e6b7ae20567bbc53c06b58fa0310d"
     },
     {
+      "path": "docs/evidence/wp3-dataset-discovery-20261127/qualification.json",
+      "bytes": 10919,
+      "sha256": "1dd0628b86fcae805711a28d941e573475228475c72183071f86db2c1aa8bc19"
+    },
+    {
       "path": "docs/glossary.md",
       "bytes": 4561,
       "sha256": "a5920df302522122b9cc2a0927aae288cad0847e66823db773333dbe6a09eef3"
@@ -1129,8 +1134,8 @@
     },
     {
       "path": "docs/reviews/wp3-dataset-discovery-report.md",
-      "bytes": 10205,
-      "sha256": "eea199ef4b42dcce851ee39738a38bd10eb0a48f3353f3735a057f426f90b24f"
+      "bytes": 10150,
+      "sha256": "06fe49fea4b5818cb3a4890e3c4fb36a4cfda74e5cc122b1c2706f1ef0145764"
     },
     {
       "path": "docs/runtime-source-management.md",

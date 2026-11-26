@@ -11,8 +11,9 @@ action is included in this delivery.
 - Feature branch: `feature/dataset-discovery-lineage`.
 - Local integration of master: `dff1c0762a8fdd7f95b3e84384c194f6ead456b2`.
 - Committed plan: `183e54acf143d419ee3b510355150ac57a48215e`.
-- Implementation source: WP3 worktree based on the plan commit; final evidence refresh records
-  the implementation commit after these files are committed.
+- Implementation commit: `7055a2598f117a7069f859b26056a068f2cf74ea`. Tests ran on the WP3
+  worktree based on the plan commit; production and test files were committed unchanged in
+  this implementation commit. The following evidence refresh changes documentation only.
 - No applicable AGENTS.md was found in the repository or checked parent paths.
 
 The existing code already has governed source browsing, immutable RawSnapshot publication,
@@ -67,7 +68,6 @@ random per-test SQL schemas. No existing volumes or production/private configura
 | --- | --- |
 | `env -u ML_TEST_DATABASE_URL -u ML_TEST_AMQP_URL -u ML_TEST_REDIS_URL -u ML_TEST_MANAGEMENT_URL -u ML_TEST_PREDICTION_URL PY -m pytest tests/ml tests/test_boundaries.py -q --basetemp=/tmp/wp3-local-full-20261127 --junitxml=/tmp/wp3-local-full.xml` | PASS: 1,419 passed, 0 failed, 5 skipped; exit 0. `/tmp/wp3-local-full.log`, XML. |
 | `PY -m pytest tests/ml/dataset_builder tests/ml/test_datasets.py -q --junitxml=/tmp/wp3-dataset-sqlite.xml` | PASS: 44 passed, 0 failed/skipped; exit 0. `/tmp/wp3-dataset-sqlite.log`, XML. |
-| `PY -m pytest tests/ml/dataset_builder tests/ml/test_datasets.py -q --junitxml=/tmp/wp3-dataset-postgres.xml` with isolated `ML_TEST_DATABASE_URL` | PASS: 44 passed, 0 failed/skipped; exit 0. `/tmp/wp3-dataset-postgres.log`, XML. |
 | `PY -m pytest tests/ml/dataset_builder tests/ml/test_datasets.py tests/ml/ingestion/test_persistence.py tests/ml/test_training_contracts.py -q --junitxml=/tmp/wp3-postgres-regression.xml` with isolated `ML_TEST_DATABASE_URL` | PASS: 72 passed, 0 failed/skipped; exit 0. `/tmp/wp3-postgres-regression.log`, XML. |
 | `PY scripts/check_boundaries.py` | PASS, exit 0; `/tmp/wp3-boundaries.log`. |
 | `PY -m pyflakes bootstrap src tests/ml` | PASS, exit 0; `/tmp/wp3-pyflakes.log`. |
@@ -78,7 +78,7 @@ random per-test SQL schemas. No existing volumes or production/private configura
 
 Focused Ruff lint/format checks for the new DTO/domain/migration/tests also pass. Exact target
 lists, final documentation/manifest checks and durable counts are recorded in the final
-qualification JSON. Test scopes overlap and must not be added together.
+[qualification JSON](../evidence/wp3-dataset-discovery-20261127/qualification.json). Test scopes overlap and must not be added together.
 
 Five full-suite skips require fixtures deliberately not configured here: real backend EBM
 lifecycle (one), live Databricks/PostgreSQL (one), live HTTP backend lifecycle (one), and
