@@ -406,6 +406,14 @@ def test_operator_token_input_must_be_private_and_bounded(tmp_path):
         bounded_file(token, 1)
 
 
+@pytest.mark.parametrize("revision", [None, "", " ", "a" * 129])
+def test_publication_requires_explicit_trusted_revision_before_artifact_access(revision):
+    from bootstrap.prediction_contracts import extract_public_contract
+
+    with pytest.raises(SchemaMismatch, match="qualified code revision"):
+        extract_public_contract(None, None, expected_code_digest=revision)
+
+
 def test_same_endpoint_name_is_scoped_to_each_tenant(components, actor, intent):
     first, _ = active(components, actor, intent)
     other = replace(actor, tenant_id="other-tenant")

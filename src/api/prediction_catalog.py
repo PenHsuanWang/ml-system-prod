@@ -63,7 +63,7 @@ class EndpointSummary(BaseModel):
         description="Complete requires verified technical metadata and reviewed usage."
     )
     input_schema_version: str | None
-    detail_url: str
+    detail_url: str = Field(description="Origin-relative detail path including ASGI root_path.")
 
 
 class EndpointPage(BaseModel):
@@ -100,7 +100,7 @@ class EndpointDetail(EndpointSummary):
     usage_revision: int | None
     usage: dict[str, str] | None
     contract: PublicTechnicalContract | None
-    predict_url: str
+    predict_url: str = Field(description="Origin-relative predict path including ASGI root_path.")
 
 
 def discovery(request: Request) -> EndpointDiscoveryService:
@@ -141,13 +141,26 @@ DiscoveryDependency = Annotated[EndpointDiscoveryService, Depends(discovery)]
     },
 )
 def endpoints(
+    request: Request,
     actor: ActorDependency,
     service: DiscoveryDependency,
     response: Response,
     page: Annotated[EndpointPageQuery, Query()],
 ) -> EndpointPage:
     response.headers["Cache-Control"] = "private, no-store"
-    return EndpointPage.model_validate(service.list(actor, page.limit, page.cursor))
+    result = service.list(actor, page.limit, page.cursor)
+    return EndpointPage.model_validate(
+        {
+            **result,
+            "items": [
+                {
+                    **item,
+                    "detail_url": request.url_for("endpoint", endpoint_id=item["endpoint_id"]).path,
+                }
+                for item in result["items"]
+            ],
+        }
+    )
 
 
 @router.get(
@@ -174,7 +187,17 @@ def endpoints(
     },
 )
 def endpoint(
-    endpoint_id: str, actor: ActorDependency, service: DiscoveryDependency, response: Response
+    request: Request,
+    endpoint_id: str,
+    actor: ActorDependency,
+    service: DiscoveryDependency,
+    response: Response,
 ) -> EndpointDetail:
     response.headers["Cache-Control"] = "private, no-store"
-    return EndpointDetail.model_validate(service.get(actor, endpoint_id))
+    return EndpointDetail.model_validate(
+        {
+            **service.get(actor, endpoint_id),
+            "detail_url": request.url_for("endpoint", endpoint_id=endpoint_id).path,
+            "predict_url": request.url_for("predict").path,
+        }
+    )

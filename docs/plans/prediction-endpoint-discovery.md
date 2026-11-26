@@ -204,7 +204,7 @@ then stores allowlisted technical metadata and the reviewed description atomical
 text is bounded plain text and must be appropriate for public prediction clients. Technical
 extraction uses the actual request/response DTOs, preserves unknown physical units as null,
 and publishes no artifact URI, normalization state or internal runtime address.
-The same CLI backfills existing bindings and adds future reviewed descriptions.
+The same CLI backfills **same-code-revision** bindings and adds reviewed descriptions.
 Unsupported contracts, bad digests, unauthorized reviewers and conflicting technical records fail closed.
 
 5. Perform existing environment approval and deployment. Controller owns activation.
@@ -216,8 +216,50 @@ Unsupported contracts, bad digests, unauthorized reviewers and conflicting techn
 
 ### Legacy, rollback and remaining qualification
 
+#### Backfill compatibility across code upgrades
+
+Publication uses the qualified operator release's `ML_CODE_REVISION` as an independent trust
+input. Both MLP and EBM runtime loaders compare it with the immutable manifest's
+`model.trusted_code_digest`, and keep their existing artifact, architecture, preprocessing,
+golden-inference and runtime checks. The extractor requires an explicit, nonempty trusted revision;
+it never infers this value from the bundle. The CLI has no historical-revision override.
+
+**In-place cross-revision backfill is not supported.** A model trained under qualified revision H
+cannot be published by a WP2 operator release at C when H differs from C, even if the architecture
+and schema version strings match. This restriction applies to both model profiles and usage
+updates that reverify the old bundle. A same-revision legacy binding can be backfilled after the
+schema is installed, using the CLI above, provided all runtime verification succeeds.
+
+For a historical bundle rejected after an upgrade:
+
+1. Keep its immutable binding, bundle, manifest, evaluations and approvals unchanged. Metadata
+   stays incomplete. Existing inference depends on retaining its original qualified, pinned
+   Serving runtime; WP2 does not qualify loading H bundles into a C runtime.
+2. Do not rewrite manifest digests, relabel images, set `ML_CODE_REVISION=H` on C code, remove
+   trusted-revision checks, or treat contract publication as runtime compatibility evidence.
+3. To obtain a complete contract on release C, use the approved C training/runtime environment
+   to train a new model version/binding from an approved immutable dataset. Run its normal quality
+   evaluation; review results and obtain fresh environment approval. Retraining is a new candidate,
+   not a guarantee of equivalent behavior or permission to reuse H's approval.
+4. Publish the new binding with the authenticated C CLI, then use the existing authorized
+   deployment/controller process and verify actual inference/provenance. Keep H until normal
+   rollback/retirement policy permits its release. No existing resource is automatically migrated.
+
+Future cross-revision reuse requires separate runtime compatibility qualification and review;
+no compatibility platform or automatic Supervisor publication is introduced here.
+
+#### Reverse proxy paths
+
+`detail_url` and `predict_url` remain origin-relative strings, now rendered by Gateway routes
+from the ASGI request. With configured `root_path=/inference`, they begin with
+`/inference/api/v1/prediction/`; with an empty root path their existing `/api/v1/...` values
+are unchanged. Follow these URLs directly; do not prepend the prefix a second time. Configure
+the ASGI server's root path to match the trusted proxy prefix. Arbitrary `X-Forwarded-Prefix`
+headers are not used as configuration. Serving's private upstream paths remain unchanged.
+
 Legacy active endpoints stay discoverable with `contract_status=incomplete` and null contract/
-example fields until verified publication. Corrupt technical metadata is also incomplete.
+example fields until compatible verified publication. Continued inference requires their
+original qualified runtime to remain available. Corrupt technical metadata is also incomplete.
 There is no automatic backfill, automatic Supervisor extraction or mandatory metadata enforcement
 on deployment in this release. The operator publication step is explicit and reviewable.
 Original model bindings, digests, serving specifications and existing POST requests are retained.

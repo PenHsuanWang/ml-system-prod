@@ -239,13 +239,13 @@
     },
     {
       "path": "bootstrap/prediction_contract_cli.py",
-      "bytes": 3382,
-      "sha256": "d05856cd0c93ace570b58c8af6e2711de291e31d09e587bad4f16bbe62080648"
+      "bytes": 3526,
+      "sha256": "f200c978cda890e230f2445226792e81fe4ae5c08085f788dd847edc11d0040f"
     },
     {
       "path": "bootstrap/prediction_contracts.py",
-      "bytes": 5345,
-      "sha256": "1227277d7b5c7593ad5662286c181b47adafb9d45c6866d87b545a909b51fc09"
+      "bytes": 5686,
+      "sha256": "c3f677297c3bc3b82cfe42439ca02ca64b5e0336d2c2070a7c29bbf5952bb18b"
     },
     {
       "path": "bootstrap/wiring.py",
@@ -1019,8 +1019,8 @@
     },
     {
       "path": "docs/plans/prediction-endpoint-discovery.md",
-      "bytes": 21513,
-      "sha256": "b8bd836c1e50d453cf40f262ffd1ac452ff43b9bc09569fa2b7a366b47416780"
+      "bytes": 24501,
+      "sha256": "42bee0477a7dc602ebb63a114f1765a4cd8d4328cb47e82b2899b4f3b1bc457f"
     },
     {
       "path": "docs/plans/self-service-api-inventory.md",
@@ -1114,8 +1114,8 @@
     },
     {
       "path": "docs/reviews/wp2-prediction-endpoints-report.md",
-      "bytes": 9427,
-      "sha256": "e120325c81dde2b3b6086dcd6ad2896afc9aeeee751be275832a58a5f2638e18"
+      "bytes": 15416,
+      "sha256": "e3d9770ffd7ac31171b675d2aea76d35505c38b2e8c22c0136c7d2ce874edf8b"
     },
     {
       "path": "docs/runtime-source-management.md",
@@ -1584,8 +1584,8 @@
     },
     {
       "path": "src/api/prediction_catalog.py",
-      "bytes": 7413,
-      "sha256": "5083401d1965818e01a9c85f4f6126f6ded65309a6087d7bd2874ceecebbffa1"
+      "bytes": 8119,
+      "sha256": "2813a03b16cd6995604c20ee11638763de91fce4fe5291148a1417533215ec47"
     },
     {
       "path": "src/api/prediction_docs.py",
@@ -2399,8 +2399,8 @@
     },
     {
       "path": "src/infrastructure/persistence/prediction_catalog.py",
-      "bytes": 7930,
-      "sha256": "d2db65eb6ac84699477f2478bb2c6f26424628a3ab757d781a1d6e5de496ce7a"
+      "bytes": 7781,
+      "sha256": "f203790a4135911c491b86bf3dfb99da3dee2778fb48eb7256647322d1f37655"
     },
     {
       "path": "src/infrastructure/persistence/prediction_contract_schema.py",
@@ -3019,13 +3019,13 @@
     },
     {
       "path": "tests/ml/test_prediction_catalog.py",
-      "bytes": 18138,
-      "sha256": "da06dde04a4c069be0a8e50f5d4f27daca0767d5a252b9a5688351f700e17e2c"
+      "bytes": 18515,
+      "sha256": "8fb44815f41f35418e2cf6a399b386e0dc3df9ef6608d15949ddcbe38c19a98b"
     },
     {
       "path": "tests/ml/test_prediction_catalog_e2e.py",
-      "bytes": 6848,
-      "sha256": "cdba3274d339806ad051a0506400fde07320dca08a8c3f027ca5c1faf27c1afa"
+      "bytes": 11547,
+      "sha256": "5912e56869e7eb597ce08ed0b2fbb60a1a02fe12da2fda6cb0ab80948886fabb"
     },
     {
       "path": "tests/ml/test_prediction_gateway_docs.py",

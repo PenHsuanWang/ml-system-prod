@@ -1,4 +1,4 @@
-"""Publish/backfill a verified model contract and a separately reviewed usage revision."""
+"""Publish verified contracts only for bundles matching this qualified runtime's code revision."""
 
 import argparse
 import asyncio
@@ -50,7 +50,10 @@ async def publish(binding_id: str, usage_file: Path, token_file: Path) -> int:
                 components.registry,
                 components.registry,
                 lambda binding: extract_public_contract(
-                    binding, materializer, expected_code_digest=settings.code_revision
+                    # Do not substitute the bundle's historical revision for this trust input.
+                    binding,
+                    materializer,
+                    expected_code_digest=settings.code_revision,
                 ),
             )
             return service.publish(actor, binding_id, usage)
