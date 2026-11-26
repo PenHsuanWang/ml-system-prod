@@ -1013,6 +1013,11 @@
       "sha256": "f59bad0c243161147eee9d6c4c01918cb1d0301d3ce70117f7075f10f7adcf31"
     },
     {
+      "path": "docs/plans/dataset-discovery-lineage.md",
+      "bytes": 3865,
+      "sha256": "1e9de50f797d67c7b54ebb448d0b72b37b07a2a6b92de18c1d35947dd96c2906"
+    },
+    {
       "path": "docs/plans/governed-discovery.md",
       "bytes": 4160,
       "sha256": "2a9de449f9ad533ce20954312d499ec3f130a53935070db7e8d330d273dc336f"
