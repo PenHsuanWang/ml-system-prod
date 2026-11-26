@@ -78,12 +78,16 @@ def create_app(
     from src.api.catalog.routers import router as catalog_router
 
     catalog = build_catalog()
+    from src.api.datasets.routers import router as dataset_discovery_router
+
     definitions = [
         *build_modules(config),
         ModuleDefinition("training", requires=("identity",), routers=(training_router,)),
         ModuleDefinition("model_registry", requires=("training",), routers=(registry_router,)),
         ModuleDefinition("deployments", requires=("training",), routers=(deployment_router,)),
-        ModuleDefinition("datasets", requires=("identity",), routers=(dataset_router,)),
+        ModuleDefinition(
+            "datasets", requires=("identity",), routers=(dataset_discovery_router, dataset_router)
+        ),
     ]
     if ingress is not None:
         from src.api.ingestion.routers import router as ingestion_router

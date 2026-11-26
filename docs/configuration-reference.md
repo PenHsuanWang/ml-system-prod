@@ -144,3 +144,13 @@ Opt-in Management discovery uses a dedicated Databricks identity and independent
 ml:catalog:read grants. Ingestion clients can browse currently eligible registered
 sources through available-sources. See [configuration, APIs and limits](runtime-source-management.md#governed-runtime-metadata-discovery).
 External Databricks qualification and production approval remain separate.
+
+
+## Dataset lineage schema (WP3)
+
+No new environment variables or secret mounts are required. Existing ML database, dataset root,
+execution root and raw snapshot root retain their meanings. Apply additive migration
+`0008_dataset_lineage` before starting upgraded Management/Builder roles; it follows WP2 0007.
+New receipts are bounded to 64 KiB and stored in the existing App DB. Existing dataset records
+remain unchanged and missing SQL provenance stays incomplete. See
+[upgrade, rollback and permissions](ml-runbook.md#dataset-discovery-and-lineage-wp3).

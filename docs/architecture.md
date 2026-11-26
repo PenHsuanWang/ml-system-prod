@@ -56,6 +56,29 @@ SQL lease 失效、缺少 Pod 或 PID 不明不能釋放實體 slot 或啟動第
 靜態註冊。通用 `ModuleCatalog`、kernel plugin 與 ML workload registry 是不同契約。
 DatasetBuilder、取得來源、模型計算、執行位置與 Serving 不互相承接對方治理生命週期。
 
+### WP3 metadata discovery and lineage
+
+Management exposes bounded, tenant-scoped ingestion job/snapshot and dataset family/version
+collections through existing application services. SQL remains the metadata authority; HTTP
+does not read raw payloads or filesystem receipts. New EBM builds verify the existing receipt
+and atomically bind it to DatasetVersion in SQL. Complete lineage also enforces input job
+owner/operate visibility. Legacy missing evidence and restricted inputs are explicit states.
+
+```mermaid
+flowchart LR
+  R[Authenticated reader] --> M[Management API]
+  M --> S[Existing ingestion / DatasetService]
+  S --> SQL[(Existing SQL catalogs)]
+  B[Existing EBM DatasetBuilder] --> P[Verified immutable files and receipt]
+  P --> T[Atomic dataset + provenance registration]
+  T --> SQL
+  SQL --> L[Authorized source / snapshot / builder lineage]
+```
+
+No Gateway registry or new service is introduced. Training continues resolving the same immutable
+dataset identity. See [ADR-024](adr/024-dataset-discovery-lineage.md) and the
+[operator workflow](ml-runbook.md#dataset-discovery-and-lineage-wp3).
+
 ## 部署與驗收
 
 local／Compose／外部服務 VM profile 保留既有執行方式。K8s profile 注入原生 Serving

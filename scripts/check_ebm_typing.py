@@ -6,6 +6,8 @@ from pathlib import Path
 
 TARGETS = [
     "src/domain/ml.py",
+    "src/domain/pagination.py",
+    "src/domain/datasets/lineage.py",
     "src/domain/training/ebm.py",
     "src/domain/training/workloads.py",
     "src/domain/datasets/ebm.py",
@@ -15,8 +17,12 @@ TARGETS = [
     "src/application/datasets",
     "src/application/prediction",
     "src/api/ml_schemas.py",
+    "src/api/collection_schemas.py",
+    "src/api/datasets",
     "src/api/ebm_schemas.py",
     "src/infrastructure/datasets/ebm_builder.py",
+    "src/infrastructure/persistence/ml_datasets.py",
+    "src/infrastructure/persistence/dataset_lineage_schema.py",
     "src/infrastructure/datasets/ebm_snapshots.py",
     "src/infrastructure/datasets/ml_recipes.py",
     "src/infrastructure/serving/artifacts.py",

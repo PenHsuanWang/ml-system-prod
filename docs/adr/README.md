@@ -117,3 +117,7 @@ See [runtime source management](022-runtime-data-source-management.md) for permi
 lifecycle behavior and separate external qualification requirements.
 
 [ADR-023 Governed metadata discovery](023-governed-metadata-discovery.md) defines the independent identity, scoped metadata queries and available-source admission boundary.
+
+
+[ADR-024 Dataset discovery and immutable build provenance](024-dataset-discovery-lineage.md)
+defines SQL receipt identity, atomic publication, input visibility and legacy incomplete lineage.

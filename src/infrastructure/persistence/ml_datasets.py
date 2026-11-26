@@ -3,17 +3,27 @@
 import hashlib
 import json
 import os
-from pathlib import Path
 import re
 import stat
 import tempfile
 import time
+from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
-from sqlalchemy import insert, or_, select
+from sqlalchemy import and_, exists, func, insert, or_, select
+from sqlalchemy.engine import Connection
 
+from src.domain.datasets.lineage import DatasetBuildReceipt
 from src.domain.datasets.models import DatasetSnapshot, DatasetVersion
-from src.domain.ml import Actor, Conflict, MLError, NotFound, canonical_json, digest
+from src.domain.ml import Actor, Conflict, Forbidden, MLError, NotFound, canonical_json, digest
+from src.domain.pagination import CollectionWindow
+from src.infrastructure.ingestion.persistence.ingestion_jobs import (
+    published_snapshot_query,
+    snapshot_from_catalog_row,
+)
+from src.infrastructure.ingestion.persistence.schema import raw_snapshots
+from src.infrastructure.persistence.dataset_lineage_schema import dataset_lineage
 from src.infrastructure.persistence.ml_database import Database, datasets
 from src.infrastructure.persistence.ml_training import lock_tenant, record_audit
 
@@ -118,7 +128,8 @@ class SQLDatasetCatalog:
             raise MLError("EBM import source cannot be read") from error
 
     def register_ebm(self, actor: Actor, dataset_id: str, version: str,
-                     metadata_path: Path, npz_path: Path) -> DatasetVersion:
+                     metadata_path: Path, npz_path: Path, *,
+                     build_receipt: DatasetBuildReceipt | None = None) -> DatasetVersion:
         """Import operator-selected files into an immutable, tenant-scoped snapshot."""
         actor.require("ml:dataset:manage")
         if dataset_id == "dataset-demo" or any(not re.fullmatch(
@@ -126,10 +137,12 @@ class SQLDatasetCatalog:
         ) or item == "latest" for item in (dataset_id, version)):
             raise MLError("Invalid or reserved dataset ID/version")
         # Scientific libraries load only for this explicit operator import.
-        from src.infrastructure.datasets.ebm_snapshots import (
-            MAX_ARRAY_BYTES, MAX_METADATA_BYTES, EBMFileDatasetSource,
-        )
         from src.domain.datasets.ebm import EBM_DATASET_SCHEMA
+        from src.infrastructure.datasets.ebm_snapshots import (
+            MAX_ARRAY_BYTES,
+            MAX_METADATA_BYTES,
+            EBMFileDatasetSource,
+        )
 
         directory = self.root / digest(actor.tenant_id) / "ebm"
         store = EBMFileDatasetSource(directory)
@@ -160,9 +173,178 @@ class SQLDatasetCatalog:
                 if (existing["content_digest"] != result.content_digest
                         or existing["summary_json"] != result.summary_json):
                     raise Conflict("Dataset version is immutable")
+                if build_receipt is not None:
+                    established = connection.execute(select(dataset_lineage).where(
+                        dataset_lineage.c.dataset_version_id == existing["id"])).mappings().first()
+                    # Existing unqualified history is not assigned a new origin on retry.
+                    if established is not None:
+                        self._persist_lineage(connection, actor, existing["id"], result, build_receipt)
                 return result
-            connection.execute(insert(datasets).values(id=str(uuid4()), tenant_id=actor.tenant_id,
+            dataset_pk = str(uuid4())
+            connection.execute(insert(datasets).values(id=dataset_pk, tenant_id=actor.tenant_id,
                 dataset_key=dataset_id, version=version, content_digest=result.content_digest,
                 snapshot_ref=result.snapshot_ref, summary_json=summary, created_at=time.time()))
+            if build_receipt is not None:
+                self._persist_lineage(connection, actor, dataset_pk, result, build_receipt)
             record_audit(connection, actor, "dataset.register", dataset_id + "@" + version)
         return result
+
+
+    @staticmethod
+    def _receipt_identity(receipt: DatasetBuildReceipt, dataset: DatasetVersion) -> dict[str, Any]:
+        value = receipt.document()
+        if (value["tenant_id"] != dataset.tenant_id
+                or value["dataset"] != {"id": dataset.dataset_id, "version": dataset.version,
+                                        "content_digest": dataset.content_digest}):
+            raise Conflict("Build receipt does not match the immutable dataset identity")
+        return value
+
+    @staticmethod
+    def _published_inputs(connection: Connection, actor: Actor,
+                          receipt: DatasetBuildReceipt) -> bool:
+        inputs = receipt.document()["inputs"]
+        identifiers = [item["snapshot_id"] for item in inputs]
+        rows = connection.execute(published_snapshot_query(actor).where(
+            raw_snapshots.c.id.in_(identifiers))).mappings()
+        snapshots = {row["id"]: snapshot_from_catalog_row(row) for row in rows}
+        if len(snapshots) != len(identifiers):
+            return False
+        for item in inputs:
+            snapshot = snapshots[item["snapshot_id"]]
+            if any(getattr(snapshot, key) != value for key, value in item.items() if key != "role"):
+                raise Conflict("Build receipt disagrees with published input metadata")
+        return True
+
+    def _persist_lineage(self, connection: Connection, actor: Actor, dataset_pk: str,
+                         dataset: DatasetVersion, receipt: DatasetBuildReceipt) -> None:
+        value = self._receipt_identity(receipt, dataset)
+        if not actor.permissions.intersection({"ml:ingest", "ml:ingestion:read",
+                                               "ml:ingestion:operate"}):
+            raise Forbidden("Published input visibility is required to register lineage")
+        if not self._published_inputs(connection, actor, receipt):
+            raise NotFound("Published build inputs are unavailable")
+        existing = connection.execute(select(dataset_lineage).where(
+            dataset_lineage.c.dataset_version_id == dataset_pk)).mappings().first()
+        if existing is not None:
+            if (existing["tenant_id"] != dataset.tenant_id
+                    or existing["content_digest"] != dataset.content_digest
+                    or existing["builder_id"] != value["builder"]["id"]
+                    or existing["builder_version"] != value["builder"]["version"]
+                    or existing["receipt_digest"] != receipt.receipt_digest
+                    or existing["receipt_json"] != receipt.receipt_json):
+                raise Conflict("Dataset version provenance is immutable")
+            return
+        connection.execute(insert(dataset_lineage).values(
+            dataset_version_id=dataset_pk, tenant_id=actor.tenant_id,
+            content_digest=dataset.content_digest,
+            builder_id=value["builder"]["id"], builder_version=value["builder"]["version"],
+            receipt_digest=receipt.receipt_digest, receipt_json=receipt.receipt_json,
+            created_at=time.time()))
+        record_audit(connection, actor, "dataset.lineage.register", receipt.receipt_digest)
+
+    @staticmethod
+    def _visible_versions(actor: Actor) -> Any:
+        shadow = datasets.alias("private_dataset_shadow")
+        private_exists = exists(select(shadow.c.id).where(
+            shadow.c.tenant_id == actor.tenant_id, shadow.c.dataset_key == datasets.c.dataset_key,
+            shadow.c.version == datasets.c.version))
+        return or_(datasets.c.tenant_id == actor.tenant_id,
+                   and_(datasets.c.tenant_id == "__public__", ~private_exists))
+
+    @staticmethod
+    def _time_window(statement: Any, window: CollectionWindow) -> Any:
+        if window.created_after is not None:
+            statement = statement.where(datasets.c.created_at > window.created_after)
+        if window.created_before is not None:
+            statement = statement.where(datasets.c.created_at < window.created_before)
+        return statement
+
+    def list_families(self, actor: Actor, window: CollectionWindow,
+                      dataset_id: str | None = None) -> list[dict[str, Any]]:
+        statement = select(datasets.c.dataset_key, func.count().label("version_count"),
+                           func.max(datasets.c.created_at).label("last_published_at")).where(
+                               self._visible_versions(actor))
+        if dataset_id is not None:
+            statement = statement.where(datasets.c.dataset_key == dataset_id)
+        statement = self._time_window(statement, window).group_by(datasets.c.dataset_key).order_by(
+            datasets.c.dataset_key).limit(window.limit + 1).offset(window.offset)
+        with self.database.transaction() as connection:
+            return [{"dataset_id": row.dataset_key, "version_count": row.version_count,
+                     "last_published_at": row.last_published_at}
+                    for row in connection.execute(statement)]
+
+    def _metadata_query(self, actor: Actor) -> Any:
+        return select(
+            datasets.c.id, datasets.c.tenant_id, datasets.c.dataset_key, datasets.c.version,
+            datasets.c.content_digest, datasets.c.created_at, datasets.c.summary_json,
+            dataset_lineage.c.builder_id, dataset_lineage.c.builder_version,
+            dataset_lineage.c.receipt_digest, dataset_lineage.c.receipt_json,
+            dataset_lineage.c.content_digest.label("lineage_content_digest"),
+        ).select_from(datasets.outerjoin(dataset_lineage, and_(
+            dataset_lineage.c.dataset_version_id == datasets.c.id,
+            dataset_lineage.c.tenant_id == datasets.c.tenant_id,
+        ))).where(self._visible_versions(actor))
+
+    @staticmethod
+    def _public_metadata(row: Any) -> dict[str, Any]:
+        summary = json.loads(row["summary_json"])
+        result = {
+            "dataset_id": row["dataset_key"], "version": row["version"],
+            "visibility": "public" if row["tenant_id"] == "__public__" else "tenant",
+            "content_digest": row["content_digest"], "created_at": row["created_at"],
+            "lineage_status": "recorded" if row["receipt_digest"] is not None else "incomplete",
+            "builder": {"id": row["builder_id"], "version": row["builder_version"]}
+                       if row["receipt_digest"] is not None else None,
+        }
+        for key in ("dataset_schema_version", "feature_schema_version", "feature_shape",
+                    "features", "signal_order", "pad_order", "feature_config", "samples"):
+            result[key] = summary.get(key)
+        return result
+
+    def list_versions(self, actor: Actor, dataset_id: str,
+                      window: CollectionWindow) -> list[dict[str, Any]]:
+        statement = self._time_window(self._metadata_query(actor), window).where(
+            datasets.c.dataset_key == dataset_id).order_by(datasets.c.version).limit(
+                window.limit + 1).offset(window.offset)
+        with self.database.transaction() as connection:
+            return [self._public_metadata(row) for row in connection.execute(statement).mappings()]
+
+    def version_metadata(self, actor: Actor, dataset_id: str, version: str) -> dict[str, Any]:
+        with self.database.transaction() as connection:
+            row = connection.execute(self._metadata_query(actor).where(
+                datasets.c.dataset_key == dataset_id, datasets.c.version == version)
+                .limit(1)).mappings().first()
+            if row is None:
+                raise NotFound("Dataset version not found")
+            return self._public_metadata(row)
+
+    def lineage(self, actor: Actor, dataset_id: str, version: str) -> dict[str, Any]:
+        with self.database.transaction() as connection:
+            row = connection.execute(self._metadata_query(actor).where(
+                datasets.c.dataset_key == dataset_id, datasets.c.version == version)
+                .limit(1)).mappings().first()
+            if row is None:
+                raise NotFound("Dataset version not found")
+            result: dict[str, Any] = {"dataset_id": dataset_id, "version": version,
+                      "content_digest": row["content_digest"], "status": "incomplete",
+                      "reason": "legacy_metadata_missing", "receipt_digest": None, "receipt": None}
+            if row["receipt_json"] is None:
+                return result
+            try:
+                receipt = DatasetBuildReceipt(row["receipt_json"], row["receipt_digest"])
+                value = receipt.document()
+                if (value["tenant_id"] != row["tenant_id"]
+                        or value["dataset"] != {"id": dataset_id, "version": version,
+                                               "content_digest": row["content_digest"]}
+                        or row["lineage_content_digest"] != row["content_digest"]
+                        or value["builder"] != {"id": row["builder_id"],
+                                                "version": row["builder_version"]}):
+                    raise Conflict("Receipt identity mismatch")
+                if (not actor.permissions.intersection(
+                        {"ml:ingest", "ml:ingestion:read", "ml:ingestion:operate"})
+                        or not self._published_inputs(connection, actor, receipt)):
+                    return {**result, "status": "restricted", "reason": "input_access_required"}
+            except (MLError, ValueError, TypeError, KeyError):
+                return {**result, "reason": "receipt_integrity_failed"}
+            return {**result, "status": "complete", "reason": None,
+                    "receipt_digest": receipt.receipt_digest, "receipt": value}

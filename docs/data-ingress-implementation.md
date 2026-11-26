@@ -320,3 +320,15 @@ Workers resolve exact SQL catalog definitions at execution. Legacy templates
 and worker-only credentials retain their existing contracts.
 See [runtime source management](runtime-source-management.md) for permissions,
 lifecycle behavior and separate external qualification requirements.
+
+
+## Bounded job and raw snapshot discovery (WP3)
+
+Authenticated `GET /api/v1/ingestion/jobs` and `/snapshots` reuse existing read permissions,
+SQL tenant/owner filtering and operator visibility. Snapshots require a durably PUBLISHED job.
+Default 25/max 100 pages accept exact source/version and strict creation-time filters; jobs
+also accept state. Metadata includes immutable source/configuration/content/manifest identity,
+counts and sizes, without payload bytes or internal paths. Existing submit/status/result/cancel
+and snapshot-detail contracts are unchanged. Dataset readers can discover versions and inspect
+verified builder lineage, subject to additional raw-input access. See the
+[complete metadata workflow](ml-runbook.md#dataset-discovery-and-lineage-wp3).

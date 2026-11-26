@@ -94,3 +94,14 @@ separate reviewed usage revisions. Legacy incomplete metadata remains explicit. 
 backfill is an authenticated operator CLI step. See the
 [delivered API and operator workflow](plans/prediction-endpoint-discovery.md#wp2-delivered-contract-and-operator-walkthrough).
 Target-environment production qualification remains separate.
+
+
+## WP3 dataset discovery and lineage
+
+Implemented on the stacked WP3 feature branch: bounded ingestion job/snapshot discovery,
+dataset family/version/detail and authorized lineage APIs; additive SQL receipt metadata and
+atomic registration through the existing EBM publisher. Existing incomplete history remains
+explicit; no automatic backfill or HTTP dataset build orchestration. Local SQLite/PostgreSQL
+engineering verification is recorded in the [WP3 report](reviews/wp3-dataset-discovery-report.md).
+External full-stack Compose/K8s and enterprise Databricks qualification are NOT EXECUTED for
+this work package. `production_accepted=false`. WP4–WP7 remain outside this delivery.
