@@ -928,6 +928,26 @@
       "sha256": "150909eb87dbae7189724c09310bfffe464a19b6f1844ddea66464cefffa96d1"
     },
     {
+      "path": "docs/evidence/prediction-endpoints-20261126/ml-regression.txt",
+      "bytes": 2698,
+      "sha256": "6b1e67ac58db29f85c1d92116f2ee26f4e2d05c690f0abad6ed0937ce50b3612"
+    },
+    {
+      "path": "docs/evidence/prediction-endpoints-20261126/postgres-focused.txt",
+      "bytes": 772,
+      "sha256": "4b04ee3743e316b1d072e71e68a1ccd4aeadb2dd750e6c56af166afe0df3bc11"
+    },
+    {
+      "path": "docs/evidence/prediction-endpoints-20261126/postgres-migration.txt",
+      "bytes": 87,
+      "sha256": "7c388da820f7bd3dcfde3c62f9d973dff319236f4113308f5fe7e39cd0bed090"
+    },
+    {
+      "path": "docs/evidence/prediction-endpoints-20261126/qualification.json",
+      "bytes": 2199,
+      "sha256": "3a30122e6c1ccb327087ba2218e44e87043af94f80aacf05c4216d5c71220849"
+    },
+    {
       "path": "docs/evidence/runtime-sources-20261125/checks.json",
       "bytes": 4158,
       "sha256": "ca3e826cb695ac0fa95829499f29158d0ec5879a38fb1a3c4005f480dbc35765"
@@ -1091,6 +1111,11 @@
       "path": "docs/reviews/wp1-api-foundation-report.md",
       "bytes": 10744,
       "sha256": "85754a90ee2df96d4fc0d4f518e7358fa0e2b4db0a60ea057206194f7e137039"
+    },
+    {
+      "path": "docs/reviews/wp2-prediction-endpoints-report.md",
+      "bytes": 9427,
+      "sha256": "e120325c81dde2b3b6086dcd6ad2896afc9aeeee751be275832a58a5f2638e18"
     },
     {
       "path": "docs/runtime-source-management.md",
