@@ -16,6 +16,7 @@ PRODUCTION = [
     "bootstrap/catalog_wiring.py",
     "src/application/ingestion",
     "src/infrastructure/ingestion",
+    "src/infrastructure/databricks",
     "src/api/ingestion",
     "bootstrap/ingestion_wiring.py",
     "bootstrap/ingestion_cli.py",
