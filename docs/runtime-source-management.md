@@ -234,3 +234,125 @@ curl --fail-with-body -X POST \
 curl --fail-with-body -X POST -H "Authorization: Bearer $SOURCE_OPERATOR_TOKEN" \
   "$BASE_URL/api/v1/ingestion/sources/fdc-process-trace/versions/v1/disable"
 ~~~
+
+## Governed runtime metadata discovery
+
+External discovery is independent of the registered SQL Source Catalog.
+`ml:catalog:read` (Identity alias `ml.catalog.read`) permits discovery only when
+an operator-owned discovery grant also matches the tenant, actor and connection.
+It grants neither `ml:source:manage` nor `ml:ingest`. Existing users receive no
+implicit permission. Provision this permission through the existing Identity
+administration, whose administrator must already hold it to delegate it.
+
+Discovery is opt-in. Leave `ML_CATALOG_ENABLED=false` to preserve existing
+Management startup without a Databricks discovery SDK or identity. When disabled
+or the two discovery configuration paths are absent, the catalog routes are not
+mounted (404). Invalid explicitly supplied configuration fails closed.
+
+A deployment operator supplies a separate connection mapping in
+`ML_CATALOG_CONNECTIONS_FILE`. It uses the existing connection schema but a
+**dedicated least-privilege metadata identity**. PAT references must use the
+reserved `ML_DISCOVERY_DATABRICKS_TOKEN` variable. OAuth M2M uses a separate client
+ID and private secret file. Shared ingestion client IDs, secret paths or token
+references are rejected when ingestion connection configuration is present.
+No credential fallback exists. Operators must also ensure that distinct opaque
+credentials actually represent different external identities. Configure Warehouse
+usage and minimum Unity Catalog metadata visibility for the discovery principal.
+
+Supply `ML_CATALOG_POLICY_FILE` as a separate read-only file. Example:
+
+~~~json
+{
+  "contract": "databricks-discovery-v1",
+  "grants": [{
+    "tenant_id": "synthetic-tenant",
+    "actor_ids": ["metadata-browser"],
+    "connection_ref": "warehouse-main",
+    "table_scope": ["manufacturing", "fdc"],
+    "columns": ["equipment_id", "temperature"]
+  }]
+}
+~~~
+
+Scope is an exact catalog, catalog/schema or catalog/schema/table prefix. Columns
+are an explicit allowlist, with no wildcard. Grants may be combined. Empty grants
+deny access. Existing databricks-access-v1 grants are unchanged and do not grant
+discovery. The policy is bounded and reloaded before and after every remote call.
+A change to effective grants discards the response. Distribute operator policy
+updates consistently across instances; there is no policy synchronization service.
+
+For the reference Compose stack, append `-f compose.ml.catalog.yaml` after the
+existing ingestion/Databricks overlays. Set `ML_CATALOG_CONNECTIONS_CONFIG` and
+`ML_CATALOG_POLICY_CONFIG` to separate host files. This overlay installs the
+existing ingestion image target's SQL Connector in Management and mounts only
+discovery credentials there. OAuth uses `ML_DISCOVERY_CLIENT_SECRET_FILE`, mounted
+at `/run/secrets/discovery_client_secret`; PAT uses the dedicated token variable.
+The worker retains its existing identity and mounts. Do not use this development
+build overlay on the production profile. For an approved production release,
+use the production image (already includes the Databricks extra) and mount these
+same dedicated files/environment settings into Management alone through a reviewed
+site override. Kubernetes uses the same Management-only Secret/configuration
+boundary; no topology change is required. New live Kubernetes discovery has not
+been qualified by fixture tests.
+
+Use the existing authentication API and a securely supplied bearer token:
+
+~~~sh
+curl --fail-with-body -H "Authorization: Bearer $CATALOG_TOKEN" \
+  "$BASE_URL/api/v1/catalog/connections?limit=50&offset=0"
+curl --fail-with-body -H "Authorization: Bearer $CATALOG_TOKEN" \
+  "$BASE_URL/api/v1/catalog/warehouse-main/catalogs"
+curl --fail-with-body -H "Authorization: Bearer $CATALOG_TOKEN" \
+  "$BASE_URL/api/v1/catalog/warehouse-main/schemas?catalog=manufacturing"
+curl --fail-with-body -H "Authorization: Bearer $CATALOG_TOKEN" \
+  "$BASE_URL/api/v1/catalog/warehouse-main/tables?catalog=manufacturing&schema=fdc"
+curl --fail-with-body -H "Authorization: Bearer $CATALOG_TOKEN" \
+  "$BASE_URL/api/v1/catalog/warehouse-main/columns?catalog=manufacturing&schema=fdc&table=process_trace"
+~~~
+
+All operations are GET. Responses contain `items`, `limit`, nullable `next_offset`
+and `has_more`. Connections are reference strings. Metadata items contain `name`
+and applicable `table_type`, `data_format`, `native_type`, `nullable`, `ingestion_type`, `supported`
+fields; inapplicable fields are null. Unsupported native types remain visible with
+`supported=false` and no ingestion type. Names unsupported by the source identifier
+contract produce a sanitized invalid-metadata response. No locations, comments,
+properties or row values are returned. Example column item:
+
+~~~json
+{"name":"temperature","table_type":null,"data_format":null,"native_type":"DOUBLE","nullable":true,"ingestion_type":"float","supported":true}
+~~~
+
+The primary implementation uses fixed parameterized SQL Connector 4.2.6 queries
+against system.information_schema. Approved scopes are part of the SQL filter,
+then checked again in the application. The dedicated identity must have access
+to that Unity Catalog metadata interface. No competing metadata client is used.
+Every metadata page reports `version_discovery=unavailable`. Obtain an explicitly
+verified fixed Delta version separately, then use the existing registration API
+above; never assume zero/latest. Discovery neither approves extraction nor proves
+live table schema compatibility. Views/unsupported table types may be browsed,
+but the existing fixed-Delta ingestion contract still governs registration/execution.
+
+Limits are 1–100 items (default 50), offset 0–1,000,000, 256 KiB response, two
+physical operations per Management process and a 12-second hard request budget
+plus bounded process cleanup. Connector statement timeout is 10 seconds, with a
+single attempt. Sync routes run in the HTTP threadpool. Child termination and
+pipe-reader shutdown precede capacity release, even after client cancellation.
+Local capacity exhaustion returns 429; denied scope/permission returns 403;
+malformed input returns 422; sanitized provider/credential/metadata failures
+return 503 and timeout returns 504. No raw SDK errors are exposed.
+
+## Sources available to an ingestion client
+
+`GET /api/v1/ingestion/available-sources?limit=50&offset=0` requires `ml:ingest`.
+It reuses ingestion admission checks for tenant, enabled state, actor grants,
+source digest, current execution policy, adapter contract and connection identity.
+It performs no remote Databricks calls. This is configuration/authorization
+eligibility at the time of listing, not a reservation or connectivity guarantee.
+Submission and worker execution recheck their original authorization contracts.
+
+Items contain only source_id, version, adapter_type, data_format, schema_version
+and limits. Follow `has_more`/`next_offset`, including when an authorization-filtered
+page contains zero items. At most limit+1 SQL keys and limit definitions are read.
+Offsets refer to the scanned tenant catalog, so concurrent insertions may shift
+pages; repeat a fresh scan if a stable browse is needed. Existing GET /sources
+management semantics are unchanged.

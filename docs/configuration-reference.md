@@ -137,3 +137,10 @@ Workers resolve exact SQL catalog definitions at execution. Legacy templates
 and worker-only credentials retain their existing contracts.
 See [runtime source management](runtime-source-management.md) for permissions,
 lifecycle behavior and separate external qualification requirements.
+
+## Governed metadata discovery
+
+Opt-in Management discovery uses a dedicated Databricks identity and independent
+ml:catalog:read grants. Ingestion clients can browse currently eligible registered
+sources through available-sources. See [configuration, APIs and limits](runtime-source-management.md#governed-runtime-metadata-discovery).
+External Databricks qualification and production approval remain separate.

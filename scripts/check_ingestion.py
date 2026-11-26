@@ -9,6 +9,11 @@ PRODUCTION = [
     "src/api/routers.py",
     "src/domain/ml.py",
     "src/domain/ingestion",
+    "src/domain/catalog",
+    "src/application/catalog",
+    "src/infrastructure/catalog",
+    "src/api/catalog",
+    "bootstrap/catalog_wiring.py",
     "src/application/ingestion",
     "src/infrastructure/ingestion",
     "src/api/ingestion",
@@ -23,8 +28,25 @@ PRODUCTION = [
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
     checks = [
-        [sys.executable, "-m", "ruff", "check", *PRODUCTION, "tests/ml/ingestion"],
-        [sys.executable, "-m", "ruff", "format", "--check", *PRODUCTION, "tests/ml/ingestion"],
+        [
+            sys.executable,
+            "-m",
+            "ruff",
+            "check",
+            *PRODUCTION,
+            "tests/ml/ingestion",
+            "tests/ml/catalog",
+        ],
+        [
+            sys.executable,
+            "-m",
+            "ruff",
+            "format",
+            "--check",
+            *PRODUCTION,
+            "tests/ml/ingestion",
+            "tests/ml/catalog",
+        ],
         [sys.executable, "-m", "mypy", "--follow-imports=skip", *PRODUCTION],
     ]
     for command in checks:

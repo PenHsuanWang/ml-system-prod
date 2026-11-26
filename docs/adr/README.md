@@ -115,3 +115,5 @@ Workers resolve exact SQL catalog definitions at execution. Legacy templates
 and worker-only credentials retain their existing contracts.
 See [runtime source management](022-runtime-data-source-management.md) for permissions,
 lifecycle behavior and separate external qualification requirements.
+
+[ADR-023 Governed metadata discovery](023-governed-metadata-discovery.md) defines the independent identity, scoped metadata queries and available-source admission boundary.

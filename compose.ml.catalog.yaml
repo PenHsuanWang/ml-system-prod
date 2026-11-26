@@ -1,0 +1,27 @@
+# Optional reference Compose discovery. Add after ingestion/Databricks overlays.
+# Management gets a dedicated discovery identity; worker mounts are unchanged.
+services:
+  management:
+    build: {context: ., dockerfile: Dockerfile.ml, target: ingestion}
+    environment:
+      ML_CATALOG_ENABLED: "true"
+      ML_CATALOG_CONNECTIONS_FILE: /app/config/discovery-connections.json
+      ML_CATALOG_POLICY_FILE: /app/config/discovery-policy.json
+      ML_DISCOVERY_DATABRICKS_TOKEN: ${ML_DISCOVERY_DATABRICKS_TOKEN:-}
+    volumes:
+      - type: bind
+        source: ${ML_CATALOG_CONNECTIONS_CONFIG:?set separate discovery connection JSON}
+        target: /app/config/discovery-connections.json
+        read_only: true
+        bind: {create_host_path: false}
+      - type: bind
+        source: ${ML_CATALOG_POLICY_CONFIG:?set approved discovery policy JSON}
+        target: /app/config/discovery-policy.json
+        read_only: true
+        bind: {create_host_path: false}
+    secrets:
+      - source: discovery_client_secret
+        target: discovery_client_secret
+secrets:
+  discovery_client_secret:
+    file: ${ML_DISCOVERY_CLIENT_SECRET_FILE:-/dev/null}
