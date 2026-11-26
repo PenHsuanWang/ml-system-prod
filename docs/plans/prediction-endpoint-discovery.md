@@ -2,24 +2,20 @@
 
 **交付界線。** 基準為 master `a5b1767`。本次補齊現有 Gateway 的 Swagger、ReDoc 與 OpenAPI 說明，並將 Gateway 首頁導向 Swagger。以下兩個 GET 是後續開發提案。今天的使用者可以開啟 `/docs`，依指引登入，並對部署負責人提供的端點發出預測。
 
-## Current implementation and WP1 scope
+## Current implementation
 
-Phase 0 + WP1 improves the existing Gateway documentation, authentication declaration,
-field semantics, MLP/EBM examples and success/error contract verification.
-Gateway validates successful upstream JSON before returning the original body.
-The shared 422 body/header correlation difference and transport-timeout 503 mapping
-are documented. This phase creates no endpoint discovery service, router, contract storage,
-database table or migration. Management domains are read-only investigation subjects.
-English wire documentation follows the [API standard](../standards/api-design-standard.md).
-The complete lifecycle inventory and WP1–WP7 roadmap are in the
-[implementation plan](self-service-api-inventory.md).
+WP1 is committed on feature/prediction-api-guide at 5091465. It supplies English Gateway
+documentation, auth instructions and strict successful upstream response validation.
+WP2 is implemented on feature/prediction-endpoint-discovery, stacked on that WP1 commit.
+The user authorized WP2 and sequential local commits, then requested a stop for review.
 
-## WP2 proposed implementation — authorization required
-
-The two GET operations below, model contract persistence, legacy backfill and their
-acceptance criteria belong to WP2 on a separately authorized feature branch after WP1 review.
-The permissions, schema, pagination and compatibility below are proposed contracts.
-WP3–WP7 are deferred to their own sessions.
+Both GET endpoints below are registered in the existing Gateway. EndpointDiscoveryService
+queries the existing authority through SQLPredictionCatalog, and contract publication extends
+SQLRegistryRepository. Additive migration 0007 adds public technical contracts and append-only
+reviewed usage descriptions. Human publication/backfill uses the authenticated operator CLI.
+The architecture and acceptance discussion below remains the design reference. Actual response
+shape and operator commands are specified in the implementation section at the end.
+WP3–WP7 await their own authorized sessions.
 
 ## 使用者從哪裡開始
 
@@ -60,7 +56,7 @@ flowchart LR
   MF -->|啟動時讀取固定 bundle| Serve
   User[使用者] -->|docs / discovery / predict| GW[Gateway 8001]
   GW -->|驗證 token| ID[Identity]
-  GW -.->|提案：讀取可見端點與公開契約| DB
+  GW -.->|讀取可見端點與公開契約| DB
   GW -->|預測時重查 active route| DB
   GW -->|實際預測與 provenance| Serve
 ```
@@ -135,3 +131,103 @@ curl -fsS -H "Authorization: Bearer $TOKEN" -H 'Content-Type: application/json' 
 | 交付證據 | 對每個待發布 revision 保存 OpenAPI 差異、授權與合約測試、端對端結果、壓測分布及未通過項目。上述是後續 API 的驗收條件 |
 
 實作位置可由 [Gateway](../../bootstrap/ml_gateway.py)、[Registry 路由](../../src/api/ml_http.py)、[Deployment SQL](../../src/infrastructure/persistence/ml_deployments.py)、[Serving](../../bootstrap/ml_serving.py) 與[目前操作手冊](../ml-runbook.md)追溯。
+
+
+## WP2 delivered contract and operator walkthrough
+
+### Public endpoints
+
+`GET /api/v1/prediction/endpoints?limit=25&cursor=...` returns `observed_at` as UTC Unix
+seconds, `items` and nullable `next_cursor`. The maximum limit is 100. Sorting is ascending
+endpoint ID. Cursors are HMAC-authenticated, expire after 15 minutes and are bound to tenant,
+account and page limit. Each request re-resolves current Identity permissions. Invalid, expired
+or mismatched cursors return sanitized 422. Concurrent updates can change later pages.
+
+Each summary includes endpoint ID, reviewed display name/purpose, registered model/version,
+generation, route revision, active route state, `readiness=unknown`, contract completeness,
+input schema version and `detail_url`. No live health timestamp is invented.
+
+`GET /api/v1/prediction/endpoints/{endpoint_id}` adds `observed_at`, deployment and binding
+IDs, manifest/contract digest, reviewed usage/revision, `contract`, `request_example` and
+`predict_url`. The nested contract contains input/output JSON Schema, limits, preprocessing,
+output semantics, nullable units, registry backend and a synthetic request template. Use the
+**top-level request_example** to invoke the deployed endpoint. Its endpoint ID is rendered
+for that route, while the stored nested contract is preserved for digest verification.
+
+The digest is the existing ml-json-v1 `digest([contract_version, binding_id, manifest_digest,
+contract_document])`. The version discriminator is `prediction-contract-v1`.
+Technical content is immutable per binding. Identical publication is idempotent; different
+technical content conflicts. Business descriptions have a separate append-only revision,
+reviewer and audit record. Repeating the current review is idempotent; changed descriptions
+create a revision without changing model/technical digests.
+
+Both operations require only `ml:predict` and current tenant access. The collection returns
+200/empty items when appropriate; an unknown, inactive or invisible individual endpoint is 404.
+Missing/invalid session is 401, absent permission is 403, validation is 422 and unavailable
+Identity/storage or inconsistent deployment identity is 503. Successful and handled-error
+discovery responses use `Cache-Control: private, no-store`.
+SQL joins routes, active unreleased deployments, tenant bindings and contract metadata in one
+bounded statement. Retrieval does not invoke MLflow, artifact storage or Serving.
+Current prediction-time readiness, route fencing and fixed-version provenance checks remain active.
+
+### Deployment and publication
+
+1. Apply migration 0007 through the existing explicitly approved deployment migration step.
+   It creates two empty additive tables and preserves existing model/source/history records.
+   No startup code runs migrations. Test migration is qualified only against disposable resources.
+2. Train/evaluate and inspect the resulting binding through existing Management APIs.
+3. A reviewer with `ml:model:read` and `ml:model:approve` writes a plain-text reviewed JSON
+   document containing exactly the five fields shown below. Obtain a current Identity token
+   and keep its file private (0600) outside the repository.
+4. Run the CLI under the existing approved operator role/secret-loading entrypoint:
+
+```sh
+python -m bootstrap.prediction_contract_cli \
+  --binding-id "$BINDING_ID" \
+  --review-file "$APPROVED_REVIEW_FILE" \
+  --token-file "$PRIVATE_REVIEWER_TOKEN_FILE"
+```
+
+```json
+{
+  "display_name": "Synthetic quality model",
+  "purpose": "Classify synthetic engineering samples.",
+  "applicable_conditions": "Use the qualified sensor/preprocessing contract.",
+  "usage_notes": "Scores are uncalibrated; units may be unspecified.",
+  "support_info": "Contact the model owner through the approved support channel."
+}
+```
+
+The CLI resolves the token through current Mongo Identity sessions. It derives tenant/actor from
+that session, verifies the exact model bundle/member hashes and approved runtime/golden contract,
+then stores allowlisted technical metadata and the reviewed description atomically. Reviewer
+text is bounded plain text and must be appropriate for public prediction clients. Technical
+extraction uses the actual request/response DTOs, preserves unknown physical units as null,
+and publishes no artifact URI, normalization state or internal runtime address.
+The same CLI backfills existing bindings and adds future reviewed descriptions.
+Unsupported contracts, bad digests, unauthorized reviewers and conflicting technical records fail closed.
+
+5. Perform existing environment approval and deployment. Controller owns activation.
+   Metadata publication alone does not make a version appear in discovery.
+6. A prediction-only account opens 8001/docs, authorizes, lists endpoints, opens detail and sends
+   its top-level request_example to predict_url. Keep returned provenance/request ID.
+7. Updating/rolling back the active generation immediately changes discovery through SQL.
+   Loaded inference and discovery continue without list-time artifact/MLflow access.
+
+### Legacy, rollback and remaining qualification
+
+Legacy active endpoints stay discoverable with `contract_status=incomplete` and null contract/
+example fields until verified publication. Corrupt technical metadata is also incomplete.
+There is no automatic backfill, automatic Supervisor extraction or mandatory metadata enforcement
+on deployment in this release. The operator publication step is explicit and reviewable.
+Original model bindings, digests, serving specifications and existing POST requests are retained.
+
+Rollback the application image first if reverting this feature. Then, only through an approved
+maintenance operation, migration downgrade removes the two new metadata tables. Historical
+model/approval/deployment/source tables remain. Export reviewed metadata before downgrade if
+it must be retained. New Gateway readiness requires the additive schema.
+
+Technical schema generation changes that alter stored content require compatibility review
+instead of rewriting historical records. Production K8s, enterprise MLflow, TLS, policy distribution,
+single-origin Identity routing, self-hosted docs assets and operational SLO qualification remain
+separate work. `production_accepted=false`.

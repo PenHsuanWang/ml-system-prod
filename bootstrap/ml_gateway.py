@@ -14,6 +14,9 @@ from bootstrap.ml_wiring import build_components
 from bootstrap.ml_telemetry import configure_telemetry
 from src.infrastructure.ml_tracing import MLTraceMiddleware, capture_context
 from src.api.ml_http import install_errors
+from src.api.prediction_catalog import EndpointCacheControl, router as endpoint_router
+from src.application.prediction.catalog import EndpointDiscoveryService
+from src.infrastructure.persistence.prediction_catalog import SQLPredictionCatalog
 from src.api.prediction_docs import (
     GATEWAY_DESCRIPTION,
     PREDICT_DESCRIPTION,
@@ -29,7 +32,9 @@ from src.infrastructure.ml_identity import MongoActorResolver
 from src.domain.ml import Conflict, Unavailable
 
 
-def create_app(*, components=None, identity=None, resolver=None, transport=None) -> FastAPI:
+def create_app(
+    *, components=None, identity=None, resolver=None, transport=None, endpoint_discovery=None
+) -> FastAPI:
     from contextlib import asynccontextmanager
     state = {}
 
@@ -46,6 +51,12 @@ def create_app(*, components=None, identity=None, resolver=None, transport=None)
         async with httpx.AsyncClient(timeout=10, limits=httpx.Limits(max_connections=32),
                                      transport=transport, follow_redirects=False, trust_env=False) as client:
             state.update(components=runtime, resolver=endpoints, identity=provider, client=client)
+            app.state.ml_identity = provider
+            catalog = endpoint_discovery
+            if catalog is None and hasattr(runtime, "database") and os.environ.get("APP_JWT_SECRET"):
+                catalog = EndpointDiscoveryService(
+                    SQLPredictionCatalog(runtime.database), os.environ["APP_JWT_SECRET"])
+            app.state.endpoint_discovery = catalog
             try:
                 yield
             finally:
@@ -58,7 +69,9 @@ def create_app(*, components=None, identity=None, resolver=None, transport=None)
         auto_error=False, bearerFormat="JWT", description="Management Identity access_token"
     )
     app = FastAPI(title="ML prediction ingress", description=GATEWAY_DESCRIPTION, lifespan=lifespan)
+    app.include_router(endpoint_router, prefix="/api/v1/prediction")
     install_errors(app, maximum_body_bytes=8 * 1024 * 1024)
+    app.add_middleware(EndpointCacheControl)
     app.add_middleware(MLTraceMiddleware)
 
     @app.get("/", include_in_schema=False)

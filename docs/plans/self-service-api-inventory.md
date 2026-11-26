@@ -11,6 +11,10 @@ Production registration is conditional on the enabled modules described below.
 Summary/description/example columns were inspected in actual OpenAPI and source.
 These observations are implementation evidence, not a live dependency qualification.
 
+This inventory records the Phase 0/WP1 snapshot. The subsequently authorized WP2 implementation
+adds the endpoint APIs and verified publication described in the
+[current endpoint guide](prediction-endpoint-discovery.md#wp2-delivered-contract-and-operator-walkthrough).
+
 ## Existing API inventory
 
 All rows below are IMPLEMENTED. Permissions apply within the authenticated tenant.

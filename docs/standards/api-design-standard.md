@@ -28,5 +28,5 @@ the WP1 response check. Error bodies preserve existing pass-through behavior.
 the correlation authority for validation failures. Harmonizing the shared handler requires a
 separate review.
 
-Live prediction documentation describes current MLP and EBM contracts. Future endpoint catalog
-operations stay in the [WP2 design](../plans/prediction-endpoint-discovery.md).
+Live prediction documentation describes current MLP and EBM contracts. Endpoint catalog
+operations are described in the [WP2 design](../plans/prediction-endpoint-discovery.md).

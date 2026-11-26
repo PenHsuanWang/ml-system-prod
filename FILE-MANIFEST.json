@@ -189,8 +189,8 @@
     },
     {
       "path": "bootstrap/ml_gateway.py",
-      "bytes": 7146,
-      "sha256": "180b07f4feaf0502d0bc5be06719223ce6ee657de0a91341fbe947bc0af21d42"
+      "bytes": 7914,
+      "sha256": "31863dcbdbf0bcb87cd310c48197947f660f621523964c57e2336404c4d419eb"
     },
     {
       "path": "bootstrap/ml_serving.py",
@@ -236,6 +236,16 @@
       "path": "bootstrap/plugin_loader.py",
       "bytes": 2510,
       "sha256": "0c514202485172383e26e3e5b40d1e9712e11c630632bf3510fa05853190b2f6"
+    },
+    {
+      "path": "bootstrap/prediction_contract_cli.py",
+      "bytes": 3382,
+      "sha256": "d05856cd0c93ace570b58c8af6e2711de291e31d09e587bad4f16bbe62080648"
+    },
+    {
+      "path": "bootstrap/prediction_contracts.py",
+      "bytes": 5345,
+      "sha256": "1227277d7b5c7593ad5662286c181b47adafb9d45c6866d87b545a909b51fc09"
     },
     {
       "path": "bootstrap/wiring.py",
@@ -464,8 +474,8 @@
     },
     {
       "path": "docs/README.md",
-      "bytes": 5610,
-      "sha256": "8467f023abd7f6389d7f59dd9ae317b6484ed25ad6ed98d3602f51a35d0886e3"
+      "bytes": 5597,
+      "sha256": "a8cdbc37336c9cf6324d4f5451e04860f5ed3552783344271e16b6b21011a92e"
     },
     {
       "path": "docs/adr/014-implementation-baseline.md",
@@ -959,8 +969,8 @@
     },
     {
       "path": "docs/implementation-status.md",
-      "bytes": 5376,
-      "sha256": "be08416e62f49687bed986fab6d88db0df2b76dea28242d1d0cc4331cd7009af"
+      "bytes": 5938,
+      "sha256": "dba4050bd540ed5a990f4b6ddb43d16d7f82d78ea0d164d4c61886aeceac2102"
     },
     {
       "path": "docs/microservice-contracts.md",
@@ -969,8 +979,8 @@
     },
     {
       "path": "docs/ml-runbook.md",
-      "bytes": 12596,
-      "sha256": "13906db4da6aa57912ea8bc293fb2d941a8fa0c87051df7db2d986122b0f302d"
+      "bytes": 12661,
+      "sha256": "d473887cb7aed7b1807f26b00bc388d33c99f1da268896de5e2a0a88fcceffa4"
     },
     {
       "path": "docs/ml-runtime-compatibility.md",
@@ -989,13 +999,13 @@
     },
     {
       "path": "docs/plans/prediction-endpoint-discovery.md",
-      "bytes": 15390,
-      "sha256": "c72aed8f1dbf37f479aa8f6fefbf015d559d9b9e18badd34b990e4765943c67e"
+      "bytes": 21513,
+      "sha256": "b8bd836c1e50d453cf40f262ffd1ac452ff43b9bc09569fa2b7a366b47416780"
     },
     {
       "path": "docs/plans/self-service-api-inventory.md",
-      "bytes": 17664,
-      "sha256": "44967d9874baf5b0560ff9c78698ec6d086d9d24b6f0b2fcce508e2a51ccc5b6"
+      "bytes": 17934,
+      "sha256": "57a9f40a1a074ace8b0a01dd9a0f297a0db94022abdd195fa3c98e7b60be6ef4"
     },
     {
       "path": "docs/pytorch-ml-system-hld.md",
@@ -1094,8 +1104,8 @@
     },
     {
       "path": "docs/standards/api-design-standard.md",
-      "bytes": 4650,
-      "sha256": "8cf3d2ee081c0bb844a8e5cc1a7f2d524a89185195205743450df2622b042460"
+      "bytes": 4652,
+      "sha256": "95b6e127770c217d9017a28122d2e25e9f192a43fe843cfad7faeab674d6451f"
     },
     {
       "path": "docs/template-baseline.txt",
@@ -1124,8 +1134,8 @@
     },
     {
       "path": "migrations/env.py",
-      "bytes": 821,
-      "sha256": "feac11c3b0684133afe8bab65eb818dd7c84a4dc3d4c0fa461d13caa062a0587"
+      "bytes": 954,
+      "sha256": "b7fc367e7556717100704aa1de6b8049f7e6c43bab20c54f35fab2df361d4faa"
     },
     {
       "path": "migrations/schema_v1.py",
@@ -1161,6 +1171,11 @@
       "path": "migrations/versions/0006_ingestion.py",
       "bytes": 4656,
       "sha256": "a07125241d9abd4948656422e0601387c7dcb9abcd94e222b0c22f6165e02fd1"
+    },
+    {
+      "path": "migrations/versions/0007_prediction_contracts.py",
+      "bytes": 1540,
+      "sha256": "859be77c2bbda6581ca371bd41061f4fccfb2f6d0c66fbbc1914d527990781ca"
     },
     {
       "path": "pyproject.toml",
@@ -1254,8 +1269,8 @@
     },
     {
       "path": "scripts/check_serving_runtime.py",
-      "bytes": 868,
-      "sha256": "567cd28d0512309c13d0bb68a30a3633f27707a42b59b514a4e5718ee8ac541f"
+      "bytes": 1948,
+      "sha256": "00e17a1897965e33e082b54bea1701cfd34e3b11da1584646663c21c90e8d0e5"
     },
     {
       "path": "scripts/check_training_runtime.py",
@@ -1543,9 +1558,14 @@
       "sha256": "2a964eb56a01f169368b1a46fda54d6cdfc4862ba011f3fd05deaceb275eb3b2"
     },
     {
+      "path": "src/api/prediction_catalog.py",
+      "bytes": 7413,
+      "sha256": "5083401d1965818e01a9c85f4f6126f6ded65309a6087d7bd2874ceecebbffa1"
+    },
+    {
       "path": "src/api/prediction_docs.py",
-      "bytes": 8551,
-      "sha256": "5bbaa00d160387d74cece61f343a6c086638ea43d08c8f03146966c05cd618e0"
+      "bytes": 8774,
+      "sha256": "227432d207cb9d1f711a7f14739a73c54910ffea2a94ca1538e435adbd903bdf"
     },
     {
       "path": "src/api/routers.py",
@@ -1726,6 +1746,11 @@
       "path": "src/application/prediction/__init__.py",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/application/prediction/catalog.py",
+      "bytes": 4877,
+      "sha256": "0e667c5b9a798cadf7361bf306d320f86fcbc4ef865324d1a98bee50e6a9f6cc"
     },
     {
       "path": "src/application/prediction/ports.py",
@@ -1986,6 +2011,11 @@
       "path": "src/domain/prediction/__init__.py",
       "bytes": 0,
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/domain/prediction/catalog.py",
+      "bytes": 2877,
+      "sha256": "31d2a535f22363dc42b520e974ad493f3a7401d128865ab7d8be9f5ace8b015b"
     },
     {
       "path": "src/domain/prediction/ebm.py",
@@ -2319,8 +2349,8 @@
     },
     {
       "path": "src/infrastructure/persistence/ml_registry.py",
-      "bytes": 5252,
-      "sha256": "48b250104cb9aac9042a98660100b2c8c461c5296c019631b4d8bce86e465e9f"
+      "bytes": 8445,
+      "sha256": "33206803a32cc02644991765ec04dededd77fc0ba6b569ed8b039c4443d5d55c"
     },
     {
       "path": "src/infrastructure/persistence/ml_training.py",
@@ -2331,6 +2361,16 @@
       "path": "src/infrastructure/persistence/mongo.py",
       "bytes": 1696,
       "sha256": "b2385c6ff24b7acd9bd021f8d11a50581d2295a330e0e5a306553faf6f3f82af"
+    },
+    {
+      "path": "src/infrastructure/persistence/prediction_catalog.py",
+      "bytes": 7930,
+      "sha256": "d2db65eb6ac84699477f2478bb2c6f26424628a3ab757d781a1d6e5de496ce7a"
+    },
+    {
+      "path": "src/infrastructure/persistence/prediction_contract_schema.py",
+      "bytes": 1121,
+      "sha256": "c2eb2251217970d300b99c54e517b7754f11aac8e37603b12e65ac54199f52e8"
     },
     {
       "path": "src/infrastructure/security.py",
@@ -2941,6 +2981,16 @@
       "path": "tests/ml/test_pod_training_runtime.py",
       "bytes": 19080,
       "sha256": "cae90652d6ac4d40b2f39adace8cb265fe10279992ab50c2309474b28998e142"
+    },
+    {
+      "path": "tests/ml/test_prediction_catalog.py",
+      "bytes": 18138,
+      "sha256": "da06dde04a4c069be0a8e50f5d4f27daca0767d5a252b9a5688351f700e17e2c"
+    },
+    {
+      "path": "tests/ml/test_prediction_catalog_e2e.py",
+      "bytes": 6848,
+      "sha256": "cdba3274d339806ad051a0506400fde07320dca08a8c3f027ca5c1faf27c1afa"
     },
     {
       "path": "tests/ml/test_prediction_gateway_docs.py",
