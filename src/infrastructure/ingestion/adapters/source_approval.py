@@ -2,6 +2,7 @@
 
 import json
 from collections.abc import Callable, Mapping
+from dataclasses import dataclass
 from typing import Any
 
 from src.domain.ingestion.models import ExtractionLimits, SourceDefinition, identifier
@@ -18,6 +19,38 @@ from src.infrastructure.ingestion.adapters.databricks_contract import (
 )
 
 
+@dataclass(frozen=True)
+class SourceAccessGrant:
+    tenant_id: str
+    manager_ids: tuple[str, ...]
+    actor_ids: tuple[str, ...]
+    template: Template
+    limits: ExtractionLimits
+    table_scope: tuple[str, ...]
+
+    def permits_template(self, template: Template) -> bool:
+        return (
+            template.connection_ref == self.template.connection_ref
+            and template.table[: len(self.table_scope)] == self.table_scope
+            and set(template.projection) <= set(self.template.projection)
+            and all(
+                any(
+                    required == candidate and type(required.value) is type(candidate.value)
+                    for candidate in template.predicates
+                )
+                for required in self.template.predicates
+            )
+        )
+
+    def permits_limits(self, limits: ExtractionLimits) -> bool:
+        return (
+            limits.max_bytes <= self.limits.max_bytes
+            and limits.max_records <= self.limits.max_records
+            and limits.max_line_bytes <= self.limits.max_line_bytes
+            and limits.timeout_seconds <= self.limits.timeout_seconds
+        )
+
+
 class DatabricksSourceApproval:
     def __init__(
         self,
@@ -27,7 +60,7 @@ class DatabricksSourceApproval:
     ) -> None:
         self._connections, self.templates, self.policy = connections, templates, policy
 
-    def _grants(self) -> list[dict[str, Any]]:
+    def _grants(self) -> list[SourceAccessGrant]:
         envelope = _object(self.policy(), {"contract", "grants"})
         if (
             envelope["contract"] != "databricks-access-v1"
@@ -54,8 +87,8 @@ class DatabricksSourceApproval:
                     raise Forbidden("Invalid source access policy")
                 for value in ids:
                     identifier(value)
-            parse_templates({"grant": grant["template"]})
-            ExtractionLimits.parse(grant["limits"])
+            template = parse_templates({"grant": grant["template"]})["grant"]
+            limits = ExtractionLimits.parse(grant["limits"])
             scope = grant.get("table_scope", grant["template"]["table"])
             if not isinstance(scope, list) or not 1 <= len(scope) <= 3:
                 raise Forbidden("Invalid source table scope")
@@ -63,17 +96,26 @@ class DatabricksSourceApproval:
                 _name(part)
             if grant["template"]["table"][: len(scope)] != scope:
                 raise Forbidden("Invalid source table scope")
-            grants.append(grant)
+            grants.append(
+                SourceAccessGrant(
+                    grant["tenant_id"],
+                    tuple(grant["manager_ids"]),
+                    tuple(grant["actor_ids"]),
+                    template,
+                    limits,
+                    tuple(scope),
+                )
+            )
         return grants
 
     def connections(self, actor: Actor) -> list[str]:
         return sorted(
             {
-                g["template"]["connection_ref"]
-                for g in self._grants()
-                if g["tenant_id"] == actor.tenant_id
-                and actor.actor_id in g["manager_ids"]
-                and g["template"]["connection_ref"] in self._connections
+                grant.template.connection_ref
+                for grant in self._grants()
+                if grant.tenant_id == actor.tenant_id
+                and actor.actor_id in grant.manager_ids
+                and grant.template.connection_ref in self._connections
             }
         )
 
@@ -113,28 +155,14 @@ class DatabricksSourceApproval:
     def _check(self, source: SourceDefinition, actor_id: str, *, management: bool) -> None:
         template = validate_source(source, self.templates, self._connections)
         for grant in self._grants():
-            approved = parse_templates({"grant": grant["template"]})["grant"]
-            bounds = ExtractionLimits.parse(grant["limits"])
+            actor_ids = grant.manager_ids if management else grant.actor_ids
             if (
-                grant["tenant_id"] == source.tenant_id
-                and actor_id in grant["manager_ids" if management else "actor_ids"]
-                and template.connection_ref == approved.connection_ref
-                and template.table[: len(grant.get("table_scope", approved.table))]
-                == tuple(grant.get("table_scope", approved.table))
-                and set(template.projection) <= set(approved.projection)
-                and all(
-                    any(
-                        required == candidate and type(required.value) is type(candidate.value)
-                        for candidate in template.predicates
-                    )
-                    for required in approved.predicates
-                )
+                grant.tenant_id == source.tenant_id
+                and actor_id in actor_ids
+                and grant.permits_template(template)
                 and source.allowed_actor_ids
-                and set(source.allowed_actor_ids) <= set(grant["actor_ids"])
-                and source.limits.max_bytes <= bounds.max_bytes
-                and source.limits.max_records <= bounds.max_records
-                and source.limits.max_line_bytes <= bounds.max_line_bytes
-                and source.limits.timeout_seconds <= bounds.timeout_seconds
+                and set(source.allowed_actor_ids) <= set(grant.actor_ids)
+                and grant.permits_limits(source.limits)
             ):
                 return
         raise Forbidden("Source access is not authorized")

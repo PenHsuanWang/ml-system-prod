@@ -22,12 +22,12 @@ from src.domain.catalog.models import (
 )
 from src.domain.ingestion.models import ExtractionLimits
 from src.domain.ml import CapacityExceeded
-from src.infrastructure.ingestion.adapters.databricks_client import (
+from src.infrastructure.databricks.sql_runtime import (
     ConnectFactory,
-    _error_kind,
-    _official_connect,
-    _sql_kind,
-    _stop_process,
+    connect_sql,
+    error_kind,
+    sql_kind,
+    stop_process,
 )
 from src.infrastructure.ingestion.adapters.databricks_contract import ConnectionConfig
 
@@ -107,7 +107,7 @@ def _item(query: MetadataQuery, row: Any) -> MetadataItem:
             or nullable not in {"YES", "NO"}
         ):
             raise ValueError("Invalid column metadata")
-        kind = _sql_kind(native)
+        kind = sql_kind(native)
         return MetadataItem(
             name,
             native_type=native,
@@ -123,7 +123,7 @@ def fetch_sql_metadata(
     query: MetadataQuery,
     scopes: tuple[DiscoveryScope, ...],
     *,
-    connect: ConnectFactory = _official_connect,
+    connect: ConnectFactory = connect_sql,
 ) -> tuple[MetadataItem, ...]:
     sql, parameters = build_metadata_query(query, scopes)
     limits = ExtractionLimits(max_bytes=MAX_BYTES, max_records=query.limit + 1, timeout_seconds=10)
@@ -174,7 +174,7 @@ def _metadata_child(
                 raise ValueError
             sender.send_bytes(b"D" + data)
         except Exception as error:
-            sender.send_bytes(b"E" + _error_kind(error))
+            sender.send_bytes(b"E" + error_kind(error))
         finally:
             sender.close()
 
@@ -244,7 +244,7 @@ class DatabricksMetadataProvider:
             # Cleanup failure deliberately retains capacity, preventing oversubscription.
             try:
                 if started:
-                    _stop_process(process)
+                    stop_process(process)
             finally:
                 sender.close()
                 receiver.close()
