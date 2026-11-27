@@ -552,6 +552,31 @@ For a dependency outage or ambiguous submission, retry using the original key.
 
 ### Worker, recovery and rollout
 
+The reference Compose worker takes `ML_DATASET_BUILD_MONGO_URI` from the
+deployment's private configuration. Use a dedicated Mongo account with the
+`find` action on the configured Identity database's `identity_users` collection.
+For the reference `backend` database, an authorized Mongo operator can create
+the role and user from an authenticated `mongosh` shell:
+
+```javascript
+const identity = db.getSiblingDB("backend")
+identity.createRole({
+  role: "datasetBuildLookup",
+  roles: [],
+  privileges: [{resource: {db: "backend", collection: "identity_users"}, actions: ["find"]}]
+})
+identity.createUser({
+  user: "dataset-build", pwd: passwordPrompt(),
+  roles: [{role: "datasetBuildLookup", db: "backend"}]
+})
+```
+
+Use that account with `authSource=backend`. The worker looks up current account
+grants directly and needs neither session access nor signing material.
+For Kubernetes, apply the opt-in
+[Dataset Build Worker declaration](../deploy/k8s/README.md#dataset-build-worker)
+after migration 0009 with the endpoint and approved worker-role Secret.
+
 Apply migration `0009_dataset_build_jobs` through the approved maintenance role before starting
 upgraded roles. Run `python -m bootstrap.dataset_build_worker` separately from HTTP, with access
 to the same App SQL database and dataset/execution roots and read-only access to the shared

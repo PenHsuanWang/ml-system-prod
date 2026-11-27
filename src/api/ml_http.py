@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from src.api.ml_schemas import ApprovalRequest, DeploymentRequest, SubmitRequest
+from src.api.ml_docs import ml_url_path
 from src.application.ml_services import MLServices
 from src.domain.ml import Actor, canonical_json, MLError, NotFound
 from src.domain.model_registry.models import ModelBinding
@@ -38,28 +39,30 @@ ActorDependency = Annotated[Actor, Depends(get_actor)]
 ServicesDependency = Annotated[MLServices, Depends(get_services)]
 
 
-def public_job(job: Job) -> dict[str, object]:
+def public_job(job: Job, request: Request) -> dict[str, object]:
     return {"job_id": job.job_id, "state": job.state, "phase": job.phase,
             "revision": job.revision, "attempt_id": job.attempt_id,
             "created_at": job.created_at, "error_code": job.error_code,
             "model_binding_id": job.model_binding_id,
             "retry_of_job_id": json.loads(job.spec_json).get("retry_of_job_id"),
-            "status_url": f"/api/v1/training/jobs/{job.job_id}"}
+            "status_url": ml_url_path(request, "query_job", job_id=job.job_id)}
 
 
 @training_router.post("/jobs", status_code=202)
-def submit(body: SubmitRequest, actor: ActorDependency, services: ServicesDependency,
+def submit(body: SubmitRequest, request: Request, actor: ActorDependency, services: ServicesDependency,
            idempotency_key: Annotated[str, Header(min_length=1, max_length=128)]) -> dict[str, object]:
     intent = body.spec.model_dump()
     if body.retry_of_job_id is not None:
         intent["retry_of_job_id"] = body.retry_of_job_id
-    return public_job(services.training.submit(actor, idempotency_key,
-                      canonical_json(intent)))
+    return public_job(
+        services.training.submit(actor, idempotency_key, canonical_json(intent)), request
+    )
 
 
 @training_router.get("/jobs/{job_id}")
-def query_job(job_id: str, actor: ActorDependency, services: ServicesDependency) -> dict[str, object]:
-    return public_job(services.training.get(actor, job_id))
+def query_job(job_id: str, request: Request, actor: ActorDependency,
+              services: ServicesDependency) -> dict[str, object]:
+    return public_job(services.training.get(actor, job_id), request)
 
 
 @training_router.get("/jobs/{job_id}/attempts")
@@ -70,8 +73,9 @@ def query_attempts(job_id: str, actor: ActorDependency, services: ServicesDepend
 
 
 @training_router.post("/jobs/{job_id}/cancel", status_code=202)
-def cancel(job_id: str, actor: ActorDependency, services: ServicesDependency) -> dict[str, object]:
-    return public_job(services.training.cancel(actor, job_id))
+def cancel(job_id: str, request: Request, actor: ActorDependency,
+           services: ServicesDependency) -> dict[str, object]:
+    return public_job(services.training.cancel(actor, job_id), request)
 
 
 @registry_router.get("/models")

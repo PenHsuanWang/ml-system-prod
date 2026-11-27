@@ -31,12 +31,12 @@ from tests.ml.ebm.test_platform_e2e import submit_ebm
 from tests.ml.integration.test_backend_stack import wait_for_ready
 
 
-def publish_inputs(components, actor, root):
+def publish_inputs(components, actor, root, *, raw_root=None):
     root.mkdir(parents=True)
     ingress = build_ingestion(
         IngestionSettings(
             database_url=components.settings.database_url,
-            raw_root=root / "raw",
+            raw_root=raw_root if raw_root is not None else root / "raw",
             file_roots=(("engineering", root),),
         ),
         database=components.database,

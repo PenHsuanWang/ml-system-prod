@@ -20,8 +20,9 @@ from tests.ml.test_api import Identity
 
 
 @pytest.mark.asyncio
+@pytest.mark.parametrize("prefix", ["", "/management"])
 async def test_http_admission_worker_process_and_raw_metadata_are_model_independent(
-    components, actor, tmp_path
+    components, actor, tmp_path, prefix
 ):
     owner = replace(
         actor,
@@ -68,17 +69,23 @@ async def test_http_admission_worker_process_and_raw_metadata_are_model_independ
     )
     headers = {"Authorization": "Bearer owner", "Idempotency-Key": "raw-events"}
     async with httpx.AsyncClient(
-        transport=httpx.ASGITransport(app), base_url="http://test"
+        transport=httpx.ASGITransport(app, root_path=prefix), base_url="http://test"
     ) as client:
+        jobs = prefix + "/api/v1/ingestion/jobs"
         request = {"source_id": "events", "source_version": "v1"}
-        assert (await client.post("/api/v1/ingestion/jobs", json=request)).status_code == 401
-        response = await client.post("/api/v1/ingestion/jobs", headers=headers, json=request)
+        assert (await client.post(jobs, json=request)).status_code == 401
+        response = await client.post(jobs, headers=headers, json=request)
         assert response.status_code == 202, response.text
         job_id = response.json()["job_id"]
+        status_url, result_url = f"{jobs}/{job_id}", f"{jobs}/{job_id}/result"
+        assert (response.json()["status_url"], response.json()["result_url"]) == (
+            status_url,
+            result_url,
+        )
         assert response.json()["state"] == "QUEUED"
         assert not list((settings.raw_root / "published").rglob("manifest.json"))
         assert (await client.get(response.json()["result_url"], headers=headers)).status_code == 409
-        replay = await client.post("/api/v1/ingestion/jobs", headers=headers, json=request)
+        replay = await client.post(jobs, headers=headers, json=request)
         assert replay.json()["job_id"] == job_id
 
         environment = {
@@ -97,7 +104,14 @@ async def test_http_admission_worker_process_and_raw_metadata_are_model_independ
         )
         assert worker.returncode == 0, worker.stderr
         assert json.loads(worker.stdout) == {"job_id": job_id, "state": "PUBLISHED"}
-        result = await client.get(response.json()["result_url"], headers=headers)
+        listing = await client.get(jobs, headers=headers)
+        assert listing.status_code == 200
+        item = listing.json()["items"][0]
+        assert (item["status_url"], item["result_url"]) == (status_url, result_url)
+        status = await client.get(item["status_url"], headers=headers)
+        assert status.status_code == 200 and status.json()["status_url"] == status_url
+        assert status.json()["result_url"] == result_url
+        result = await client.get(status.json()["result_url"], headers=headers)
         assert result.status_code == 200, result.text
         snapshot = result.json()
         assert snapshot["content_digest"] == hashlib.sha256(data).hexdigest()

@@ -1,10 +1,13 @@
 """Real train/evaluate/approve/contract/serve plus prediction-only HTTP discovery."""
 
 import json
+import math
 from dataclasses import replace
+from itertools import combinations
 from types import SimpleNamespace
 
 import httpx
+import numpy as np
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import select
@@ -18,6 +21,7 @@ from bootstrap.ml_wiring import build_components
 from bootstrap.prediction_contracts import extract_public_contract
 from src.application.prediction.catalog import ContractPublicationService, EndpointDiscoveryService
 from src.domain.ml import MLError, canonical_json
+from src.infrastructure.datasets.ebm_snapshots import EBMFileDatasetSource
 from src.infrastructure.persistence.dataset_build_jobs import SQLDatasetBuildJobs
 from src.infrastructure.persistence.ml_outbox import SQLOutboxRepository
 from src.infrastructure.persistence.prediction_catalog import SQLPredictionCatalog
@@ -26,6 +30,7 @@ from src.infrastructure.persistence.prediction_contract_schema import (
     usage_reviews,
 )
 from src.infrastructure.serving.materializer import BundleMaterializer, verify_bundle
+from src.plugins.evaluation.ebm_v1 import LOT_CORRELATION_METRIC
 from tests.ml.dataset_builder.conftest import published_builder_inputs as published_builder_inputs
 from tests.ml.ebm.test_platform_training import ebm_intent, register
 from tests.ml.test_api import Identity
@@ -54,7 +59,7 @@ def test_prediction_only_user_discovers_and_invokes_verified_bundle(
         "builder": replace(
             actor,
             actor_id="builder",
-            permissions=frozenset({"ml:dataset:manage", "ml:ingestion:operate"}),
+            permissions=frozenset({"ml:dataset:manage", "ml:dataset:read", "ml:ingestion:operate"}),
         ),
         "trainer": replace(actor, actor_id="trainer", permissions=frozenset({"ml:train"})),
         "reviewer": replace(
@@ -116,7 +121,12 @@ def test_prediction_only_user_discovers_and_invokes_verified_bundle(
             evaluation_url = f"/api/v1/model_registry/bindings/{binding.binding_id}/evaluations"
             assert manager.get(evaluation_url, headers=trainer).status_code == 403
             evaluation = manager.get(evaluation_url, headers=auth("reviewer")).json()[0]
-            assert evaluation["decision"] == "APPROVED_BY_POLICY"
+            metrics = json.loads(evaluation["metrics_json"])
+            if profile == "ebm":
+                assert metrics["lots"] >= 2 and metrics["samples"] >= metrics["lots"], metrics
+                correlation = metrics[LOT_CORRELATION_METRIC]
+                assert correlation is not None and math.isfinite(correlation), metrics
+            assert evaluation["decision"] == "APPROVED_BY_POLICY", metrics
         reader = replace(actor, actor_id="prediction-client", permissions=frozenset({"ml:predict"}))
         materializer = BundleMaterializer(
             runtime.settings.artifact_root, runtime.settings.tracking_uri
@@ -272,6 +282,16 @@ def _build_dataset(manager, runtime, tmp_path, builder):
     assert worker.run_once() == job["job_id"]
     result = manager.get(job["result_url"], headers=headers)
     assert result.status_code == 200, result.text
+    dataset = runtime.services.datasets.get(builder, payload["dataset_id"], "v1")
+    snapshot = EBMFileDatasetSource(runtime.settings.dataset_root).load(
+        {"content_digest": dataset.content_digest, "snapshot_ref": dataset.snapshot_ref}
+    )
+    test_lots = {snapshot.metadata.samples[i].lot_id: i for i in snapshot.metadata.test}
+    assert len(test_lots) >= 2
+    assert all(
+        np.max(np.abs(snapshot.spectrograms[i] - snapshot.spectrograms[j])) > 0.01
+        for i, j in combinations(test_lots.values(), 2)
+    )
     return ebm_intent(result.json()["dataset_id"], result.json()["version"])
 
 

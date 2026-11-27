@@ -110,6 +110,16 @@ async def test_api_only_dataset_build_produces_discoverable_verified_lineage(
             components.services.datasets.metadata(actor, payload["dataset_id"], payload["version"])
 
         # Separate SQL engine and worker composition, with a controlled account lookup.
+        abandoned = SQLDatasetBuildJobs(components.database).claim(queued["job_id"])
+        assert abandoned is not None
+        replacement_clock = abandoned.job.updated_at + BUILD_LEASE_SECONDS + 1
+        original_directory_fd = raw_snapshot_writer.directory_fd
+
+        def read_only_directory(path, *, create=False):
+            assert not create, "The worker cannot create directories in RawSnapshot storage"
+            return original_directory_fd(path)
+
+        monkeypatch.setattr(raw_snapshot_writer, "directory_fd", read_only_directory)
         database = Database(components.settings.database_url)
         checks = []
 
@@ -120,7 +130,7 @@ async def test_api_only_dataset_build_produces_discoverable_verified_lineage(
         try:
             worker = build_worker(
                 components.settings,
-                SQLDatasetBuildJobs(database),
+                SQLDatasetBuildJobs(database, clock=lambda: replacement_clock),
                 tmp_path / "raw-snapshots",
                 resolve,
             )
@@ -130,7 +140,7 @@ async def test_api_only_dataset_build_produces_discoverable_verified_lineage(
             database.close()
         assert checks == [(actor.tenant_id, actor.actor_id)] * 2
         status = (await client.get(queued["status_url"])).json()
-        assert status["state"] == "SUCCEEDED" and status["attempt_count"] == 1
+        assert status["state"] == "SUCCEEDED" and status["attempt_count"] == 2
         result = (await client.get(queued["result_url"])).json()
         metadata = (await client.get(result["dataset_url"])).json()
         lineage = (await client.get(result["dataset_url"] + "/lineage")).json()

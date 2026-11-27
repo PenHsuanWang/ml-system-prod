@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb
+spec:
+  template:
+    spec:
+      containers:
+      - name: mongodb
+        volumeMounts:
+        - name: dataset-build-identity-init
+          mountPath: /docker-entrypoint-initdb.d
+          readOnly: true
+      volumes:
+      - name: dataset-build-identity-init
+        secret:
+          secretName: ml-dataset-build-identity-init
+          defaultMode: 292

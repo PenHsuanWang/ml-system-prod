@@ -305,6 +305,10 @@ def main():
             model = {"binding_id": first_job["binding_id"], "approval_id": before["approval_id"]}
             predict(first)
         else:
+            # Exercise a fresh worker Pod before admitting the first API build.
+            worker = "deployment/ml-dataset-build-worker"
+            run("rollout", "restart", worker)
+            run("rollout", "status", worker, "--timeout=240s")
             native = json.loads(run("get", "deployment/ml-control", "-o", "json"))
             run("create", "-f", "-", input=json.dumps(create_operator(native, args.tools_image)))
             run(

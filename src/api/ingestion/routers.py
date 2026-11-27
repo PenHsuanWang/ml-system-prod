@@ -16,6 +16,7 @@ from src.api.ingestion.schemas import (
     AvailableSourceResponse,
     IngestionSubmitRequest,
 )
+from src.api.ml_docs import ml_url_path
 from src.api.ml_http import ActorDependency
 from src.application.ingestion.service import IngestionService
 from src.domain.ingestion.models import IngestionJob, RawSnapshot
@@ -34,7 +35,7 @@ def get_ingestion_service(request: Request) -> IngestionService:
 IngestionDependency = Annotated[IngestionService, Depends(get_ingestion_service)]
 
 
-def public_job(job: IngestionJob) -> dict[str, object]:
+def public_job(job: IngestionJob, request: Request) -> dict[str, object]:
     return {
         "job_id": job.job_id,
         "state": job.state,
@@ -48,8 +49,8 @@ def public_job(job: IngestionJob) -> dict[str, object]:
         "deadline": job.deadline,
         "cancel_requested": job.cancel_requested,
         "error_code": job.error_code,
-        "status_url": f"/api/v1/ingestion/jobs/{job.job_id}",
-        "result_url": f"/api/v1/ingestion/jobs/{job.job_id}/result",
+        "status_url": ml_url_path(request, "get_ingestion_job", job_id=job.job_id),
+        "result_url": ml_url_path(request, "get_result", job_id=job.job_id),
     }
 
 
@@ -74,16 +75,23 @@ def public_snapshot(snapshot: RawSnapshot) -> dict[str, object]:
 @router.post("/jobs", status_code=202)
 def submit(
     body: IngestionSubmitRequest,
+    request: Request,
     actor: ActorDependency,
     service: IngestionDependency,
     idempotency_key: Annotated[str, Header(min_length=1, max_length=128)],
 ) -> dict[str, object]:
-    return public_job(service.submit(actor, idempotency_key, body.to_domain()))
+    return public_job(service.submit(actor, idempotency_key, body.to_domain()), request)
 
 
-@router.get("/jobs/{job_id}")
-def get_job(job_id: str, actor: ActorDependency, service: IngestionDependency) -> dict[str, object]:
-    return public_job(service.get(actor, job_id))
+@router.get(
+    "/jobs/{job_id}",
+    name="get_ingestion_job",
+    operation_id="get_job_api_v1_ingestion_jobs__job_id__get",
+)
+def get_job(
+    job_id: str, request: Request, actor: ActorDependency, service: IngestionDependency
+) -> dict[str, object]:
+    return public_job(service.get(actor, job_id), request)
 
 
 @router.get("/jobs/{job_id}/result")
@@ -95,9 +103,9 @@ def get_result(
 
 @router.post("/jobs/{job_id}/cancel", status_code=202)
 def cancel_job(
-    job_id: str, actor: ActorDependency, service: IngestionDependency
+    job_id: str, request: Request, actor: ActorDependency, service: IngestionDependency
 ) -> dict[str, object]:
-    return public_job(service.cancel(actor, job_id))
+    return public_job(service.cancel(actor, job_id), request)
 
 
 @router.get("/snapshots/{snapshot_id}")
@@ -146,6 +154,7 @@ def available_sources(
     "Concurrent inserts may shift offset pages. Follow status_url or result_url for details.",
 )
 def jobs(
+    request: Request,
     response: Response,
     actor: ActorDependency,
     service: IngestionDependency,
@@ -156,7 +165,7 @@ def jobs(
     items, more = service.collections(actor, query)
     return MetadataPage[IngestionJobMetadata](
         items=[
-            IngestionJobMetadata.model_validate(public_job(cast(IngestionJob, item)))
+            IngestionJobMetadata.model_validate(public_job(cast(IngestionJob, item), request))
             for item in items
         ],
         limit=page.limit,

@@ -37,6 +37,8 @@ def raw_records(
         for signal_index, signal in enumerate(EBM_SIGNAL_ORDER):
             for pad_index, pad in enumerate(EBM_PAD_ORDER):
                 base = float(lot_index + 1) + signal_index / 10 + pad_index / 100
+                # Vary slope and midpoint by Lot so constant detrending cannot erase the signal.
+                ramp = (1.0 + lot_index / 2) / 4
                 fdc.append(
                     {
                         "schema_version": "ebm-raw-input-v1",
@@ -49,7 +51,9 @@ def raw_records(
                         "observations": [
                             {
                                 "timestamp": (start + timedelta(seconds=offset)).isoformat(),
-                                "value": base + offset / 4,
+                                "value": base
+                                + ramp * offset
+                                + (lot_index / 8 if offset == 2 else 0),
                             }
                             for offset in (0, 2, 4)
                         ],

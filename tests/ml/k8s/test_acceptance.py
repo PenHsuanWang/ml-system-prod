@@ -119,11 +119,39 @@ def test_acceptance_profile_is_explicit_and_does_not_change_the_production_base(
     literals = config["configMapGenerator"][1]["literals"]
     assert "ML_TRAINING_NAMESPACE=ml-k8s-acceptance" in literals
     assert "ML_SERVING_NAMESPACE=ml-k8s-acceptance" in literals
+    worker_secret = json.loads((directory / "dataset-build-worker.json").read_text())
+    assert set(worker_secret) == {"ML_DATABASE_URL", "APP_MONGO_URI"}
+    assert worker_secret["APP_MONGO_URI"].startswith("mongodb://dataset-build:")
+    assert worker_secret["APP_MONGO_URI"].endswith("?authSource=backend")
+    mongo_init = (directory / "dataset-build-identity.js").read_text()
+    assert 'collection:"identity_users"},actions:["find"]' in mongo_init
+    assert 'roles:[{role:"datasetBuildLookup",db:"backend"}]' in mongo_init
     with pytest.raises(FileExistsError):
         prepare(directory, "b" * 40, images, namespace="ml-k8s-acceptance", acceptance=True)
     base = yaml.safe_load((ROOT / "deploy/k8s/base/configmap.yaml").read_text())["data"]
     assert base["ML_MODEL_ENVIRONMENT"] == "prod"
     assert "ML_EBM_QUALITY_POLICY_JSON" not in base
+
+
+def test_worker_declaration_exposes_only_approved_shared_subpaths():
+    resources = list(
+        yaml.safe_load_all((ROOT / "deploy/k8s/dataset-build/worker.yaml").read_text())
+    )
+    assert [resource["kind"] for resource in resources] == ["ServiceAccount", "Deployment"]
+    deployment = resources[1]["spec"]
+    assert deployment["replicas"] == 1 and deployment["strategy"]["type"] == "Recreate"
+    pod = deployment["template"]["spec"]
+    assert pod["automountServiceAccountToken"] is False
+    assert pod["securityContext"]["runAsNonRoot"] is True
+    (worker,) = pod["containers"]
+    assert worker["args"] == ["python", "-m", "bootstrap.dataset_build_worker"]
+    assert worker["securityContext"]["readOnlyRootFilesystem"] is True
+    assert "ports" not in worker
+    assert {key for key in worker["resources"]["limits"]} == {"cpu", "memory", "ephemeral-storage"}
+    mounts = {mount["subPath"]: mount for mount in worker["volumeMounts"] if "subPath" in mount}
+    assert set(mounts) == {"datasets", "executions", "raw-snapshots"}
+    assert mounts["raw-snapshots"]["readOnly"] is True
+    assert all(not mounts[path].get("readOnly") for path in ("datasets", "executions"))
 
 
 def test_operator_is_bounded_token_free_and_does_not_mutate_runtime_declaration():
