@@ -7,6 +7,7 @@ import re
 import stat
 import tempfile
 import time
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -28,9 +29,15 @@ from src.infrastructure.persistence.ml_database import Database, datasets
 from src.infrastructure.persistence.ml_training import lock_tenant, record_audit
 
 
+BuildPublication = Callable[[Connection, Actor, DatasetVersion, DatasetBuildReceipt], None]
+
+
 class SQLDatasetCatalog:
-    def __init__(self, database: Database, root: Path) -> None:
+    def __init__(
+        self, database: Database, root: Path, *, complete_build: BuildPublication | None = None
+    ) -> None:
         self.database, self.root = database, root.resolve()
+        self.complete_build = complete_build
 
     def seed_builtin(self) -> None:
         checksum = "0d3b1bc213b97137c2046846ae72f600739146fdb61f8d2b0215558804ae1885"
@@ -132,6 +139,8 @@ class SQLDatasetCatalog:
                      build_receipt: DatasetBuildReceipt | None = None) -> DatasetVersion:
         """Import operator-selected files into an immutable, tenant-scoped snapshot."""
         actor.require("ml:dataset:manage")
+        if self.complete_build is not None and build_receipt is None:
+            raise Conflict("A dataset build job requires verified lineage")
         if dataset_id == "dataset-demo" or any(not re.fullmatch(
             r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}", item
         ) or item == "latest" for item in (dataset_id, version)):
@@ -179,6 +188,10 @@ class SQLDatasetCatalog:
                     # Existing unqualified history is not assigned a new origin on retry.
                     if established is not None:
                         self._persist_lineage(connection, actor, existing["id"], result, build_receipt)
+                        if self.complete_build is not None:
+                            self.complete_build(connection, actor, result, build_receipt)
+                    elif self.complete_build is not None:
+                        raise Conflict("Existing dataset version has no verified build lineage")
                 return result
             dataset_pk = str(uuid4())
             connection.execute(insert(datasets).values(id=dataset_pk, tenant_id=actor.tenant_id,
@@ -186,6 +199,8 @@ class SQLDatasetCatalog:
                 snapshot_ref=result.snapshot_ref, summary_json=summary, created_at=time.time()))
             if build_receipt is not None:
                 self._persist_lineage(connection, actor, dataset_pk, result, build_receipt)
+                if self.complete_build is not None:
+                    self.complete_build(connection, actor, result, build_receipt)
             record_audit(connection, actor, "dataset.register", dataset_id + "@" + version)
         return result
 

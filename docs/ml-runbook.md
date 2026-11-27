@@ -163,10 +163,9 @@ curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" \
 To acquire new data, use existing `POST /ingestion/jobs` with `source_id`, `source_version`
 and `Idempotency-Key`, then follow the returned status/result URLs. Discovery neither ingests
 data nor proves that a table is currently reachable. Select FDC/wafer snapshots and retain
-their exact manifest digests. Dataset creation remains the explicit, authorized
-[DatasetBuilder CLI](ebm-implementation-status.md#rawsnapshot-datasetbuilder);
-HTTP build orchestration is deferred to WP6. New CLI builds atomically register the dataset
-and verified receipt in SQL. A filesystem receipt alone does not establish catalog lineage.
+their exact manifest digests. Submit an explicit [dataset build job](#dataset-build-jobs-wp6)
+or use the authorized [DatasetBuilder CLI](ebm-implementation-status.md#rawsnapshot-datasetbuilder).
+Successful builds register the dataset and verified receipt together in SQL.
 
 After a synthetic `built`, `v1` dataset has been published, a reader can discover and inspect it:
 
@@ -386,3 +385,74 @@ and unavailable persisted evidence is 503 with the existing error envelope and r
 The existing `GET /model_registry/models` binding array, versions, evaluations and approval
 contracts remain in place. Deployment detail retains its existing response and accepts the
 new read grant. Creation and rollback still require `ml:deploy`. WP5 adds no SQL migration.
+
+## Dataset build jobs (WP6)
+
+Management (port 8000) serves the following authenticated paths under `/api/v1/datasets`.
+Sign in through Identity and authorize the Bearer token in Management `/docs`.
+
+| Operation | Access and contract |
+| --- | --- |
+| `GET /builders` and `GET /builders/{builder_id}/versions/{version}` | `ml:dataset:manage`. Discover the approved `ebm-dataset-builder` version `1.0.0`, input roles, shape, limits, configuration schema and a synthetic request. |
+| `POST /build-jobs` | `ml:dataset:manage` and ingestion read access to all input snapshots under owner/operate rules. Returns 202 with a durable job identity, status URL and result URL. |
+| `GET /build-jobs` and `GET /build-jobs/{job_id}` | Within the tenant, the authenticated owner or `ml:jobs:read_all`. List supports state, exclusive creation-time bounds in UTC Unix seconds, limit and offset. |
+| `GET /build-jobs/{job_id}/result` | Same job visibility. A successful result returns dataset ID/version, content and receipt digests and a link to DatasetVersion metadata. Before success returns 409. |
+
+The list orders by creation UTC time and job ID descending. Default page size is 25,
+maximum 100, with offsets 0 through 1,000,000. Follow `next_offset` until null. Concurrent
+writes can shift pages. Successful responses use private, no-store caching. The API
+uses the existing 401/403/404/422 error handling. An input manifest mismatch returns 409
+and an aggregate build limit violation returns 400. A full tenant queue returns 429.
+For a dependency outage or ambiguous submission, retry using the original key.
+
+1. List published snapshots using `GET /api/v1/ingestion/snapshots`. Select 2–32 unique
+   snapshots, including both `fdc` and `wafer`, covering up to 16 MiB and 8,192 records combined.
+   The builder validates the inner `ebm-raw-input-v1` records and creates an immutable
+   `ebm-feature-snapshot-v1` dataset with per-sample shape `[7, 4, 9, 31]`.
+2. Read builder detail and copy its `submit_example`. Replace each snapshot ID and manifest
+   digest with the selected values, select a new dataset ID/version, and set the requested
+   recipe and segment. Submit with a visible ASCII `Idempotency-Key` of 1–128 characters.
+   Keys are scoped to actor and tenant for as long as the job is retained. Reordering inputs
+   or spelling out the same defaults gives the same intent. A different intent under the
+   same key returns 409. Each tenant can hold up to 100 pending builds.
+3. Follow `status_url`. When it reports `SUCCEEDED`, fetch `result_url`, then follow
+   `dataset_url` and its `/lineage` route using their existing dataset and input grants.
+   Request/response bodies contain no raw records, local paths or saved credentials.
+
+### Worker, recovery and rollout
+
+Apply migration `0009_dataset_build_jobs` through the approved maintenance role before starting
+upgraded roles. Run `python -m bootstrap.dataset_build_worker` separately from HTTP, with access
+to the same App SQL database and dataset/execution roots and read-only access to the shared
+RawSnapshot root. Configure `APP_MONGO_URI` and `APP_MONGO_DATABASE` for current Identity
+account lookup. Use an account that can read active identity users. No JWT signing secret,
+source connector credentials, or broker access is required by the worker. For the dev/reference
+Compose stack, create the expected `var/raw-snapshots`, `var/datasets`, and `var/executions`
+directories with the configured runtime UID/GID, then add the opt-in worker to existing profiles:
+
+```sh
+docker compose --env-file "$STACK_ENV" -f compose.ml.yaml -f compose.ml.ingestion.yaml \
+  -f compose.ml.dataset-build.yaml --profile ingestion --profile dataset-build \
+  up -d --build management ingestion-worker dataset-build-worker
+```
+
+The worker processes one job at a time. A job has a 30-minute deadline and up to three
+attempts under five-minute leases. SQL claims are exclusive, and expired attempts can
+be reclaimed by another worker. Dependency outages retry after five seconds within these
+limits. An inactive account, lost grants, invalid input or immutable publication conflict
+produces a terminal failure. The worker reads current account grants at claim and again before
+publication, and publication rechecks snapshot visibility in SQL. The admitted job belongs
+to the account and does not retain an access token or depend on the original login session.
+
+The lease and intent are checked in the transaction that registers the verified receipt,
+publishes the dataset and records success. A stale attempt cannot publish a catalog entry.
+As with the operator CLI, temporary or unreferenced immutable files can remain after failed
+publication. Existing dataset versions without a verified SQL receipt cannot be assigned
+retroactive provenance by a build job. Equivalent registered builds reuse their verified
+version, while different content or provenance requires a new version.
+
+`FAILED` and `SUCCEEDED` are terminal. A replay fetches the same job. To rerun a failed intent
+after resolving its cause, submit it under a new key. Cancellation and manual retry of a
+running job are deferred. Stop the worker to pause processing. On rollback, retain the queue
+table to preserve pending jobs and job evidence. Downgrading 0009 drops that queue but keeps
+already published datasets and lineage. The explicit operator CLI remains available.

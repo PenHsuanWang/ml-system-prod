@@ -25,6 +25,7 @@ PRODUCTION = [
     "bootstrap/ml_api.py",
     "migrations/env.py",
     "migrations/versions/0006_ingestion.py",
+    "migrations/versions/0009_dataset_build_jobs.py",
 ]
 
 

@@ -135,12 +135,12 @@ The following table is planning scope. Each later package needs its own session 
 | WP3 / IMPLEMENTED (feature branch) | GET ingestion/jobs, ingestion/snapshots, datasets, datasets/{id}/versions, version detail/lineage | Reuse source discovery, snapshot publication, SQLDatasetCatalog and verified builder receipts. Define provenance/content identity and publication consistency. Authorization/filters/pagination in SQL. | Preserve exact-version route and legacy incomplete lineage. |
 | WP4 / IMPLEMENTED (feature branch) | GET training/recipes, recipe version, resource-profiles, jobs, job spec/metrics | Approved workload registry and actual submission DTOs. Tenant/ownership filters in SQL, with read-only metrics from persisted attempt results. See [the WP4 workflow](../ml-runbook.md#training-recipe-and-job-discovery-wp4). | Preserves submission, idempotency, outbox, recovery and model approval. No database migration. |
 | WP5 / IMPLEMENTED (feature branch) | Bounded binding and evaluation lists, model family, contract/lineage/approval reads, deployment list/endpoints/history/events | SQL tenant scoping, separate deployment read grant, and only persisted evidence. See [the WP5 workflow](../ml-runbook.md#model-registry-and-deployment-discovery-wp5). | Preserves the binding array and existing writes. Controller remains route writer. No migration. |
-| WP6 / PLANNED | Dataset builder list/detail and durable datasets/build-jobs submit/list/status/result | Reuse current algorithms/CLI and immutable publication. Decide worker mechanism, ownership, recovery, idempotency and cancellation explicitly. | Preserve CLI; additive durable orchestration approved independently. |
+| WP6 / IMPLEMENTED (feature branch) | Builder list/detail and durable dataset build jobs submit/list/status/result | Reuses the EBM transformer and verified receipt. A separate SQL worker rechecks owner grants and atomically commits publication and job success. See [the WP6 workflow](../ml-runbook.md#dataset-build-jobs-wp6). | Preserves the CLI. Additive migration 0009. Bounded automatic recovery, with no cancellation endpoint in WP6. |
 | WP7 / DEFERRED | Evaluate platform/info, capabilities, single-origin login, restricted-network docs assets, role guides, operations | End-to-end MLP/EBM multi-role Compose and target K8s; enterprise TLS/least privilege, dependency outages and actual SLO evidence | Feature rollout and image/config rollback documented per deployment. Production acceptance requires target evidence. |
 
 Dataset/feature preparation and evaluation are PARTIALLY_IMPLEMENTED as API-only user workflows.
 Existing computation and model evaluation are IMPLEMENTED via CLI/Supervisor.
-HTTP dataset build orchestration remains NOT_IMPLEMENTED.
+Explicit EBM dataset build orchestration is implemented on the WP6 feature branch.
 The proposed endpoint catalog is PLANNED and has no registered router.
 The full self-service platform remains PARTIALLY_IMPLEMENTED.
 
@@ -167,6 +167,6 @@ existing SQL catalog; old missing evidence stays incomplete. Full receipts addit
 input visibility, otherwise restricted status withholds source identities. See the
 [API workflow](../ml-runbook.md#dataset-discovery-and-lineage-wp3),
 [plan](dataset-discovery-lineage.md) and [evidence report](../reviews/wp3-dataset-discovery-report.md).
-Dataset build HTTP orchestration remains NOT_IMPLEMENTED (WP6). Training recipe discovery,
-registry/deployment transparency and target-environment production qualification remain planned
-for their separately authorized work packages. Full API-only self-service is not complete.
+Later work packages build on this baseline. The table above records the current trajectory
+for training, governance, and explicit dataset build orchestration. Target-environment
+production qualification remains separate.
