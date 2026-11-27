@@ -9,8 +9,10 @@ from sqlalchemy.exc import IntegrityError
 
 from src.domain.ml import Actor, Conflict, NotFound
 from src.domain.model_registry.models import Approval, Evaluation, ModelBinding
+from src.domain.prediction.catalog import PublicModelContract
 from src.infrastructure.persistence.ml_database import approvals, Database, evaluations, models
 from src.infrastructure.persistence.ml_training import record_audit
+from src.infrastructure.persistence.prediction_contract_schema import public_contracts, usage_reviews
 
 
 def binding_from_row(row: Mapping[str, Any]) -> ModelBinding:
@@ -110,3 +112,54 @@ class SQLRegistryRepository:
             values["approval_id"] = values.pop("id")
             values.pop("created_at")
             return Approval(**values)
+
+
+    def publish_contract(self, actor: Actor, contract: "PublicModelContract", usage_json: str) -> int:
+        from src.domain.ml import digest
+        from src.domain.prediction.catalog import reviewed_usage
+        from src.infrastructure.persistence.ml_training import lock_tenant
+        import json
+
+        actor.require("ml:model:approve")
+        actor.require("ml:model:read")
+        # Validate the separately reviewed allowlist even when called by an operator tool.
+        if reviewed_usage(json.loads(usage_json)) != usage_json:
+            raise Conflict("Usage review must be canonical")
+        with self.db.transaction() as c:
+            lock_tenant(c, actor.tenant_id)
+            binding = c.execute(select(models).where(
+                models.c.id == contract.binding_id,
+                models.c.tenant_id == actor.tenant_id,
+            )).mappings().first()
+            if binding is None:
+                raise NotFound("Model not found")
+            if binding["manifest_digest"] != contract.manifest_digest:
+                raise Conflict("Public contract does not match the model manifest")
+            current = c.execute(select(public_contracts).where(
+                public_contracts.c.binding_id == contract.binding_id)).mappings().first()
+            if current is not None:
+                if (current["manifest_digest"] != contract.manifest_digest
+                        or current["contract_digest"] != contract.contract_digest
+                        or current["document_json"] != contract.document_json
+                        or current["tenant_id"] != actor.tenant_id):
+                    raise Conflict("Published technical contracts are immutable")
+            else:
+                c.execute(insert(public_contracts).values(
+                    binding_id=contract.binding_id, tenant_id=actor.tenant_id,
+                    manifest_digest=contract.manifest_digest,
+                    contract_digest=contract.contract_digest, document_json=contract.document_json,
+                    created_at=time.time()))
+                record_audit(c, actor, "model.contract.publish", contract.contract_digest)
+            review = c.execute(select(usage_reviews).where(
+                usage_reviews.c.binding_id == contract.binding_id).order_by(
+                usage_reviews.c.revision.desc()).limit(1)).mappings().first()
+            if review is not None and review["review_json"] == usage_json:
+                return int(review["revision"])
+            revision = 1 if review is None else int(review["revision"]) + 1
+            review_digest = digest([contract.binding_id, revision, usage_json])
+            c.execute(insert(usage_reviews).values(
+                binding_id=contract.binding_id, revision=revision, tenant_id=actor.tenant_id,
+                review_json=usage_json, review_digest=review_digest,
+                reviewer_id=actor.actor_id, created_at=time.time()))
+            record_audit(c, actor, "model.usage.review", review_digest)
+            return revision

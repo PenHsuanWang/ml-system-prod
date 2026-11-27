@@ -1,0 +1,47 @@
+{
+  "baseline_master": "a5b1767fb2994ae6db5127b4311179a93d9af6f4",
+  "wp1_dependency": "50914652912b262b6652e68b53591cbdc7fb526e",
+  "source_commit": "eb30663aa97fdba37914208550c71ec8e17edb5c",
+  "branch": "feature/prediction-endpoint-discovery",
+  "production_accepted": false,
+  "environment": "Cloud Linux, Python 3.12.14, PyTorch 2.6.0+cpu; isolated SQLite and PostgreSQL 17",
+  "qualification": "Synthetic engineering fixtures; no enterprise service or live Mongo qualification",
+  "validations": [
+    {
+      "name": "ml-regression",
+      "command": "env -u ML_TEST_DATABASE_URL -u ML_TEST_MANAGEMENT_URL -u ML_TEST_PREDICTION_URL -u ML_TEST_AMQP_URL -u ML_TEST_REDIS_URL /workspace/ml-system-prod/.venv/bin/python -m pytest tests/ml tests/test_boundaries.py -q -rs --junitxml=/tmp/wp2-final-head.xml",
+      "status": "PASSED",
+      "exit_status": 0,
+      "passed": 1398,
+      "failed": 0,
+      "skipped": 5,
+      "evidence": "ml-regression.txt",
+      "sha256": "6b1e67ac58db29f85c1d92116f2ee26f4e2d05c690f0abad6ed0937ce50b3612"
+    },
+    {
+      "name": "postgres-focused",
+      "command": "ML_TEST_DATABASE_URL=<isolated fixture on 127.0.0.1:15492> /workspace/ml-system-prod/.venv/bin/python -m pytest tests/ml/test_prediction_catalog.py tests/ml/test_prediction_catalog_e2e.py tests/ml/test_prediction_gateway_docs.py tests/test_boundaries.py -q --junitxml=/tmp/wp2-pg-final-closure.xml",
+      "status": "PASSED",
+      "exit_status": 0,
+      "passed": 197,
+      "failed": 0,
+      "skipped": 0,
+      "evidence": "postgres-focused.txt",
+      "sha256": "4b04ee3743e316b1d072e71e68a1ccd4aeadb2dd750e6c56af166afe0df3bc11"
+    },
+    {
+      "name": "postgres-migration",
+      "status": "PASSED",
+      "exit_status": 0,
+      "command": "/workspace/ml-system-prod/.venv/bin/python /tmp/wp2-pg-migration.py",
+      "scope": "fresh random PostgreSQL schema, 0006 -> 0007 -> 0006 -> 0007; legacy row preserved",
+      "evidence": "postgres-migration.txt",
+      "sha256": "7c388da820f7bd3dcfde3c62f9d973dff319236f4113308f5fe7e39cd0bed090"
+    }
+  ],
+  "deferred": [
+    "Full Compose lifecycle",
+    "Kubernetes dynamic acceptance",
+    "External enterprise qualification"
+  ]
+}

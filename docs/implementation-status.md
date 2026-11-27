@@ -84,3 +84,13 @@ Opt-in Management discovery uses a dedicated Databricks identity and independent
 ml:catalog:read grants. Ingestion clients can browse currently eligible registered
 sources through available-sources. See [configuration, APIs and limits](runtime-source-management.md#governed-runtime-metadata-discovery).
 External Databricks qualification and production approval remain separate.
+
+
+## Prediction endpoint discovery
+
+The feature implementation adds tenant-authorized endpoint list/detail on the existing Gateway.
+It reuses active SQL routes and model bindings, with additive verified public contracts and
+separate reviewed usage revisions. Legacy incomplete metadata remains explicit. Publication/
+backfill is an authenticated operator CLI step. See the
+[delivered API and operator workflow](plans/prediction-endpoint-discovery.md#wp2-delivered-contract-and-operator-walkthrough).
+Target-environment production qualification remains separate.

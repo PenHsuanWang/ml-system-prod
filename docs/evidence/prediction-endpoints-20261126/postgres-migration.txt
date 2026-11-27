@@ -1,0 +1,1 @@
+PASS: isolated PostgreSQL migration 0006 -> 0007 -> 0006 -> 0007; legacy row preserved

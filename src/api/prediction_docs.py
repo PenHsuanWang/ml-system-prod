@@ -11,16 +11,19 @@ from src.domain.prediction.models import Prediction
 GATEWAY_DESCRIPTION = """
 Run inference using a logical endpoint assigned to your tenant.
 
-1. Obtain your endpoint ID, its input contract, and the Management URL from the deployment owner.
+1. Obtain the Management login URL from the deployment owner.
    The reference Compose Management URL uses port 8000.
 2. Sign in at Management `POST /api/v1/identity/login` with `tenant_id`, `username`, and `password`.
    Your account needs `ml:predict`. Paste the returned `access_token` into **Authorize**.
-3. Open **Predict with an active endpoint**, choose **Try it out**, replace the synthetic endpoint
-   in an example with your assigned endpoint, and supply your data.
+3. Use **List models assigned to your prediction endpoints** to find an endpoint.
+   Open its detail_url for a reviewed description, input/output schemas and request_example.
+   Send that example to **Predict with an active endpoint**, replacing its synthetic feature values.
 4. Record `request_id` and `provenance` to identify the model version used for that request.
 
-Synthetic endpoint IDs illustrate request structure. Ask the deployment owner for a deployed ID.
-Endpoint discovery is planned. Users with `ml:model:read` can inspect platform-registered versions
+Synthetic endpoint IDs illustrate request structure. Discovery returns your deployed endpoint IDs.
+Legacy contracts may be incomplete; ask the model owner to publish a verified contract.
+Discovery requires only `ml:predict` and reports SQL routing state with readiness=unknown.
+Users with `ml:model:read` can inspect platform-registered versions
 through Management `GET /api/v1/model_registry/models` and
 `GET /api/v1/model_registry/models/{name}/versions`.
 A registry listing describes registered bindings and requires the deployed endpoint mapping

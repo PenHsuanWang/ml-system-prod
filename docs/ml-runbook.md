@@ -13,9 +13,9 @@ the [README](../README.md); EBM schemas/policy and Ingestion have their own link
 ## API 與 client 契約
 
 參考 Compose 的預測入口為 `http://127.0.0.1:8001/docs`。在 Management 登入後，
-於 Swagger 選 **Authorize** 並貼上 access token。向部署負責人取得邏輯端點與輸入契約，
-在預測操作中選用 MLP 或 EBM 格式。成功回應的 `provenance` 提供這次實際使用的名稱、版本與部署世代。
-可呼叫端點清單的設計見[探索 API 提案](plans/prediction-endpoint-discovery.md)。
+於 Swagger 選 **Authorize** 並貼上 access token。使用 `GET /api/v1/prediction/endpoints` 列出可用端點，
+開啟明細取得輸入契約與 `request_example`，在預測操作中選用 MLP 或 EBM 格式。成功回應的 `provenance` 提供這次實際使用的名稱、版本與部署世代。
+端點 API 與契約發布步驟見[探索 API 文件](plans/prediction-endpoint-discovery.md)。
 
 Management／Gateway／Serving 使用目前 Identity session 的 Bearer token。帳號不會在
 啟動時自動建立；`manage.py create-admin` 的 dot permissions 對映為以下 colon scopes。
