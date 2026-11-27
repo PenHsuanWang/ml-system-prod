@@ -14,8 +14,8 @@ from bootstrap.ml_gateway import create_app
 from src.api.ml_schemas import PredictionRequest
 from src.api.prediction_docs import PREDICT_EXAMPLES, GatewayPredictionResult
 from src.application.prediction.catalog import ContractPublicationService, EndpointDiscoveryService
-from src.domain.ml import Conflict, Forbidden, NotFound, SchemaMismatch, canonical_json
-from src.domain.prediction.catalog import CONTRACT_VERSION, PublicModelContract
+from src.domain.ml import Conflict, Forbidden, NotFound, SchemaMismatch, canonical_json, digest
+from src.domain.prediction.catalog import CONTRACT_VERSION, PublicModelContract, contract_document
 from src.infrastructure.persistence.ml_database import audit, routes
 from src.infrastructure.persistence.prediction_catalog import SQLPredictionCatalog
 from src.infrastructure.persistence.prediction_contract_schema import (
@@ -82,6 +82,98 @@ def predictor(actor):
     return replace(actor, permissions=frozenset({"ml:predict"}))
 
 
+@pytest.mark.parametrize(
+    ("key", "value", "accepted"),
+    [
+        ("input_units", [], False),
+        ("input_units", {"sensor": 123}, False),
+        ("input_units", {"sensor": True}, False),
+        ("input_units", {"sensor": None}, True),
+        ("input_units", {"sensor": "V"}, True),
+        ("output_semantics", [], False),
+        ("limits", {"max_batch_size": 128.0}, False),
+        ("limits", {"max_batch_size": True}, False),
+        ("limits", {"max_batch_size": "128"}, False),
+        ("limits", {"max_batch_size": 128}, True),
+        ("input_schema_version", 1, False),
+        ("output_schema_version", None, False),
+        ("unknown", {}, False),
+    ],
+)
+def test_technical_document_field_types_match_public_contract(key, value, accepted):
+    from src.api.prediction_catalog import PublicTechnicalContract
+
+    binding = SimpleNamespace(binding_id="synthetic-binding", manifest_digest="a" * 64)
+    document = json.loads(technical(binding).document_json)
+    document[key] = value
+    raw = json.dumps(document)  # Retain integral floats for the strict type check.
+    if accepted:
+        assert (
+            contract_document(raw) == PublicTechnicalContract.model_validate(document).model_dump()
+        )
+        canonical = canonical_json(document)
+        contract = PublicModelContract(binding.binding_id, binding.manifest_digest, canonical)
+        assert contract.document_json == canonical
+        assert contract.contract_digest == digest(
+            [CONTRACT_VERSION, binding.binding_id, binding.manifest_digest, document]
+        )
+    else:
+        with pytest.raises(SchemaMismatch, match="Invalid public model contract"):
+            contract_document(raw)
+
+
+def test_technical_document_requires_all_fields():
+    binding = SimpleNamespace(binding_id="synthetic-binding", manifest_digest="a" * 64)
+    document = json.loads(technical(binding).document_json)
+    del document["input_units"]
+    with pytest.raises(SchemaMismatch, match="Invalid public model contract"):
+        contract_document(canonical_json(document))
+
+
+def test_invalid_technical_document_cannot_publish_an_immutable_contract(components, actor, intent):
+    binding, _, _ = evidence(components, actor, intent)
+
+    def invalid_verified_reader(binding):
+        document = json.loads(technical(binding).document_json)
+        document["limits"] = {"max_batch": True}
+        return PublicModelContract(
+            binding.binding_id, binding.manifest_digest, canonical_json(document)
+        )
+
+    service = ContractPublicationService(
+        components.registry, components.registry, invalid_verified_reader
+    )
+    with pytest.raises(SchemaMismatch):
+        service.publish(actor, binding.binding_id, USAGE)
+    with components.database.transaction() as connection:
+        assert connection.execute(select(public_contracts)).first() is None
+        assert connection.execute(select(usage_reviews)).first() is None
+
+
+def test_digest_valid_historical_schema_error_is_incomplete(components, actor, intent):
+    binding, _ = active(components, actor, intent)
+    document = json.loads(technical(binding).document_json)
+    document["input_schema_version"] = 1
+    with components.database.transaction() as connection:
+        connection.execute(
+            update(public_contracts)
+            .where(public_contracts.c.binding_id == binding.binding_id)
+            .values(
+                document_json=canonical_json(document),
+                contract_digest=digest(
+                    [CONTRACT_VERSION, binding.binding_id, binding.manifest_digest, document]
+                ),
+            )
+        )
+    service = catalog(components)
+    reader = predictor(actor)
+    (summary,) = service.list(reader)["items"]
+    assert summary["contract_status"] == "incomplete" and summary["input_schema_version"] is None
+    detail = service.get(reader, "quality")
+    assert detail["contract_status"] == "incomplete" and detail["contract"] is None
+    assert detail["contract_digest"] is None and detail["request_example"] is None
+
+
 def test_only_current_active_generation_is_visible(components, actor, intent):
     first, deployed = active(components, actor, intent)
     reader = predictor(actor)
@@ -135,7 +227,7 @@ def test_cursor_scope_expiry_and_tenant_visibility(components, actor, intent):
     active(components, actor, intent, "b", key="b")
     service = catalog(components)
     reader = predictor(actor)
-    first = service.list(reader, 1)
+    first = service.list(reader, 1, cursor=None)
     assert first["items"][0]["endpoint_id"] == "a"
     cursor = first["next_cursor"]
     second = service.list(reader, 1, cursor)
@@ -143,7 +235,7 @@ def test_cursor_scope_expiry_and_tenant_visibility(components, actor, intent):
     for other in (replace(reader, tenant_id="other"), replace(reader, actor_id="other")):
         with pytest.raises(SchemaMismatch):
             service.list(other, 1, cursor)
-    for token, limit in ((cursor + "x", 1), ("bad", 1), (cursor, 2)):
+    for token, limit in ((cursor + "x", 1), ("bad", 1), (cursor, 2), ("", 1)):
         with pytest.raises(SchemaMismatch):
             service.list(reader, limit, token)
     with pytest.raises(SchemaMismatch):
@@ -263,7 +355,7 @@ def test_http_only_predictor_can_discover_contract_and_predict(components, actor
         )
         assert prediction.status_code == 200
         assert prediction.json()["provenance"]["model_version"] == detail["model_version"]
-        for params in ("limit=101", "cursor=invalid", "tenant_id=other"):
+        for params in ("limit=101", "cursor=invalid", "cursor=", "tenant_id=other"):
             assert (
                 client.get("/api/v1/prediction/endpoints?" + params, headers=headers).status_code
                 == 422

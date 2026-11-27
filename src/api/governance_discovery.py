@@ -81,8 +81,12 @@ class DeploymentQuery(PageQuery):
 
 
 def page(model: type[T], rows: list[ReadRow], window: CollectionWindow) -> MetadataPage[T]:
+    try:
+        items = [model.model_validate(row) for row in rows[: window.limit]]
+    except ValidationError:
+        raise Unavailable("Stored governance metadata is unavailable") from None
     return MetadataPage[T](
-        items=[model.model_validate(row) for row in rows[: window.limit]],
+        items=items,
         limit=window.limit,
         offset=window.offset,
         next_offset=window.next_offset(has_more=len(rows) > window.limit),
