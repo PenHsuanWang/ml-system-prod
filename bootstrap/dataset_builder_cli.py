@@ -7,37 +7,20 @@ import json
 import os
 from pathlib import Path
 
-from bootstrap.ingestion_wiring import IngestionSettings
+from bootstrap.dataset_build_wiring import build_preparation
 from bootstrap.ml_config import MLSettings
-from src.application.datasets.builder import (
-    EBMDatasetPreparationService,
-    RawSnapshotSetResolver,
-)
+from src.application.datasets.builder import EBMDatasetPreparationService
 from src.domain.datasets.ebm_builder import (
     EBMDatasetBuilderConfig,
     EBMRawSnapshotReference,
 )
 from src.domain.ml import Actor
-from src.infrastructure.datasets.ebm_builder import LocalEBMDatasetPublisher
-from src.infrastructure.ingestion.persistence.ingestion_jobs import SQLIngestionJobRepository
-from src.infrastructure.ingestion.storage.raw_snapshot_writer import LocalRawSnapshotStore
 from src.infrastructure.persistence.ml_database import Database
-from src.infrastructure.persistence.ml_datasets import SQLDatasetCatalog
-from src.plugins.features.ebm_dataset_builder_v1 import EBMDatasetBuilderV1
 
 
 def _service(settings: MLSettings, raw_root: Path) -> tuple[EBMDatasetPreparationService, Database]:
-    ingestion = IngestionSettings(database_url=settings.database_url, raw_root=raw_root)
     database = Database(settings.database_url)
-    jobs = SQLIngestionJobRepository(database)
-    store = LocalRawSnapshotStore(ingestion.raw_root)
-    catalog = SQLDatasetCatalog(database, settings.dataset_root)
-    service = EBMDatasetPreparationService(
-        RawSnapshotSetResolver(jobs, store),
-        EBMDatasetBuilderV1(),
-        LocalEBMDatasetPublisher(catalog, settings.execution_root / "dataset-builder"),
-    )
-    return service, database
+    return build_preparation(settings, database, raw_root), database
 
 
 def main() -> None:

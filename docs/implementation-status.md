@@ -9,7 +9,7 @@
   checkpoint、精確 Bundle 評估、MLflow／S3、明確 Approval、固定版本部署與預測。
 - Data Ingress：File 與 Databricks SQL Warehouse batch adapter、核准來源與模板、
   OAuth M2M、固定 Delta version、有界 JSONL、持久發布與故障對帳。
-  Raw Snapshot 不會自動變成訓練資料；EBM DatasetBuilder 是明確的 operator 步驟。
+  Raw Snapshot 不會自動變成訓練資料。EBM DatasetBuilder 由 API 或 operator CLI 明確啟動。
 - 治理與協調：SQL 是 Job／Attempt／Outbox／Evaluation／Approval／Route 的權威；
   Redis 是 technical snapshot，RabbitMQ 是傳輸。取消、deadline、drain 與重送保留 fencing。
 - 部署：既有 local／Compose／外部服務 VM profile，以及 opt-in K8s 原生 Serving、
@@ -122,3 +122,10 @@ and persisted creation events. See the
 [governance discovery workflow](ml-runbook.md#model-registry-and-deployment-discovery-wp5).
 Local verification is recorded in the [WP5 report](reviews/wp5-governance-discovery-report.md).
 Runtime readiness and target-environment qualification remain separate.
+
+## WP6 dataset build orchestration
+
+The WP6 feature branch adds explicit EBM Builder discovery and durable build jobs on Management.
+A separate SQL worker reuses the existing transformer and verified publication. See the
+[build API and worker workflow](ml-runbook.md#dataset-build-jobs-wp6).
+Local verification is recorded in the [WP6 report](reviews/wp6-dataset-build-report.md).

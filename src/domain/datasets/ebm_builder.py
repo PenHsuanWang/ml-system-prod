@@ -8,7 +8,7 @@ from collections.abc import Mapping
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import UTC, datetime
-from typing import Any
+from typing import Any, Final
 
 from src.domain.datasets.ebm import EBM_PAD_ORDER, EBM_SIGNAL_ORDER, EBMSample
 from src.domain.datasets.models import DatasetVersion
@@ -16,8 +16,8 @@ from src.domain.ingestion.models import RawSnapshot
 from src.domain.ml import MLError
 
 EBM_RAW_INPUT_SCHEMA = "ebm-raw-input-v1"
-EBM_DATASET_BUILDER_ID = "ebm-dataset-builder"
-EBM_DATASET_BUILDER_VERSION = "1.0.0"
+EBM_DATASET_BUILDER_ID: Final = "ebm-dataset-builder"
+EBM_DATASET_BUILDER_VERSION: Final = "1.0.0"
 EBM_RAW_SNAPSHOT_ROLES = frozenset({"fdc", "wafer"})
 
 _IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,127}")

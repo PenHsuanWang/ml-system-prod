@@ -61,6 +61,11 @@ def test_lineage_upgrade_downgrade_preserves_preexisting_versions(migration_url)
         command.upgrade(config, "head")
         command.upgrade(config, "head")
         assert "dataset_build_lineage" in inspect(engine).get_table_names()
+        assert "dataset_build_jobs" in inspect(engine).get_table_names()
+        command.downgrade(config, "0008_dataset_lineage")
+        tables = inspect(engine).get_table_names()
+        assert "dataset_build_lineage" in tables and "dataset_build_jobs" not in tables
+        command.upgrade(config, "head")
         foreign_keys = inspect(engine).get_foreign_keys("dataset_build_lineage")
         assert foreign_keys[0]["referred_table"] == "dataset_versions"
         with engine.connect() as connection:

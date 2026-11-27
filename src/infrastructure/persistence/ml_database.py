@@ -8,9 +8,9 @@ import sqlite3
 
 from sqlalchemy import Boolean, Column, create_engine, event, Float, ForeignKey, Index, Integer, MetaData, String, Table, Text, UniqueConstraint
 from sqlalchemy.engine import Connection, Engine
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import DBAPIError, IntegrityError, SQLAlchemyError, TimeoutError
 
-from src.domain.ml import Unavailable
+from src.domain.ml import TransientDependency, Unavailable
 
 metadata = MetaData()
 
@@ -141,6 +141,21 @@ audit = Table("audit_events", metadata, identity(),
               Column("created_at", Float, nullable=False))
 
 
+def _transient_database_error(error: SQLAlchemyError) -> bool:
+    if isinstance(error, TimeoutError):
+        return True
+    if not isinstance(error, DBAPIError):
+        return False
+    state = getattr(error.orig, "sqlstate", None)
+    if error.connection_invalidated or state in {
+        "08000", "08001", "08003", "08006", "08007",
+        "40001", "40P01", "55P03", "57P01", "57P02", "57P03",
+    }:
+        return True
+    code = getattr(error.orig, "sqlite_errorcode", None)
+    return isinstance(code, int) and code & 0xFF in {sqlite3.SQLITE_BUSY, sqlite3.SQLITE_LOCKED}
+
+
 class Database:
     def __init__(self, url: str) -> None:
         options: dict[str, object] = {"pool_pre_ping": True}
@@ -172,7 +187,9 @@ class Database:
                 yield connection
         except IntegrityError:
             raise
-        except SQLAlchemyError:
+        except SQLAlchemyError as error:
+            if _transient_database_error(error):
+                raise TransientDependency("Application storage is unavailable") from None
             raise Unavailable("Application storage is unavailable") from None
 
     def ready(self) -> bool:

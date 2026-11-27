@@ -5,6 +5,7 @@ from functools import partial
 import json
 
 from bootstrap.ml_config import MLSettings
+from src.application.datasets.build_jobs import DatasetBuildService
 from src.application.deployments.service import DeploymentService
 from src.application.datasets.service import DatasetService
 from src.application.governance import GovernanceDiscoveryService
@@ -17,6 +18,8 @@ from src.infrastructure.datasets.snapshots import FileDatasetSource
 from src.infrastructure.datasets.ebm_snapshots import EBMFileDatasetSource
 from bootstrap.ml_training_wiring import training_executor
 from src.infrastructure.mlflow.tracking import LocalExperimentTracker, MLflowExperimentTracker
+from src.infrastructure.ingestion.persistence.ingestion_jobs import SQLIngestionJobRepository
+from src.infrastructure.persistence.dataset_build_jobs import SQLDatasetBuildJobs
 from src.infrastructure.persistence.ml_database import Database
 from src.infrastructure.persistence.governance_reads import SQLGovernanceReader
 from src.infrastructure.persistence.ml_datasets import SQLDatasetCatalog
@@ -88,5 +91,6 @@ def build_components(settings: MLSettings) -> Components:
         deployment_service,
         DatasetService(catalog, discovery=catalog),
         GovernanceDiscoveryService(SQLGovernanceReader(database), registry_service, deployment_service),
+        DatasetBuildService(SQLDatasetBuildJobs(database), SQLIngestionJobRepository(database)),
     )
     return Components(settings, database, training, registry, deployments, services)

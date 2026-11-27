@@ -17,6 +17,7 @@ from typing import IO, TYPE_CHECKING, Any, cast
 
 from src.domain.datasets.ebm import EBM_FEATURE_SHAPE, EBMDatasetMetadata
 from src.domain.ml import MLError, canonical_json
+from src.infrastructure.storage_errors import raise_if_transient_storage_error
 
 if TYPE_CHECKING:
     import numpy as np
@@ -155,6 +156,7 @@ class EBMFileDatasetSource:
                     raise MLError("EBM snapshot file exceeds its size limit")
                 return data
         except OSError as exc:
+            raise_if_transient_storage_error(exc)
             raise MLError("EBM snapshot file cannot be read") from exc
 
     def load(self, reference: Mapping[str, str]) -> EBMFeatureSnapshot:

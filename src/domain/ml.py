@@ -40,6 +40,10 @@ class Unavailable(MLError):
     code, status, retryable = "DEPENDENCY_UNAVAILABLE", 503, True
 
 
+class TransientDependency(Unavailable):
+    """A recognized temporary dependency failure eligible for background retry."""
+
+
 class SchemaMismatch(MLError):
     code, status = "SCHEMA_MISMATCH", 422
 

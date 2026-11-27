@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from typing import Protocol
 
+from src.application.datasets.build_jobs import DatasetBuildService
 from src.application.deployments.service import DeploymentService
 from src.application.datasets.service import DatasetService
 from src.application.governance import GovernanceDiscoveryService
@@ -22,3 +23,4 @@ class MLServices:
     deployments: DeploymentService
     datasets: DatasetService
     governance: GovernanceDiscoveryService | None = None
+    dataset_builds: DatasetBuildService | None = None
