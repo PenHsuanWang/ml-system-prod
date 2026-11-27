@@ -78,6 +78,6 @@ def build_components(settings: MLSettings) -> Components:
     recipes = ApprovedRecipeResolver(
         code_revision=settings.code_revision, image_digest=settings.image_digest, catalog=catalog,
         ebm_evaluation_policy=policy)
-    services = MLServices(TrainingService(training, recipes), ModelRegistryService(registry),
+    services = MLServices(TrainingService(training, recipes, discovery=training), ModelRegistryService(registry),
                           DeploymentService(deployments, settings.environment), DatasetService(catalog, discovery=catalog))
     return Components(settings, database, training, registry, deployments, services)

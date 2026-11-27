@@ -2,12 +2,13 @@
 
 import json
 import math
-from typing import Any, Protocol
+from typing import Any, Protocol, cast
 
 from src.domain.ml import Actor, canonical_json, MLError
 from src.domain.datasets.models import DatasetVersion
 from src.domain.datasets.ebm import EBM_DATASET_SCHEMA
 from src.domain.training.ebm import EBM_RECIPE_ID, EBM_RECIPE_VERSION, EBMTrainingConfig
+from src.domain.training.workloads import EBM_WORKLOAD, MLP_WORKLOAD, WorkloadContract
 
 
 def _ebm_model_config(value: Any) -> dict[str, Any]:
@@ -55,6 +56,11 @@ class ApprovedRecipeResolver:
         self.ebm_evaluation_policy = (json.loads(canonical_json(ebm_evaluation_policy))
                                       if ebm_evaluation_policy is not None else None)
 
+    def evaluation_policy_version(self, workload: WorkloadContract) -> str:
+        if workload == EBM_WORKLOAD and self.ebm_evaluation_policy:
+            return cast(str, self.ebm_evaluation_policy["policy_version"])
+        return workload.default_evaluation_policy
+
     def resolve(self, intent_json: str, actor: Actor | None = None) -> str:
         value = json.loads(intent_json)
         allowed = {"schema_version", "recipe", "dataset", "model", "training",
@@ -78,14 +84,14 @@ class ApprovedRecipeResolver:
         if (summary.get("dataset_schema_version") == EBM_DATASET_SCHEMA
                 or summary.get("feature_schema_version") != "1"):
             raise MLError("Dataset contract does not match the approved MLP recipe")
-        if value["resource_profile_id"] != "cpu-small-v1":
+        if value["resource_profile_id"] != MLP_WORKLOAD.resource_profile_id:
             raise MLError("Resource profile is not approved")
-        if value["model"]["architecture"] != "mlp_v1":
+        if value["model"]["architecture"] != MLP_WORKLOAD.architecture:
             raise MLError("Architecture is not approved")
         value.update({"code_revision": self.code_revision,
                       "training_image_digest": self.image_digest, "feature_schema_version": "1",
                       "split": {"strategy": "fixed_indices", "split_id": dataset.content_digest},
-                      "output_contract_version": "1", "evaluation_policy": "demo-accuracy-v1",
+                      "output_contract_version": "1", "evaluation_policy": self.evaluation_policy_version(MLP_WORKLOAD),
                       "request_normalization": "ml-json-v1"})
         return canonical_json(value)
 
@@ -94,11 +100,11 @@ class ApprovedRecipeResolver:
         if (summary.get("dataset_schema_version") != EBM_DATASET_SCHEMA
                 or summary.get("feature_schema_version") != "ebm-spectrogram-input-v1"):
             raise MLError("Dataset contract does not match the approved EBM recipe")
-        if value.get("resource_profile_id") != "cpu-ebm-v1":
+        if value.get("resource_profile_id") != EBM_WORKLOAD.resource_profile_id:
             raise MLError("Resource profile is not approved for EBM")
         model = value.get("model")
         if (not isinstance(model, dict) or set(model) != {"architecture", "config"}
-                or model.get("architecture") != "ebm_cnn_v1"):
+                or model.get("architecture") != EBM_WORKLOAD.architecture):
             raise MLError("Architecture is not approved for EBM")
         model["config"] = _ebm_model_config(model["config"])
         value["training"] = EBMTrainingConfig.from_dict(value.get("training", {})).to_dict()
@@ -111,6 +117,6 @@ class ApprovedRecipeResolver:
             "output_contract_version": "ebm-neural-output-v1",
             "evaluator_version": "ebm-neural-v1", "compatibility_id": "ebm-torch-cpu-v1",
             "artifact_profile": "ebm-neural-bundle-v1",
-            "evaluation_policy": policy["policy_version"] if policy else "ebm-unqualified-v1",
+            "evaluation_policy": self.evaluation_policy_version(EBM_WORKLOAD),
             "evaluation_policy_config": policy, "request_normalization": "ml-json-v1"})
         return canonical_json(value)

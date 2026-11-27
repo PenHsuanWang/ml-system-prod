@@ -79,10 +79,13 @@ def create_app(
 
     catalog = build_catalog()
     from src.api.datasets.routers import router as dataset_discovery_router
+    from src.api.training_discovery import router as training_discovery_router
 
     definitions = [
         *build_modules(config),
-        ModuleDefinition("training", requires=("identity",), routers=(training_router,)),
+        ModuleDefinition(
+            "training", requires=("identity",), routers=(training_router, training_discovery_router)
+        ),
         ModuleDefinition("model_registry", requires=("training",), routers=(registry_router,)),
         ModuleDefinition("deployments", requires=("training",), routers=(deployment_router,)),
         ModuleDefinition(

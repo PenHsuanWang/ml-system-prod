@@ -174,8 +174,8 @@
     },
     {
       "path": "bootstrap/ml_api.py",
-      "bytes": 6621,
-      "sha256": "34c57f328815cbb17a2d89edd8533fe46035690406d061eafb3f9fa80ab19a61"
+      "bytes": 6748,
+      "sha256": "e748edd1da8c7b5a597f03b5497c99667a74fc88b3332f43c7e2b1dc74932c9b"
     },
     {
       "path": "bootstrap/ml_cli.py",
@@ -224,8 +224,8 @@
     },
     {
       "path": "bootstrap/ml_wiring.py",
-      "bytes": 5151,
-      "sha256": "a7283c0742d3fe3f3a6d216f253af3496f5965936ef877fbfc5191def5114b24"
+      "bytes": 5171,
+      "sha256": "816a1a4b9997d80802d6b28243fbebe31393ad05959c2b1fe6f6f292037ed3d2"
     },
     {
       "path": "bootstrap/ml_worker.py",
@@ -1004,8 +1004,8 @@
     },
     {
       "path": "docs/implementation-status.md",
-      "bytes": 6642,
-      "sha256": "7b5e781c56a7d5899507d6bcf6a8973b8ab49f8dcd802b84793399b247a21a84"
+      "bytes": 7019,
+      "sha256": "9f43c1947c56f8bfa4ecccd06fc3b5872e804be420e0dcef1d45d13b9e9ea2cb"
     },
     {
       "path": "docs/microservice-contracts.md",
@@ -1014,8 +1014,8 @@
     },
     {
       "path": "docs/ml-runbook.md",
-      "bytes": 19886,
-      "sha256": "e0aa985c6ee15b7d4a992c7626723d35a686d70d05d272743312299a81c0d009"
+      "bytes": 24611,
+      "sha256": "0d37f752df314066a56be31b160c120bfc1bfa6da1ed0274d68756554cb4951d"
     },
     {
       "path": "docs/ml-runtime-compatibility.md",
@@ -1044,8 +1044,8 @@
     },
     {
       "path": "docs/plans/self-service-api-inventory.md",
-      "bytes": 19003,
-      "sha256": "85308142ea7bd1c911bc9709761176e54a39715253d64582a4302f71b3ea6d57"
+      "bytes": 19097,
+      "sha256": "3e7619d3ea1e13a774bc77261e36cb642f93106ba2c50ac5c1c67d448efa161e"
     },
     {
       "path": "docs/pytorch-ml-system-hld.md",
@@ -1329,8 +1329,8 @@
     },
     {
       "path": "scripts/check_training_runtime.py",
-      "bytes": 1019,
-      "sha256": "c0c1c85193cf5922751091136e07d56681ef744cd93d7f05796108612399554f"
+      "bytes": 1186,
+      "sha256": "7dda1737d08020e0a4e5794b7a6f50792609e01e00a09b12e935a685378aa774"
     },
     {
       "path": "scripts/create_ml_env.py",
@@ -1629,8 +1629,8 @@
     },
     {
       "path": "src/api/ml_http.py",
-      "bytes": 8883,
-      "sha256": "79c14f44fa48a07604d121fdd2517b6c9435abde0f09a35beea62b8332875497"
+      "bytes": 9039,
+      "sha256": "6a5d116c590756e7bf278e11e31a8e26318d092db909da1f010b62fde3c0bbde"
     },
     {
       "path": "src/api/ml_schemas.py",
@@ -1656,6 +1656,11 @@
       "path": "src/api/schemas.py",
       "bytes": 215,
       "sha256": "e745921d32ace960b90185d8d507ce29eb361fc540912eedb553d72b3d6bbad2"
+    },
+    {
+      "path": "src/api/training_discovery.py",
+      "bytes": 9764,
+      "sha256": "70c1ba61e2d85fe654f218d1fc979dd8c61d8ebc504ae8be08e58fb19cdb0fce"
     },
     {
       "path": "src/application/__init__.py",
@@ -1864,8 +1869,8 @@
     },
     {
       "path": "src/application/training/ports.py",
-      "bytes": 1929,
-      "sha256": "695aa3c8fd3ebb65cc0c3ceda7bfdbcb9929620561a1c13485caae2d684060a2"
+      "bytes": 2378,
+      "sha256": "5f656f165898e2bfd7fc442cc63743226615e34da2e0a556f1d16c66eace1586"
     },
     {
       "path": "src/application/training/reconciliation.py",
@@ -1874,8 +1879,8 @@
     },
     {
       "path": "src/application/training/service.py",
-      "bytes": 2107,
-      "sha256": "58be8e098c1429f837e5ab9d687d36c59fb474659f8d662130f31be416ffbe40"
+      "bytes": 7406,
+      "sha256": "28cab7330ab01d55b7e7d0e670f456564b26720cd56755b956f26f15b0e162d4"
     },
     {
       "path": "src/application/training/supervisor.py",
@@ -2149,8 +2154,8 @@
     },
     {
       "path": "src/domain/training/workloads.py",
-      "bytes": 3410,
-      "sha256": "15da937783a3e4e5d1aeeb38700627ee9718debc4f46901dc65eb965a2f180f5"
+      "bytes": 3637,
+      "sha256": "071cf222fb2defd10b0c7cbcf174144f1236f85a5c0e720bedbb8467b6be5f4a"
     },
     {
       "path": "src/infrastructure/__init__.py",
@@ -2204,8 +2209,8 @@
     },
     {
       "path": "src/infrastructure/datasets/ml_recipes.py",
-      "bytes": 6827,
-      "sha256": "2965f892db5ec7cf8aad48046e92ad01bb30d8eda68dc028d7a30e77fdadbba5"
+      "bytes": 7268,
+      "sha256": "3d7f9fc7555cb04378fb8ec5842d960962cbb9055723d6be7faa1404452b798c"
     },
     {
       "path": "src/infrastructure/datasets/snapshots.py",
@@ -2464,8 +2469,8 @@
     },
     {
       "path": "src/infrastructure/persistence/ml_training.py",
-      "bytes": 18577,
-      "sha256": "e112b37ca7cd64b95115f120432b6c52058f986d1c93d54e71d88b9069daf6d2"
+      "bytes": 19883,
+      "sha256": "e884a4ed1ba01161b366cc237ec29d8077559d2b787aa72a4868185b1ce67837"
     },
     {
       "path": "src/infrastructure/persistence/mongo.py",
@@ -3136,6 +3141,11 @@
       "path": "tests/ml/test_training_contracts.py",
       "bytes": 8039,
       "sha256": "9ff3097bd66ecff0d012c54bf92cb7cf2f52aae68cd6edc320a28842a7652a60"
+    },
+    {
+      "path": "tests/ml/test_training_discovery.py",
+      "bytes": 9028,
+      "sha256": "c9accd3e4ec82018feca30a54c460dccab48456818119cd78d6d0497af0bb29f"
     },
     {
       "path": "tests/ml/test_workload_dispatch.py",

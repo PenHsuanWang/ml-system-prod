@@ -1,4 +1,4 @@
-"""Check Pod Training adapter boundaries and formatting."""
+"""Check Training runtime and discovery lint and formatting."""
 
 import subprocess
 import sys
@@ -11,7 +11,11 @@ FILES = [
     "src/infrastructure/messaging/training_ack.py",
     "src/application/training/delivery.py",
     "src/application/training/reconciliation.py",
+    "src/application/training/service.py",
+    "src/domain/training/workloads.py",
+    "src/api/training_discovery.py",
     "tests/ml/test_pod_training_runtime.py",
+    "tests/ml/test_training_discovery.py",
     "scripts/check_training_runtime.py",
     "scripts/k8s_training_fixture.py",
     "scripts/k8s_training_fault.py",

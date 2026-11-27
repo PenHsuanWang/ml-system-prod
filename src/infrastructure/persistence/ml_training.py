@@ -11,8 +11,9 @@ from sqlalchemy import delete, func, insert, select, update
 from sqlalchemy.engine import Connection
 
 from src.domain.ml import Actor, CapacityExceeded, Conflict, digest, IdempotencyConflict, NotFound, canonical_json
+from src.domain.pagination import CollectionWindow
 from src.infrastructure.ml_tracing import capture_context
-from src.domain.training.models import Attempt, Claim, Job, TERMINAL, TrainingCommand
+from src.domain.training.models import Attempt, Claim, Job, JobState, TERMINAL, TrainingCommand
 from src.infrastructure.persistence.ml_database import attempts, audit, Database, evaluations, jobs, keys, models, outbox, tenants
 
 
@@ -112,6 +113,30 @@ class SQLTrainingRepository:
     def get(self, job_id: str) -> Job:
         with self.db.transaction() as c:
             return job_from_row(self._job(c, job_id))
+
+    def list_visible(
+        self, actor: Actor, window: CollectionWindow, state: JobState | None
+    ) -> list[Job]:
+        statement = select(jobs).where(jobs.c.tenant_id == actor.tenant_id)
+        if "ml:jobs:read_all" not in actor.permissions:
+            statement = statement.where(jobs.c.owner_id == actor.actor_id)
+        if state is not None:
+            statement = statement.where(jobs.c.state == state.value)
+        if window.created_after is not None:
+            statement = statement.where(jobs.c.created_at > window.created_after)
+        if window.created_before is not None:
+            statement = statement.where(jobs.c.created_at < window.created_before)
+        statement = statement.order_by(jobs.c.created_at.desc(), jobs.c.id.desc()).limit(
+            window.limit + 1
+        ).offset(window.offset)
+        with self.db.transaction() as c:
+            return [job_from_row(row) for row in c.execute(statement).mappings()]
+
+    def attempt_result(self, job_id: str, attempt_id: str) -> str | None:
+        with self.db.transaction() as c:
+            return cast(str | None, c.scalar(select(attempts.c.result_json).where(
+                attempts.c.job_id == job_id, attempts.c.id == attempt_id,
+            )))
 
     def attempts(self, job_id: str) -> tuple[Attempt, ...]:
         with self.db.transaction() as c:
