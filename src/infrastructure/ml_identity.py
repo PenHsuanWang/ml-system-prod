@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 import jwt
 
-from src.domain.ml import Actor, Forbidden, MLError, Unavailable
+from src.domain.ml import Actor, Forbidden, MLError, TransientDependency, Unavailable
 
 
 class AuthenticationRequired(MLError):
@@ -23,12 +23,14 @@ class MongoActiveActorResolver:
         self.db = self.client[database]
 
     def _active_user(self, tenant_id: str, user_id: str):
-        from pymongo.errors import PyMongoError
+        from pymongo.errors import ConnectionFailure, PyMongoError
         try:
             return self.db.identity_users.find_one(
                 {"_id": user_id, "tenant_id": tenant_id, "active": True},
                 {"permissions": 1},
             )
+        except ConnectionFailure:
+            raise TransientDependency("Identity storage is unavailable") from None
         except PyMongoError:
             raise Unavailable("Identity storage is unavailable") from None
 

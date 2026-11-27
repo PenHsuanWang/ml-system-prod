@@ -28,6 +28,7 @@ TARGETS = [
     "src/infrastructure/persistence/dataset_build_schema.py",
     "src/infrastructure/persistence/dataset_build_jobs.py",
     "src/infrastructure/datasets/ebm_snapshots.py",
+    "src/infrastructure/storage_errors.py",
     "src/infrastructure/datasets/ml_recipes.py",
     "src/infrastructure/serving/artifacts.py",
     "src/infrastructure/serving/ebm_artifacts.py",

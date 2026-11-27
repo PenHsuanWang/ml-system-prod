@@ -437,12 +437,23 @@ docker compose --env-file "$STACK_ENV" -f compose.ml.yaml -f compose.ml.ingestio
 ```
 
 The worker processes one job at a time. A job has a 30-minute deadline and up to three
-attempts under five-minute leases. SQL claims are exclusive, and expired attempts can
-be reclaimed by another worker. Dependency outages retry after five seconds within these
-limits. An inactive account, lost grants, invalid input or immutable publication conflict
-produces a terminal failure. The worker reads current account grants at claim and again before
-publication, and publication rechecks snapshot visibility in SQL. The admitted job belongs
-to the account and does not retain an access token or depend on the original login session.
+attempts under five-minute leases. The worker renews its current lease every minute
+during processing, up to the job deadline. SQL claims are exclusive. An expired or
+superseded lease cannot be renewed, and another worker can reclaim an expired attempt
+while the job is within its deadline and attempt budget. Lease loss or deadline expiry
+fences publication. An already running transformation can continue computing until it
+returns or the process stops.
+
+Recognized transient SQL connection and contention errors, MongoDB connection errors,
+and temporary shared-filesystem errors can requeue an attempt after five seconds within
+the same limits. A brief heartbeat outage leaves the last committed lease in effect.
+If publication loses its SQL commit acknowledgement, the persisted job state determines
+the outcome. A completed publication stays successful, and an uncommitted publication
+can retry. An inactive account, lost grants, invalid input, digest mismatch or immutable
+publication conflict produces a terminal failure. The worker reads current account
+grants at claim and again before publication, and publication rechecks snapshot
+visibility in SQL. The admitted job belongs to the account and does not retain an access
+token or depend on the original login session.
 
 The lease and intent are checked in the transaction that registers the verified receipt,
 publishes the dataset and records success. A stale attempt cannot publish a catalog entry.

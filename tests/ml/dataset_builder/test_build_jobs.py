@@ -1,26 +1,36 @@
 """WP6 acceptance on actual immutable File Batch inputs and SQL publication."""
 
+import errno
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from functools import partial
+from pathlib import Path
+from threading import Event
+from types import SimpleNamespace
 
 import httpx
 import pytest
+from pymongo.errors import AutoReconnect, OperationFailure
 from sqlalchemy import select
+from sqlalchemy.exc import DBAPIError
 
 from bootstrap.dataset_build_wiring import build_preparation, build_worker
 from bootstrap.ml_api import create_app
 from src.api.datasets.build_jobs import BuildRequest
 from src.application.datasets.build_jobs import DatasetBuildService
-from src.domain.ml import Conflict, NotFound, Unavailable
+from src.domain.ml import Conflict, NotFound, TransientDependency
+from src.infrastructure.datasets.ebm_builder import LocalEBMDatasetPublisher
+from src.infrastructure.ingestion.storage import raw_snapshot_writer
 from src.infrastructure.ingestion.storage.raw_snapshot_writer import LocalRawSnapshotStore
+from src.infrastructure.ml_identity import MongoActiveActorResolver
 from src.infrastructure.persistence.dataset_build_jobs import (
     BUILD_DEADLINE_SECONDS,
     BUILD_LEASE_SECONDS,
     SQLDatasetBuildJobs,
 )
+from src.infrastructure.persistence.dataset_build_schema import dataset_build_jobs
 from src.infrastructure.persistence.dataset_lineage_schema import dataset_lineage
-from src.infrastructure.persistence.ml_database import Database, audit
+from src.infrastructure.persistence.ml_database import Database, audit, datasets
 from tests.ml.test_api import Identity
 
 JOBS = "/api/v1/datasets/build-jobs"
@@ -153,10 +163,12 @@ def test_expired_worker_cannot_publish_and_next_lease_completes_atomically(
         claimed = list(pool.map(lambda _: queue.claim(), range(2)))
     assert sum(claim is not None for claim in claimed) == 1
     stale = next(claim for claim in claimed if claim is not None)
-    time[0] += BUILD_LEASE_SECONDS + 1
+    time[0] += BUILD_LEASE_SECONDS
+    assert not queue.renew(stale)
     recovered = queue.claim()
     assert recovered is not None and recovered.token != stale.token
     assert recovered.job.attempt_count == 2
+    assert not queue.renew(stale)
     raw_root = tmp_path / "raw-snapshots"
     stale_service = build_preparation(
         components.settings,
@@ -181,6 +193,101 @@ def test_expired_worker_cannot_publish_and_next_lease_completes_atomically(
     result = current.build(actor, spec.dataset_id, spec.version, spec.inputs, spec.config)
     persisted = service.get(actor, job.job_id)
     assert persisted.state == "SUCCEEDED" and persisted.receipt_digest == result.receipt_digest
+    with pytest.raises(Conflict, match="lease"):
+        stale_service.build(actor, spec.dataset_id, spec.version, spec.inputs, spec.config)
+    assert service.get(actor, job.job_id) == persisted
+
+
+def test_worker_renews_during_long_running_build(
+    components, published_builder_inputs, monkeypatch, tmp_path
+):
+    fixture = published_builder_inputs
+    actor = fixture.operator
+    now = [1000.0]
+    queue = SQLDatasetBuildJobs(components.database, clock=lambda: now[0])
+    service = DatasetBuildService(queue, fixture.ingress.jobs)
+    spec = BuildRequest.model_validate(request_body(fixture)).spec()
+    job = service.submit(actor, "long-build", spec)
+    started, renewed, finish = Event(), Event(), Event()
+    read_records = LocalRawSnapshotStore.read_records
+    renew = queue.renew
+    missed = False
+
+    def slow_read(store, snapshot):
+        started.set()
+        assert finish.wait(10)
+        return read_records(store, snapshot)
+
+    def observe_renewal(claim):
+        nonlocal missed
+        if now[0] == job.created_at + BUILD_LEASE_SECONDS / 2:
+            if not missed:
+                missed = True
+                raise TransientDependency("Temporary heartbeat outage")
+            alive = renew(claim)
+            assert alive
+            renewed.set()
+            return alive
+        return renew(claim)
+
+    monkeypatch.setattr(LocalRawSnapshotStore, "read_records", slow_read)
+    monkeypatch.setattr(queue, "renew", observe_renewal)
+    worker = build_worker(components.settings, queue, tmp_path / "raw-snapshots", lambda *_: actor)
+    worker.heartbeat_interval = 0.01
+    with ThreadPoolExecutor(1) as pool:
+        result = pool.submit(worker.run_once)
+        try:
+            assert started.wait(10)
+            now[0] += BUILD_LEASE_SECONDS / 2
+            assert renewed.wait(10)
+            now[0] = job.created_at + BUILD_LEASE_SECONDS + 1
+            assert queue.claim() is None
+        finally:
+            finish.set()
+        assert result.result(timeout=10) == job.job_id
+    completed = service.get(actor, job.job_id)
+    assert completed.state == "SUCCEEDED" and completed.attempt_count == 1
+    assert completed.receipt_digest is not None
+
+
+def test_claim_and_renewal_are_capped_by_deadline(components, published_builder_inputs, tmp_path):
+    fixture = published_builder_inputs
+    actor = fixture.operator
+    now = [1000.0]
+    queue = SQLDatasetBuildJobs(components.database, clock=lambda: now[0])
+    service = DatasetBuildService(queue, fixture.ingress.jobs)
+    spec = BuildRequest.model_validate(request_body(fixture)).spec()
+    job = service.submit(actor, "near-deadline", spec)
+    now[0] = job.deadline - 10
+    claim = queue.claim()
+    assert claim is not None
+
+    def lease_until():
+        with components.database.transaction() as connection:
+            return connection.scalar(
+                select(dataset_build_jobs.c.lease_until).where(
+                    dataset_build_jobs.c.id == job.job_id
+                )
+            )
+
+    assert lease_until() == job.deadline
+    now[0] = job.deadline - 1
+    assert queue.renew(claim)
+    assert lease_until() == job.deadline
+    now[0] = job.deadline
+    assert not queue.renew(claim)
+    preparation = build_preparation(
+        components.settings,
+        components.database,
+        tmp_path / "raw-snapshots",
+        complete_build=partial(queue.complete, claim),
+    )
+    with pytest.raises(Conflict, match="lease"):
+        preparation.build(actor, spec.dataset_id, spec.version, spec.inputs, spec.config)
+    assert queue.claim() is None
+    assert service.get(actor, job.job_id).error_code == "BUILD_DEADLINE_EXCEEDED"
+    with pytest.raises(NotFound):
+        components.services.datasets.metadata(actor, spec.dataset_id, spec.version)
 
 
 def test_replayed_submission_and_lost_grants_at_publish(
@@ -218,8 +325,9 @@ def test_replayed_submission_and_lost_grants_at_publish(
     assert events == {"dataset.build.submit", "dataset.build.fail"}
 
 
-def test_transient_identity_failure_requeues_and_claim_budget_is_bounded(
-    components, published_builder_inputs, tmp_path
+@pytest.mark.parametrize("error_type", [AutoReconnect, OperationFailure])
+def test_identity_failure_retries_only_connection_errors(
+    components, published_builder_inputs, error_type, tmp_path
 ):
     fixture = published_builder_inputs
     time = [1000.0]
@@ -229,22 +337,139 @@ def test_transient_identity_failure_requeues_and_claim_budget_is_bounded(
     job = service.submit(fixture.operator, "retry", spec)
 
     def unavailable(*args):
-        raise Unavailable("private dependency error")
+        raise error_type("private identity error")
 
-    worker = build_worker(components.settings, queue, tmp_path / "raw-snapshots", unavailable)
-    for attempts in (1, 2, 3):
+    identity = MongoActiveActorResolver.__new__(MongoActiveActorResolver)
+    identity.db = SimpleNamespace(identity_users=SimpleNamespace(find_one=unavailable))
+    worker = build_worker(
+        components.settings, queue, tmp_path / "raw-snapshots", identity.resolve_active
+    )
+    attempts_allowed = 3 if error_type is AutoReconnect else 1
+    for attempts in range(1, attempts_allowed + 1):
         assert worker.run_once() == job.job_id
         state = service.get(fixture.operator, job.job_id)
         assert (
             state.attempt_count == attempts and state.error_code == "BUILD_DEPENDENCY_UNAVAILABLE"
         )
-        assert state.state == ("FAILED" if attempts == 3 else "QUEUED")
+        assert state.state == ("FAILED" if attempts == attempts_allowed else "QUEUED")
         assert worker.run_once() is None
         time[0] += 5
     expired = service.submit(fixture.operator, "too-late", spec)
     time[0] += BUILD_DEADLINE_SECONDS
     assert queue.claim() is None
     assert service.get(fixture.operator, expired.job_id).error_code == "BUILD_DEADLINE_EXCEEDED"
+
+
+@pytest.mark.parametrize(
+    ("failure", "state", "code"),
+    [
+        ("stale", "QUEUED", "BUILD_DEPENDENCY_UNAVAILABLE"),
+        ("artifact-timeout", "QUEUED", "BUILD_DEPENDENCY_UNAVAILABLE"),
+        ("access", "FAILED", "BUILD_REJECTED"),
+        ("digest", "FAILED", "BUILD_REJECTED"),
+    ],
+)
+def test_only_known_shared_storage_errors_retry(
+    components, published_builder_inputs, monkeypatch, tmp_path, failure, state, code
+):
+    fixture = published_builder_inputs
+    actor = fixture.operator
+    now = [1000.0]
+    queue = SQLDatasetBuildJobs(components.database, clock=lambda: now[0])
+    service = DatasetBuildService(queue, fixture.ingress.jobs)
+    spec = BuildRequest.model_validate(request_body(fixture)).spec()
+    job = service.submit(actor, "storage-failure", spec)
+    worker = build_worker(components.settings, queue, tmp_path / "raw-snapshots", lambda *_: actor)
+
+    def read_error(*args):
+        raise OSError(errno.ESTALE if failure == "stale" else errno.EACCES, "private path")
+
+    def write_error(*args):
+        raise OSError(errno.ETIMEDOUT, "private path")
+
+    with monkeypatch.context() as context:
+        if failure == "digest":
+            Path(fixture.fdc_snapshot.snapshot_ref).with_name("data.jsonl").write_bytes(b"{}\n")
+        elif failure == "artifact-timeout":
+            context.setattr(LocalEBMDatasetPublisher, "_write_receipt", write_error)
+        else:
+            context.setattr(raw_snapshot_writer, "_read_file", read_error)
+        assert worker.run_once() == job.job_id
+    result = service.get(actor, job.job_id)
+    assert (result.state, result.error_code, result.attempt_count) == (state, code, 1)
+    with pytest.raises(NotFound):
+        components.services.datasets.metadata(actor, spec.dataset_id, spec.version)
+    now[0] += 5
+    if state == "QUEUED":
+        assert worker.run_once() == job.job_id
+        assert service.get(actor, job.job_id).state == "SUCCEEDED"
+    else:
+        assert worker.run_once() is None
+
+
+@pytest.mark.parametrize("committed", [False, True])
+def test_publication_commit_disconnect_resolves_without_duplicate_rows(
+    components, published_builder_inputs, monkeypatch, tmp_path, committed
+):
+    fixture = published_builder_inputs
+    actor = fixture.operator
+    now = [1000.0]
+    queue = SQLDatasetBuildJobs(components.database, clock=lambda: now[0])
+    service = DatasetBuildService(queue, fixture.ingress.jobs)
+    spec = BuildRequest.model_validate(request_body(fixture)).spec()
+    job = service.submit(actor, "commit-disconnect", spec)
+    worker = build_worker(components.settings, queue, tmp_path / "raw-snapshots", lambda *_: actor)
+    dialect = components.database.engine.dialect
+    commit, complete = dialect.do_commit, queue.complete
+    armed = False
+
+    def arm_commit(*args):
+        nonlocal armed
+        complete(*args)
+        armed = True
+
+    def disconnect(connection):
+        nonlocal armed
+        if not armed:
+            return commit(connection)
+        armed = False
+        if committed:
+            commit(connection)
+        else:
+            connection.rollback()
+        raise DBAPIError(
+            "COMMIT", None, OSError("private database error"), connection_invalidated=True
+        )
+
+    with monkeypatch.context() as context:
+        context.setattr(queue, "complete", arm_commit)
+        context.setattr(dialect, "do_commit", disconnect)
+        assert worker.run_once() == job.job_id
+
+    observed = service.get(actor, job.job_id)
+    assert observed.state == ("SUCCEEDED" if committed else "QUEUED")
+    now[0] += 5
+    assert worker.run_once() == (None if committed else job.job_id)
+    result = service.get(actor, job.job_id)
+    assert result.state == "SUCCEEDED"
+    assert result.attempt_count == (1 if committed else 2)
+    with components.database.transaction() as connection:
+        assert (
+            len(
+                connection.execute(
+                    select(datasets).where(datasets.c.dataset_key == spec.dataset_id)
+                ).all()
+            )
+            == 1
+        )
+        assert connection.execute(select(dataset_lineage)).scalar_one() is not None
+        assert list(
+            connection.scalars(
+                select(audit.c.action).where(
+                    audit.c.subject_id == job.job_id, audit.c.action == "dataset.build.succeed"
+                )
+            )
+        ) == ["dataset.build.succeed"]
 
 
 @pytest.mark.asyncio

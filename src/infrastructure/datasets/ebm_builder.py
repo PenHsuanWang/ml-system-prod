@@ -26,6 +26,7 @@ from src.infrastructure.ingestion.storage.raw_snapshot_writer import (
     relative_file_fd,
 )
 from src.infrastructure.persistence.ml_datasets import SQLDatasetCatalog
+from src.infrastructure.storage_errors import classify_storage_errors
 
 _DATASET_IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,63}")
 _MAX_RECEIPT_BYTES = 64 * 1024
@@ -142,6 +143,7 @@ class LocalEBMDatasetPublisher:
             },
         }
 
+    @classify_storage_errors()
     def publish(
         self,
         actor: Actor,

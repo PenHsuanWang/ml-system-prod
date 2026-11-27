@@ -3,7 +3,7 @@
 import time
 from collections.abc import Callable, Mapping
 from dataclasses import fields
-from typing import Any
+from typing import Any, cast
 from uuid import uuid4
 
 from sqlalchemy import and_, func, insert, or_, select, update
@@ -193,7 +193,7 @@ class SQLDatasetBuildJobs:
         with self.db.transaction() as connection:
             now = self.clock()
             self._expire(connection, now)
-            query = select(builds.c.id).where(
+            query = select(builds.c.id, builds.c.deadline).where(
                 builds.c.deadline > now,
                 builds.c.attempt_count < BUILD_MAX_ATTEMPTS,
                 or_(
@@ -203,22 +203,25 @@ class SQLDatasetBuildJobs:
             )
             if job_id is not None:
                 query = query.where(builds.c.id == job_id)
-            selected = connection.scalar(
+            selected = connection.execute(
                 query.order_by(builds.c.created_at, builds.c.id)
                 .limit(1)
                 .with_for_update(skip_locked=True)
-            )
+            ).first()
             if selected is None:
+                return None
+            now = self.clock()
+            if selected.deadline <= now:
                 return None
             token = uuid4().hex
             row = (
                 connection.execute(
                     update(builds)
-                    .where(builds.c.id == selected)
+                    .where(builds.c.id == selected.id)
                     .values(
                         state="RUNNING",
                         lease_token=token,
-                        lease_until=now + BUILD_LEASE_SECONDS,
+                        lease_until=min(now + BUILD_LEASE_SECONDS, selected.deadline),
                         updated_at=now,
                         attempt_count=builds.c.attempt_count + 1,
                         error_code=None,
@@ -243,6 +246,28 @@ class SQLDatasetBuildJobs:
             builds.c.lease_until > now,
             builds.c.deadline > now,
         )
+
+    @staticmethod
+    def _lock_claim(connection: Connection, claim: DatasetBuildClaim) -> float | None:
+        deadline = connection.scalar(
+            select(builds.c.deadline)
+            .where(builds.c.id == claim.job.job_id, builds.c.lease_token == claim.token)
+            .with_for_update()
+        )
+        return cast(float | None, deadline)
+
+    def renew(self, claim: DatasetBuildClaim) -> bool:
+        with self.db.transaction() as connection:
+            deadline = self._lock_claim(connection, claim)
+            if deadline is None:
+                return False
+            now = self.clock()
+            renewed = connection.execute(
+                update(builds)
+                .where(self._owned(claim, now))
+                .values(lease_until=min(deadline, now + BUILD_LEASE_SECONDS))
+            )
+            return cast(int, renewed.rowcount) == 1
 
     def complete(
         self,
@@ -273,7 +298,8 @@ class SQLDatasetBuildJobs:
             )
         ):
             raise Conflict("Dataset build publication does not match its immutable intent")
-        connection.execute(select(builds.c.id).where(builds.c.id == job.job_id).with_for_update())
+        if self._lock_claim(connection, claim) is None:
+            raise Conflict("Dataset build lease no longer owns publication")
         now = self.clock()
         changed = connection.execute(
             update(builds)
@@ -293,6 +319,8 @@ class SQLDatasetBuildJobs:
 
     def fail(self, claim: DatasetBuildClaim, error_code: str, *, retry: bool = False) -> None:
         with self.db.transaction() as connection:
+            if self._lock_claim(connection, claim) is None:
+                return
             now = self.clock()
             requeue = (
                 retry

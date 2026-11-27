@@ -37,6 +37,7 @@ from src.domain.ingestion.models import (
 )
 from src.domain.ml import canonical_json, digest
 from src.infrastructure.ingestion.storage.jsonl import bounded_lines, object_record
+from src.infrastructure.storage_errors import raise_if_transient_storage_error
 
 _MAX_BYTES = 128 * 1024 * 1024
 _MANIFEST_LIMIT = 32768
@@ -456,7 +457,12 @@ class LocalRawSnapshotStore:
     def read_records(self, snapshot: RawSnapshot) -> tuple[dict[str, Any], ...]:
         """Return verified JSONL records from this store's immutable snapshot namespace."""
 
-        snapshot = self.verify(snapshot)
+        try:
+            snapshot = self.verify(snapshot)
+        except SnapshotInvalid as error:
+            # lookup preserves its ingestion error contract and chains read failures.
+            raise_if_transient_storage_error(error.__cause__)
+            raise
         path = self._final(snapshot.tenant_id, snapshot.snapshot_id)
         limits = ExtractionLimits(
             max_bytes=_MAX_BYTES,
@@ -492,6 +498,7 @@ class LocalRawSnapshotStore:
                     raise SnapshotInvalid("Immutable raw snapshot payload digest mismatch")
                 return tuple(records)
         except OSError as error:
+            raise_if_transient_storage_error(error)
             raise SnapshotInvalid("Immutable raw snapshot cannot be read") from error
 
     def publish(self, intent: PublicationIntent) -> RawSnapshot:

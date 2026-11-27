@@ -27,6 +27,7 @@ from src.infrastructure.ingestion.persistence.schema import raw_snapshots
 from src.infrastructure.persistence.dataset_lineage_schema import dataset_lineage
 from src.infrastructure.persistence.ml_database import Database, datasets
 from src.infrastructure.persistence.ml_training import lock_tenant, record_audit
+from src.infrastructure.storage_errors import raise_if_transient_storage_error
 
 
 BuildPublication = Callable[[Connection, Actor, DatasetVersion, DatasetBuildReceipt], None]
@@ -132,6 +133,7 @@ class SQLDatasetCatalog:
                     outgoing.flush()
                     os.fsync(outgoing.fileno())
         except OSError as error:
+            raise_if_transient_storage_error(error)
             raise MLError("EBM import source cannot be read") from error
 
     def register_ebm(self, actor: Actor, dataset_id: str, version: str,
