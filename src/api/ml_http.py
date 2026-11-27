@@ -154,7 +154,9 @@ def install_errors(app: FastAPI, *, maximum_body_bytes: int = 65536) -> None:
     async def invalid_request(request: Request, _: RequestValidationError) -> JSONResponse:
         # Pydantic errors include raw input; never echo them into public errors/logs.
         return JSONResponse(status_code=422, content={"code": "SCHEMA_MISMATCH",
-                                                      "message": "Request does not match the schema", "request_id": str(uuid4()), "retryable": False})
+                                                      "message": "Request does not match the schema",
+                                                      "request_id": getattr(request.state, "request_id", str(uuid4())),
+                                                      "retryable": False})
 
 
 def mount_management(app: FastAPI) -> None:

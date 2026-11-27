@@ -6,11 +6,12 @@ from typing import Protocol
 
 from src.application.deployments.service import DeploymentService, require_deployment_read
 from src.application.model_registry.service import ModelRegistryService
-from src.domain.ml import Actor, MLError, NotFound, Unavailable, digest
+from src.domain.ml import Actor, MLError, NotFound, SchemaMismatch, Unavailable, digest
 from src.domain.pagination import CollectionWindow
 from src.domain.prediction.catalog import PublicModelContract, contract_document, reviewed_usage
 
 ReadRow = dict[str, object]
+MAX_AUDIT_WINDOW_SECONDS = 7 * 24 * 60 * 60
 
 PUBLIC_EVALUATION_METRICS = frozenset(
     {
@@ -49,6 +50,9 @@ class GovernanceReader(Protocol):
     def endpoint(self, actor: Actor, endpoint_id: str) -> ReadRow: ...
     def events(
         self, actor: Actor, deployment_id: str, window: CollectionWindow
+    ) -> list[ReadRow]: ...
+    def audit_events(
+        self, actor: Actor, subject_id: str, window: CollectionWindow
     ) -> list[ReadRow]: ...
 
 
@@ -206,3 +210,15 @@ class GovernanceDiscoveryService:
     def events(self, actor: Actor, deployment_id: str, window: CollectionWindow) -> list[ReadRow]:
         self.deployment_service.get(actor, deployment_id)
         return self.reader.events(actor, deployment_id, window)
+
+    def audit_events(
+        self, actor: Actor, subject_id: str, window: CollectionWindow
+    ) -> list[ReadRow]:
+        actor.require("ml:operate")
+        if (
+            window.created_after is None
+            or window.created_before is None
+            or window.created_before - window.created_after > MAX_AUDIT_WINDOW_SECONDS
+        ):
+            raise SchemaMismatch("Audit time bounds must span at most seven days")
+        return self.reader.audit_events(actor, subject_id, window)

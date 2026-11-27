@@ -133,6 +133,12 @@ The response contains a persistent `job_id` and `status_url`. Replay the same re
 
 ## Lifecycle endpoints
 
+Start with `GET /api/v1/platform/info` on Management or Prediction Gateway for
+documentation and sign-in links. After login, `GET /api/v1/platform/capabilities`
+shows the entry points for your account. Gateway users can list their assigned
+endpoints and see the deployed model version and verified inference contract.
+Swagger UI and ReDoc load from the API origin. [Role-by-role quickstart](docs/ml-runbook.md#self-service-quickstart-wp7)
+
 | Operation | Endpoint |
 | --- | --- |
 | Submit / query / cancel | `POST /api/v1/training/jobs`, `GET .../jobs/{id}`, `POST .../jobs/{id}/cancel` |
@@ -142,6 +148,7 @@ The response contains a persistent `job_id` and `status_url`. Replay the same re
 | Manual approval | `POST /api/v1/model_registry/bindings/{id}/approvals` with `evaluation_id`, `environment` |
 | Deployment | `POST /api/v1/deployments` with `endpoint_id`, `model_binding_id`, `approval_id` |
 | Observe / rollback | `GET /api/v1/deployments/{id}`, `POST .../{id}/rollback` |
+| Discover deployed endpoints | `GET /api/v1/prediction/endpoints`, `GET .../endpoints/{endpoint_id}` on prediction ingress |
 | Predict | `POST /api/v1/prediction/predict` on prediction ingress |
 | Health / metrics | `/health/ready`; management `/metrics` requires `ml.operate` |
 

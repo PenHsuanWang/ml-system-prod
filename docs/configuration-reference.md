@@ -77,6 +77,13 @@ queue 與 training budget；調大 broker ACK 不會延長 fit。更動 budgets 
 
 ## 其他 ML／Serving／Identity 設定
 
+`ML_GATEWAY_IDENTITY_PREFIX` is optional. It advertises three origin-relative
+Identity links in Gateway `GET /api/v1/platform/info`. Set it only after configuring
+the proxy's exact login, me and logout routes to Management. For example,
+`/inference/identity` works with the
+[HTTPS proxy example](ml-runbook.md#https-proxy-and-identity).
+The Gateway keeps its configured ASGI root path for its own docs and prediction links.
+
 | 鍵／常數 | 現行值／來源 |
 | --- | --- |
 | `ML_REDIS_URL` | Worker Python 預設 `redis://localhost:6379/0`；production private file；僅 technical ACK snapshot |

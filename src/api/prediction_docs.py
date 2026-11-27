@@ -11,11 +11,13 @@ from src.domain.prediction.models import Prediction
 GATEWAY_DESCRIPTION = """
 Run inference using a logical endpoint assigned to your tenant.
 
-1. Obtain the Management login URL from the deployment owner.
+1. Start with `GET /api/v1/platform/info`. Use its configured Identity login link,
+   or obtain the trusted HTTPS Identity URL from the deployment owner.
    The reference Compose Management URL uses port 8000.
 2. Sign in at Management `POST /api/v1/identity/login` with `tenant_id`, `username`, and `password`.
    Your account needs `ml:predict`. Paste the returned `access_token` into **Authorize**.
-3. Use **List models assigned to your prediction endpoints** to find an endpoint.
+3. Use `GET /api/v1/platform/capabilities` to find your entry points and
+   **List models assigned to your prediction endpoints** to find an endpoint.
    Open its detail_url for a reviewed description, input/output schemas and request_example.
    Send that example to **Predict with an active endpoint**, replacing its synthetic feature values.
 4. Record `request_id` and `provenance` to identify the model version used for that request.
@@ -53,9 +55,9 @@ input schema version, and immutable specification/manifest digests in `provenanc
 With an MLflow backend, the registered name/version identifies the bound MLflow model version.
 
 Send a valid `X-Request-ID` for correlation, or use the generated response header.
-Gateway-generated domain errors echo it in their body. Validation errors (422) currently generate
-a separate body request ID; correlate those using the response header. Proxied responses keep the
-upstream body request ID. The Gateway forwards its request ID to Serving.
+Gateway-generated domain and validation errors echo it in their body. The 413 response
+carries the ID in its header. Proxied responses keep the upstream body request ID.
+The Gateway forwards its request ID to Serving.
 
 For 401, sign in again. For 403, request the required permission. For 404, confirm your endpoint.
 For 413/422, correct the payload. For 429/503/504, use bounded backoff and contact the owner if

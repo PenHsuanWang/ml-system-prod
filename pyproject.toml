@@ -36,6 +36,7 @@ py-modules = ["server", "worker", "manage"]
 include = ["src*", "bootstrap*"]
 
 [tool.setuptools.package-data]
+"src.api" = ["docs_assets/*.js", "docs_assets/*.css", "docs_assets/*.txt"]
 "src.infrastructure.datasets" = ["*.json"]
 
 [tool.pytest.ini_options]

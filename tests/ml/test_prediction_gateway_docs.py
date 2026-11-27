@@ -276,7 +276,7 @@ def test_payload_limit_validation_and_unknown_endpoint(gateway_runtime):
         )
         assert invalid.status_code == 422
         error = PredictionError.model_validate(invalid.json())
-        assert error.request_id != invalid.headers["x-request-id"]
+        assert error.request_id == invalid.headers["x-request-id"] == "synthetic-correlation"
         assert "do-not-echo" not in invalid.text
         unknown = gateway.post(
             "/api/v1/prediction/predict",

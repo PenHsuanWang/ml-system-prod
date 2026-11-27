@@ -145,7 +145,10 @@ services:
     mem_limit: ${ML_CONTROL_MEMORY:?set approved controller memory limit}
   gateway:
     <<: *runtime
-    environment: {<<: *runtime-environment, ML_RUNTIME_ROLE: gateway}
+    environment:
+      <<: *runtime-environment
+      ML_RUNTIME_ROLE: gateway
+      ML_GATEWAY_IDENTITY_PREFIX: ${ML_GATEWAY_IDENTITY_PREFIX:-}
     secrets: [{source: runtime_gateway, target: runtime.json}]
     command: [uvicorn, "bootstrap.ml_gateway:create_app", --factory, --host, 0.0.0.0, --port, "8001", --limit-concurrency, "${ML_GATEWAY_CONCURRENCY:?set approved prediction ingress concurrency}"]
     network_mode: service:control

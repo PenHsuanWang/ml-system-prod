@@ -14,7 +14,7 @@ import pytest
 
 
 async def wait_for_state(client, path, headers, expected, *, timeout=180):
-    deadline = time.monotonic()+timeout
+    deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         response = await client.get(path, headers=headers)
         assert response.status_code == 200
@@ -27,7 +27,7 @@ async def wait_for_state(client, path, headers, expected, *, timeout=180):
 
 
 async def wait_for_ready(client, *, timeout=90):
-    deadline = time.monotonic()+timeout
+    deadline = time.monotonic() + timeout
     while time.monotonic() < deadline:
         try:
             response = await client.get("/health/ready")
@@ -39,15 +39,28 @@ async def wait_for_ready(client, *, timeout=90):
     pytest.fail("Required Backend service did not become ready")
 
 
-async def provision(tenant, username, password):
-    permissions = ("ml.train", "ml.cancel", "ml.model.read", "ml.model.approve",
-                   "ml.deploy", "ml.predict", "ml.jobs.read_all")
-    command = [sys.executable, "manage.py", "create-admin", "--tenant-id", tenant,
-               "--username", username, "--password-stdin"]
+async def provision(tenant, username, password, permissions):
+    command = [
+        sys.executable,
+        "manage.py",
+        "create-admin",
+        "--tenant-id",
+        tenant,
+        "--username",
+        username,
+        "--password-stdin",
+    ]
     for permission in permissions:
         command.extend(["--permission", permission])
-    result = await asyncio.to_thread(subprocess.run, command, input=password+"\n", text=True,
-                                     capture_output=True, timeout=40, check=False)
+    result = await asyncio.to_thread(
+        subprocess.run,
+        command,
+        input=password + "\n",
+        text=True,
+        capture_output=True,
+        timeout=40,
+        check=False,
+    )
     assert result.returncode == 0, "Explicit test-account provisioning failed"
 
 
@@ -61,61 +74,128 @@ async def test_live_backend_train_approve_predict_rollout_rollback_and_revoke():
             pytest.fail("Stack acceptance URLs are required")
         pytest.skip("Set isolated ML_TEST_MANAGEMENT_URL and ML_TEST_PREDICTION_URL")
     # Accounts and all backend data belong to a disposable acceptance stack.
-    tenant, foreign = "accept-"+uuid4().hex[:16], "accept-"+uuid4().hex[:16]
-    username, password = "acceptance_operator", secrets.token_urlsafe(24)
-    async with httpx.AsyncClient(base_url=management, timeout=15) as manager, httpx.AsyncClient(
-            base_url=prediction, timeout=15) as gateway:
+    tenant, foreign = "accept-" + uuid4().hex[:16], "accept-" + uuid4().hex[:16]
+    password = secrets.token_urlsafe(24)
+    async with (
+        httpx.AsyncClient(base_url=management, timeout=15) as manager,
+        httpx.AsyncClient(base_url=prediction, timeout=15) as gateway,
+    ):
         await wait_for_ready(manager)
         await wait_for_ready(gateway)
-        await provision(tenant, username, password)
-        await provision(foreign, username, password)
+        info = (await manager.get("/api/v1/platform/info")).json()
+        assert info["service"] == "management"
+        gateway_info = (await gateway.get("/api/v1/platform/info")).json()
+        assert gateway_info["service"] == "prediction-gateway"
 
-        async def login(scope):
-            response = await manager.post("/api/v1/identity/login", json={
-                "tenant_id": scope, "username": username, "password": password})
+        async def login(scope, username):
+            response = await manager.post(
+                info["identity"]["login_url"],
+                json={"tenant_id": scope, "username": username, "password": password},
+            )
             assert response.status_code == 200
-            return {"Authorization": "Bearer "+response.json()["access_token"]}
+            return {"Authorization": "Bearer " + response.json()["access_token"]}
 
-        owner, intruder = await login(tenant), await login(foreign)
-        assert (await manager.get("/api/v1/identity/me", headers=owner)).json()["tenant_id"] == tenant
+        grants = ("ml.train", "ml.model.read", "ml.model.approve", "ml.deploy", "ml.predict")
+        await provision(tenant, "acceptance_admin", password, grants)
+        admin = await login(tenant, "acceptance_admin")
+
+        async def register(username, permissions):
+            created = await manager.post(
+                "/api/v1/identity/register",
+                json={"username": username, "password": password, "permissions": permissions},
+                headers=admin,
+            )
+            assert created.status_code == 201
+            return await login(tenant, username)
+
+        owner = await register("acceptance_trainer", ["ml.train"])
+        reviewer = await register("acceptance_reviewer", ["ml.model.read", "ml.model.approve"])
+        deployer = await register("acceptance_deployer", ["ml.deploy"])
+        predictor = await register("acceptance_predictor", ["ml.predict"])
+        await provision(foreign, "acceptance_intruder", password, ("ml.train", "ml.predict"))
+        intruder = await login(foreign, "acceptance_intruder")
+        capabilities_url = gateway_info["capabilities_url"]
+        links = (await gateway.get(capabilities_url, headers=predictor)).json()["items"]
+        assert {entry["id"] for entry in links} == {"prediction-discovery", "prediction"}
+        list_endpoints = next(
+            entry["url"] for entry in links if entry["id"] == "prediction-discovery"
+        )
+        assert (await manager.get("/api/v1/identity/me", headers=owner)).json()[
+            "tenant_id"
+        ] == tenant
         assert (await manager.post("/api/v1/training/jobs", json={})).status_code == 401
-        endpoint = "quality-"+uuid4().hex[:8]
+        endpoint = "quality-" + uuid4().hex[:8]
 
         async def train_and_deploy(seed):
-            body = {"spec": {"recipe": {"id": "nn_classifier", "version": "1.0.0"},
-                             "dataset": {"id": "dataset-demo", "version": "2026-10-28-v1"}, "training": {"seed": seed}}}
+            body = {
+                "spec": {
+                    "recipe": {"id": "nn_classifier", "version": "1.0.0"},
+                    "dataset": {"id": "dataset-demo", "version": "2026-10-28-v1"},
+                    "training": {"seed": seed},
+                }
+            }
             headers = {**owner, "Idempotency-Key": uuid4().hex}
             accepted = await manager.post("/api/v1/training/jobs", headers=headers, json=body)
             assert accepted.status_code == 202
             replay = await manager.post("/api/v1/training/jobs", headers=headers, json=body)
             assert replay.status_code == 202
             assert replay.json()["job_id"] == accepted.json()["job_id"]
-            assert (await manager.get(accepted.json()["status_url"], headers=intruder)).status_code == 404
-            completed = await wait_for_state(manager, accepted.json()["status_url"], owner, "SUCCEEDED")
+            assert (
+                await manager.get(accepted.json()["status_url"], headers=intruder)
+            ).status_code == 404
+            completed = await wait_for_state(
+                manager, accepted.json()["status_url"], owner, "SUCCEEDED"
+            )
             binding = completed["model_binding_id"]
-            model = await manager.get(f"/api/v1/model_registry/bindings/{binding}", headers=owner)
+            model = await manager.get(
+                f"/api/v1/model_registry/bindings/{binding}", headers=reviewer
+            )
             assert model.status_code == 200
-            evaluation = (await manager.get(f"/api/v1/model_registry/bindings/{binding}/evaluations", headers=owner)).json()[0]
+            evaluation = (
+                await manager.get(
+                    f"/api/v1/model_registry/bindings/{binding}/evaluations", headers=reviewer
+                )
+            ).json()[0]
             assert evaluation["decision"] == "APPROVED_BY_POLICY"
             assert json.loads(evaluation["metrics_json"])["accuracy"] >= 0.75
-            approved = await manager.post(f"/api/v1/model_registry/bindings/{binding}/approvals", headers=owner,
-                                          json={"evaluation_id": evaluation["evaluation_id"], "environment": "dev"})
+            approved = await manager.post(
+                f"/api/v1/model_registry/bindings/{binding}/approvals",
+                headers=reviewer,
+                json={"evaluation_id": evaluation["evaluation_id"], "environment": "dev"},
+            )
             assert approved.status_code == 201
-            deployment = await manager.post("/api/v1/deployments", headers=owner, json={"endpoint_id": endpoint,
-                                                                                        "model_binding_id": binding, "approval_id": approved.json()["approval_id"]})
+            deployment = await manager.post(
+                "/api/v1/deployments",
+                headers=deployer,
+                json={
+                    "endpoint_id": endpoint,
+                    "model_binding_id": binding,
+                    "approval_id": approved.json()["approval_id"],
+                },
+            )
             assert deployment.status_code == 202
-            path = "/api/v1/deployments/"+deployment.json()["deployment_id"]
-            return await wait_for_state(manager, path, owner, "ACTIVE"), model.json()
+            path = "/api/v1/deployments/" + deployment.json()["deployment_id"]
+            return await wait_for_state(manager, path, deployer, "ACTIVE"), model.json()
 
         async def predict(deployment, model):
-            payload = {"endpoint_id": endpoint, "instances": [
-                {"features": {"sensor_a": 1.0, "sensor_b": 1.0}}]}
-            result = await gateway.post("/api/v1/prediction/predict", headers=owner, json=payload)
+            listing = await gateway.get(list_endpoints, headers=predictor)
+            assert listing.status_code == 200
+            assigned = next(
+                item for item in listing.json()["items"] if item["endpoint_id"] == endpoint
+            )
+            detail = (await gateway.get(assigned["detail_url"], headers=predictor)).json()
+            payload = {
+                "endpoint_id": detail["endpoint_id"],
+                "instances": [{"features": {"sensor_a": 1.0, "sensor_b": 1.0}}],
+            }
+            result = await gateway.post(detail["predict_url"], headers=predictor, json=payload)
             assert result.status_code == 200
             assert result.json()["provenance"]["deployment_id"] == deployment["deployment_id"]
             assert result.json()["provenance"]["model_version"] == model["model_version"]
             assert result.json()["predictions"][0]["class_id"] == 1
-            assert (await gateway.post("/api/v1/prediction/predict", headers=intruder, json=payload)).status_code == 404
+            assert (
+                await gateway.post("/api/v1/prediction/predict", headers=intruder, json=payload)
+            ).status_code == 404
             return payload
 
         first, first_model = await train_and_deploy(42)
@@ -123,12 +203,23 @@ async def test_live_backend_train_approve_predict_rollout_rollback_and_revoke():
         second, second_model = await train_and_deploy(43)
         assert second_model["model_version"] != first_model["model_version"]
         await predict(second, second_model)
-        await wait_for_state(manager, "/api/v1/deployments/"+first["deployment_id"], owner, "RETIRED")
-        rollback = await manager.post(f"/api/v1/deployments/{first['deployment_id']}/rollback", headers=owner)
+        await wait_for_state(
+            manager, "/api/v1/deployments/" + first["deployment_id"], deployer, "RETIRED"
+        )
+        rollback = await manager.post(
+            f"/api/v1/deployments/{first['deployment_id']}/rollback", headers=deployer
+        )
         assert rollback.status_code == 202
-        restored = await wait_for_state(manager, "/api/v1/deployments/"+rollback.json()["deployment_id"], owner, "ACTIVE")
+        restored = await wait_for_state(
+            manager, "/api/v1/deployments/" + rollback.json()["deployment_id"], deployer, "ACTIVE"
+        )
         assert restored["generation"] > second["generation"]
         payload = await predict(restored, first_model)
-        assert (await manager.post("/api/v1/identity/logout", headers=owner)).status_code == 204
-        assert (await gateway.post("/api/v1/prediction/predict", headers=owner, json=payload)).status_code == 401
-        assert (await manager.get("/api/v1/identity/me", headers=owner)).status_code == 401
+        assert (
+            await manager.post(info["identity"]["logout_url"], headers=predictor)
+        ).status_code == 204
+        assert (await gateway.get(capabilities_url, headers=predictor)).status_code == 401
+        assert (
+            await gateway.post("/api/v1/prediction/predict", headers=predictor, json=payload)
+        ).status_code == 401
+        assert (await manager.get(info["identity"]["me_url"], headers=predictor)).status_code == 401

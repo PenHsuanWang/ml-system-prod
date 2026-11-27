@@ -126,31 +126,32 @@ Kubernetes changes runtime endpoint resolution but retains the same logical HTTP
 
 ## Missing lifecycle operations and phased implementation plan
 
-The following table is planning scope. Each later package needs its own session and branch approval.
+The first rows preserve planning context. Current deltas and acceptance evidence
+follow the table.
 
 | Package / status | User gap and proposed operations | Dependency and acceptance | Rollback / compatibility |
 | --- | --- | --- | --- |
 | Phase 0 + WP1 / current session | Inventory, standard, English Gateway docs, examples, runtime contract validation | Existing service/DTO/route inspection, real isolated HTTP fixtures, boundary and regression evidence | Local diff only. Preserve status/code/envelope; reject malformed upstream success with existing 503. |
-| WP2 / PLANNED | GET /prediction/endpoints and /prediction/endpoints/{endpoint_id}; model contracts | Verified bundle → binding/manifest → published public contract → active SQL route. Shared tenant/ml:predict; legacy incomplete, pagination, rollback and readiness semantics. Detailed existing plan is linked below. | Additive storage/backfill designed only after approval. Old endpoints stay callable; staged enforcement. |
+| WP2 / IMPLEMENTED | GET /prediction/endpoints and /prediction/endpoints/{endpoint_id}; model contracts | Verified bundle → binding/manifest → published public contract → active SQL route. Shared tenant/ml:predict; legacy incomplete, pagination, rollback and readiness semantics. Detailed existing plan is linked below. | Additive storage and trusted revision verification. Existing prediction calls remain supported. |
 | WP3 / IMPLEMENTED (feature branch) | GET ingestion/jobs, ingestion/snapshots, datasets, datasets/{id}/versions, version detail/lineage | Reuse source discovery, snapshot publication, SQLDatasetCatalog and verified builder receipts. Define provenance/content identity and publication consistency. Authorization/filters/pagination in SQL. | Preserve exact-version route and legacy incomplete lineage. |
 | WP4 / IMPLEMENTED (feature branch) | GET training/recipes, recipe version, resource-profiles, jobs, job spec/metrics | Approved workload registry and actual submission DTOs. Tenant/ownership filters in SQL, with read-only metrics from persisted attempt results. See [the WP4 workflow](../ml-runbook.md#training-recipe-and-job-discovery-wp4). | Preserves submission, idempotency, outbox, recovery and model approval. No database migration. |
 | WP5 / IMPLEMENTED (feature branch) | Bounded binding and evaluation lists, model family, contract/lineage/approval reads, deployment list/endpoints/history/events | SQL tenant scoping, separate deployment read grant, and only persisted evidence. See [the WP5 workflow](../ml-runbook.md#model-registry-and-deployment-discovery-wp5). | Preserves the binding array and existing writes. Controller remains route writer. No migration. |
 | WP6 / IMPLEMENTED (feature branch) | Builder list/detail and durable dataset build jobs submit/list/status/result | Reuses the EBM transformer and verified receipt. A separate SQL worker rechecks owner grants and atomically commits publication and job success. See [the WP6 workflow](../ml-runbook.md#dataset-build-jobs-wp6). | Preserves the CLI. Additive migration 0009. Bounded automatic recovery, with no cancellation endpoint in WP6. |
-| WP7 / DEFERRED | Evaluate platform/info, capabilities, single-origin login, restricted-network docs assets, role guides, operations | End-to-end MLP/EBM multi-role Compose and target K8s; enterprise TLS/least privilege, dependency outages and actual SLO evidence | Feature rollout and image/config rollback documented per deployment. Production acceptance requires target evidence. |
+| WP7 / IMPLEMENTED, target qualification pending | Service info, permission-based capability links, self-hosted docs, exact Identity proxy recipe, subject-scoped audit and request correlation | MLP and EBM role-separated fixture workflows. See [WP7 evidence](../reviews/wp7-platform-usability-report.md) for executed tests and target blockers. | Additive routes and optional proxy configuration. Production acceptance requires target evidence. |
 
 Dataset/feature preparation and evaluation are PARTIALLY_IMPLEMENTED as API-only user workflows.
 Existing computation and model evaluation are IMPLEMENTED via CLI/Supervisor.
-Explicit EBM dataset build orchestration is implemented on the WP6 feature branch.
-The proposed endpoint catalog is PLANNED and has no registered router.
+Explicit EBM dataset build orchestration is implemented in WP6.
+Endpoint discovery is implemented in WP2 and remains Gateway-scoped.
 The full self-service platform remains PARTIALLY_IMPLEMENTED.
 
 Trace the existing source ID/version → snapshot/source/config/content/manifest digests →
 builder/version/config receipt → dataset ID/version/content → job/attempt/spec digest →
 binding/run/registered version/manifest → evaluation/approval → deployment/generation/route revision →
 prediction request/provenance. Historical missing joins must be explicit incomplete fields.
-The shared 422 body/header ID mismatch, production docs asset hosting, runtime transport
-non-JSON error handling, endpoint metadata persistence and registry live-existence reconciliation
-remain separate reviewed work. Runtime response error pass-through is verified, not generalized.
+WP7 packaged the ML documentation assets and aligned 422 body/header IDs.
+Runtime transport handling of non-JSON errors and registry live-existence reconciliation
+remain governed by the prior contracts.
 
 [API standard](../standards/api-design-standard.md) ·
 [WP2 endpoint plan](prediction-endpoint-discovery.md) ·

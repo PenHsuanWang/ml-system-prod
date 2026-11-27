@@ -129,7 +129,10 @@ services:
   gateway:
     <<: *ml-app
     network_mode: service:control
-    environment: {<<: *ml-environment, ML_DEPLOYMENT_ROLE: gateway}
+    environment:
+      <<: *ml-environment
+      ML_DEPLOYMENT_ROLE: gateway
+      ML_GATEWAY_IDENTITY_PREFIX: ${ML_GATEWAY_IDENTITY_PREFIX:-}
     command: [uvicorn, "bootstrap.ml_gateway:create_app", --factory, --host, 0.0.0.0, --port, "8001", --limit-concurrency, "64"]
     depends_on: {control: {condition: service_started}}
     mem_limit: 256m

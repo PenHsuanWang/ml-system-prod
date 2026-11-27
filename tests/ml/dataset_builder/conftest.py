@@ -67,7 +67,7 @@ def raw_records(
                     "wafer_id": f"wafer-{wafer_index:02d}",
                     "event_time": (start + timedelta(seconds=4)).isoformat(),
                     "available_at": (start + timedelta(seconds=5)).isoformat(),
-                    "cdf_target": 0.1 + lot_index * 0.1 + wafer_index * 0.01,
+                    "cdf_target": 0.1 + lot_index / max(10, lot_count + 1) + wafer_index * 0.01,
                     "pad_counts": [
                         float(lot_index + wafer_index + pad_index + 1) for pad_index in range(4)
                     ],
@@ -144,8 +144,13 @@ class PublishedBuilderInputs:
 
 
 @pytest.fixture
-def published_builder_inputs(components, actor, tmp_path):
-    fdc, wafers = raw_records()
+def builder_lot_count() -> int:
+    return 5
+
+
+@pytest.fixture
+def published_builder_inputs(components, actor, tmp_path, builder_lot_count):
+    fdc, wafers = raw_records(lot_count=builder_lot_count)
     incoming = tmp_path / "builder-input"
     incoming.mkdir()
     fdc_path = incoming / "fdc.jsonl"

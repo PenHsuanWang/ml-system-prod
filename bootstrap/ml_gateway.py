@@ -2,6 +2,7 @@
 
 import asyncio
 import os
+import re
 from typing import Annotated
 
 import httpx
@@ -13,7 +14,9 @@ from bootstrap.ml_config import MLSettings
 from bootstrap.ml_wiring import build_components
 from bootstrap.ml_telemetry import configure_telemetry
 from src.infrastructure.ml_tracing import MLTraceMiddleware, capture_context
+from src.api.ml_docs import install_ml_docs, ml_url_path
 from src.api.ml_http import install_errors
+from src.api.ml_platform import PREDICT, IdentityLinks, install_platform_discovery
 from src.api.prediction_catalog import EndpointCacheControl, router as endpoint_router
 from src.application.prediction.catalog import EndpointDiscoveryService
 from src.infrastructure.persistence.prediction_catalog import SQLPredictionCatalog
@@ -30,6 +33,17 @@ from bootstrap.ml_serving_wiring import endpoint_resolver
 from src.domain.deployments.identity import matches_identity
 from src.infrastructure.ml_identity import MongoActorResolver
 from src.domain.ml import Conflict, Unavailable
+
+
+def _proxy_identity_links() -> IdentityLinks | None:
+    prefix = os.environ.get("ML_GATEWAY_IDENTITY_PREFIX", "")
+    if not prefix:
+        return None
+    if len(prefix) > 128 or not re.fullmatch(r"(/[a-zA-Z0-9][a-zA-Z0-9_-]*)+", prefix):
+        raise ValueError("ML_GATEWAY_IDENTITY_PREFIX must be an origin-relative path prefix")
+    return IdentityLinks(
+        login_url=f"{prefix}/login", me_url=f"{prefix}/me", logout_url=f"{prefix}/logout"
+    )
 
 
 def create_app(
@@ -68,7 +82,17 @@ def create_app(
     bearer = HTTPBearer(
         auto_error=False, bearerFormat="JWT", description="Management Identity access_token"
     )
-    app = FastAPI(title="ML prediction ingress", description=GATEWAY_DESCRIPTION, lifespan=lifespan)
+    app = FastAPI(
+        title="ML prediction ingress",
+        description=GATEWAY_DESCRIPTION,
+        lifespan=lifespan,
+        docs_url=None,
+        redoc_url=None,
+    )
+    install_ml_docs(app)
+    install_platform_discovery(
+        app, "prediction-gateway", (PREDICT,), proxy_identity=_proxy_identity_links()
+    )
     app.include_router(endpoint_router, prefix="/api/v1/prediction")
     install_errors(app, maximum_body_bytes=8 * 1024 * 1024)
     app.add_middleware(EndpointCacheControl)
@@ -76,7 +100,7 @@ def create_app(
 
     @app.get("/", include_in_schema=False)
     async def documentation(request: Request) -> RedirectResponse:
-        return RedirectResponse(request.url_for("swagger_ui_html").path)
+        return RedirectResponse(ml_url_path(request, "swagger_ui_html"))
 
     @app.get("/health/live", summary="Check Gateway liveness", operation_id="live_health_live_get",
              description="Reports whether the Gateway HTTP process is responding.")

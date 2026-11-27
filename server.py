@@ -32,6 +32,7 @@ def create_app(
     *,
     modules: Sequence[ModuleDefinition] | None = None,
     include_default_readiness: bool = True,
+    include_default_docs: bool = True,
 ) -> FastAPI:
     config = settings or load_settings()
     catalog = ModuleCatalog(build_modules(config) if modules is None else modules)
@@ -100,7 +101,13 @@ def create_app(
                 app.state.runtime = None
                 logger.info("Runtime stopping pid=%s", os.getpid())
 
-    app = FastAPI(title=config.app_name, version="0.1.0", lifespan=lifespan)
+    app = FastAPI(
+        title=config.app_name,
+        version="0.1.0",
+        lifespan=lifespan,
+        docs_url="/docs" if include_default_docs else None,
+        redoc_url="/redoc" if include_default_docs else None,
+    )
     app.state.runtime = None
     app.add_middleware(RequestContextMiddleware)
     register_error_handlers(app)
