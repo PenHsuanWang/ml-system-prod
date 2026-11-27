@@ -1,14 +1,18 @@
 """Management governance discovery against tenant SQL and the existing state writers."""
 
+import hashlib
+import json
 from dataclasses import replace
+from uuid import uuid4
 
 import httpx
+import pytest
 from sqlalchemy import update
 
 from bootstrap.ml_api import create_app
-from src.domain.ml import Actor, canonical_json
+from src.domain.ml import Actor, canonical_json, digest
 from src.domain.prediction.catalog import PublicModelContract
-from src.infrastructure.persistence.ml_database import evaluations, jobs, routes
+from src.infrastructure.persistence.ml_database import deployments, evaluations, jobs, routes
 from src.infrastructure.persistence.prediction_contract_schema import public_contracts
 from tests.ml.test_model_governance import evidence, ready
 from tests.ml.test_prediction_catalog import publish
@@ -149,6 +153,119 @@ async def test_binding_contract_integrity_and_lineage_permissions(components, ac
             )
         response = await client.get(f"{base}/contract", headers=auth("owner"))
         assert response.status_code == 200 and response.json()["contract"] is None
+
+
+@pytest.mark.parametrize("evaluator", ["classifier-v1", "ebm-neural-v1"])
+async def test_evaluation_projection_reports_unverified_metadata(
+    components, actor, intent, evaluator
+):
+    binding, template, _ = evidence(components, actor, intent)
+    ebm = evaluator == "ebm-neural-v1"
+    policy = "ebm-unqualified-v1" if ebm else "demo-accuracy-v1"
+    decision = "REJECTED_BY_POLICY" if ebm else "APPROVED_BY_POLICY"
+    original_metrics = {"samples": 64}
+    report = {
+        "model_binding_id": binding.binding_id,
+        "manifest_digest": binding.manifest_digest,
+        "dataset_digest": template.dataset_digest,
+        "policy_version": policy,
+        "evaluator_version": evaluator,
+        "decision": decision,
+        "metrics": original_metrics,
+    }
+    if ebm:
+        report.update(policy_config_digest=digest(None), semantics="retrospective_replay")
+    evaluation = components.registry.save_evaluation(
+        replace(
+            template,
+            evaluation_id=str(uuid4()),
+            evaluator_version=evaluator,
+            policy_version=policy,
+            decision=decision,
+            report_digest=digest(report),
+            metrics_json=canonical_json({"samples": 32, "internal_metric": 123}),
+        )
+    )
+    url = f"{REGISTRY}/bindings/{binding.binding_id}/evaluation-results"
+    async with http(components, reader=actor) as client:
+        response = await client.get(url, headers=auth("reader"))
+        assert response.status_code == 200, response.text
+        item = next(
+            r for r in response.json()["items"] if r["evaluation_id"] == evaluation.evaluation_id
+        )
+        assert item["metrics"] == {"samples": 32}
+        assert item["report_digest"] == digest(report) == evaluation.report_digest
+        schema = (await client.get("/openapi.json")).json()
+        operation = schema["paths"][f"{REGISTRY}/bindings/{{binding_id}}/evaluation-results"]["get"]
+        fields = schema["components"]["schemas"]["EvaluationRecord"]["properties"]
+        assert "does not verify the original report digest" in operation["description"]
+        assert "not independently verified" in fields["metrics"]["description"]
+        assert "original evaluation report" in fields["report_digest"]["description"]
+    assert components.registry.get_evaluation(evaluation.evaluation_id) == evaluation
+
+
+@pytest.mark.parametrize(
+    "corruption",
+    [
+        "digest",
+        "invalid-json",
+        "endpoint_id",
+        "model_binding_id",
+        "registered_name",
+        "model_version",
+        "manifest_digest",
+    ],
+)
+async def test_deployment_discovery_hides_invalid_assignments(
+    components, actor, intent, corruption
+):
+    binding, _, approval = evidence(components, actor, intent)
+    deployment = components.services.deployments.create(
+        actor, "quality", binding.binding_id, approval.approval_id
+    )
+    ready(components, deployment)
+    components.deployments.activate(deployment)
+    row = {"spec_json": deployment.spec_json, "spec_digest": deployment.spec_digest}
+    if corruption == "digest":
+        row["spec_digest"] = "0" * 64
+    elif corruption == "invalid-json":
+        row["spec_json"] = "{"
+        row["spec_digest"] = hashlib.sha256(row["spec_json"].encode()).hexdigest()
+    else:
+        spec = json.loads(deployment.spec_json)
+        spec[corruption] = "other"
+        row = {"spec_json": canonical_json(spec), "spec_digest": digest(spec)}
+    with components.database.transaction() as connection:
+        connection.execute(
+            update(deployments).where(deployments.c.id == deployment.deployment_id).values(**row)
+        )
+    reader = Actor.from_identity(actor.tenant_id, "reader", frozenset({"ml.deployment.read"}))
+    async with http(components, reader=reader) as client:
+        headers = auth("reader")
+        route = f"{DEPLOYMENTS}/endpoints/quality"
+        detail = await client.get(route, headers=headers)
+        listing = await client.get(f"{DEPLOYMENTS}/endpoints", headers=headers)
+        assert detail.status_code == listing.status_code == 200
+        assignment = detail.json()
+        assert listing.json()["items"] == [assignment]
+        assert assignment["route_state"] == "inconsistent" and assignment["readiness"] == "unknown"
+        for field in (
+            "deployment_id",
+            "generation",
+            "model_binding_id",
+            "model_version",
+            "manifest_digest",
+            "registered_name",
+            "approval_id",
+            "environment",
+        ):
+            assert assignment[field] is None
+        for path in (DEPLOYMENTS, f"{route}/history"):
+            response = await client.get(path, headers=headers)
+            assert response.status_code == 200, response.text
+            record = response.json()["items"][0]
+            assert record["state"] == "ACTIVE" and record["routed"] is False
+            assert "spec_json" not in record and "tenant_id" not in record
 
 
 async def test_deployment_read_scope_observes_rollout_and_rollback(components, actor, intent):

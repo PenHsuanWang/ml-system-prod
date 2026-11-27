@@ -4,7 +4,8 @@ from typing import Any
 
 from sqlalchemy import Select, and_, func, select
 
-from src.domain.ml import Actor, NotFound
+from src.domain.deployments.identity import deployment_spec
+from src.domain.ml import Actor, Conflict, NotFound
 from src.domain.pagination import CollectionWindow
 from src.infrastructure.persistence.ml_database import (
     Database,
@@ -17,12 +18,30 @@ from src.infrastructure.persistence.ml_database import (
     models,
     routes,
 )
+from src.infrastructure.persistence.ml_deployments import deployment_from_row
 from src.infrastructure.persistence.prediction_contract_schema import (
     public_contracts,
     usage_reviews,
 )
 
 ReadRow = dict[str, object]
+
+
+def _valid_assignment(row: ReadRow) -> bool:
+    try:
+        deployment = deployment_from_row(
+            {
+                column.key: row["deployment_id" if column.key == "id" else column.key]
+                for column in deployments.c
+            }
+        )
+        spec = deployment_spec(deployment)
+        return type(spec.get("generation")) is int and all(
+            spec.get(field) == row[field]
+            for field in ("model_binding_id", "registered_name", "model_version", "manifest_digest")
+        )
+    except (Conflict, ValueError, TypeError, KeyError, RecursionError):
+        return False
 
 
 class SQLGovernanceReader:
@@ -205,6 +224,8 @@ class SQLGovernanceReader:
                 deployments.c.approval_id,
                 deployments.c.resources_released,
                 deployments.c.expected_route_revision,
+                deployments.c.tenant_id,
+                deployments.c.spec_json,
                 deployments.c.spec_digest,
                 routes.c.revision.label("route_revision"),
                 and_(
@@ -252,9 +273,13 @@ class SQLGovernanceReader:
             statement = statement.where(deployments.c.state == state)
         if environment is not None:
             statement = statement.where(approvals.c.environment == environment)
-        return self._page(
+        rows = self._page(
             statement.order_by(deployments.c.endpoint_id, deployments.c.generation.desc()), window
         )
+        for row in rows:
+            row["routed"] = bool(row["routed"]) and _valid_assignment(row)
+            del row["tenant_id"], row["spec_json"]
+        return rows
 
     @staticmethod
     def _routes(actor: Actor) -> Select[Any]:
@@ -265,6 +290,12 @@ class SQLGovernanceReader:
                 routes.c.deployment_id.label("assigned_id"),
                 deployments.c.id.label("deployment_id"),
                 deployments.c.generation,
+                deployments.c.tenant_id,
+                deployments.c.state,
+                deployments.c.resources_released,
+                deployments.c.expected_route_revision,
+                deployments.c.spec_json,
+                deployments.c.spec_digest,
                 models.c.id.label("model_binding_id"),
                 models.c.registered_name,
                 models.c.version.label("model_version"),
@@ -303,11 +334,29 @@ class SQLGovernanceReader:
 
     @staticmethod
     def _route_status(row: ReadRow) -> ReadRow:
-        assigned_id = row.pop("assigned_id")
-        status = "unassigned"
-        if assigned_id is not None:
-            status = "active" if row["deployment_id"] is not None else "inconsistent"
-        return {**row, "route_state": status, "readiness": "unknown"}
+        active = row["deployment_id"] is not None and _valid_assignment(row)
+        state = "unassigned"
+        if row["assigned_id"] is not None:
+            state = "active" if active else "inconsistent"
+        return {
+            "endpoint_id": row["endpoint_id"],
+            "route_revision": row["route_revision"],
+            "route_state": state,
+            "readiness": "unknown",
+            **{
+                field: row[field] if active else None
+                for field in (
+                    "deployment_id",
+                    "generation",
+                    "model_binding_id",
+                    "registered_name",
+                    "model_version",
+                    "manifest_digest",
+                    "approval_id",
+                    "environment",
+                )
+            },
+        }
 
     def endpoints(self, actor: Actor, window: CollectionWindow) -> list[ReadRow]:
         return [

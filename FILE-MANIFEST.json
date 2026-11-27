@@ -1014,8 +1014,8 @@
     },
     {
       "path": "docs/ml-runbook.md",
-      "bytes": 29619,
-      "sha256": "034049b90241848d44df4750c3ad6ab719f18d7a4b4e5fc8e4c7d8d24be75f5d"
+      "bytes": 30650,
+      "sha256": "57ef604542bec3c3a46895725761b1ad0c44f5adf9dcfcfd2469344f1bdeb92f"
     },
     {
       "path": "docs/ml-runtime-compatibility.md",
@@ -1559,8 +1559,8 @@
     },
     {
       "path": "src/api/governance_discovery.py",
-      "bytes": 13088,
-      "sha256": "bad8b4154e9623db932d810471c30aa75c9da889bcb47a40e8c712860df8d3ea"
+      "bytes": 13712,
+      "sha256": "a64b79c6135e79083be994db1f21248155c5b8be8f975d2f80f0f6161f3c7c19"
     },
     {
       "path": "src/api/health.py",
@@ -1744,8 +1744,8 @@
     },
     {
       "path": "src/application/governance.py",
-      "bytes": 8565,
-      "sha256": "6997742bd79bc7d96192178ce5b5017282a069584a8df790a61aee5fd344f488"
+      "bytes": 8748,
+      "sha256": "7e7dde2a8be3f4cf196031968ae051d9867722702481e72eabd11520907edaed"
     },
     {
       "path": "src/application/hierarchy.py",
@@ -2459,8 +2459,8 @@
     },
     {
       "path": "src/infrastructure/persistence/governance_reads.py",
-      "bytes": 13259,
-      "sha256": "8a1d80d598a3fa5c95a7c68909f1602590fd434a772506d9909c0e951bd8f16a"
+      "bytes": 15111,
+      "sha256": "52fd00373f206287dd3afebe618783d4cdafaa30c43a8155c879e56ef40a6268"
     },
     {
       "path": "src/infrastructure/persistence/identity.py",
@@ -3124,8 +3124,8 @@
     },
     {
       "path": "tests/ml/test_governance_discovery.py",
-      "bytes": 13241,
-      "sha256": "1bf33048b85dc71db7a597cb67386ae0a13d2ead013cf3fc1830b33799aea614"
+      "bytes": 18292,
+      "sha256": "f8dbcc4079ea747fc62caaacc5e08d28f7b99b77b58555dcdc69c308af7da071"
     },
     {
       "path": "tests/ml/test_model_governance.py",

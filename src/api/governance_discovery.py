@@ -144,8 +144,12 @@ class EvaluationRecord(StrictModel):
     policy_version: str
     evaluator_version: str
     decision: str
-    metrics: dict[str, float | int | bool | None]
-    report_digest: str
+    metrics: dict[str, float | int | bool | None] = Field(
+        description="Allowlisted persisted metrics. This projection is not independently verified."
+    )
+    report_digest: str = Field(
+        description="Stored digest of the original evaluation report. The metric view is separate."
+    )
     created_at: float = Field(description="Time recorded in SQL, in UTC Unix seconds.")
 
 
@@ -170,7 +174,7 @@ class DeploymentRecord(StrictModel):
     expected_route_revision: int
     route_revision: int = Field(description="Current route revision at read time.")
     spec_digest: str
-    routed: bool
+    routed: bool = Field(description="Whether the current route matches this validated assignment.")
     registered_name: str
     model_version: str
     manifest_digest: str
@@ -277,8 +281,9 @@ def lineage(binding_id: ResourceId, actor: ActorDependency, service: Discovery) 
     responses=NOT_FOUND,
     operation_id="list_model_evaluation_results",
     summary="List recorded model evaluation results",
-    description="Requires ml:model:read. Pages immutable evaluation evidence and approved "
-    "public metric fields, newest SQL record first.",
+    description="Requires ml:model:read. Pages persisted evaluation metadata and allowlisted "
+    "public metrics, newest SQL record first. This view does not verify the original "
+    "report digest or attest to the consistency of the projected metrics.",
 )
 def evaluation_results(
     binding_id: ResourceId,
@@ -333,7 +338,8 @@ def deployments(
     operation_id="list_deployment_endpoints",
     summary="List endpoint route assignments",
     description="Requires ml:deployment:read or ml:deploy. Returns tenant SQL assignments "
-    "ordered by endpoint ID. Readiness is unknown because this API does not probe serving.",
+    "ordered by endpoint ID. A route is active only if the deployment specification and binding "
+    "identity agree. Readiness is unknown because this API does not probe serving.",
 )
 def endpoints(
     actor: ActorDependency,
@@ -351,7 +357,8 @@ def endpoints(
     operation_id="get_deployment_endpoint",
     summary="Read current endpoint assignment",
     description="Requires ml:deployment:read or ml:deploy. Returns the current persisted SQL "
-    "route assignment and its revision, with unknown runtime readiness.",
+    "route assignment and its revision. Invalid specifications or binding identities produce an "
+    "inconsistent state with no assignment details. Runtime readiness is unknown.",
 )
 def endpoint(endpoint_id: EndpointId, actor: ActorDependency, service: Discovery) -> EndpointRecord:
     return EndpointRecord.model_validate(service.endpoint(actor, endpoint_id))

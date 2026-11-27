@@ -152,6 +152,8 @@ class GovernanceDiscoveryService:
         self.registry.get(actor, binding_id)
         rows = self.reader.evaluations(actor, binding_id, window)
         for row in rows:
+            # The recorded digest identifies the original evaluator report. This projection
+            # omits report data, including the policy digest and replay semantics for EBM.
             raw = row.pop("metrics_json")
             try:
                 if not isinstance(raw, str) or len(raw) > 65536:

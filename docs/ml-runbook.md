@@ -333,7 +333,7 @@ Assign the read-only grants independently of `ml.model.approve` and `ml.deploy`.
 | `/model_registry/models/{name}` | `ml:model:read`. Name and count of registered versions visible in the current tenant. Use the bindings list with `registered_name` to browse versions. |
 | `/model_registry/bindings/{id}/contract` | `ml:model:read`. Digest-verified public inference contract and latest verified usage review, tied to the binding manifest. Missing or invalid evidence is `incomplete`. |
 | `/model_registry/bindings/{id}/lineage` | `ml:model:read`. Binding, run ID and manifest. The recorded job attempt, recipe and spec digest also require job ownership or same-tenant `ml:jobs:read_all`. The pinned dataset additionally requires `ml:train` or `ml:dataset:read`. Missing or inaccessible fields remain null with `status=incomplete`. |
-| `/model_registry/bindings/{id}/evaluation-results` | `ml:model:read`. Immutable evaluations for the exact binding/manifest and known public metrics. Newest recorded time first, then ID descending. Undefined metrics can be null. |
+| `/model_registry/bindings/{id}/evaluation-results` | `ml:model:read`. Persisted evaluation metadata for the exact binding/manifest and allowlisted public metrics. Newest recorded time first, then ID descending. Undefined metrics can be null. |
 | `/model_registry/bindings/{id}/approvals` | `ml:model:read`. Recorded approvals matching the binding and evaluation evidence, including the approved environment. Newest recorded time first, then ID descending. |
 | `/deployments` | `ml:deployment:read` or `ml:deploy`. Model binding/version, state, generation, approval, environment and route revision. Optional exact `endpoint_id`, `state`, and `environment`. Order is endpoint ID ascending, then generation descending. |
 | `/deployments/endpoints` and `/deployments/endpoints/{id}` | Same read grants. Current tenant SQL route assignments in endpoint ID order. An endpoint can be `active`, `unassigned`, or `inconsistent`. Readiness is always `unknown` in these observations. |
@@ -361,6 +361,20 @@ creates a new generation and initially leaves the current assignment in place. T
 records do not distinguish rollback creation from ordinary creation, or preserve a timeline
 of controller transitions. Use Prediction Gateway endpoint discovery for inference
 contracts as a prediction-only user.
+
+The evaluation list returns a projection of stored metrics and the original report's
+persisted `report_digest`. The API does not independently verify those metrics against
+the report. For MLP the digest covers the complete evaluator report, including unfiltered
+metrics, decision and binding, dataset, policy and evaluator identities. A successful EBM
+evaluation report also includes the frozen policy configuration digest and retrospective
+replay semantics. Supervisor errors use a reduced error-report contract, and legacy rows can
+lack the original report inputs. The list cannot verify a complete report. Use the
+existing approval evidence for deployment decisions.
+
+An endpoint assignment is active only after the immutable deployment specification and
+associated binding identity agree. An invalid assignment is `inconsistent`, with assignment
+fields set to null and readiness still `unknown`. Generation lists and history retain the
+persisted lifecycle state and mark an invalid assignment as `routed=false`.
 
 Collections return `items`, `limit`, `offset`, and `next_offset` (null at the end or at the
 offset bound). The default limit is 25, maximum 100, and offsets range from 0 to 1,000,000.
