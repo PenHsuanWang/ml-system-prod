@@ -152,7 +152,8 @@ def jobs(
     page: Annotated[JobCollectionQuery, Query()],
 ) -> MetadataPage[IngestionJobMetadata]:
     response.headers["Cache-Control"] = "private, no-store"
-    items, more = service.collections(actor, page.query())
+    query = page.query()
+    items, more = service.collections(actor, query)
     return MetadataPage[IngestionJobMetadata](
         items=[
             IngestionJobMetadata.model_validate(public_job(cast(IngestionJob, item)))
@@ -160,7 +161,7 @@ def jobs(
         ],
         limit=page.limit,
         offset=page.offset,
-        next_offset=page.offset + page.limit if more else None,
+        next_offset=query.window.next_offset(has_more=more),
     )
 
 
@@ -183,7 +184,8 @@ def snapshots(
     page: Annotated[SnapshotCollectionQuery, Query()],
 ) -> MetadataPage[RawSnapshotMetadata]:
     response.headers["Cache-Control"] = "private, no-store"
-    items, more = service.collections(actor, page.query(), snapshots=True)
+    query = page.query()
+    items, more = service.collections(actor, query, snapshots=True)
     return MetadataPage[RawSnapshotMetadata](
         items=[
             RawSnapshotMetadata.model_validate(public_snapshot(cast(RawSnapshot, item)))
@@ -191,5 +193,5 @@ def snapshots(
         ],
         limit=page.limit,
         offset=page.offset,
-        next_offset=page.offset + page.limit if more else None,
+        next_offset=query.window.next_offset(has_more=more),
     )

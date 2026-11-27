@@ -395,6 +395,71 @@ async def test_http_user_discovers_ingestion_build_and_lineage_without_filesyste
 
 
 @pytest.mark.asyncio
+async def test_collection_continuation_stops_at_offset_bound(
+    components, published_builder_inputs, tmp_path, monkeypatch
+):
+    inputs = published_builder_inputs
+    datasets_repo = components.services.datasets.discovery
+    assert datasets_repo is not None
+    source = tmp_path / "fixture.json"
+    source.write_text(canonical_json(snapshot_value()))
+    catalog = SQLDatasetCatalog(components.database, components.settings.dataset_root)
+    for version in ("v1", "v2"):
+        catalog.register(inputs.operator, "offset-fixture", version, source)
+
+    # Simulate lookahead at large offsets using the two visible rows at the start.
+    read_families = datasets_repo.list_families
+    read_versions = datasets_repo.list_versions
+
+    def first_families_page(actor, window, dataset_id=None):
+        return read_families(actor, replace(window, offset=0), dataset_id)
+
+    def first_versions_page(actor, dataset_id, window):
+        return read_versions(actor, dataset_id, replace(window, offset=0))
+
+    monkeypatch.setattr(datasets_repo, "list_families", first_families_page)
+    monkeypatch.setattr(datasets_repo, "list_versions", first_versions_page)
+    ingestion_repo = inputs.ingress.service.discovery
+    assert ingestion_repo is not None
+
+    def first_ingestion_page(read):
+        def page(actor, query):
+            return read(actor, replace(query, window=replace(query.window, offset=0)))
+
+        return page
+
+    for method in ("list_jobs", "list_snapshots"):
+        monkeypatch.setattr(
+            ingestion_repo, method, first_ingestion_page(getattr(ingestion_repo, method))
+        )
+
+    app = create_app(
+        services=components.services,
+        identity=Identity(inputs.operator),
+        ingestion_service=inputs.ingress.service,
+    )
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        auth = {"Authorization": "Bearer owner"}
+        for path in (
+            "/api/v1/datasets",
+            "/api/v1/datasets/offset-fixture/versions",
+            "/api/v1/ingestion/jobs",
+            "/api/v1/ingestion/snapshots",
+        ):
+            page = await client.get(path, params={"offset": 999_999, "limit": 1}, headers=auth)
+            assert page.status_code == 200
+            assert page.json()["next_offset"] == 1_000_000
+            last = await client.get(
+                path, params={"offset": page.json()["next_offset"], "limit": 1}, headers=auth
+            )
+            assert last.status_code == 200
+            assert len(last.json()["items"]) == 1
+            assert last.json()["next_offset"] is None
+
+
+@pytest.mark.asyncio
 async def test_metadata_http_permissions_errors_and_public_contracts(
     components, published_builder_inputs
 ):

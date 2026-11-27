@@ -4,7 +4,7 @@ from typing import Any, Generic, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from src.domain.pagination import CollectionWindow
+from src.domain.pagination import MAX_COLLECTION_OFFSET, CollectionWindow
 
 T = TypeVar("T")
 
@@ -42,7 +42,7 @@ class CollectionQuery(BaseModel):
     model_config = ConfigDict(extra="forbid", allow_inf_nan=False)
     limit: int = Field(default=25, ge=1, le=100, description="Maximum items, default 25.")
     offset: int = Field(
-        default=0, ge=0, le=1_000_000, description="Offset in deterministic ordering."
+        default=0, ge=0, le=MAX_COLLECTION_OFFSET, description="Offset in deterministic ordering."
     )
     created_after: float | None = Field(
         default=None, ge=0, description="Strictly after UTC Unix time."
@@ -60,4 +60,8 @@ class MetadataPage(BaseModel, Generic[T]):
     items: list[T]
     limit: int
     offset: int
-    next_offset: int | None
+    next_offset: int | None = Field(
+        ge=0,
+        le=MAX_COLLECTION_OFFSET,
+        description="Null when there are no more results or the next offset exceeds the maximum.",
+    )

@@ -3,6 +3,7 @@
 Baseline master 651ce17, WP2 dependency 75802fd. The initial WP3 branch merges that master
 into the WP2 branch at dff1c07 so the new migration follows 0007 without a parallel Alembic head.
 Branch feature/dataset-discovery-lineage. User authorization covers WP3 with sequential commits.
+PR #19 later merged master at `eb472ca`, which includes the final WP2 review corrections.
 
 ## Scope and implementation
 
@@ -29,10 +30,10 @@ Branch feature/dataset-discovery-lineage. User authorization covers WP3 with seq
 Use offset pages, default 25/max 100, maximum offset 1,000,000. Ordering is explicit and
 deterministic; clients should tolerate changes between pages. Timestamp bounds use UTC Unix
 seconds, strictly after/before. A page has items, limit, offset and nullable next_offset.
+Continuation ends when the next offset would exceed the maximum, even if SQL found more rows.
 SQL performs filtering, shadow resolution, grouping and bounds before records reach Python.
 
-A new 0008 migration follows the unmerged WP2 0007 migration. WP3 therefore remains a stacked
-change until WP2 is integrated. No published migration is rewritten.
+Migration 0008 follows WP2 migration 0007, now part of master. No published migration is rewritten.
 The receipt is canonically serialized and SHA-256 verified against the immutable on-disk
 receipt before the existing publisher supplies it to catalog registration. Catalog registration
 verifies exact dataset identity/content, current SQL-published input metadata and actor visibility.

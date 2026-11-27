@@ -30,7 +30,7 @@ class DatasetService:
             "items": rows[: window.limit],
             "limit": window.limit,
             "offset": window.offset,
-            "next_offset": window.offset + window.limit if len(rows) > window.limit else None,
+            "next_offset": window.next_offset(has_more=len(rows) > window.limit),
         }
 
     def families(

@@ -524,8 +524,8 @@
     },
     {
       "path": "docs/adr/024-dataset-discovery-lineage.md",
-      "bytes": 3322,
-      "sha256": "8703d8e332875f449f819ea00e0af6ab5cfc40e672aea4707b4695842dd7def7"
+      "bytes": 3319,
+      "sha256": "b06136bf496dae168290f854bd2981465dd838f4b0a48d5719b54762c1046636"
     },
     {
       "path": "docs/adr/README.md",
@@ -1004,8 +1004,8 @@
     },
     {
       "path": "docs/implementation-status.md",
-      "bytes": 6625,
-      "sha256": "bf6b0ec7ffd379171a8dbde9690663d2263ef7a07d164e5bb190575335b31ff1"
+      "bytes": 6642,
+      "sha256": "7b5e781c56a7d5899507d6bcf6a8973b8ab49f8dcd802b84793399b247a21a84"
     },
     {
       "path": "docs/microservice-contracts.md",
@@ -1014,8 +1014,8 @@
     },
     {
       "path": "docs/ml-runbook.md",
-      "bytes": 19805,
-      "sha256": "6e4db1c3d99dbf30424a452ce86b974e306e9ea1e47ee1c46accd18143d79b6d"
+      "bytes": 19886,
+      "sha256": "e0aa985c6ee15b7d4a992c7626723d35a686d70d05d272743312299a81c0d009"
     },
     {
       "path": "docs/ml-runtime-compatibility.md",
@@ -1029,8 +1029,8 @@
     },
     {
       "path": "docs/plans/dataset-discovery-lineage.md",
-      "bytes": 3865,
-      "sha256": "1e9de50f797d67c7b54ebb448d0b72b37b07a2a6b92de18c1d35947dd96c2906"
+      "bytes": 3986,
+      "sha256": "d084c810c4050bca37bfe95d1e919907fa7a76a870a3a602514c10bdc59954c6"
     },
     {
       "path": "docs/plans/governed-discovery.md",
@@ -1504,8 +1504,8 @@
     },
     {
       "path": "src/api/collection_schemas.py",
-      "bytes": 1921,
-      "sha256": "28db9774a96be524d1d3d88d866f84fef3d33116a03321b5c2fe8b7fbecbc1ae"
+      "bytes": 2118,
+      "sha256": "cbe18d0885653cbd743ed7c6f8ba110702d2898bc610147ed9262ff52bb6d50a"
     },
     {
       "path": "src/api/datasets/__init__.py",
@@ -1579,8 +1579,8 @@
     },
     {
       "path": "src/api/ingestion/routers.py",
-      "bytes": 7115,
-      "sha256": "af0f7c1615a2daa872ed563f8d351d8af3f97af5b73e8a451040a8e698e376c3"
+      "bytes": 7145,
+      "sha256": "0a6dd1147758fd94f6e9f3433510eb35f4eab1f92c94536a99e15b7ffbde8644"
     },
     {
       "path": "src/api/ingestion/schemas.py",
@@ -1694,8 +1694,8 @@
     },
     {
       "path": "src/application/datasets/service.py",
-      "bytes": 2209,
-      "sha256": "6324088d8c3f1ede8e515ac67db43c96262dab2e2f57d2b3b16bd3cee45ffcfa"
+      "bytes": 2196,
+      "sha256": "97d9d2b65767eb40171db6a1083b6bc141363cb26c2925891714217354f13851"
     },
     {
       "path": "src/application/deployments/__init__.py",
@@ -2094,8 +2094,8 @@
     },
     {
       "path": "src/domain/pagination.py",
-      "bytes": 1269,
-      "sha256": "93cc217711f85f04607c974005eb62527799e5b2b34f7817770f206bd5613551"
+      "bytes": 1514,
+      "sha256": "88680d39fc8dd51e5cb3bb3c2e43f82800483a22450f1a23c40f034feeffedff"
     },
     {
       "path": "src/domain/ports.py",
@@ -2779,8 +2779,8 @@
     },
     {
       "path": "tests/ml/dataset_builder/test_discovery.py",
-      "bytes": 20627,
-      "sha256": "1ce6342e4d80ee952af02b3473343cf8aa39ef09b263bf47b3f728b7571ddfc2"
+      "bytes": 23283,
+      "sha256": "1d045c4c507f210b3c74f0421ca24d420fd98326530c5318c5d5d2cf6f7e4a77"
     },
     {
       "path": "tests/ml/dataset_builder/test_integration.py",

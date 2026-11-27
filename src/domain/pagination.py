@@ -5,6 +5,8 @@ from dataclasses import dataclass
 
 from src.domain.ml import SchemaMismatch
 
+MAX_COLLECTION_OFFSET = 1_000_000
+
 
 @dataclass(frozen=True)
 class CollectionWindow:
@@ -18,7 +20,7 @@ class CollectionWindow:
             type(self.limit) is not int
             or not 1 <= self.limit <= 100
             or type(self.offset) is not int
-            or not 0 <= self.offset <= 1_000_000
+            or not 0 <= self.offset <= MAX_COLLECTION_OFFSET
         ):
             raise SchemaMismatch("Invalid collection page bounds")
         for value in (self.created_after, self.created_before):
@@ -35,3 +37,7 @@ class CollectionWindow:
             and self.created_after >= self.created_before
         ):
             raise SchemaMismatch("created_after must precede created_before")
+
+    def next_offset(self, *, has_more: bool) -> int | None:
+        next_offset = self.offset + self.limit
+        return next_offset if has_more and next_offset <= MAX_COLLECTION_OFFSET else None

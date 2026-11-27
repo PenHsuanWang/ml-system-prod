@@ -131,7 +131,8 @@ Existing source browsing, approved-source registration and ingestion execution a
 All collections use `limit` (default 25, maximum 100), `offset` (0–1,000,000), optional
 `created_after` and `created_before` (finite, nonnegative UTC Unix seconds, strict bounds;
 after must precede before). Unknown parameters are rejected. Pages contain `items`, `limit`,
-`offset`, `next_offset` (null at the end). Jobs/snapshots accept exact `source_id` and
+`offset`, and `next_offset`. Continuation is null when the results are exhausted or the next
+offset would exceed 1,000,000. Jobs/snapshots accept exact `source_id` and
 `source_version`; jobs also accept `state`. Families accept exact `dataset_id`. Job/snapshot
 ordering is creation time descending then ID descending; family ID and version ordering are
 lexically ascending. Family counts reflect matching time bounds. Offset pages can shift during

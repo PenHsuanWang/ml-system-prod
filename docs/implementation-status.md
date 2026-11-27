@@ -98,7 +98,7 @@ Target-environment production qualification remains separate.
 
 ## WP3 dataset discovery and lineage
 
-Implemented on the stacked WP3 feature branch: bounded ingestion job/snapshot discovery,
+Implemented on the WP3 feature branch synchronized with master: bounded ingestion job/snapshot discovery,
 dataset family/version/detail and authorized lineage APIs; additive SQL receipt metadata and
 atomic registration through the existing EBM publisher. Existing incomplete history remains
 explicit; no automatic backfill or HTTP dataset build orchestration. Local SQLite/PostgreSQL

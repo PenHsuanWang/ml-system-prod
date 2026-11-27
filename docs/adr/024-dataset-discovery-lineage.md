@@ -45,7 +45,7 @@ SQL is authoritative for recorded provenance. Immutable files may remain unrefer
 failed SQL transaction, as with existing artifact publication. An explicit schema downgrade
 removes new provenance evidence, not dataset content. Missing files are not probed by metadata
 GETs; complete lineage is not live external readiness or fresh byte-integrity qualification.
-Migration 0008 follows the stacked WP2 0007 dependency, with no parallel Alembic head.
+Migration 0008 follows WP2 migration 0007 on master, with no parallel Alembic head.
 Dataset creation remains the operator CLI; WP6 orchestration and WP4/WP5 APIs are outside WP3.
 See the [workflow and rollback guidance](../ml-runbook.md#dataset-discovery-and-lineage-wp3)
 and [implementation plan](../plans/dataset-discovery-lineage.md).
