@@ -7,8 +7,8 @@ services:
     command: [python, -m, bootstrap.dataset_build_worker]
     environment:
       ML_DATABASE_URL: postgresql+psycopg://ml:${ML_DB_PASSWORD:?set ML_DB_PASSWORD}@postgres:5432/ml
-      APP_MONGO_URI: mongodb://root:${ML_MONGO_PASSWORD:?set ML_MONGO_PASSWORD}@mongo:27017/?authSource=admin
-      APP_MONGO_DATABASE: backend
+      APP_MONGO_URI: ${ML_DATASET_BUILD_MONGO_URI:?set the dedicated Identity lookup connection}
+      APP_MONGO_DATABASE: ${APP_MONGO_DATABASE:-backend}
       ML_DATASET_ROOT: /app/var/datasets
       ML_EXECUTION_ROOT: /app/var/executions
       ML_RAW_SNAPSHOT_ROOT: /app/var/raw-snapshots

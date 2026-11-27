@@ -10,6 +10,7 @@ from bootstrap.ml_config import MLSettings
 from bootstrap.ml_telemetry import configure_telemetry
 from bootstrap.ml_wiring import build_components
 from src.api.ingestion.source_routers import router as source_router
+from src.api.ml_docs import install_ml_docs
 from src.api.ml_http import (
     ActorDependency,
     dataset_router,
@@ -19,12 +20,57 @@ from src.api.ml_http import (
     registry_router,
     training_router,
 )
+from src.api.ml_platform import (
+    CATALOG,
+    DATASET_BUILD,
+    GOVERNANCE,
+    INGESTION,
+    MANAGEMENT,
+    METRICS,
+    SOURCE_MANAGEMENT,
+    install_platform_audit,
+    install_platform_discovery,
+)
 from src.application.catalog.service import CatalogService
 from src.application.ingestion.service import IngestionService
 from src.application.ingestion.source_management import SourceManagementService
 from src.application.ml_services import ActorResolver, MLServices
 from src.domain.ml import Actor
 from src.infrastructure.ml_tracing import MLTraceMiddleware
+
+
+def _install_portal(
+    app: FastAPI,
+    services: MLServices,
+    *,
+    ingestion: bool,
+    source_management: bool,
+    catalog: bool,
+    production_factory: bool,
+) -> None:
+    app.description = (
+        "Discover and govern data, models and deployments. Use "
+        "`GET /api/v1/platform/info` for sign-in instructions and "
+        "`GET /api/v1/platform/capabilities` for your workflow entry points. "
+        "Use a Bearer access token from the deployment's trusted Identity URL. "
+        "Use the Prediction Gateway for endpoint discovery and inference."
+    )
+    entries = MANAGEMENT
+    if ingestion:
+        entries += INGESTION
+    if source_management:
+        entries += (SOURCE_MANAGEMENT,)
+    if catalog:
+        entries += (CATALOG,)
+    if services.dataset_builds is not None:
+        entries += (DATASET_BUILD,)
+    if services.governance is not None:
+        entries += GOVERNANCE
+        install_platform_audit(app)
+    if production_factory:
+        entries += (METRICS,)
+    install_ml_docs(app)
+    install_platform_discovery(app, "management", entries, local_identity=production_factory)
 
 
 def create_app(
@@ -38,7 +84,7 @@ def create_app(
     if services is not None:
         if identity is None:
             raise ValueError("An explicit identity provider is required")
-        app: FastAPI = FastAPI(title="ML Management")
+        app: FastAPI = FastAPI(title="ML Management", docs_url=None, redoc_url=None)
         app.state.ml_services, app.state.ml_identity = services, identity
         mount_management(app)
         if ingestion_service is not None:
@@ -54,6 +100,14 @@ def create_app(
 
             app.state.catalog_service = catalog_service
             app.include_router(catalog_router, prefix="/api/v1/catalog")
+        _install_portal(
+            app,
+            services,
+            ingestion=ingestion_service is not None,
+            source_management=source_management is not None,
+            catalog=catalog_service is not None,
+            production_factory=False,
+        )
         app.add_middleware(MLTraceMiddleware)
         return app
 
@@ -117,7 +171,9 @@ def create_app(
         definitions.append(
             ModuleDefinition("catalog", requires=("identity",), routers=(catalog_router,))
         )
-    app = template_factory(config, modules=definitions, include_default_readiness=False)
+    app = template_factory(
+        config, modules=definitions, include_default_readiness=False, include_default_docs=False
+    )
     original_lifespan = app.router.lifespan_context
 
     class TemplateIdentity:
@@ -173,4 +229,12 @@ def create_app(
 
     app.add_api_route("/health/ready", ready, methods=["GET"], response_model=None)
     app.add_api_route("/metrics", metrics, methods=["GET"], response_class=PlainTextResponse)
+    _install_portal(
+        app,
+        components.services,
+        ingestion=ingress is not None,
+        source_management=ingress is not None,
+        catalog=catalog is not None,
+        production_factory=True,
+    )
     return app

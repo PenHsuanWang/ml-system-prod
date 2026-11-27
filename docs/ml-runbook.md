@@ -54,8 +54,139 @@ ML domain errors 使用 flat `code`、`message`、`request_id`、`retryable`；4
 拒絕不回顯輸入。401／403／404 分別處理身份、權限與不可見資源，409 表示 intent／
 狀態衝突，429 `CAPACITY_EXCEEDED`，503 `DEPENDENCY_UNAVAILABLE`，Serving timeout
 為 504 `PREDICTION_DEADLINE`。Transport authentication／body-limit 回應可能不同：
-Management 的 missing Bearer 為標準 HTTP `detail`，413 `PAYLOAD_TOO_LARGE` 沒有
-`request_id`；client 不應假設所有錯誤都有同一 JSON shape。
+Identity／HTTP 拒絕可能使用巢狀 `error`；413 `PAYLOAD_TOO_LARGE` 將 request ID
+放在 HTTP header。請依 response status 與各 operation 的契約處理。
+422 的 JSON `request_id` 與 `X-Request-ID` header 可用同一個值查詢。
+
+## Self-service quickstart (WP7)
+
+Start on the API origin supplied by your deployment owner. The reference
+development ports are 8000 for Management and 8001 for Prediction Gateway.
+Production clients use the approved HTTPS hostname and proxy prefix. On either
+service, `GET /api/v1/platform/info` returns links to Swagger UI, ReDoc,
+OpenAPI, capabilities and Identity when available on that origin. URLs are
+origin-relative and carry the configured prefix. Swagger and ReDoc serve JavaScript
+and CSS from the application image. The browser requires neither a CDN nor Google Fonts.
+
+1. Send `tenant_id`, `username` and `password` to the **trusted** Identity login URL.
+   If the Gateway response has `identity: null`, use the Management Identity URL
+   from the deployment owner. Enter the returned `access_token` using **Authorize**
+   in Swagger, or send it as `Authorization: Bearer <access_token>`.
+2. Call the returned `capabilities_url`. When logged in, the list contains entry
+   points enabled on this service and allowed by the account's current permission
+   scopes. Each action rechecks relevant ownership, tenant, resource and approval
+   constraints. An empty list means no matching entry point. A listed entry point
+   can have zero resources, and the list provides no worker or serving readiness signal.
+3. Follow the role workflow below. Keep version and digest identifiers from API
+   responses when passing work to another role. Sign out using the Identity
+   `logout_url` after interactive use.
+
+| Role and grants | Workflow |
+| --- | --- |
+| Data operator with `ml:ingest` and approved source access | Find `ingestion-submit`, select an approved `source_id` and `source_version`, then submit `POST /api/v1/ingestion/jobs`. Poll the job and collect the published snapshot ID, source revision and manifest digest. `catalog` separately requires `ml:catalog:read` and an enabled catalog. `source-management` requires `ml:source:manage` and the source access policy. |
+| Dataset builder with `ml:dataset:manage` and visibility to the input snapshots | Find `dataset-build` and select the EBM builder version. Use published snapshot IDs and manifest digests for its required input roles. Submit a build job and collect the exact dataset version from its result URL. A user with dataset read grants can follow the dataset link and inspect lineage. The deployment needs the opt-in worker to process the job. |
+| Trainer with `ml:train` | Find `dataset-read` and `training`. Match the dataset version and feature schema to a recipe version, submit the documented spec with an idempotency key, and poll status. Hand off the resulting model binding ID and manifest digest. |
+| Reviewer with `ml:model:read` and `ml:model:approve` | Find `model-registry`, verify model lineage, evaluation and policy, and approve the binding for the intended environment. Public technical contract and usage publication use the existing verified operator CLI. |
+| Deployer with `ml:deploy` | Follow `deployment-submit` using the binding and approval IDs for the intended environment. Inspect `deployment-read` for the rollout state, generation and route revision. A read-only observer can use `ml:deployment:read`. |
+| Prediction client with `ml:predict` | On the Gateway, follow `prediction-discovery`, open the endpoint's `detail_url`, select the verified input contract and run its example using `predict_url`. Replace synthetic values for actual use. Record the response provenance and request ID to identify the exact version and generation used. |
+| Support operator with `ml:operate` | On Management, use `audit` with the exact subject ID and explicit UTC window. The existing `metrics` endpoint returns aggregate operational gauges. See [Observability](#observability). |
+
+Example Gateway capability response for a prediction-only account behind
+`/inference` (synthetic):
+
+```json
+{
+  "items": [
+    {
+      "id": "prediction-discovery",
+      "method": "GET",
+      "url": "/inference/api/v1/prediction/endpoints",
+      "description": "Find assigned endpoints and their inference contracts."
+    },
+    {
+      "id": "prediction",
+      "method": "POST",
+      "url": "/inference/api/v1/prediction/predict",
+      "description": "Run inference with an active endpoint."
+    }
+  ]
+}
+```
+
+Use the endpoint detail's `request_example` for the first synthetic prediction.
+An incomplete legacy contract may require an operator to publish a verified
+contract. The endpoint's registered name and version identify its deployed
+binding and the corresponding MLflow model version when MLflow is configured.
+Runtime readiness is checked when prediction runs.
+
+### Support and audit
+
+Send the response's `X-Request-ID`, operation, UTC time and available job,
+snapshot, binding or deployment ID to support. Use the header for HTTP responses
+such as 413 that carry it outside the body. Share identifiers and safe error codes.
+Keep tokens and input data out of support requests.
+
+Management `GET /api/v1/platform/audit-events` requires `ml:operate`.
+For example, query
+`?subject_id=synthetic-job&created_after=1770000000&created_before=1770003600&limit=25`.
+The query is restricted to the authenticated tenant, one subject, and an exclusive
+UTC Unix time window of at most seven days. Page size defaults to 25 and caps at
+100. Continue with `next_offset` until it is null. Order is newest first, then event
+ID descending. Concurrent writes may shift pages. The response contains only
+recorded action, event/actor/subject IDs and timestamps. The audit does not act as
+a history of individual predictions, inferred controller transitions or missing
+historical events. A subject with no visible matching events returns an empty page.
+
+On 401, sign in again. On 403, have the owner confirm the relevant grant.
+On 404, confirm the ID and resource visibility. For 413 or 422, correct the request.
+On retryable 429, 503 or 504, use bounded backoff. After an ambiguous job submission,
+replay the same intent with the original idempotency key and check its durable status.
+
+### HTTPS proxy and Identity
+
+Run the Gateway with the proxy-owned ASGI prefix, for example
+`--root-path /inference`, and strip that prefix before forwarding to the upstream.
+Use a trusted TLS certificate and restrict Uvicorn's forwarded-header trust to the
+proxy's address. Overwrite inbound forwarding headers at the proxy. Gateway and
+Management generate origin-relative links using the server's ASGI root path.
+
+For same-origin sign-in, an operator can add exact proxy routes for the three
+existing Identity operations. Set `ML_GATEWAY_IDENTITY_PREFIX=/inference/identity`
+on the Gateway only after these routes are available. The value is an origin-relative
+path supplied by deployment configuration. It may be unset for separate origins.
+This example belongs inside the trusted HTTPS virtual host for a loopback Compose
+deployment. Use an ingress-specific equivalent when the services have private cluster
+addresses.
+
+```nginx
+proxy_set_header Host $server_name;
+proxy_set_header X-Forwarded-Proto https;
+proxy_set_header X-Forwarded-For $remote_addr;
+proxy_set_header X-Forwarded-Prefix "";
+
+location = /inference/identity/login {
+    limit_except POST { deny all; }
+    proxy_pass http://127.0.0.1:8000/api/v1/identity/login;
+}
+location = /inference/identity/me {
+    limit_except GET { deny all; }
+    proxy_pass http://127.0.0.1:8000/api/v1/identity/me;
+}
+location = /inference/identity/logout {
+    limit_except POST { deny all; }
+    proxy_pass http://127.0.0.1:8000/api/v1/identity/logout;
+}
+location /inference/ {
+    proxy_pass http://127.0.0.1:8001/;
+}
+```
+
+Keep the Management upstream private. Permit and rate-limit login according to site
+policy. Preserve `Cache-Control: no-store` on authentication and authorized discovery
+responses. Apply the existing account, session and resource policies throughout.
+Qualify the proxy and full lifecycle on disposable Compose and target Kubernetes
+using the deployment runbooks. The [WP7 verification report](reviews/wp7-platform-usability-report.md)
+tracks executed evidence and deployment limits.
 
 Management body 上限 64 KiB，Gateway／Serving 8 MiB；MLP 每次 1–128 筆兩維
 features，EBM 每次 1–16 筆 `[7,4,9,31]` precomputed spectrogram，固定 signal／Pad
@@ -420,6 +551,31 @@ For a dependency outage or ambiguous submission, retry using the original key.
    Request/response bodies contain no raw records, local paths or saved credentials.
 
 ### Worker, recovery and rollout
+
+The reference Compose worker takes `ML_DATASET_BUILD_MONGO_URI` from the
+deployment's private configuration. Use a dedicated Mongo account with the
+`find` action on the configured Identity database's `identity_users` collection.
+For the reference `backend` database, an authorized Mongo operator can create
+the role and user from an authenticated `mongosh` shell:
+
+```javascript
+const identity = db.getSiblingDB("backend")
+identity.createRole({
+  role: "datasetBuildLookup",
+  roles: [],
+  privileges: [{resource: {db: "backend", collection: "identity_users"}, actions: ["find"]}]
+})
+identity.createUser({
+  user: "dataset-build", pwd: passwordPrompt(),
+  roles: [{role: "datasetBuildLookup", db: "backend"}]
+})
+```
+
+Use that account with `authSource=backend`. The worker looks up current account
+grants directly and needs neither session access nor signing material.
+For Kubernetes, apply the opt-in
+[Dataset Build Worker declaration](../deploy/k8s/README.md#dataset-build-worker)
+after migration 0009 with the endpoint and approved worker-role Secret.
 
 Apply migration `0009_dataset_build_jobs` through the approved maintenance role before starting
 upgraded roles. Run `python -m bootstrap.dataset_build_worker` separately from HTTP, with access

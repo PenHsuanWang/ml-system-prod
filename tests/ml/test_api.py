@@ -16,17 +16,24 @@ class Identity:
 
 
 @pytest.mark.asyncio
-async def test_scoped_api_idempotency_and_safe_attempt_history(components, actor, intent):
+@pytest.mark.parametrize("prefix", ["", "/management"])
+async def test_scoped_api_idempotency_and_safe_attempt_history(components, actor, intent, prefix):
     app = create_app(services=components.services, identity=Identity(actor))
-    async with httpx.AsyncClient(transport=httpx.ASGITransport(app), base_url="http://test") as client:
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app, root_path=prefix), base_url="http://test"
+    ) as client:
+        jobs = prefix + "/api/v1/training/jobs"
         body = {"spec": json.loads(intent)}
-        assert (await client.post("/api/v1/training/jobs", json=body)).status_code == 401
+        assert (await client.post(jobs, json=body)).status_code == 401
         headers = {"Authorization": "Bearer owner", "Idempotency-Key": "api-one"}
-        first = await client.post("/api/v1/training/jobs", json=body, headers=headers)
+        first = await client.post(jobs, json=body, headers=headers)
         assert first.status_code == 202, first.text
-        repeated = await client.post("/api/v1/training/jobs", json=body, headers=headers)
+        repeated = await client.post(jobs, json=body, headers=headers)
         assert repeated.json()["job_id"] == first.json()["job_id"]
         url = first.json()["status_url"]
+        assert url == f"{jobs}/{first.json()['job_id']}"
+        status = await client.get(url, headers=headers)
+        assert status.status_code == 200 and status.json()["status_url"] == url
         assert (await client.get(url, headers={"Authorization": "Bearer other"})).status_code == 404
         attempts = await client.get(url+"/attempts", headers=headers)
         assert attempts.status_code == 200

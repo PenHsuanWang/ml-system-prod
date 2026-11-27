@@ -33,7 +33,8 @@ def build_preparation(
     catalog = SQLDatasetCatalog(database, settings.dataset_root, complete_build=complete_build)
     return EBMDatasetPreparationService(
         RawSnapshotSetResolver(
-            SQLIngestionJobRepository(database), LocalRawSnapshotStore(raw_root)
+            SQLIngestionJobRepository(database),
+            LocalRawSnapshotStore(raw_root, create_directories=False),
         ),
         EBMDatasetBuilderV1(),
         LocalEBMDatasetPublisher(catalog, settings.execution_root / "dataset-builder"),

@@ -137,11 +137,31 @@ def test_database_url_requires_the_unified_images_psycopg_driver(deployment_envi
         entrypoint.load_runtime_environment(deployment_environment)
 
 
-@pytest.mark.parametrize("role", ["migrate", "management", "relay", "gateway", "ingestion-worker"])
+@pytest.mark.parametrize(
+    "role",
+    ["migrate", "management", "relay", "gateway", "ingestion-worker", "dataset-build-worker"],
+)
 def test_writer_or_serving_secrets_are_rejected_for_nonwriter_roles(deployment_environment, role):
     deployment_environment["ML_RUNTIME_ROLE"] = role
     with pytest.raises(ValueError, match="overprivileged"):
         entrypoint.load_runtime_environment(deployment_environment)
+
+
+def test_dataset_build_worker_role_requires_only_sql_and_identity_lookup(deployment_environment):
+    environment = dict(deployment_environment, ML_RUNTIME_ROLE="dataset-build-worker")
+    path = Path(environment["ML_RUNTIME_CONFIG_FILE"])
+    settings = {
+        "ML_DATABASE_URL": "postgresql+psycopg://builder:test@database.example/release",
+        "APP_MONGO_URI": "mongodb://lookup:test@mongo.example/backend?authSource=backend",
+    }
+    path.write_text(json.dumps(settings))
+    runtime = entrypoint.load_runtime_environment(environment)
+    assert runtime["ML_DEPLOYMENT_ROLE"] == "management"
+    assert {key: runtime[key] for key in entrypoint.PRIVATE_KEYS if key in runtime} == settings
+    settings.pop("APP_MONGO_URI")
+    path.write_text(json.dumps(settings))
+    with pytest.raises(ValueError, match="missing"):
+        entrypoint.load_runtime_environment(environment)
 
 
 @pytest.mark.parametrize(

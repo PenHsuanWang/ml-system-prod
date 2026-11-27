@@ -187,8 +187,10 @@ def _rename_exclusive(source: str, destination: str, source_fd: int, destination
 class LocalRawSnapshotStore:
     """One approved raw store; RawSnapshots never register an ML Dataset Version."""
 
-    def __init__(self, root: Path) -> None:
+    def __init__(self, root: Path, *, create_directories: bool = True) -> None:
         self.root = root.absolute()
+        if not create_directories:
+            return
         try:
             with directory_fd(self.root, create=True):
                 pass

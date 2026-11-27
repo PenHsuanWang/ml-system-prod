@@ -386,3 +386,22 @@ class SQLGovernanceReader:
             .order_by(audit.c.created_at, audit.c.id)
         )
         return self._page(statement, window)
+
+    def audit_events(
+        self, actor: Actor, subject_id: str, window: CollectionWindow
+    ) -> list[ReadRow]:
+        if window.created_after is None or window.created_before is None:
+            raise ValueError("Audit read requires an explicit time window")
+        statement = select(
+            audit.c.id.label("event_id"),
+            audit.c.subject_id,
+            audit.c.action,
+            audit.c.actor_id,
+            audit.c.created_at,
+        ).where(
+            audit.c.tenant_id == actor.tenant_id,
+            audit.c.subject_id == subject_id,
+            audit.c.created_at > window.created_after,
+            audit.c.created_at < window.created_before,
+        )
+        return self._page(statement.order_by(audit.c.created_at.desc(), audit.c.id.desc()), window)

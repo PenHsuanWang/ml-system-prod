@@ -32,3 +32,26 @@ allowlisted sanitized receipts may be published. The helper targets the local
 [ADR-017–021](../../docs/adr/README.md) define the contracts. Single-node engineering
 acceptance leaves production CSI, partitions, network-policy enforcement, enterprise
 services, capacity/SLO and backup/restore qualification outstanding.
+
+## Dataset Build Worker
+
+Add `deploy/k8s/dataset-build` to the site's private overlay. Pin its runtime
+image alongside the other roles. Apply migration 0009 before rollout. Provide
+a role-specific `ml-runtime-dataset-build-worker` Secret with `runtime.json`
+containing `ML_DATABASE_URL` and `APP_MONGO_URI`. Use the dedicated
+[Mongo Identity lookup grant](../../docs/ml-runbook.md#worker-recovery-and-rollout).
+The role uses the existing private configuration copy, pinned release and CA
+contract. Its Pod has no service or Kubernetes API token.
+
+Set the worker's roots consistently with Management and Ingestion. The sample
+shares the existing `ml-runtime` PVC through `raw-snapshots` (read-only),
+`datasets` and `executions` (writable) subpaths. Prepare them with ownership
+and access appropriate for UID/GID 10001, and qualify the site's volume and
+scheduling mode. Source publication must use the same absolute RawSnapshot path.
+
+The disposable Minikube acceptance overlay provisions the narrow Mongo role
+when its fresh Mongo volume initializes. The acceptance harness rolls the worker,
+submits a build through Management, and reads the successful result and verified
+lineage. An interrupted attempt can be reclaimed after lease expiration. Use the
+[worker recovery runbook](../../docs/ml-runbook.md#worker-recovery-and-rollout)
+to interpret deadlines and retry limits.

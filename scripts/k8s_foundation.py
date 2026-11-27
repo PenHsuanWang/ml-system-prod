@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 NAMESPACE = "ml-k8s-foundation"
 NAMESPACES = (NAMESPACE, "ml-k8s-serving-runtime", "ml-k8s-training-runtime", "ml-k8s-acceptance")
 ROLES = ("migrate", "management", "relay", "supervisor", "control", "gateway", "ingestion-worker")
+DATASET_BUILD_ROLE = "dataset-build-worker"
 IMAGES = (
     "ml-system-runtime:unconfigured",
     "ml-system-mlflow:unconfigured",
@@ -190,6 +191,36 @@ def prepare(
         generators.append(
             {"name": "ml-runtime-" + role, "files": ["runtime.json=" + role + ".json"]}
         )
+    if acceptance:
+        password = secrets.token_hex(24)
+        private_write(
+            directory / (DATASET_BUILD_ROLE + ".json"),
+            json.dumps(
+                {
+                    "ML_DATABASE_URL": database,
+                    "APP_MONGO_URI": (
+                        f"mongodb://dataset-build:{password}@mongodb:27017/backend?authSource=backend"
+                    ),
+                }
+            ),
+        )
+        # The Mongo entrypoint runs this during fresh disposable volume initialization.
+        private_write(
+            directory / "dataset-build-identity.js",
+            'const identity = db.getSiblingDB("backend");\n'
+            'identity.createRole({role:"datasetBuildLookup", roles:[], privileges:[{'
+            'resource:{db:"backend",collection:"identity_users"},actions:["find"]}]});\n'
+            'identity.createUser({user:"dataset-build", pwd:'
+            + json.dumps(password)
+            + ', roles:[{role:"datasetBuildLookup",db:"backend"}]});\n',
+        )
+        generators += [
+            {
+                "name": "ml-runtime-" + DATASET_BUILD_ROLE,
+                "files": ["runtime.json=" + DATASET_BUILD_ROLE + ".json"],
+            },
+            {"name": "ml-dataset-build-identity-init", "files": ["dataset-build-identity.js"]},
+        ]
     if serving_runtime:
         serving = {key: connection[key] for key in ("APP_MONGO_URI", "APP_JWT_SECRET")}
         serving.update(
@@ -405,7 +436,10 @@ def deploy(directory: Path, namespace: str = NAMESPACE) -> None:
     apply("migration", migration)
     run([*kubectl, "wait", "--for=condition=complete", "job/ml-migrate", "--timeout=300s"])
     apply("runtime", runtime)
-    for name in ("management", "relay", "supervisor", "control", "ingestion-worker"):
+    runtime_roles = ("management", "relay", "supervisor", "control", "ingestion-worker")
+    if namespace == "ml-k8s-acceptance":
+        runtime_roles += (DATASET_BUILD_ROLE,)
+    for name in runtime_roles:
         run([*kubectl, "rollout", "status", "deployment/ml-" + name, "--timeout=300s"])
     print("FOUNDATION_STARTED: initialization only; recovery and production remain unqualified")
 
@@ -428,6 +462,9 @@ def verify(directory: Path, namespace: str = NAMESPACE) -> None:
             text=True,
         ).stdout
     )
+    expected_roles = set(ROLES)
+    if namespace == "ml-k8s-acceptance":
+        expected_roles.add(DATASET_BUILD_ROLE)
     validated, ready = set(), set()
     for pod in pods["items"]:
         if not pod["metadata"]["name"].startswith("ml-"):
@@ -438,11 +475,11 @@ def verify(directory: Path, namespace: str = NAMESPACE) -> None:
                     raise ValueError("A role did not pass production bootstrap initialization")
                 validated.add(status["name"].removeprefix("prepare-"))
         for status in pod["status"].get("containerStatuses", []):
-            if status["name"] in ROLES and status["name"] != "migrate":
+            if status["name"] in expected_roles and status["name"] != "migrate":
                 if not status.get("ready") or "running" not in status.get("state", {}):
                     raise ValueError("A runtime role is not ready")
                 ready.add(status["name"])
-    if validated != set(ROLES) or ready != set(ROLES) - {"migrate"}:
+    if validated != expected_roles or ready != expected_roles - {"migrate"}:
         raise ValueError("Foundation role coverage is incomplete")
     report = run(
         [

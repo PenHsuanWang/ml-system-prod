@@ -20,6 +20,7 @@ ROLES = {
     "control": "control",
     "gateway": "gateway",
     "ingestion-worker": "management",
+    "dataset-build-worker": "management",
     "operator": "management",
     "serving": "serving",
 }
@@ -55,6 +56,7 @@ REQUIRED = {
     "control": {"ML_DATABASE_URL", "APP_MONGO_URI", "APP_JWT_SECRET"},
     "gateway": {"ML_DATABASE_URL", "APP_MONGO_URI", "APP_JWT_SECRET"},
     "ingestion-worker": {"ML_DATABASE_URL"},
+    "dataset-build-worker": {"ML_DATABASE_URL", "APP_MONGO_URI"},
     "operator": {"ML_DATABASE_URL", "APP_MONGO_URI", "APP_JWT_SECRET"},
     "serving": {"APP_MONGO_URI", "APP_JWT_SECRET"},
 }

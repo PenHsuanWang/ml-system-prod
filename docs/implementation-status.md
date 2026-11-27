@@ -1,5 +1,9 @@
 # 實作與驗收狀態
 
+WP7 adds API first-use links, scoped capabilities, local documentation assets
+and a subject audit query. See the [WP7 review](reviews/wp7-platform-usability-report.md)
+for isolated workflow evidence and the pending target-environment qualification.
+
 更新：2026-11-19。基準為已合併 PR #11 的 master `55dd226`。
 本頁集中記錄現行能力與剩餘工作；設計文件、測試結果與正式環境核准分開判定。
 

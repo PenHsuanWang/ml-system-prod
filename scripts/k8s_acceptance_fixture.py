@@ -1,12 +1,12 @@
 """Synthetic inputs and authenticated HTTP operations for the isolated K8s gate."""
 
-import hashlib
 import json
 import math
 import os
 import secrets
 import subprocess
 import sys
+import time
 from dataclasses import asdict
 from pathlib import Path
 from uuid import uuid4
@@ -50,6 +50,60 @@ def provision(tenant, name, permissions):
     return account
 
 
+def build_dataset(account, references):
+    with httpx.Client(base_url="http://ml-management:8000", timeout=15, trust_env=False) as manager:
+        login = manager.post("/api/v1/identity/login", json=account)
+        require(login.status_code == 200, "BUILDER_LOGIN_FAILED")
+        manager.headers["Authorization"] = "Bearer " + login.json()["access_token"]
+        accepted = manager.post(
+            "/api/v1/datasets/build-jobs",
+            headers={"Idempotency-Key": uuid4().hex},
+            json={
+                "dataset_id": "acceptance-ebm",
+                "version": "v1",
+                "inputs": [reference.to_dict() for reference in references],
+                "configuration": {"recipe_id": "recipe-a", "segment_id": 1, "split_seed": 17},
+            },
+        )
+        require(accepted.status_code == 202, "BUILDER_API_ADMISSION")
+        job = accepted.json()
+        deadline = time.monotonic() + 180
+        while time.monotonic() < deadline:
+            response = manager.get(job["status_url"])
+            require(response.status_code == 200, "BUILDER_API_STATUS")
+            status = response.json()
+            require(status["state"] != "FAILED", "BUILDER_ATTEMPT_FAILED")
+            if status["state"] == "SUCCEEDED":
+                break
+            time.sleep(1)
+        else:
+            raise TimeoutError("BUILDER_JOB_DEADLINE")
+        result = manager.get(job["result_url"])
+        require(result.status_code == 200, "BUILDER_API_RESULT")
+        published = result.json()
+        result = manager.get(published["dataset_url"] + "/lineage")
+        require(result.status_code == 200, "BUILDER_API_LINEAGE")
+        lineage = result.json()
+        require(
+            lineage["status"] == "complete"
+            and lineage["receipt_digest"] == published["receipt_digest"]
+            and {
+                (raw["role"], raw["snapshot_id"], raw["manifest_digest"])
+                for raw in lineage["receipt"]["inputs"]
+            }
+            == {(raw.role, raw.snapshot_id, raw.manifest_digest) for raw in references},
+            "BUILDER_RECEIPT_MISMATCH",
+        )
+        return {
+            "job_id": status["job_id"],
+            "state": status["state"],
+            "attempt_count": status["attempt_count"],
+            "content_digest": published["content_digest"],
+            "builder_receipt_digest": published["receipt_digest"],
+            "raw_inputs": [reference.to_dict() for reference in references],
+        }
+
+
 def main():
     require(os.environ.get("ML_TRAINING_NAMESPACE") == NAMESPACE, "ISOLATED_NAMESPACE_REQUIRED")
     settings = MLSettings.from_env()
@@ -66,8 +120,6 @@ def main():
     try:
         if mode == "init":
             require(not fixture.exists(), "RETAIN_EXISTING_FIXTURE")
-            from bootstrap.dataset_builder_cli import _service
-            from src.domain.datasets.ebm_builder import EBMDatasetBuilderConfig
             from src.infrastructure.persistence.ml_datasets import SQLDatasetCatalog
             from tests.ml.ebm.test_realdata_e2e import publish_inputs
 
@@ -86,6 +138,11 @@ def main():
                 "viewer": provision(tenant, "viewer", ["ml.model.read", "ml.predict"]),
                 "foreign": provision("foreign-" + uuid4().hex[:12], "foreign", permissions),
             }
+            builder = provision(
+                tenant,
+                "dataset-builder",
+                ["ml.dataset.manage", "ml.dataset.read", "ml.ingestion.operate"],
+            )
             actor = Actor(
                 tenant,
                 "synthetic-input-operator",
@@ -101,32 +158,21 @@ def main():
             path = root / "rejected.json"
             path.write_text(canonical_json(rejected))
             catalog.register(actor, "acceptance-rejected", "v1", path)
-            references = publish_inputs(components, actor, root / "raw-inputs")
-            service, database = _service(settings, root / "raw-inputs/raw")
-            try:
-                result = service.build(
-                    actor,
-                    "acceptance-ebm",
-                    "v1",
-                    references,
-                    EBMDatasetBuilderConfig("recipe-a", 1, split_seed=17),
-                )
-            finally:
-                database.close()
-            receipt = Path(result.receipt_ref).read_bytes()
-            require(
-                hashlib.sha256(receipt).hexdigest() == result.receipt_digest,
-                "BUILDER_RECEIPT_DIGEST",
+            references = publish_inputs(
+                components,
+                actor,
+                root / "raw-inputs",
+                raw_root=Path(os.environ["ML_RAW_SNAPSHOT_ROOT"]),
             )
+            evidence = build_dataset(builder, references)
+            reader = Actor(tenant, "dataset-evidence-reader", frozenset({"ml:dataset:read"}))
+            dataset = catalog.resolve(reader, "acceptance-ebm", "v1")
+            require(dataset.content_digest == evidence["content_digest"], "BUILDER_DATASET_DIGEST")
             value["ebm_reference"] = {
-                "snapshot_ref": result.dataset.snapshot_ref,
-                "content_digest": result.dataset.content_digest,
+                "snapshot_ref": dataset.snapshot_ref,
+                "content_digest": dataset.content_digest,
             }
-            value["dataset_evidence"] = {
-                "content_digest": result.dataset.content_digest,
-                "builder_receipt_digest": result.receipt_digest,
-                "raw_inputs": [reference.to_dict() for reference in references],
-            }
+            value["dataset_evidence"] = evidence
             with fixture.open("x") as stream:
                 os.chmod(fixture, 0o600)
                 json.dump(value, stream)

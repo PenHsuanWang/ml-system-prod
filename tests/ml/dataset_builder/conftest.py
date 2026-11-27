@@ -37,6 +37,8 @@ def raw_records(
         for signal_index, signal in enumerate(EBM_SIGNAL_ORDER):
             for pad_index, pad in enumerate(EBM_PAD_ORDER):
                 base = float(lot_index + 1) + signal_index / 10 + pad_index / 100
+                # Vary slope and midpoint by Lot so constant detrending cannot erase the signal.
+                ramp = (1.0 + lot_index / 2) / 4
                 fdc.append(
                     {
                         "schema_version": "ebm-raw-input-v1",
@@ -49,7 +51,9 @@ def raw_records(
                         "observations": [
                             {
                                 "timestamp": (start + timedelta(seconds=offset)).isoformat(),
-                                "value": base + offset / 4,
+                                "value": base
+                                + ramp * offset
+                                + (lot_index / 8 if offset == 2 else 0),
                             }
                             for offset in (0, 2, 4)
                         ],
@@ -67,7 +71,7 @@ def raw_records(
                     "wafer_id": f"wafer-{wafer_index:02d}",
                     "event_time": (start + timedelta(seconds=4)).isoformat(),
                     "available_at": (start + timedelta(seconds=5)).isoformat(),
-                    "cdf_target": 0.1 + lot_index * 0.1 + wafer_index * 0.01,
+                    "cdf_target": 0.1 + lot_index / max(10, lot_count + 1) + wafer_index * 0.01,
                     "pad_counts": [
                         float(lot_index + wafer_index + pad_index + 1) for pad_index in range(4)
                     ],
@@ -144,8 +148,13 @@ class PublishedBuilderInputs:
 
 
 @pytest.fixture
-def published_builder_inputs(components, actor, tmp_path):
-    fdc, wafers = raw_records()
+def builder_lot_count() -> int:
+    return 5
+
+
+@pytest.fixture
+def published_builder_inputs(components, actor, tmp_path, builder_lot_count):
+    fdc, wafers = raw_records(lot_count=builder_lot_count)
     incoming = tmp_path / "builder-input"
     incoming.mkdir()
     fdc_path = incoming / "fdc.jsonl"
