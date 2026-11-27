@@ -17,21 +17,17 @@ class WorkloadContract:
     input_schema_version: str
     output_schema_version: str
     artifact_profile: str
+
+
+@dataclass(frozen=True)
+class RecipeAdmission:
     architecture: str
     resource_profile_id: str
-    default_evaluation_policy: str
+    evaluation_policy: str
 
 
 MLP_WORKLOAD = WorkloadContract(
-    "nn_classifier",
-    "classifier-v1",
-    "torch-cpu-v1",
-    "1",
-    "1",
-    "mlp-neural-bundle-v1",
-    "mlp_v1",
-    "cpu-small-v1",
-    "demo-accuracy-v1",
+    "nn_classifier", "classifier-v1", "torch-cpu-v1", "1", "1", "mlp-neural-bundle-v1"
 )
 EBM_WORKLOAD = WorkloadContract(
     EBM_RECIPE_ID,
@@ -40,9 +36,6 @@ EBM_WORKLOAD = WorkloadContract(
     "ebm-spectrogram-input-v1",
     "ebm-neural-output-v1",
     "ebm-neural-bundle-v1",
-    "ebm_cnn_v1",
-    "cpu-ebm-v1",
-    "ebm-unqualified-v1",
 )
 
 

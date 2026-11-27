@@ -26,7 +26,7 @@ from src.api.ml_schemas import (
 from src.domain.datasets.ebm import EBM_DATASET_SCHEMA, EBM_FEATURE_SHAPE
 from src.domain.ml import Unavailable
 from src.domain.training.models import JobState
-from src.domain.training.workloads import EBM_WORKLOAD, WorkloadContract
+from src.domain.training.workloads import EBM_WORKLOAD, RecipeAdmission, WorkloadContract
 
 router = APIRouter(tags=["training discovery"], responses=COLLECTION_RESPONSES)
 NOT_FOUND: dict[int | str, dict[str, Any]] = {
@@ -111,13 +111,15 @@ class JobMetrics(StrictModel):
     samples: list[MetricSample]
 
 
-def recipe_summary(recipe_id: str, version: str, workload: WorkloadContract) -> RecipeSummary:
+def recipe_summary(
+    recipe_id: str, version: str, workload: WorkloadContract, admission: RecipeAdmission
+) -> RecipeSummary:
     return RecipeSummary(
         recipe=VersionRef(id=recipe_id, version=version),
-        architecture=workload.architecture,
+        architecture=admission.architecture,
         input_schema_version=workload.input_schema_version,
         dataset_schema_version=EBM_DATASET_SCHEMA if workload == EBM_WORKLOAD else None,
-        resource_profile_id=workload.resource_profile_id,
+        resource_profile_id=admission.resource_profile_id,
         artifact_profile=workload.artifact_profile,
     )
 
@@ -147,10 +149,10 @@ def recipes(actor: ActorDependency, services: ServicesDependency) -> list[Recipe
 def recipe_version(
     recipe_id: str, version: str, actor: ActorDependency, services: ServicesDependency
 ) -> RecipeDetail:
-    workload, policy_version = services.training.approved_recipe(actor, recipe_id, version)
+    workload, admission = services.training.approved_recipe(actor, recipe_id, version)
     is_ebm = workload == EBM_WORKLOAD
     intent_model = EBMTrainingIntent if is_ebm else TrainingIntent
-    summary = recipe_summary(recipe_id, version, workload)
+    summary = recipe_summary(recipe_id, version, workload, admission)
     example = SubmitRequest.model_validate(
         {
             "spec": {
@@ -172,7 +174,7 @@ def recipe_version(
         ),
         feature_shape=list(EBM_FEATURE_SHAPE) if is_ebm else [2],
         evaluator_version=workload.evaluator_version,
-        evaluation_policy=policy_version,
+        evaluation_policy=admission.evaluation_policy,
         evaluation_policy_configurable=is_ebm,
         output_schema_version=workload.output_schema_version,
         spec_schema=spec_schema,
@@ -192,8 +194,8 @@ def resource_profiles(
     actor: ActorDependency, services: ServicesDependency
 ) -> list[ResourceProfile]:
     profiles: dict[str, list[VersionRef]] = {}
-    for recipe_id, version, workload in services.training.approved_recipes(actor):
-        profiles.setdefault(workload.resource_profile_id, []).append(
+    for recipe_id, version, _, admission in services.training.approved_recipes(actor):
+        profiles.setdefault(admission.resource_profile_id, []).append(
             VersionRef(id=recipe_id, version=version)
         )
     return [

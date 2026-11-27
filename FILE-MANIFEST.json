@@ -1659,8 +1659,8 @@
     },
     {
       "path": "src/api/training_discovery.py",
-      "bytes": 9764,
-      "sha256": "70c1ba61e2d85fe654f218d1fc979dd8c61d8ebc504ae8be08e58fb19cdb0fce"
+      "bytes": 9841,
+      "sha256": "de2f79db8245fa51e8321a14fa3d4e168f083d13f69ae36caf170b299820299e"
     },
     {
       "path": "src/application/__init__.py",
@@ -1869,8 +1869,8 @@
     },
     {
       "path": "src/application/training/ports.py",
-      "bytes": 2378,
-      "sha256": "5f656f165898e2bfd7fc442cc63743226615e34da2e0a556f1d16c66eace1586"
+      "bytes": 2391,
+      "sha256": "d6b9f8dfa8b6b6579e26d9ee58e3ac345771a2d673897e4dba616960473c98c4"
     },
     {
       "path": "src/application/training/reconciliation.py",
@@ -1879,8 +1879,8 @@
     },
     {
       "path": "src/application/training/service.py",
-      "bytes": 7406,
-      "sha256": "28cab7330ab01d55b7e7d0e670f456564b26720cd56755b956f26f15b0e162d4"
+      "bytes": 7488,
+      "sha256": "e1099b8ac048e8662740ffa9cf857ad982968b7acadc47690003156f981f9778"
     },
     {
       "path": "src/application/training/supervisor.py",
@@ -2154,8 +2154,8 @@
     },
     {
       "path": "src/domain/training/workloads.py",
-      "bytes": 3637,
-      "sha256": "071cf222fb2defd10b0c7cbcf174144f1236f85a5c0e720bedbb8467b6be5f4a"
+      "bytes": 3537,
+      "sha256": "4c16ecb6c94f73021dd62f13cad4e75bba4b62a8f008700315f88b2f0c9b8eed"
     },
     {
       "path": "src/infrastructure/__init__.py",
@@ -2209,8 +2209,8 @@
     },
     {
       "path": "src/infrastructure/datasets/ml_recipes.py",
-      "bytes": 7268,
-      "sha256": "3d7f9fc7555cb04378fb8ec5842d960962cbb9055723d6be7faa1404452b798c"
+      "bytes": 7557,
+      "sha256": "542161ee949844735f02192f287301dd7641318a2030a133c3281cce527cccd0"
     },
     {
       "path": "src/infrastructure/datasets/snapshots.py",

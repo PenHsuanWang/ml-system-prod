@@ -8,7 +8,7 @@ from src.domain.ml import Actor
 from src.domain.training.execution import ExecutionHandle, ExecutionObservation, TrainingOutput
 from src.domain.pagination import CollectionWindow
 from src.domain.training.models import Attempt, Claim, Job, JobState, TrainingCommand
-from src.domain.training.workloads import WorkloadContract
+from src.domain.training.workloads import RecipeAdmission, WorkloadContract
 
 
 class TrainingRepository(Protocol):
@@ -43,7 +43,7 @@ class CommandPublisher(Protocol):
 
 class RecipeResolver(Protocol):
     def resolve(self, intent_json: str, actor: Actor | None = None) -> str: ...
-    def evaluation_policy_version(self, workload: WorkloadContract) -> str: ...
+    def admission(self, workload: WorkloadContract) -> RecipeAdmission: ...
 
 
 class TrainingDiscoveryRepository(Protocol):

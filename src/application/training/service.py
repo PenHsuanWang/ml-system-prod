@@ -14,6 +14,7 @@ from src.domain.training.models import TERMINAL, Attempt, Job, JobState
 from src.domain.training.workloads import (
     APPROVED_WORKLOADS,
     EBM_WORKLOAD,
+    RecipeAdmission,
     WorkloadContract,
     workload_for_spec,
 )
@@ -84,21 +85,23 @@ class TrainingService:
         actor.require("ml:cancel")
         return self.repository.cancel(job_id, actor)
 
-    def approved_recipes(self, actor: Actor) -> tuple[tuple[str, str, WorkloadContract], ...]:
+    def approved_recipes(
+        self, actor: Actor
+    ) -> tuple[tuple[str, str, WorkloadContract, RecipeAdmission], ...]:
         actor.require("ml:train")
         return tuple(
-            (recipe_id, version, workload)
+            (recipe_id, version, workload, self.recipes.admission(workload))
             for (recipe_id, version), workload in sorted(APPROVED_WORKLOADS.items())
         )
 
     def approved_recipe(
         self, actor: Actor, recipe_id: str, version: str
-    ) -> tuple[WorkloadContract, str]:
+    ) -> tuple[WorkloadContract, RecipeAdmission]:
         actor.require("ml:train")
         workload = APPROVED_WORKLOADS.get((recipe_id, version))
         if workload is None:
             raise NotFound("Training recipe version not found")
-        return workload, self.recipes.evaluation_policy_version(workload)
+        return workload, self.recipes.admission(workload)
 
     def _discovery(self) -> TrainingDiscoveryRepository:
         if self.discovery is None:
