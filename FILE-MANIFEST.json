@@ -1108,6 +1108,11 @@
       "sha256": "38ba8fa2c80f38fb10b3d50e7e1223f3772e2baf054e778a1242a7ec68e490e7"
     },
     {
+      "path": "docs/reviews/discovery-contract-hardening-report.md",
+      "bytes": 11691,
+      "sha256": "a4b8ba85468ff41ff340555251c5af44dcbc4fafe35ce5569f5f422445e5be2c"
+    },
+    {
       "path": "docs/reviews/documentation-code-audit-2026-11-19.md",
       "bytes": 8134,
       "sha256": "041a8a93868affa2a2122187c3051b7b84378828b951861b1d4c68d7fb631dff"
