@@ -158,8 +158,10 @@ def install_errors(app: FastAPI, *, maximum_body_bytes: int = 65536) -> None:
 
 def mount_management(app: FastAPI) -> None:
     from src.api.datasets.routers import router as dataset_discovery_router
+    from src.api.training_discovery import router as training_discovery_router
     app.include_router(dataset_discovery_router, prefix="/api/v1/datasets")
     app.include_router(training_router, prefix="/api/v1/training")
+    app.include_router(training_discovery_router, prefix="/api/v1/training")
     app.include_router(registry_router, prefix="/api/v1/model_registry")
     app.include_router(deployment_router, prefix="/api/v1/deployments")
     app.include_router(dataset_router, prefix="/api/v1/datasets")

@@ -105,3 +105,11 @@ explicit; no automatic backfill or HTTP dataset build orchestration. Local SQLit
 engineering verification is recorded in the [WP3 report](reviews/wp3-dataset-discovery-report.md).
 External full-stack Compose/K8s and enterprise Databricks qualification are NOT EXECUTED for
 this work package. `production_accepted=false`. WP4–WP7 remain outside this delivery.
+
+## WP4 training recipe and job discovery
+
+The WP4 feature branch serves approved recipe and resource metadata, scoped job pages,
+the resolved spec and persisted fit metrics through the existing Management API.
+See the [training discovery workflow](ml-runbook.md#training-recipe-and-job-discovery-wp4).
+Submission and deployment approval continue using the existing contracts.
+Local verification is recorded in the [WP4 report](reviews/wp4-training-discovery-report.md).

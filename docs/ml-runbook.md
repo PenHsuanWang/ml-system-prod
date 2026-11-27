@@ -264,3 +264,56 @@ Workers resolve exact SQL catalog definitions at execution. Legacy templates
 and worker-only credentials retain their existing contracts.
 See [runtime source management](runtime-source-management.md) for permissions,
 lifecycle behavior and separate external qualification requirements.
+
+## Training recipe and job discovery (WP4)
+
+Use the Management API on port 8000 and sign in through the existing Identity workflow. Open
+Management `/docs`, choose **Authorize** and use the current Bearer access token. All paths below
+are relative to `/api/v1`. The recipe catalog reflects the approved workloads in the running
+release. A recipe version describes a particular dataset and request contract rather than the
+model version created by a later training job.
+
+| GET | Access and behavior |
+| --- | --- |
+| `/training/recipes` | `ml:train`. Built-in recipe IDs and versions in ascending order, with the resource profile, input schema, architecture and expected artifact profile. |
+| `/training/recipes/{recipe_id}/versions/{version}` | `ml:train`. Dataset requirements and per-sample feature shape, evaluation policy version, output schema version, and the same model/training constraints as admission. `submit_example` is a validated synthetic POST body with defaults. |
+| `/training/resource-profiles` | `ml:train`. Built-in CPU profile IDs and the approved recipe versions that use them, ordered by profile ID. Actual CPU/memory and time budgets depend on the deployed Training role. |
+| `/training/jobs` | Authenticated job owner or same-tenant `ml:jobs:read_all`. Returns job state/phase, current attempt ID, revision, timestamps, spec digest and resulting model binding when present. |
+| `/training/jobs/{job_id}/spec` | Same visibility as job status. Returns the dataset ID/version and content digest, recipe, resolved model/training settings, evaluation policy and immutable execution spec digest. |
+| `/training/jobs/{job_id}/metrics` | Same visibility as job status. Returns persisted fit metric snapshots for the observed current attempt, ordered by zero-based epoch index. Before a result is checkpointed the status is `unknown` with an empty `samples` array. |
+
+1. List recipes and read the exact recipe version. Compare its dataset schema and feature shape
+   with an accessible version from [Dataset discovery](#dataset-discovery-and-lineage-wp3).
+   MLP needs the approved two-feature dataset contract. EBM needs the EBM replay dataset
+   schema and `[7, 4, 9, 31]` per-sample shape. The EBM example uses a synthetic dataset that
+   must be registered separately. Training admission checks the selected dataset again.
+2. Copy the recipe detail's `submit_example` and replace the dataset reference as needed.
+   Submit to the existing `POST /training/jobs` with an `Idempotency-Key`. A 202 response means
+   the job was accepted. See the existing [client contract](#api-與-client-契約) for replay,
+   cancellation and terminal-state behavior.
+3. List jobs or poll the existing status URL. Follow the job's spec and metrics endpoints to
+   read its resolved inputs and recorded training metrics. A completed job with a
+   `model_binding_id` can be inspected through the existing registry with `ml:model:read`.
+   EBM evaluation can reject a successfully trained model when an operator policy is absent.
+   Deployment still requires the existing environment approval.
+
+Job lists use the shared limit (default 25, maximum 100) and offset (0 through 1,000,000).
+They sort by creation time and then job ID, both descending. Use the returned `next_offset`
+until it is null. Concurrent job changes can shift offset pages. Filter by exact `state` or
+exclusive `created_after` / `created_before` bounds in UTC Unix seconds. The recipe and
+resource-profile collections are bounded by the built-in registry. Discovery GETs do not
+have idempotency keys or mutate job state. The new job reads use private, no-store caching.
+
+The spec digest identifies the complete stored execution spec. The response is a safe view of
+that spec and omits internal paths, runtime settings and operator policy configuration.
+Metrics come from the current attempt's persisted output instead of a live progress file or
+MLflow. The endpoint serves up to 1,000 epoch snapshots with only known finite fit metrics.
+MLP `validation_accuracy` is a fraction. Loss fields are the recorded training objective
+values, and units for those values are unspecified. Final evaluation metrics remain in the
+existing model registry. A metrics response can contain recorded fit output even when a later
+evaluation or registration failed. Check the job state separately.
+
+Authentication failure is 401. Recipe/profile reads return 403 without `ml:train`. Unknown
+recipes or invisible job details return 404. Invalid query fields, state or bounds return 422.
+Unavailable or invalid stored evidence returns 503 with the existing retryable error envelope.
+Use the response's `X-Request-ID` when reporting a problem. No schema change is needed for WP4.

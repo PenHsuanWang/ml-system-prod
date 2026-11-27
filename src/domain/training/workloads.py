@@ -19,6 +19,13 @@ class WorkloadContract:
     artifact_profile: str
 
 
+@dataclass(frozen=True)
+class RecipeAdmission:
+    architecture: str
+    resource_profile_id: str
+    evaluation_policy: str
+
+
 MLP_WORKLOAD = WorkloadContract(
     "nn_classifier", "classifier-v1", "torch-cpu-v1", "1", "1", "mlp-neural-bundle-v1"
 )
