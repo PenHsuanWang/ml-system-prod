@@ -1,24 +1,33 @@
 # WP3 — Dataset discovery and lineage delivery
 
-Date: 2026-11-27 (Asia/Taipei). Status: READY FOR REVIEW for the authorized WP3 scope.
-`production_accepted=false`. No WP4–WP7 implementation, remote push, PR creation or production
-action is included in this delivery.
+Date: 2026-11-27 (Asia/Taipei). PR #19 integration and pagination correction are ready for review.
+`production_accepted=false`. This delivery covers WP3.
 
 ## Baseline and scope
 
-- Master inspected: `651ce174c247a7873eaf533b9ee44716d7bc9268`.
-- Stacked WP2 dependency: `75802fd6c8f0f8cc2b8f5f3348e775dfd80730cf`.
+- Current master baseline: `eb472cae0f08856e0728df7cec757e016d349818` (merge of PR #18).
 - Feature branch: `feature/dataset-discovery-lineage`.
-- Local integration of master: `dff1c0762a8fdd7f95b3e84384c194f6ead456b2`.
+- Previous WP3 HEAD: `998a0895f9ad79db15d4ffc86b9e18498e054520`.
+- Integration merge: `c58b9affa98e1b1211eb9fd93d423d941eab3f1b`, with the previous WP3 HEAD
+  and current master as its two parents.
 - Committed plan: `183e54acf143d419ee3b510355150ac57a48215e`.
-- Implementation commit: `7055a2598f117a7069f859b26056a068f2cf74ea`. Tests ran on the WP3
-  worktree based on the plan commit; production and test files were committed unchanged in
-  this implementation commit. The following evidence refresh changes documentation only.
+- Original implementation commit: `7055a2598f117a7069f859b26056a068f2cf74ea`.
+- Integrated source and test commit: `4cda8252e646d570a7c809899017ff65b8b41074`.
 - No applicable AGENTS.md was found in the repository or checked parent paths.
 
 The existing code already has governed source browsing, immutable RawSnapshot publication,
 DatasetBuilder and exact known-version Dataset Catalog lookup. WP3 supplies the missing
 bounded discovery and SQL-bound provenance; it does not add HTTP dataset creation.
+
+The only merge conflict was the generated source manifest, which was rebuilt from the merged
+tracked file set. The three-dot diff against `eb472ca` contains WP3 changes only. The WP2
+trusted code revision checks and API URL rendering under ASGI `root_path` match master, and
+the commits containing those corrections are ancestors of the integrated branch.
+
+All four WP3 collection routes return a continuation only if there are more results and
+the next offset is at most 1,000,000. A continuation at exactly 1,000,000 is valid. The API
+returns `null` if advancing by the limit would exceed that bound. The regression exercises all
+four HTTP routes with real visible records and simulated lookahead at the offset boundary.
 
 ## Delivered behavior and changed components
 
@@ -33,7 +42,7 @@ bounded discovery and SQL-bound provenance; it does not add HTTP dataset creatio
 | `bootstrap/{ml_api,ml_wiring,ingestion_wiring}.py` | Compose discovery dependencies in existing Management runtime; no new service or credential grants. |
 | `tests/ml/dataset_builder/test_discovery.py`, `test_lineage_migration.py` (new) | SQL/API/security/concurrency/atomicity/legacy and upgrade/downgrade coverage. |
 | `scripts/check_ingestion.py`, `scripts/check_ebm_typing.py` | Include new shared query/domain/API/catalog modules in existing typing/format validation scopes. |
-| README, architecture/configuration/implementation status/ingress docs, ML runbook, inventory, ADR-024, plan, manifest | Operator workflow, authority/limits, stacked migration, compatibility and rollback guidance. |
+| README, architecture/configuration/implementation status/ingress docs, ML runbook, inventory, ADR-024, plan, manifest | Operator workflow, authority/limits, migration order, compatibility and rollback guidance. |
 
 Architecture and decisions are in [ADR-024](../adr/024-dataset-discovery-lineage.md).
 The [runbook](../ml-runbook.md#dataset-discovery-and-lineage-wp3) defines the full API contract,
@@ -56,7 +65,51 @@ existing dataset/source digests and training contracts are unchanged. SQL eviden
 is reported as incomplete, distinct from denied input visibility. Audit records retain actor,
 tenant and digest through the existing mechanism. No new permissions are introduced.
 
-## Final verification commands
+## PR #19 integration verification
+
+The tests ran from `4cda8252e646d570a7c809899017ff65b8b41074` in
+`/workspace/ml-prediction-guide` with Python 3.12.14. Both focused runs exercised dataset
+and lineage discovery/upgrade, ingestion persistence, training contracts, and WP2 prediction
+catalog and runtime integration, including trusted-revision and reverse-proxy cases.
+The PostgreSQL run used the disposable `wp3-discovery-pg-20261127` PostgreSQL 17 container
+on 127.0.0.1:15493 with tmpfs storage and per-test schemas. It was stopped after the run.
+
+The commands below use the existing virtual environment and the same focused test targets
+for both databases. For PostgreSQL, `ML_TEST_DATABASE_URL` pointed to the disposable instance.
+
+```sh
+PY=/workspace/ml-system-prod/.venv/bin/python
+set -- tests/ml/dataset_builder tests/ml/test_datasets.py \
+  tests/ml/ingestion/test_persistence.py tests/ml/test_training_contracts.py \
+  tests/ml/test_prediction_catalog.py tests/ml/test_prediction_catalog_e2e.py
+env -u ML_TEST_DATABASE_URL "$PY" -m pytest "$@" -q \
+  --basetemp=/tmp/wp3-pr19-sqlite-retry-20261127 --junitxml=/tmp/wp3-pr19-sqlite-retry.xml
+"$PY" -m pytest "$@" -q \
+  --basetemp=/tmp/wp3-pr19-postgres-20261127 --junitxml=/tmp/wp3-pr19-postgres.xml
+env -u ML_TEST_DATABASE_URL -u ML_TEST_AMQP_URL -u ML_TEST_REDIS_URL \
+  -u ML_TEST_MANAGEMENT_URL -u ML_TEST_PREDICTION_URL "$PY" -m pytest \
+  tests/ml tests/test_boundaries.py -q --basetemp=/tmp/wp3-pr19-full-retry-20261127 \
+  --junitxml=/tmp/wp3-pr19-full-retry.xml
+```
+
+| Test scope | Outcome | Local evidence |
+| --- | --- | --- |
+| Focused SQLite | 102 passed, 0 failed/skipped, exit 0 | `/tmp/wp3-pr19-sqlite-retry.log`, corresponding JUnit XML |
+| Focused PostgreSQL | 102 passed, 0 failed/skipped, exit 0 | `/tmp/wp3-pr19-postgres.log`, corresponding JUnit XML |
+| Full ML and architecture tests | 1,428 passed, 0 failed, 5 skipped, exit 0 | `/tmp/wp3-pr19-full-retry.log`, corresponding JUnit XML |
+
+The initial SQLite and full-suite attempts failed while the workspace filesystem was full,
+and Docker could not create a fresh container layer. The runs above followed removal of the
+two prior disposable pytest data directories. Their logs and JUnit reports were retained.
+The full-suite skips require the external fixtures listed in the initial verification below.
+
+The architecture boundary check, Pyflakes, CI-scoped Mypy, and repository ingestion, EBM,
+Serving, deployment, training, Kubernetes acceptance and init static checks all passed.
+Scoped Ruff lint and format checks, documentation, generated manifest and Git whitespace
+checks also passed. The quality check commands use the same repository scripts listed below.
+Remote CI and dynamic deployment qualification are outside this local evidence.
+
+## Initial WP3 verification before the PR #19 integration
 
 Execution environment: managed Linux cloud workspace `/workspace/ml-prediction-guide`,
 Python 3.12.14 at `/workspace/ml-system-prod/.venv/bin/python` (abbreviated **PY** below).
@@ -101,6 +154,6 @@ checks the preserved legacy record by ID. Final qualification results above cont
 Dataset creation still requires the authorized operator CLI. WP4 recipe discovery, WP5 lifecycle
 transparency, WP6 durable dataset build APIs and WP7 production usability remain separately
 authorized future work. No automatic provenance backfill or full API-only self-service claim.
-This branch is stacked on WP2; integrate that dependency before the WP3 migration reaches master.
+Migration 0008 follows WP2 migration 0007, already on master.
 
 READY FOR REVIEW. Review approval is required before any merge or production rollout.
