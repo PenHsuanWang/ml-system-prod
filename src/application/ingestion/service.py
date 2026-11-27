@@ -3,11 +3,13 @@
 import json
 
 from src.application.ingestion.ports import (
+    IngestionDiscoveryRepository,
     IngestionJobRepository,
     SourceAdapterResolver,
     SourceCandidates,
     SourceResolver,
 )
+from src.domain.ingestion.discovery import IngestionCollectionQuery
 from src.domain.ingestion.models import (
     IngestionJob,
     IngestionRequest,
@@ -24,9 +26,11 @@ class IngestionService:
         adapters: SourceAdapterResolver,
         jobs: IngestionJobRepository,
         candidates: SourceCandidates | None = None,
+        discovery: IngestionDiscoveryRepository | None = None,
     ) -> None:
         self.sources, self.adapters, self.jobs = sources, adapters, jobs
         self.candidates = candidates
+        self.discovery = discovery
 
     def submit(self, actor: Actor, key: str, request: IngestionRequest) -> IngestionJob:
         actor.require("ml:ingest")
@@ -117,3 +121,19 @@ class IngestionService:
         actor.require("ml:ingestion:operate")
         self.get(actor, job_id)
         return self.jobs.requeue_reconciliation(actor, job_id)
+
+    def collections(
+        self, actor: Actor, query: IngestionCollectionQuery, *, snapshots: bool = False
+    ) -> tuple[list[IngestionJob] | list[RawSnapshot], bool]:
+        if not actor.permissions.intersection(
+            {"ml:ingest", "ml:ingestion:read", "ml:ingestion:operate"}
+        ):
+            raise Forbidden("Ingestion read permission is required")
+        if self.discovery is None:
+            raise Unavailable("Ingestion metadata discovery is not configured")
+        rows = (
+            self.discovery.list_snapshots(actor, query)
+            if snapshots
+            else self.discovery.list_jobs(actor, query)
+        )
+        return rows[: query.window.limit], len(rows) > query.window.limit

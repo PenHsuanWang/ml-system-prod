@@ -26,7 +26,8 @@ Management／Gateway／Serving 使用目前 Identity session 的 Bearer token。
 | Training submit | `ml:train`；202；必填 `Idempotency-Key`，1–128 visible ASCII characters |
 | Job／attempt 查詢 | 同 tenant 的 owner，或 `ml:jobs:read_all`；不符合時 404 |
 | Training cancel | 上述可見性加 `ml:cancel`；202；已終態為 409 |
-| Dataset metadata | `ml:train` 或 `ml:dataset:read`；版本格式 `dataset_id@version` |
+| Dataset discovery / metadata | `ml:train` 或 `ml:dataset:read`；保留 `dataset_id@version` lookup |
+| Dataset full lineage | 上述權限，加所有 Raw Snapshot 的 ingestion read 與 owner／operate 可見性 |
 | Model／versions／evaluation 查詢 | `ml:model:read` |
 | 以 binding ID 人工 Approval | `ml:model:approve`；201；必須有同 binding／manifest 的 `APPROVED_BY_POLICY` evaluation |
 | 以 name/version 人工 Approval | 上述 approve 加 `ml:model:read`（會先列出版本） |
@@ -111,6 +112,115 @@ measurement remain Production Operations work; do not infer them from design tab
 ## Backup and restore
 
 Back up App DB, MLflow metadata DB, versioned artifact bytes, registered dataset snapshots, identity state and pinned source/images as a coordinated recovery set. Database backups do not recreate missing artifacts. Do not garbage-collect active, rollback or approval-referenced bundles.
+
+## Dataset discovery and lineage (WP3)
+
+These authenticated metadata APIs belong to **Management (8000)**. Gateway (8001) remains the
+prediction entry point. Use Management `/docs` or `/openapi.json` for typed parameters and responses.
+Existing source browsing, approved-source registration and ingestion execution are unchanged.
+
+| GET path under `/api/v1` | Purpose and permissions |
+| --- | --- |
+| `/ingestion/jobs` | Visible jobs; `ml:ingest`, `ml:ingestion:read` or `ml:ingestion:operate`; owner scope unless operate, always same tenant |
+| `/ingestion/snapshots` | Only snapshots of durably PUBLISHED, visible jobs; same permissions |
+| `/datasets` | Dataset families; `ml:train` or `ml:dataset:read` |
+| `/datasets/{id}/versions` | Immutable versions and safe schema/feature/split metadata; same dataset permission |
+| `/datasets/{id}/versions/{version}` | Exact version metadata; same permission |
+| `/datasets/{id}/versions/{version}/lineage` | Receipt, builder configuration and source revisions/digests when every input is visible |
+
+All collections use `limit` (default 25, maximum 100), `offset` (0–1,000,000), optional
+`created_after` and `created_before` (finite, nonnegative UTC Unix seconds, strict bounds;
+after must precede before). Unknown parameters are rejected. Pages contain `items`, `limit`,
+`offset`, and `next_offset`. Continuation is null when the results are exhausted or the next
+offset would exceed 1,000,000. Jobs/snapshots accept exact `source_id` and
+`source_version`; jobs also accept `state`. Families accept exact `dataset_id`. Job/snapshot
+ordering is creation time descending then ID descending; family ID and version ordering are
+lexically ascending. Family counts reflect matching time bounds. Offset pages can shift during
+concurrent writes; enumerate again for a fresh view. Successful new metadata responses use
+`Cache-Control: private, no-store`; clients should also discard error responses on sign-out.
+
+Dataset visibility preserves tenant versions plus existing public fixtures. A private version
+shadows the same public ID/version. Missing/invisible collections are empty; missing/invisible
+exact versions return 404. The existing `/datasets/versions/{dataset_id}@{version}` response
+is unchanged. There is no inferred latest version and no raw-data download endpoint.
+
+### Operator and reader walkthrough
+
+The following uses synthetic names; choose sources approved by the deployment operator.
+Set `MANAGEMENT_URL` to the trusted Management origin and `ACCESS_TOKEN` to an authenticated
+session token. Discover resources rather than requesting filesystem paths or private IDs:
+
+```sh
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "$MANAGEMENT_URL/api/v1/ingestion/available-sources"
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "$MANAGEMENT_URL/api/v1/ingestion/jobs?source_id=builder-fdc&state=PUBLISHED&limit=25"
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "$MANAGEMENT_URL/api/v1/ingestion/snapshots?source_id=builder-fdc&source_version=v1"
+```
+
+To acquire new data, use existing `POST /ingestion/jobs` with `source_id`, `source_version`
+and `Idempotency-Key`, then follow the returned status/result URLs. Discovery neither ingests
+data nor proves that a table is currently reachable. Select FDC/wafer snapshots and retain
+their exact manifest digests. Dataset creation remains the explicit, authorized
+[DatasetBuilder CLI](ebm-implementation-status.md#rawsnapshot-datasetbuilder);
+HTTP build orchestration is deferred to WP6. New CLI builds atomically register the dataset
+and verified receipt in SQL. A filesystem receipt alone does not establish catalog lineage.
+
+After a synthetic `built`, `v1` dataset has been published, a reader can discover and inspect it:
+
+```sh
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "$MANAGEMENT_URL/api/v1/datasets?dataset_id=built&limit=25"
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "$MANAGEMENT_URL/api/v1/datasets/built/versions"
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "$MANAGEMENT_URL/api/v1/datasets/built/versions/v1"
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "$MANAGEMENT_URL/api/v1/datasets/built/versions/v1/lineage"
+```
+
+A family page has the following shape (publication time is illustrative):
+
+```json
+{"items":[{"dataset_id":"built","version_count":1,"last_published_at":1795737600.0}],"limit":25,"offset":0,"next_offset":null}
+```
+
+Version metadata exposes the content digest, schema versions, feature shape/order/config and
+split counts when known. Unknown historical fields are null. `lineage_status=recorded` means
+a receipt is stored; the lineage detail separately verifies its integrity and input access:
+
+- `complete`: exact dataset identity, canonical receipt digest and current SQL-published input
+  metadata agree. Includes builder/version, configuration, snapshot IDs, source versions/revisions,
+  configuration/content/manifest digests, counts and byte sizes. The receipt includes the reader's
+  own tenant identity so its canonical SHA-256 remains independently reproducible.
+- `restricted`: dataset metadata is readable, but ingestion read permission or visibility of any
+  input is missing. Receipt and its digest are withheld; no source IDs are disclosed.
+- `incomplete`: no SQL receipt (`legacy_metadata_missing`) or failed verification
+  (`receipt_integrity_failed`). No fabricated history or live qualification is implied.
+
+Dataset content identity and provenance identity are distinct. Once recorded, a source/config
+change needs a new dataset version even if feature bytes are identical. An equivalent build is
+idempotent; different established provenance conflicts. Rebuilding an existing legacy version
+without a SQL receipt leaves it incomplete; no automatic backfill assigns a new origin.
+Lineage reads check persisted metadata, not current raw-file bytes or live external connectivity.
+
+### Errors, upgrade and rollback
+
+New GETs have no write/idempotency side effects. Authentication failures are 401; permission
+failures 403; invalid/unknown fields or bounds 422; unavailable SQL/composition 503 (retryable
+with backoff). Stored raw snapshot identity failures return the existing 400 ingestion error.
+Exact dataset lookups can return 404. Existing error envelopes and request IDs are preserved;
+401 may use the existing `detail` body. Correct 4xx requests/permissions before retrying.
+
+Apply additive `0008_dataset_lineage` with `python -m bootstrap.ml_cli migrate` through the
+approved maintenance role before upgraded roles start. It follows WP2 `0007_prediction_contracts`.
+No existing source/dataset digests or historical rows are rewritten. Keep the table when rolling
+back application code. An explicit downgrade to 0007 removes only new receipt evidence, retains
+dataset versions/content and makes lineage incomplete; back up evidence first. Migration tests
+exercise this only on disposable SQLite/PostgreSQL databases. Production migrations require
+deployment authorization. `production_accepted=false`; target Compose/K8s and enterprise
+Databricks qualification are separate gates.
 
 Restore to an isolated environment with relay/consumer/controller stopped. Verify migrations, image/source compatibility, model/evaluation/approval digests and required artifacts. Reconcile actual executions/routes before replay. Exercise golden inference and rollback before traffic. Actual retained versions determine recoverable RPO; measured restore determines RTO.
 

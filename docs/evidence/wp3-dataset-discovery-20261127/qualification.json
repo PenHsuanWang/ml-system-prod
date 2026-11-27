@@ -1,0 +1,253 @@
+{
+  "work_package": "WP3 dataset discovery and lineage",
+  "date": "2026-11-27",
+  "timezone": "Asia/Taipei",
+  "status": "READY FOR REVIEW",
+  "production_accepted": false,
+  "baseline_master": "651ce174c247a7873eaf533b9ee44716d7bc9268",
+  "wp2_dependency": "75802fd6c8f0f8cc2b8f5f3348e775dfd80730cf",
+  "branch": "feature/dataset-discovery-lineage",
+  "source_commit": "7055a2598f117a7069f859b26056a068f2cf74ea",
+  "execution_source": "Tests ran on the WP3 worktree based on 183e54a; production/test files were committed unchanged in source_commit. Evidence refresh changes documentation only.",
+  "environment": {
+    "workspace": "/workspace/ml-prediction-guide",
+    "python": "3.12.14",
+    "postgres_container": "wp3-discovery-pg-20261127",
+    "postgres_storage": "disposable tmpfs, no existing volumes",
+    "data": "synthetic",
+    "http": "real ASGI applications with controlled Identity and HTTP transport; no live enterprise deployment",
+    "postgres_fixture_state": "Stopped after successful tests; no user volumes removed."
+  },
+  "tests": [
+    {
+      "command": "env -u ML_TEST_DATABASE_URL -u ML_TEST_AMQP_URL -u ML_TEST_REDIS_URL -u ML_TEST_MANAGEMENT_URL -u ML_TEST_PREDICTION_URL /workspace/ml-system-prod/.venv/bin/python -m pytest tests/ml tests/test_boundaries.py -q --basetemp=/tmp/wp3-local-full-20261127 --junitxml=/tmp/wp3-local-full.xml",
+      "environment": "SQLite; external endpoints unset",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 1419,
+      "failed": 0,
+      "skipped": 5,
+      "skip_details": [
+        {
+          "test": "tests.ml.ebm.test_realdata_e2e.test_raw_snapshots_to_real_worker_mlflow_controller_and_http_gateway",
+          "reason": "Requires the disposable backend stack"
+        },
+        {
+          "test": "tests.ml.ingestion.test_databricks_live.test_live_warehouse_postgres_and_independent_worker",
+          "reason": "Requires approved Databricks fixture, OAuth secret files and PostgreSQL"
+        },
+        {
+          "test": "tests.ml.integration.test_backend_stack.test_live_backend_train_approve_predict_rollout_rollback_and_revoke",
+          "reason": "Set isolated ML_TEST_MANAGEMENT_URL and ML_TEST_PREDICTION_URL"
+        },
+        {
+          "test": "tests.ml.integration.test_receiver.test_real_receiver_persists_before_ack_and_deduplicates[False]",
+          "reason": "Set ML_TEST_AMQP_URL and ML_TEST_REDIS_URL for real receiver tests"
+        },
+        {
+          "test": "tests.ml.integration.test_receiver.test_real_receiver_persists_before_ack_and_deduplicates[True]",
+          "reason": "Set ML_TEST_AMQP_URL and ML_TEST_REDIS_URL for real receiver tests"
+        }
+      ],
+      "artifacts": [
+        {
+          "path": "/tmp/wp3-local-full.log",
+          "sha256": "b025fd00680d5845e0ba9d735a27d6799c44128068b5096626056ba26d347720"
+        },
+        {
+          "path": "/tmp/wp3-local-full.xml",
+          "sha256": "3e1603eab96a57c520837b1dc027269945f1693cc661e094a1094108c50b07bb"
+        }
+      ]
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python -m pytest tests/ml/dataset_builder tests/ml/test_datasets.py -q --junitxml=/tmp/wp3-dataset-sqlite.xml",
+      "environment": "SQLite",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 44,
+      "failed": 0,
+      "skipped": 0,
+      "skip_details": [],
+      "artifacts": [
+        {
+          "path": "/tmp/wp3-dataset-sqlite.log",
+          "sha256": "e3d311921de4c9942ed2189a7d582ce3d82892bba5b025fc2c215d22fc2e0a5a"
+        },
+        {
+          "path": "/tmp/wp3-dataset-sqlite.xml",
+          "sha256": "c9c25dfc88fbc21dfcf016ed2542945c022e83e54de1ce7026a73aff13c5b08e"
+        }
+      ]
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python -m pytest tests/ml/dataset_builder tests/ml/test_datasets.py tests/ml/ingestion/test_persistence.py tests/ml/test_training_contracts.py -q --junitxml=/tmp/wp3-postgres-regression.xml",
+      "environment": "ML_TEST_DATABASE_URL configured for disposable PostgreSQL 17; random per-test schemas",
+      "status": "PASS",
+      "exit_status": 0,
+      "passed": 72,
+      "failed": 0,
+      "skipped": 0,
+      "skip_details": [],
+      "artifacts": [
+        {
+          "path": "/tmp/wp3-postgres-regression.log",
+          "sha256": "f735e8c718c1d40cd5ece8b385197c24314201bc0044a4f3ecb32717fd8259a8"
+        },
+        {
+          "path": "/tmp/wp3-postgres-regression.xml",
+          "sha256": "2ebde901ffa65cdcfb1e988275ec48a97a11e443a7e7f19123615f32c100af96"
+        }
+      ]
+    }
+  ],
+  "quality_gates": [
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/check_boundaries.py",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-boundaries.log",
+        "sha256": "696f9a58b43691031967c73d000d780b3a8af9ba63ab8a495f2654864112c156"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python -m pyflakes bootstrap src tests/ml",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-pyflakes.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python -m mypy --follow-imports=skip src/domain/ml.py src/domain/training src/domain/deployments src/domain/model_registry src/domain/prediction src/domain/datasets src/application/training src/application/deployments src/application/model_registry src/application/prediction src/application/datasets src/application/ml_services.py",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-core-typing.log",
+        "sha256": "e6a337f5d3c5bfc91aa5e09a3e3e6ba1ed5d06d2dac23e22cac9db017a5c00ea"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/check_ingestion.py",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-ingestion-check.log",
+        "sha256": "544048d4a9e1090e24a16e0e354a9be7f83ed07456a50399b6290777bbe5c803"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/check_ebm_typing.py",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-ebm-typing.log",
+        "sha256": "d65cae0083d77ec23a4483dfe03fa5cbfde2ebbad3bc4205bfa20ae5ff3edceb"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/check_deployment.py",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-check_deployment.log",
+        "sha256": "61468a6b1821c0c26eef0da4a5889c648a9ec08f2e79fff317c429327d27579e"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/check_serving_runtime.py",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-check_serving_runtime.log",
+        "sha256": "8e4f3d8fd6238272f243b97fdfb7b798becde77c9cab5d7cb9283243f1d0e17b"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/check_k8s_acceptance.py",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-check_k8s_acceptance.log",
+        "sha256": "cd7f41cf1ad5ba8b6263217889865f18d2b85df5ad631a05d6d321f51fd1b7b2"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/check_training_runtime.py",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-check_training_runtime.log",
+        "sha256": "f89b5905d1ee7ee5fa75e6f76b46c3aebd944a531bb138a53c505a8f711e2fcd"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/check_init.py",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-check_init.log",
+        "sha256": "8147f0130d7257905c964d08e185077ee75ba6951d7b6c53f3287e028337950e"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python -m ruff check src/domain/pagination.py src/domain/datasets/lineage.py src/domain/ingestion/discovery.py src/api/collection_schemas.py src/api/datasets src/api/ingestion/discovery_schemas.py src/application/datasets src/infrastructure/datasets/ebm_builder.py src/infrastructure/persistence/dataset_lineage_schema.py migrations/versions/0008_dataset_lineage.py tests/ml/dataset_builder/test_discovery.py tests/ml/dataset_builder/test_lineage_migration.py",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-focused-lint.log",
+        "sha256": "82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python -m ruff format --check src/domain/pagination.py src/domain/datasets/lineage.py src/domain/ingestion/discovery.py src/api/collection_schemas.py src/api/datasets src/api/ingestion/discovery_schemas.py src/application/datasets src/infrastructure/datasets/ebm_builder.py src/infrastructure/persistence/dataset_lineage_schema.py migrations/versions/0008_dataset_lineage.py tests/ml/dataset_builder/test_discovery.py tests/ml/dataset_builder/test_lineage_migration.py",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-focused-format.log",
+        "sha256": "ff581aaa8f1b2a77e28a682a7cae7b738f926730737e49664d06c810bcd5aa03"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/check_docs.py",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-docs.log",
+        "sha256": "ed28ed44d2ad3b5ec6864c6415d530f4a1e78df9d2be8b9f73dfd1a12cc192ea"
+      }
+    },
+    {
+      "command": "/workspace/ml-system-prod/.venv/bin/python scripts/update_manifest.py --check",
+      "status": "PASS",
+      "exit_status": 0,
+      "artifact": {
+        "path": "/tmp/wp3-manifest.log",
+        "sha256": "6e0f87194373aa36a520a9b6c0c9078893764392f1fed0dacf6063b6a84cc72c"
+      }
+    },
+    {
+      "command": "git diff --check",
+      "status": "PASS",
+      "exit_status": 0
+    }
+  ],
+  "scope_note": "Test suites overlap; do not sum passed counts. Static Kubernetes checks are not dynamic acceptance.",
+  "not_executed": [
+    "Remote CI for WP3 (branch not pushed)",
+    "Full-stack Compose runtime acceptance for WP3",
+    "Kubernetes dynamic acceptance",
+    "Live enterprise Databricks qualification",
+    "Live Identity/MLflow/broker deployment qualification"
+  ],
+  "deferred": [
+    "WP4 training discovery",
+    "WP5 registry/deployment transparency",
+    "WP6 dataset build orchestration",
+    "WP7 production usability and qualification",
+    "Automatic legacy receipt backfill"
+  ],
+  "warning": "Existing Starlette TestClient/httpx deprecation warning in full suite."
+}

@@ -259,7 +259,7 @@ def build_ingestion(
         queue_timeout=settings.queue_timeout,
         max_pending=settings.max_pending,
     )
-    service = IngestionService(sources, registry, jobs, candidates=sources)
+    service = IngestionService(sources, registry, jobs, candidates=sources, discovery=jobs)
     return IngestionComponents(
         db,
         sources,

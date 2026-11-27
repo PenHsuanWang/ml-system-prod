@@ -3,6 +3,7 @@
 from collections.abc import Callable, Iterable
 from typing import Protocol
 
+from src.domain.ingestion.discovery import IngestionCollectionQuery
 from src.domain.ingestion.models import (
     AdapterDescriptor,
     BatchExtraction,
@@ -112,3 +113,10 @@ class SourceApproval(Protocol):
         allowed_actor_ids: tuple[str, ...],
     ) -> SourceDefinition: ...
     def authorize(self, actor: Actor, source: SourceDefinition) -> None: ...
+
+
+class IngestionDiscoveryRepository(Protocol):
+    def list_jobs(self, actor: Actor, query: "IngestionCollectionQuery") -> list[IngestionJob]: ...
+    def list_snapshots(
+        self, actor: Actor, query: "IngestionCollectionQuery"
+    ) -> list[RawSnapshot]: ...

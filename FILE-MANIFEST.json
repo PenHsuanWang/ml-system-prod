@@ -74,8 +74,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 15969,
-      "sha256": "dd0976ca359ffdd3d9ddee62f2090ac8a75507400cdb12b1084d548e3a2f991c"
+      "bytes": 16440,
+      "sha256": "a6e20fa97c1786fad82f63aee95273de95ca285c2916d5f8e59e09f5738557cc"
     },
     {
       "path": "REVIEW-P1-P2-REMEDIATION.md",
@@ -154,8 +154,8 @@
     },
     {
       "path": "bootstrap/ingestion_wiring.py",
-      "bytes": 11357,
-      "sha256": "8143d8ab0a3103b7f6f8e58ed830b83ed996414544fc386ed6abe78614e8dc04"
+      "bytes": 11373,
+      "sha256": "5ac5c23fc2996c5061fd021da0d27e1a504a9d368d6fabbe1224dad92dbce4c4"
     },
     {
       "path": "bootstrap/init_cli.py",
@@ -174,8 +174,8 @@
     },
     {
       "path": "bootstrap/ml_api.py",
-      "bytes": 6497,
-      "sha256": "ea5ae157ac459947e8092b040076df36b317f976e63c6e976cacc293b643a2fa"
+      "bytes": 6621,
+      "sha256": "34c57f328815cbb17a2d89edd8533fe46035690406d061eafb3f9fa80ab19a61"
     },
     {
       "path": "bootstrap/ml_cli.py",
@@ -224,8 +224,8 @@
     },
     {
       "path": "bootstrap/ml_wiring.py",
-      "bytes": 5132,
-      "sha256": "a6d27898ebcc472609846b720b5b1ffff27c8e24848e2efc1da3033d6e37822a"
+      "bytes": 5151,
+      "sha256": "a7283c0742d3fe3f3a6d216f253af3496f5965936ef877fbfc5191def5114b24"
     },
     {
       "path": "bootstrap/ml_worker.py",
@@ -523,24 +523,29 @@
       "sha256": "88d0b5d7c5dcf4b95a028ca553027c3bb480c0e0e6afb9f9d1fbf371775873af"
     },
     {
+      "path": "docs/adr/024-dataset-discovery-lineage.md",
+      "bytes": 3319,
+      "sha256": "b06136bf496dae168290f854bd2981465dd838f4b0a48d5719b54762c1046636"
+    },
+    {
       "path": "docs/adr/README.md",
-      "bytes": 14622,
-      "sha256": "dedf5071c719c8d75a5b39fea9e883566f8f43009771be74bd60553a26fba15d"
+      "bytes": 14815,
+      "sha256": "3cc9617d526f96ffb7dc0321c2cb013d495e72cc16dfb11bdbc35b9bb11e1f1b"
     },
     {
       "path": "docs/architecture.md",
-      "bytes": 4781,
-      "sha256": "91d272e4c30ce2446fb3158c452e8046d123cc7d95175a7d5bf9c631345f826f"
+      "bytes": 5892,
+      "sha256": "69f19e646615c25832467bd6ea637d27f8e16b6d1e38f8874b77b36d98e4d7b0"
     },
     {
       "path": "docs/configuration-reference.md",
-      "bytes": 11929,
-      "sha256": "b69cc0ecaef4e744227d44a4499034fb8eadeb9cdcd67aea9e0efc1edbf35d20"
+      "bytes": 12487,
+      "sha256": "d1b462384402bcfd9aeafbd2e4a78f8f84538c0f864419d481185bc91b50cea0"
     },
     {
       "path": "docs/data-ingress-implementation.md",
-      "bytes": 24886,
-      "sha256": "e9b37e4c5fefd8da9b4ba1db5806b79d55f7dc1112511014c53661610413e995"
+      "bytes": 25656,
+      "sha256": "743527e3e4fc1de2255f59014e0371d4a07edb92cea510695aaa5a6bbdee1c2a"
     },
     {
       "path": "docs/databricks-ingestion-runbook.md",
@@ -988,14 +993,19 @@
       "sha256": "3dfb49d6dfe9c65982fac6acf11926f42c01ca761707f05c34f92f7361d49e23"
     },
     {
+      "path": "docs/evidence/wp3-dataset-discovery-20261127/qualification.json",
+      "bytes": 10919,
+      "sha256": "1dd0628b86fcae805711a28d941e573475228475c72183071f86db2c1aa8bc19"
+    },
+    {
       "path": "docs/glossary.md",
       "bytes": 4561,
       "sha256": "a5920df302522122b9cc2a0927aae288cad0847e66823db773333dbe6a09eef3"
     },
     {
       "path": "docs/implementation-status.md",
-      "bytes": 5938,
-      "sha256": "dba4050bd540ed5a990f4b6ddb43d16d7f82d78ea0d164d4c61886aeceac2102"
+      "bytes": 6642,
+      "sha256": "7b5e781c56a7d5899507d6bcf6a8973b8ab49f8dcd802b84793399b247a21a84"
     },
     {
       "path": "docs/microservice-contracts.md",
@@ -1004,8 +1014,8 @@
     },
     {
       "path": "docs/ml-runbook.md",
-      "bytes": 12661,
-      "sha256": "d473887cb7aed7b1807f26b00bc388d33c99f1da268896de5e2a0a88fcceffa4"
+      "bytes": 19886,
+      "sha256": "e0aa985c6ee15b7d4a992c7626723d35a686d70d05d272743312299a81c0d009"
     },
     {
       "path": "docs/ml-runtime-compatibility.md",
@@ -1016,6 +1026,11 @@
       "path": "docs/module-spec.md",
       "bytes": 27047,
       "sha256": "f59bad0c243161147eee9d6c4c01918cb1d0301d3ce70117f7075f10f7adcf31"
+    },
+    {
+      "path": "docs/plans/dataset-discovery-lineage.md",
+      "bytes": 3986,
+      "sha256": "d084c810c4050bca37bfe95d1e919907fa7a76a870a3a602514c10bdc59954c6"
     },
     {
       "path": "docs/plans/governed-discovery.md",
@@ -1029,8 +1044,8 @@
     },
     {
       "path": "docs/plans/self-service-api-inventory.md",
-      "bytes": 17934,
-      "sha256": "57a9f40a1a074ace8b0a01dd9a0f297a0db94022abdd195fa3c98e7b60be6ef4"
+      "bytes": 19003,
+      "sha256": "85308142ea7bd1c911bc9709761176e54a39715253d64582a4302f71b3ea6d57"
     },
     {
       "path": "docs/pytorch-ml-system-hld.md",
@@ -1123,6 +1138,11 @@
       "sha256": "960887b9bbc6cec9bbacd01f59374e50663efa6afeb24017a2efe07050dbdba5"
     },
     {
+      "path": "docs/reviews/wp3-dataset-discovery-report.md",
+      "bytes": 13543,
+      "sha256": "64781f46b44f6bc446a0c40ba0af8d427269d47985000364feea37abdfd77718"
+    },
+    {
       "path": "docs/runtime-source-management.md",
       "bytes": 18757,
       "sha256": "76ffe56326041796c57aad5a26e4674e0ebb511ce98f7b9664cd0c4cb26f3a3f"
@@ -1164,8 +1184,8 @@
     },
     {
       "path": "migrations/env.py",
-      "bytes": 954,
-      "sha256": "b7fc367e7556717100704aa1de6b8049f7e6c43bab20c54f35fab2df361d4faa"
+      "bytes": 1080,
+      "sha256": "9921cbb516d5574d129632493b224d383048a06523d587f17e80170d171242ad"
     },
     {
       "path": "migrations/schema_v1.py",
@@ -1206,6 +1226,11 @@
       "path": "migrations/versions/0007_prediction_contracts.py",
       "bytes": 1540,
       "sha256": "859be77c2bbda6581ca371bd41061f4fccfb2f6d0c66fbbc1914d527990781ca"
+    },
+    {
+      "path": "migrations/versions/0008_dataset_lineage.py",
+      "bytes": 1030,
+      "sha256": "0ecf2d0a7c8cc6f6370ad9fbf0b22fb9712d39320fff0c18fc2005e0f86e37f4"
     },
     {
       "path": "pyproject.toml",
@@ -1274,13 +1299,13 @@
     },
     {
       "path": "scripts/check_ebm_typing.py",
-      "bytes": 1630,
-      "sha256": "9d25faf88ff7c4531ebc8c6b3c98949415080532087e0d6278ff056b1e437adf"
+      "bytes": 1878,
+      "sha256": "93d55062db34f2e71e7a77f908c0dd14f7eaa3ebd4192a035f53f5f0ab4656a4"
     },
     {
       "path": "scripts/check_ingestion.py",
-      "bytes": 1522,
-      "sha256": "9319906aae1d12d6a559553d86aa640ad61474bd7758c8cc50ddf1ed2280d379"
+      "bytes": 1591,
+      "sha256": "8b3669c26318010c17425b37dc0b0767f47cd508f39a2231016def8be7adc7c7"
     },
     {
       "path": "scripts/check_init.py",
@@ -1478,6 +1503,26 @@
       "sha256": "425a0aa776ab2cabb15aae66e3c2ed5dbc92f3f29587786f1a83ef41961a8c6f"
     },
     {
+      "path": "src/api/collection_schemas.py",
+      "bytes": 2118,
+      "sha256": "cbe18d0885653cbd743ed7c6f8ba110702d2898bc610147ed9262ff52bb6d50a"
+    },
+    {
+      "path": "src/api/datasets/__init__.py",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/api/datasets/routers.py",
+      "bytes": 4597,
+      "sha256": "d937fb89312021b23c309075e1a61d1287d68cd7be8d85981efea6955c2c2ec5"
+    },
+    {
+      "path": "src/api/datasets/schemas.py",
+      "bytes": 3784,
+      "sha256": "73674aa00123d4b1d3242d6b5d870869a9c034a463ab76f71cb2f148030fbb9b"
+    },
+    {
       "path": "src/api/dependencies.py",
       "bytes": 643,
       "sha256": "6866f99307cb4c0ddf12fab566355bbfa2680b53f25ca976eb761bbbdfea6dcc"
@@ -1528,9 +1573,14 @@
       "sha256": "629b38560655cbe506306e5177fa3f0e049205706912cbf4de55d43bcc8d8c8b"
     },
     {
+      "path": "src/api/ingestion/discovery_schemas.py",
+      "bytes": 2242,
+      "sha256": "b846eaad1fb8b421cacdcf8afe736f43d84d0b87d3f155aaf58dbc5cb8be7adf"
+    },
+    {
       "path": "src/api/ingestion/routers.py",
-      "bytes": 4317,
-      "sha256": "d7ff27d8b0e2d311e450a3f83629f7a2a7f4a8f8d4aa98c3a6281af28a171898"
+      "bytes": 7145,
+      "sha256": "0a6dd1147758fd94f6e9f3433510eb35f4eab1f92c94536a99e15b7ffbde8644"
     },
     {
       "path": "src/api/ingestion/schemas.py",
@@ -1579,8 +1629,8 @@
     },
     {
       "path": "src/api/ml_http.py",
-      "bytes": 8731,
-      "sha256": "8cdd383eed43aa096a44cb65b349fd816d36451238bfd74fd424027915bbc592"
+      "bytes": 8883,
+      "sha256": "79c14f44fa48a07604d121fdd2517b6c9435abde0f09a35beea62b8332875497"
     },
     {
       "path": "src/api/ml_schemas.py",
@@ -1639,13 +1689,13 @@
     },
     {
       "path": "src/application/datasets/ports.py",
-      "bytes": 1224,
-      "sha256": "10c32212217105a3581ba88b39285a7ab4c0291dd1cec40f84be55d345b08dfb"
+      "bytes": 1780,
+      "sha256": "5981c2c52054391018c4a51144edbe540f85c4c675682353e7f2677bba11c125"
     },
     {
       "path": "src/application/datasets/service.py",
-      "bytes": 561,
-      "sha256": "e7bfeb3098c0281885c8cf9d32c5e47100cb18c422d22aa5fbf270fe263f3323"
+      "bytes": 2196,
+      "sha256": "97d9d2b65767eb40171db6a1083b6bc141363cb26c2925891714217354f13851"
     },
     {
       "path": "src/application/deployments/__init__.py",
@@ -1704,8 +1754,8 @@
     },
     {
       "path": "src/application/ingestion/ports.py",
-      "bytes": 4316,
-      "sha256": "b6c04af3f16a31dc7308f32ba0b71913a1bc3a237dd1640c010353450952ad7a"
+      "bytes": 4650,
+      "sha256": "da1f2a47c52e3923fad1d28e261e98a2be10f317e0a965baab5c2f41940b3822"
     },
     {
       "path": "src/application/ingestion/registry.py",
@@ -1714,8 +1764,8 @@
     },
     {
       "path": "src/application/ingestion/service.py",
-      "bytes": 5098,
-      "sha256": "a3437faf3a62b3e9e24511f0137ede824d2bf0d1cb0d7fc8f5a587ecc675ab9c"
+      "bytes": 6021,
+      "sha256": "2252e847dc3773033fa2aea444b582d9223572801ec4d80daf6cbca15b6483a7"
     },
     {
       "path": "src/application/ingestion/source_management.py",
@@ -1888,6 +1938,11 @@
       "sha256": "b2cfa398767c8d15d6e73e0541fd1e79e884e5fb1272ac4d74f66a7e12d634a6"
     },
     {
+      "path": "src/domain/datasets/lineage.py",
+      "bytes": 4615,
+      "sha256": "aee11b94cc57c4672d82198f21996c86c13c99671328c48071ffaea7d820c7aa"
+    },
+    {
       "path": "src/domain/datasets/models.py",
       "bytes": 2595,
       "sha256": "324595d9f13d0867ade6ce0ea298b93b30ffcc8b249ff8c90656c1f8039d0f44"
@@ -1963,6 +2018,11 @@
       "sha256": "88852446948b82cf81edaf0f53ba845f1027243f99465d457c483f73c5b73e66"
     },
     {
+      "path": "src/domain/ingestion/discovery.py",
+      "bytes": 866,
+      "sha256": "301f6b0d66b6d52cbd95b81f93b5d97fbfee965fe8cd2ab7f7fb0d5a7c806abc"
+    },
+    {
       "path": "src/domain/ingestion/errors.py",
       "bytes": 842,
       "sha256": "15a4c2a084560050b8ffed9dc90d407a59185d69b87c3fda4d1d4dced7365408"
@@ -2031,6 +2091,11 @@
       "path": "src/domain/models.py",
       "bytes": 737,
       "sha256": "75f67e682db38c1eee7e5a86f1f7259e73a6d73b1c0fc8688c1f5ddb8c35f926"
+    },
+    {
+      "path": "src/domain/pagination.py",
+      "bytes": 1514,
+      "sha256": "88680d39fc8dd51e5cb3bb3c2e43f82800483a22450f1a23c40f034feeffedff"
     },
     {
       "path": "src/domain/ports.py",
@@ -2129,8 +2194,8 @@
     },
     {
       "path": "src/infrastructure/datasets/ebm_builder.py",
-      "bytes": 7233,
-      "sha256": "1e5b7d2ef27702b1b515d2e864cc0b73b4bc7c7c8cb16dddc211b2afe9092360"
+      "bytes": 7605,
+      "sha256": "a741f838e20fc4469674ef4472789b420ad6493e2cf48aa4af5c133fbbd67f32"
     },
     {
       "path": "src/infrastructure/datasets/ebm_snapshots.py",
@@ -2234,8 +2299,8 @@
     },
     {
       "path": "src/infrastructure/ingestion/persistence/ingestion_jobs.py",
-      "bytes": 30275,
-      "sha256": "dc57754b93d31c62a9ecd1c7087585922513c20787206f52265611b089785be8"
+      "bytes": 34014,
+      "sha256": "deb1608d855d489401db20d7fa7b8da155b94e4986455b0b7e9f19d10627f6dd"
     },
     {
       "path": "src/infrastructure/ingestion/persistence/metrics.py",
@@ -2358,6 +2423,11 @@
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
+      "path": "src/infrastructure/persistence/dataset_lineage_schema.py",
+      "bytes": 760,
+      "sha256": "1acbd01fdb10cf6d6be1c85ff4c61ce3a02dd98a91e14ed482bbe69c92f95702"
+    },
+    {
       "path": "src/infrastructure/persistence/exports.py",
       "bytes": 3613,
       "sha256": "98c23bba9551957eb1aa6560bcba75da0e3f6aa2d497dff050c9c5fd397ef4ec"
@@ -2374,8 +2444,8 @@
     },
     {
       "path": "src/infrastructure/persistence/ml_datasets.py",
-      "bytes": 10271,
-      "sha256": "ac029cb342c1f9efee6c08d78d2d530f402f04a1e0683cd7eb0beab984fbb7ef"
+      "bytes": 21166,
+      "sha256": "9e1439e52f01552ca04f32f24d8627ec8a47276d41dc5b814db0580054938192"
     },
     {
       "path": "src/infrastructure/persistence/ml_deployments.py",
@@ -2708,9 +2778,19 @@
       "sha256": "e3a81e6d11fe3e48a95a721dad6b56eee47f6768a1a3adceb8980c178a766478"
     },
     {
+      "path": "tests/ml/dataset_builder/test_discovery.py",
+      "bytes": 23283,
+      "sha256": "1d045c4c507f210b3c74f0421ca24d420fd98326530c5318c5d5d2cf6f7e4a77"
+    },
+    {
       "path": "tests/ml/dataset_builder/test_integration.py",
       "bytes": 11241,
       "sha256": "fd0bab90f8ed721891687d658a1bb31c6d48a74a80f09474430c1132295fdde1"
+    },
+    {
+      "path": "tests/ml/dataset_builder/test_lineage_migration.py",
+      "bytes": 2971,
+      "sha256": "8cd3ad20e38a3afc3b2a7306844cd808d94e1b4a44c8e1a30158c20180465c1d"
     },
     {
       "path": "tests/ml/ebm/test_artifact_safety.py",

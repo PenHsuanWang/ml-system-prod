@@ -132,7 +132,7 @@ The following table is planning scope. Each later package needs its own session 
 | --- | --- | --- | --- |
 | Phase 0 + WP1 / current session | Inventory, standard, English Gateway docs, examples, runtime contract validation | Existing service/DTO/route inspection, real isolated HTTP fixtures, boundary and regression evidence | Local diff only. Preserve status/code/envelope; reject malformed upstream success with existing 503. |
 | WP2 / PLANNED | GET /prediction/endpoints and /prediction/endpoints/{endpoint_id}; model contracts | Verified bundle → binding/manifest → published public contract → active SQL route. Shared tenant/ml:predict; legacy incomplete, pagination, rollback and readiness semantics. Detailed existing plan is linked below. | Additive storage/backfill designed only after approval. Old endpoints stay callable; staged enforcement. |
-| WP3 / PLANNED | GET ingestion/jobs, ingestion/snapshots, datasets, datasets/{id}/versions, version detail/lineage | Reuse source discovery, snapshot publication, SQLDatasetCatalog and verified builder receipts. Define provenance/content identity and publication consistency. Authorization/filters/pagination in SQL. | Preserve exact-version route and legacy incomplete lineage. |
+| WP3 / IMPLEMENTED (feature branch) | GET ingestion/jobs, ingestion/snapshots, datasets, datasets/{id}/versions, version detail/lineage | Reuse source discovery, snapshot publication, SQLDatasetCatalog and verified builder receipts. Define provenance/content identity and publication consistency. Authorization/filters/pagination in SQL. | Preserve exact-version route and legacy incomplete lineage. |
 | WP4 / PLANNED | GET training/recipes, recipe version, resource-profiles, jobs, job spec/metrics | Reuse approved workload registry, dataset schema admission and ownership/read_all. Publish real persisted metrics only; valid selected dataset + recipe can train. | Preserve submission/idempotency/outbox/recovery. |
 | WP5 / PLANNED | Registry family detail, binding contract/lineage/approvals; deployment list/endpoints/history/events | Preserve binding-array identity; add bounded queries compatibly. Evaluate read-only deployment permission and grant migration. Only persisted evidence becomes history. | Compatible paths or explicit versioning; Controller remains route writer. |
 | WP6 / PLANNED | Dataset builder list/detail and durable datasets/build-jobs submit/list/status/result | Reuse current algorithms/CLI and immutable publication. Decide worker mechanism, ownership, recovery, idempotency and cancellation explicitly. | Preserve CLI; additive durable orchestration approved independently. |
@@ -155,3 +155,18 @@ remain separate reviewed work. Runtime response error pass-through is verified, 
 [API standard](../standards/api-design-standard.md) ·
 [WP2 endpoint plan](prediction-endpoint-discovery.md) ·
 [WP1 delivery report](../reviews/wp1-api-foundation-report.md).
+
+
+## WP3 implementation delta — 2026-11-27
+
+The Phase 0 route inventory above remains a historical baseline. WP3 adds Management-only
+GET ingestion jobs/snapshots, dataset families/versions/version detail/lineage. Existing source
+browsing and exact dataset-version lookup remain available. SQL performs tenant/owner scope,
+filters, ordering and bounds. New EBM builds atomically bind verified receipt evidence in the
+existing SQL catalog; old missing evidence stays incomplete. Full receipts additionally require
+input visibility, otherwise restricted status withholds source identities. See the
+[API workflow](../ml-runbook.md#dataset-discovery-and-lineage-wp3),
+[plan](dataset-discovery-lineage.md) and [evidence report](../reviews/wp3-dataset-discovery-report.md).
+Dataset build HTTP orchestration remains NOT_IMPLEMENTED (WP6). Training recipe discovery,
+registry/deployment transparency and target-environment production qualification remain planned
+for their separately authorized work packages. Full API-only self-service is not complete.

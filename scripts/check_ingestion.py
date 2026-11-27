@@ -8,6 +8,8 @@ PRODUCTION = [
     "server.py",
     "src/api/routers.py",
     "src/domain/ml.py",
+    "src/domain/pagination.py",
+    "src/api/collection_schemas.py",
     "src/domain/ingestion",
     "src/domain/catalog",
     "src/application/catalog",

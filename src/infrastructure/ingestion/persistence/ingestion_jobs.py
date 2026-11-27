@@ -10,9 +10,10 @@ from dataclasses import fields
 from typing import Any, cast
 from uuid import uuid4
 
-from sqlalchemy import func, insert, or_, select, update
+from sqlalchemy import and_, func, insert, or_, select, update
 from sqlalchemy.engine import Connection
 
+from src.domain.ingestion.discovery import IngestionCollectionQuery
 from src.domain.ingestion.errors import IngestionCancelled, IngestionError, SnapshotConflict
 from src.domain.ingestion.models import (
     ExtractionLimits,
@@ -70,6 +71,51 @@ def _error_code(value: str) -> str:
         if isinstance(value, str) and re.fullmatch(r"[A-Z0-9_]{1,64}", value)
         else "INGESTION_FAILED"
     )
+
+
+def visible_jobs_clause(actor: Actor) -> Any:
+    visibility = ingestion_jobs.c.tenant_id == actor.tenant_id
+    if "ml:ingestion:operate" not in actor.permissions:
+        visibility = and_(visibility, ingestion_jobs.c.owner_id == actor.actor_id)
+    return visibility
+
+
+def published_snapshot_query(actor: Actor) -> Any:
+    return (
+        select(
+            *raw_snapshots.c,
+            ingestion_jobs.c.source_id,
+            ingestion_jobs.c.source_version,
+            ingestion_jobs.c.source_digest,
+        )
+        .select_from(
+            raw_snapshots.join(
+                ingestion_jobs,
+                and_(
+                    raw_snapshots.c.job_id == ingestion_jobs.c.id,
+                    raw_snapshots.c.tenant_id == ingestion_jobs.c.tenant_id,
+                ),
+            )
+        )
+        .where(visible_jobs_clause(actor), ingestion_jobs.c.state == "PUBLISHED")
+    )
+
+
+def snapshot_from_catalog_row(row: Mapping[str, Any]) -> RawSnapshot:
+    snapshot = RawSnapshot.parse(json.loads(row["snapshot_json"]))
+    expected = {
+        "snapshot_id": row["id"],
+        "tenant_id": row["tenant_id"],
+        "job_id": row["job_id"],
+        "manifest_digest": row["manifest_digest"],
+        "content_digest": row["content_digest"],
+        "source_id": row["source_id"],
+        "source_version": row["source_version"],
+        "source_configuration_digest": row["source_digest"],
+    }
+    if any(getattr(snapshot, key) != value for key, value in expected.items()):
+        raise IngestionError("Published snapshot metadata failed identity verification")
+    return snapshot
 
 
 class SQLIngestionJobRepository:
@@ -730,3 +776,43 @@ class SQLIngestionJobRepository:
             )
             record_audit(connection, actor, "ingestion.reconcile.requested", job_id)
             return job_from_row(self._job(connection, job_id))
+
+    @staticmethod
+    def _collection_filters(statement: Any, query: IngestionCollectionQuery, timestamp: Any) -> Any:
+        if query.source_id is not None:
+            statement = statement.where(ingestion_jobs.c.source_id == query.source_id)
+        if query.source_version is not None:
+            statement = statement.where(ingestion_jobs.c.source_version == query.source_version)
+        if query.window.created_after is not None:
+            statement = statement.where(timestamp > query.window.created_after)
+        if query.window.created_before is not None:
+            statement = statement.where(timestamp < query.window.created_before)
+        return statement
+
+    def list_jobs(self, actor: Actor, query: IngestionCollectionQuery) -> list[IngestionJob]:
+        statement = self._collection_filters(
+            select(ingestion_jobs).where(visible_jobs_clause(actor)),
+            query,
+            ingestion_jobs.c.created_at,
+        )
+        if query.state is not None:
+            statement = statement.where(ingestion_jobs.c.state == query.state)
+        statement = statement.order_by(
+            ingestion_jobs.c.created_at.desc(), ingestion_jobs.c.id.desc()
+        )
+        with self.db.transaction() as connection:
+            rows = connection.execute(
+                statement.limit(query.window.limit + 1).offset(query.window.offset)
+            ).mappings()
+            return [job_from_row(row) for row in rows]
+
+    def list_snapshots(self, actor: Actor, query: IngestionCollectionQuery) -> list[RawSnapshot]:
+        statement = self._collection_filters(
+            published_snapshot_query(actor), query, raw_snapshots.c.created_at
+        )
+        statement = statement.order_by(raw_snapshots.c.created_at.desc(), raw_snapshots.c.id.desc())
+        with self.db.transaction() as connection:
+            rows = connection.execute(
+                statement.limit(query.window.limit + 1).offset(query.window.offset)
+            ).mappings()
+            return [snapshot_from_catalog_row(row) for row in rows]

@@ -18,6 +18,7 @@ from src.domain.datasets.ebm_builder import (
     EBMDatasetBuildResult,
     EBMRawSnapshotSet,
 )
+from src.domain.datasets.lineage import DatasetBuildReceipt
 from src.domain.ml import Actor, MLError, canonical_json
 from src.infrastructure.datasets.ebm_snapshots import EBMFileDatasetSource
 from src.infrastructure.ingestion.storage.raw_snapshot_writer import (
@@ -168,6 +169,10 @@ class LocalEBMDatasetPublisher:
                 verified.content_digest,
             )
         )
+        receipt_path = Path(receipt_ref)
+        with relative_file_fd(receipt_path.parent, receipt_path.name) as descriptor:
+            data = os.read(descriptor, _MAX_RECEIPT_BYTES + 1)
+        build_receipt = DatasetBuildReceipt(data.decode("utf-8"), receipt_digest)
         source = Path(reference["snapshot_ref"]).parent
         dataset = self.catalog.register_ebm(
             actor,
@@ -175,6 +180,7 @@ class LocalEBMDatasetPublisher:
             version,
             source / "metadata.json",
             source / "spectrograms.npz",
+            build_receipt=build_receipt,
         )
         # Registration is deliberately the terminal side effect: register_ebm
         # validates the same files and commits the catalog row atomically, so no

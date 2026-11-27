@@ -206,3 +206,12 @@ Opt-in Management discovery uses a dedicated Databricks identity and independent
 ml:catalog:read grants. Ingestion clients can browse currently eligible registered
 sources through available-sources. See [configuration, APIs and limits](docs/runtime-source-management.md#governed-runtime-metadata-discovery).
 External Databricks qualification and production approval remain separate.
+
+
+## Dataset discovery and lineage
+
+Management (8000) provides authorized ingestion job/snapshot and dataset family/version lists.
+Dataset detail exposes safe schema, shape and split metadata; lineage traces verified builder
+receipts to approved source versions when inputs are visible. Existing legacy lineage can be
+incomplete, and dataset creation remains the operator CLI. See the
+[API and operator walkthrough](docs/ml-runbook.md#dataset-discovery-and-lineage-wp3).

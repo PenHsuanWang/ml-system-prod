@@ -2,8 +2,15 @@
 
 from typing import Annotated, cast
 
-from fastapi import APIRouter, Depends, Header, Query, Request
+from fastapi import APIRouter, Depends, Header, Query, Request, Response
 
+from src.api.collection_schemas import COLLECTION_RESPONSES, MetadataPage
+from src.api.ingestion.discovery_schemas import (
+    IngestionJobMetadata,
+    JobCollectionQuery,
+    RawSnapshotMetadata,
+    SnapshotCollectionQuery,
+)
 from src.api.ingestion.schemas import (
     AvailableSourcePage,
     AvailableSourceResponse,
@@ -123,4 +130,68 @@ def available_sources(
         limit=limit,
         next_offset=offset + limit if more else None,
         has_more=more,
+    )
+
+
+@router.get(
+    "/jobs",
+    response_model=MetadataPage[IngestionJobMetadata],
+    summary="List visible ingestion jobs",
+    operation_id="list_ingestion_jobs",
+    responses=COLLECTION_RESPONSES,
+    description="Requires ml:ingest, ml:ingestion:read or ml:ingestion:operate. "
+    "Filters the current tenant and owner in SQL; operate can inspect all jobs in that tenant. "
+    "Filter by exact source/version, job state or strict UTC creation bounds. "
+    "Order is created_at descending, then job_id descending. Default 25/max 100 items. "
+    "Concurrent inserts may shift offset pages. Follow status_url or result_url for details.",
+)
+def jobs(
+    response: Response,
+    actor: ActorDependency,
+    service: IngestionDependency,
+    page: Annotated[JobCollectionQuery, Query()],
+) -> MetadataPage[IngestionJobMetadata]:
+    response.headers["Cache-Control"] = "private, no-store"
+    query = page.query()
+    items, more = service.collections(actor, query)
+    return MetadataPage[IngestionJobMetadata](
+        items=[
+            IngestionJobMetadata.model_validate(public_job(cast(IngestionJob, item)))
+            for item in items
+        ],
+        limit=page.limit,
+        offset=page.offset,
+        next_offset=query.window.next_offset(has_more=more),
+    )
+
+
+@router.get(
+    "/snapshots",
+    response_model=MetadataPage[RawSnapshotMetadata],
+    summary="List published raw snapshot metadata",
+    operation_id="list_raw_snapshots",
+    responses=COLLECTION_RESPONSES,
+    description="Uses the same tenant, owner/operate and read permissions as snapshot detail. "
+    "Only durably PUBLISHED jobs are included. Filters use exact source/version and strict "
+    "UTC creation bounds. Order is created_at descending, then snapshot_id descending. "
+    "Default 25/max 100 items with offset continuation. Returns immutable identity and digests; "
+    "raw bytes and filesystem paths are excluded.",
+)
+def snapshots(
+    response: Response,
+    actor: ActorDependency,
+    service: IngestionDependency,
+    page: Annotated[SnapshotCollectionQuery, Query()],
+) -> MetadataPage[RawSnapshotMetadata]:
+    response.headers["Cache-Control"] = "private, no-store"
+    query = page.query()
+    items, more = service.collections(actor, query, snapshots=True)
+    return MetadataPage[RawSnapshotMetadata](
+        items=[
+            RawSnapshotMetadata.model_validate(public_snapshot(cast(RawSnapshot, item)))
+            for item in items
+        ],
+        limit=page.limit,
+        offset=page.offset,
+        next_offset=query.window.next_offset(has_more=more),
     )
