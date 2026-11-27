@@ -128,3 +128,4 @@ Runtime readiness and target-environment qualification remain separate.
 The WP6 feature branch adds explicit EBM Builder discovery and durable build jobs on Management.
 A separate SQL worker reuses the existing transformer and verified publication. See the
 [build API and worker workflow](ml-runbook.md#dataset-build-jobs-wp6).
+Local verification is recorded in the [WP6 report](reviews/wp6-dataset-build-report.md).
