@@ -106,3 +106,114 @@ container with networking disabled.
 | Enterprise and production | NOT VERIFIED | Collect actual TLS, Identity, Databricks and MLflow authorization, storage, SLO/capacity, dependency outage and recovery evidence in the authorized environment. |
 
 `production_accepted=false`.
+
+## Final review closure
+
+Reviewed head `201d0c3685a8bd47ee1f4c4253f42fd6f6158d3f`.
+Closure implementation `dac0ea4f66181ae61c65a87602d1bfbcc651bb9b`.
+
+### EBM evaluation
+
+The [reviewed PostgreSQL job](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/45994945675/job/140491912216)
+failed. Its public run page did not expose the persisted report rows, and the
+artifact and log requests did not return the underlying reports. Local executions
+queried the actual evaluation rows from isolated PostgreSQL before fixture teardown.
+The complete baseline fixture passed locally. A controlled DC-only reproduction
+used exactly representable offsets with an otherwise identical ramp and reached
+the same `REJECTED_BY_POLICY` outcome through real ingest, build, fit and evaluation.
+
+| Executed EBM inputs | Persisted loss | Persisted lot Pearson | Lots | Samples | Outcome |
+| --- | ---: | ---: | ---: | ---: | --- |
+| Reviewed fixture on local PostgreSQL | 0.2206274 | -1 | 2 | 4 | APPROVED_BY_POLICY in both cases |
+| Exact DC-only reproduction on local PostgreSQL | 0.2206299 | null | 2 | 4 | REJECTED_BY_POLICY in both cases |
+| Revised lot-specific waveforms on local PostgreSQL | 0.2206964 | 1 | 2 | 4 | APPROVED_BY_POLICY in both cases |
+
+The exact DC-only reproduction satisfies the loss, lot and sample bounds. Identical
+lot scores make the correlation undefined, which the real policy rejects.
+The old fixture could instead produce slightly different features through float
+rounding, as observed on this host. The test now varies slope and curvature by
+lot, checks pairwise variation in the built held-out tensors, and checks the
+finite persisted correlation and qualified lot count before requiring approval.
+The real publisher, transformer, training, evaluator, policy and prediction
+remain in the test path. Diagnostic logs are `/tmp/wp7-closure-reviewed.log`,
+`/tmp/wp7-closure-dc.log` and `/tmp/wp7-close-focus.log`.
+
+### Management job links
+
+The existing API URL resolver now renders Training and Ingestion job links
+using the app's route names and ASGI root path. HTTP tests follow the returned
+links under both root and `/management`. They cover Training admission and
+status, and Ingestion admission, listing, status and published result. Existing
+fields retain their response types and root deployment paths.
+
+### Dataset Build Worker
+
+The [opt-in Kubernetes workload](../../deploy/k8s/README.md#dataset-build-worker)
+uses the WP6 SQL worker, a pinned non-root runtime, a private SQL and Identity
+role file, and resource limits. It has writable dataset/execution subpaths
+and a read-only RawSnapshot subpath. The dataset builder opens its raw store
+without creating directories. The isolated profile creates a Mongo account
+granted only `find` on `identity_users`. The reference Compose worker takes
+its own lookup URI through private configuration. Migration 0009 is applied
+through the existing migration role.
+
+The local worker smoke used real PostgreSQL 17 with Alembic through 0009,
+MongoDB 7.0.48 with authorization, the normal Management factory with synthetic
+development settings, and two separate invocations of the actual worker entry
+point. Mongo accepted account lookup and denied session reads and identity
+writes. The first worker exited idle. The second consumed the job submitted
+through HTTP, using unwritable RawSnapshot directories, and its result and
+lineage were verified through Management. In the contract test, a new SQL
+engine and replacement worker recovered an abandoned lease under a controlled
+clock and published exactly one result. These tests establish process and SQL
+recovery behavior on local fixtures.
+
+The private acceptance overlay rendered with the scoped Secret, pinned
+container and expected shared-storage mounts. The Kubernetes harness now
+restarts the worker Pod, admits the EBM build through Management, and verifies
+the published lineage before submitting training. Live Minikube acceptance
+still requires an isolated cluster with sufficient disk. The managed egress
+policy excludes `api.github.com`, and the workflow dispatch preflight returned
+HTTP 403. An authorized runner can use the existing pull-request trigger or
+`gh workflow run k8s-acceptance.yml --ref feature/platform-usability-acceptance`.
+Qualification of the mounted storage and restart behavior in a running
+Kubernetes namespace is pending.
+
+### Verification evidence
+
+The full contract suites use Python 3.12.14 on managed Linux and disposable
+SQLite databases or isolated schemas in the PostgreSQL 17 tmpfs container.
+The local suite excludes real external services via the repository's normal
+environment gates. The hosted Backend Stack uses its own isolated dependencies.
+
+```sh
+WP7_PY=/workspace/ml-system-prod/.venv/bin/python
+WP7_DB=sqlite  # Or postgres with ML_TEST_DATABASE_URL set to the isolated fixture.
+"$WP7_PY" -m pytest tests/ml tests/test_boundaries.py -q \
+  --basetemp="/tmp/wp7-close-full-$WP7_DB" --junitxml="/tmp/wp7-close-full-$WP7_DB.xml"
+```
+
+The local logs and JUnit XML use the prefix `/tmp/wp7-close-full-`. The live worker
+evidence is `/tmp/wp7-close-live-worker.log`. The architecture, lint, typing,
+Kubernetes manifest, Compose rendering and documentation gates are recorded in
+`/tmp/wp7-close-static-final.log`. Hosted results are tied to the
+[implementation workflow](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/46011077912).
+
+| Executed closure suite | Passed | Failed | Skipped | Exit |
+| --- | ---: | ---: | ---: | ---: |
+| Full SQLite contracts and architecture | 1,476 | 0 | 5 | 0 |
+| Full PostgreSQL contracts and architecture | 1,476 | 0 | 5 | 0 |
+| Focused PostgreSQL diagnostics and regression | 27 | 0 | 0 | 0 |
+
+Local skips cover the isolated Backend stack, approved live Databricks, external
+HTTP endpoints, and live RabbitMQ/Redis receivers. The hosted contract matrix
+runs its database suites with RabbitMQ and Redis. Both hosted contract jobs
+passed. The [Hosted Backend Stack job](https://github.com/PenHsuanWang/ml-system-prod/actions/runs/46011077912/job/140548591690)
+started its isolated Compose roles and passed the zero-skipped integration gate,
+including the existing separate live EBM case. The run uploaded its acceptance
+artifacts. This evidence covers the implementation commit and the reference
+backend, including the fixes for the two previously failing PostgreSQL cases.
+The following report and manifest commit contains the same runtime and tests.
+Kubernetes dynamic acceptance and enterprise qualification remain separate gates.
+
+`production_accepted=false`.
