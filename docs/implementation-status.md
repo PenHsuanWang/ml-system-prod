@@ -120,4 +120,5 @@ The WP5 feature branch adds tenant-scoped binding, contract, lineage, evaluation
 reads on Management. Deployment readers can inspect versions, generations, SQL route revisions
 and persisted creation events. See the
 [governance discovery workflow](ml-runbook.md#model-registry-and-deployment-discovery-wp5).
+Local verification is recorded in the [WP5 report](reviews/wp5-governance-discovery-report.md).
 Runtime readiness and target-environment qualification remain separate.
