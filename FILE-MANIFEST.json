@@ -1004,8 +1004,8 @@
     },
     {
       "path": "docs/implementation-status.md",
-      "bytes": 7019,
-      "sha256": "9f43c1947c56f8bfa4ecccd06fc3b5872e804be420e0dcef1d45d13b9e9ea2cb"
+      "bytes": 7113,
+      "sha256": "f58ef76c6065e24fafeaeddf3b733d391fc313a466f91b6c58757ad86d5d4f20"
     },
     {
       "path": "docs/microservice-contracts.md",
@@ -1141,6 +1141,11 @@
       "path": "docs/reviews/wp3-dataset-discovery-report.md",
       "bytes": 13543,
       "sha256": "64781f46b44f6bc446a0c40ba0af8d427269d47985000364feea37abdfd77718"
+    },
+    {
+      "path": "docs/reviews/wp4-training-discovery-report.md",
+      "bytes": 5193,
+      "sha256": "402ee247ae4db3e59952d930372024d492897dcd93ce616b72193cdede619e98"
     },
     {
       "path": "docs/runtime-source-management.md",
