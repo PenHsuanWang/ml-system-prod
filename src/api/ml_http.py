@@ -5,7 +5,7 @@ from dataclasses import asdict
 from typing import Annotated
 from uuid import uuid4
 
-from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, FastAPI, Header, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
@@ -124,9 +124,10 @@ def deploy(body: DeploymentRequest, actor: ActorDependency, services: ServicesDe
 
 
 @deployment_router.get("/{deployment_id}")
-def get_deployment(deployment_id: str, actor: ActorDependency,
+def get_deployment(deployment_id: str, response: Response, actor: ActorDependency,
                    services: ServicesDependency) -> dict[str, object]:
     value = services.deployments.get(actor, deployment_id)
+    response.headers["Cache-Control"] = "private, no-store"
     return {"deployment_id": value.deployment_id, "endpoint_id": value.endpoint_id,
             "generation": value.generation, "state": value.state,
             "desired_state": "ACTIVE", "observed_state": value.state,
@@ -158,11 +159,15 @@ def install_errors(app: FastAPI, *, maximum_body_bytes: int = 65536) -> None:
 
 def mount_management(app: FastAPI) -> None:
     from src.api.datasets.routers import router as dataset_discovery_router
+    from src.api.governance_discovery import deployment_router as deployment_discovery_router
+    from src.api.governance_discovery import registry_router as registry_discovery_router
     from src.api.training_discovery import router as training_discovery_router
     app.include_router(dataset_discovery_router, prefix="/api/v1/datasets")
     app.include_router(training_router, prefix="/api/v1/training")
     app.include_router(training_discovery_router, prefix="/api/v1/training")
+    app.include_router(registry_discovery_router, prefix="/api/v1/model_registry")
     app.include_router(registry_router, prefix="/api/v1/model_registry")
+    app.include_router(deployment_discovery_router, prefix="/api/v1/deployments")
     app.include_router(deployment_router, prefix="/api/v1/deployments")
     app.include_router(dataset_router, prefix="/api/v1/datasets")
     install_errors(app)

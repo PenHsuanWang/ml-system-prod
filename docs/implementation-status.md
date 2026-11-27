@@ -113,3 +113,12 @@ the resolved spec and persisted fit metrics through the existing Management API.
 See the [training discovery workflow](ml-runbook.md#training-recipe-and-job-discovery-wp4).
 Submission and deployment approval continue using the existing contracts.
 Local verification is recorded in the [WP4 report](reviews/wp4-training-discovery-report.md).
+
+## WP5 model registry and deployment discovery
+
+The WP5 feature branch adds tenant-scoped binding, contract, lineage, evaluation and approval
+reads on Management. Deployment readers can inspect versions, generations, SQL route revisions
+and persisted creation events. See the
+[governance discovery workflow](ml-runbook.md#model-registry-and-deployment-discovery-wp5).
+Local verification is recorded in the [WP5 report](reviews/wp5-governance-discovery-report.md).
+Runtime readiness and target-environment qualification remain separate.

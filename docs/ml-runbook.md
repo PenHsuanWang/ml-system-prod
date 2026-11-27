@@ -31,7 +31,8 @@ Management／Gateway／Serving 使用目前 Identity session 的 Bearer token。
 | Model／versions／evaluation 查詢 | `ml:model:read` |
 | 以 binding ID 人工 Approval | `ml:model:approve`；201；必須有同 binding／manifest 的 `APPROVED_BY_POLICY` evaluation |
 | 以 name/version 人工 Approval | 上述 approve 加 `ml:model:read`（會先列出版本） |
-| Deployment create／read／rollback | `ml:deploy`；create／rollback 為 202，須輪詢 observed state |
+| Deployment create／rollback | `ml:deploy`；回傳 202，須輪詢 observed state |
+| Deployment read | `ml:deployment:read` 或既有 `ml:deploy`，限目前 tenant |
 | Gateway／Serving prediction | `ml:predict`；model input schema、endpoint 與 route identity 都須相符 |
 | Management metrics | `ml:operate`；200 text exposition |
 
@@ -317,3 +318,71 @@ Authentication failure is 401. Recipe/profile reads return 403 without `ml:train
 recipes or invisible job details return 404. Invalid query fields, state or bounds return 422.
 Unavailable or invalid stored evidence returns 503 with the existing retryable error envelope.
 Use the response's `X-Request-ID` when reporting a problem. No schema change is needed for WP4.
+
+## Model registry and deployment discovery (WP5)
+
+On Management port 8000, sign in through Identity and use the Bearer token in `/docs`.
+Paths below are relative to `/api/v1`. Grant `ml.model.read` in Identity to inspect models and
+`ml.deployment.read` to inspect deployments. These map to `ml:model:read` and
+`ml:deployment:read`. Existing `ml.deploy` grants retain read access, with no grant migration.
+Assign the read-only grants independently of `ml.model.approve` and `ml.deploy`.
+
+| GET path | Information and scope |
+| --- | --- |
+| `/model_registry/bindings` | `ml:model:read`. Paged SQL bindings. Filter by exact `registered_name` and/or `model_version`. Order is registered name, version string, then binding ID. There is no implicit latest version. |
+| `/model_registry/models/{name}` | `ml:model:read`. Name and count of registered versions visible in the current tenant. Use the bindings list with `registered_name` to browse versions. |
+| `/model_registry/bindings/{id}/contract` | `ml:model:read`. Digest-verified public inference contract and latest verified usage review, tied to the binding manifest. Missing or invalid evidence is `incomplete`. |
+| `/model_registry/bindings/{id}/lineage` | `ml:model:read`. Binding, run ID and manifest. The recorded job attempt, recipe and spec digest also require job ownership or same-tenant `ml:jobs:read_all`. The pinned dataset additionally requires `ml:train` or `ml:dataset:read`. Missing or inaccessible fields remain null with `status=incomplete`. |
+| `/model_registry/bindings/{id}/evaluation-results` | `ml:model:read`. Persisted evaluation metadata for the exact binding/manifest and allowlisted public metrics. Newest recorded time first, then ID descending. Undefined metrics can be null. |
+| `/model_registry/bindings/{id}/approvals` | `ml:model:read`. Recorded approvals matching the binding and evaluation evidence, including the approved environment. Newest recorded time first, then ID descending. |
+| `/deployments` | `ml:deployment:read` or `ml:deploy`. Model binding/version, state, generation, approval, environment and route revision. Optional exact `endpoint_id`, `state`, and `environment`. Order is endpoint ID ascending, then generation descending. |
+| `/deployments/endpoints` and `/deployments/endpoints/{id}` | Same read grants. Current tenant SQL route assignments in endpoint ID order. An endpoint can be `active`, `unassigned`, or `inconsistent`. Readiness is always `unknown` in these observations. |
+| `/deployments/endpoints/{id}/history` | Same read grants. Recorded generations newest first and their current observed state. `expected_route_revision` is the generation's stored precondition. `route_revision` is the current SQL observation. |
+| `/deployments/{id}/events` | Same read grants. Only persisted deployment audit records, in ascending event time and ID order. Currently these are `deployment.create` records. |
+
+For example, a governance reader can browse a synthetic deployment named `quality`, then
+use its returned `model_binding_id` to inspect that model's exact evaluation and approval.
+Replace the example names with values from the visible lists:
+
+```sh
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "$MANAGEMENT_URL/api/v1/deployments/endpoints/quality"
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "$MANAGEMENT_URL/api/v1/deployments/endpoints/quality/history?limit=25"
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "$MANAGEMENT_URL/api/v1/model_registry/bindings/$BINDING_ID/evaluation-results"
+curl -sS -H "Authorization: Bearer $ACCESS_TOKEN" \
+  "$MANAGEMENT_URL/api/v1/model_registry/bindings/$BINDING_ID/approvals"
+```
+
+Binding identity, evaluation decisions, approvals, deployment generations and active
+assignments are separate records. The Controller still owns SQL route changes. A rollback
+creates a new generation and initially leaves the current assignment in place. The audit
+records do not distinguish rollback creation from ordinary creation, or preserve a timeline
+of controller transitions. Use Prediction Gateway endpoint discovery for inference
+contracts as a prediction-only user.
+
+The evaluation list returns a projection of stored metrics and the original report's
+persisted `report_digest`. The API does not independently verify those metrics against
+the report. For MLP the digest covers the complete evaluator report, including unfiltered
+metrics, decision and binding, dataset, policy and evaluator identities. A successful EBM
+evaluation report also includes the frozen policy configuration digest and retrospective
+replay semantics. Supervisor errors use a reduced error-report contract, and legacy rows can
+lack the original report inputs. The list cannot verify a complete report. Use the
+existing approval evidence for deployment decisions.
+
+An endpoint assignment is active only after the immutable deployment specification and
+associated binding identity agree. An invalid assignment is `inconsistent`, with assignment
+fields set to null and readiness still `unknown`. Generation lists and history retain the
+persisted lifecycle state and mark an invalid assignment as `routed=false`.
+
+Collections return `items`, `limit`, `offset`, and `next_offset` (null at the end or at the
+offset bound). The default limit is 25, maximum 100, and offsets range from 0 to 1,000,000.
+Concurrent changes can shift pages. Identity derives the tenant, and unexpected query fields
+are rejected. New reads use private, no-store caching. Authentication failure is 401,
+missing permission is 403, inaccessible or missing detail is 404, invalid input is 422,
+and unavailable persisted evidence is 503 with the existing error envelope and request ID.
+
+The existing `GET /model_registry/models` binding array, versions, evaluations and approval
+contracts remain in place. Deployment detail retains its existing response and accepts the
+new read grant. Creation and rollback still require `ml:deploy`. WP5 adds no SQL migration.

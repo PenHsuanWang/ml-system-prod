@@ -5,6 +5,7 @@ from typing import Protocol
 
 from src.application.deployments.service import DeploymentService
 from src.application.datasets.service import DatasetService
+from src.application.governance import GovernanceDiscoveryService
 from src.application.model_registry.service import ModelRegistryService
 from src.application.training.service import TrainingService
 from src.domain.ml import Actor
@@ -20,3 +21,4 @@ class MLServices:
     registry: ModelRegistryService
     deployments: DeploymentService
     datasets: DatasetService
+    governance: GovernanceDiscoveryService | None = None

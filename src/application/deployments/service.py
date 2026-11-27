@@ -5,6 +5,11 @@ from src.domain.deployments.models import Deployment
 from src.domain.ml import Actor, Conflict, MLError
 
 
+def require_deployment_read(actor: Actor) -> None:
+    if "ml:deploy" not in actor.permissions:
+        actor.require("ml:deployment:read")
+
+
 class DeploymentService:
     def __init__(self, repository: DeploymentRepository, environment: str) -> None:
         self.repository = repository
@@ -18,10 +23,11 @@ class DeploymentService:
         return self.repository.create(actor, endpoint, binding_id, approval_id, self.environment)
 
     def get(self, actor: Actor, deployment_id: str) -> Deployment:
-        actor.require("ml:deploy")
+        require_deployment_read(actor)
         return self.repository.get(actor, deployment_id)
 
     def rollback(self, actor: Actor, deployment_id: str) -> Deployment:
+        actor.require("ml:deploy")
         previous = self.get(actor, deployment_id)
         return self.create(actor, previous.endpoint_id, previous.model_binding_id,
                            previous.approval_id)

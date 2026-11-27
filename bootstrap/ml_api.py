@@ -79,6 +79,8 @@ def create_app(
 
     catalog = build_catalog()
     from src.api.datasets.routers import router as dataset_discovery_router
+    from src.api.governance_discovery import deployment_router as deployment_discovery_router
+    from src.api.governance_discovery import registry_router as registry_discovery_router
     from src.api.training_discovery import router as training_discovery_router
 
     definitions = [
@@ -86,8 +88,16 @@ def create_app(
         ModuleDefinition(
             "training", requires=("identity",), routers=(training_router, training_discovery_router)
         ),
-        ModuleDefinition("model_registry", requires=("training",), routers=(registry_router,)),
-        ModuleDefinition("deployments", requires=("training",), routers=(deployment_router,)),
+        ModuleDefinition(
+            "model_registry",
+            requires=("training",),
+            routers=(registry_discovery_router, registry_router),
+        ),
+        ModuleDefinition(
+            "deployments",
+            requires=("training",),
+            routers=(deployment_discovery_router, deployment_router),
+        ),
         ModuleDefinition(
             "datasets", requires=("identity",), routers=(dataset_discovery_router, dataset_router)
         ),
