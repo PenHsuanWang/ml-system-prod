@@ -18,8 +18,15 @@ def extract_public_contract(
     binding: ModelBinding,
     materializer: BundleMaterializer,
     *,
-    expected_code_digest: str | None = None,
+    expected_code_digest: str,
 ) -> PublicModelContract:
+    # This trust input comes from the qualified caller, never from bundle metadata.
+    if (
+        not isinstance(expected_code_digest, str)
+        or not 1 <= len(expected_code_digest) <= 128
+        or expected_code_digest.strip() != expected_code_digest
+    ):
+        raise SchemaMismatch("Contract publication requires a qualified code revision")
     directory = materializer.materialize(binding.artifact_ref, binding.manifest_digest)
     manifest = verify_bundle(directory, binding.manifest_digest)
     entries = {entry["path"]: entry for entry in manifest["artifact"]["files"]}

@@ -136,7 +136,6 @@ class SQLPredictionCatalog:
             "readiness": "unknown",
             "contract_status": "complete" if technical and usage else "incomplete",
             "input_schema_version": technical["input_schema_version"] if technical else None,
-            "detail_url": f"/api/v1/prediction/endpoints/{deployment.endpoint_id}",
         }
         if detailed:
             result.update(
@@ -149,7 +148,6 @@ class SQLPredictionCatalog:
                     "usage_revision": row["review_revision"] if usage else None,
                     "usage": usage,
                     "contract": technical,
-                    "predict_url": "/api/v1/prediction/predict",
                 }
             )
             if technical:
