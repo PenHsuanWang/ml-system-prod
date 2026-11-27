@@ -61,6 +61,7 @@ class Actor:
             "ml.model.read": "ml:model:read",
             "ml.model.approve": "ml:model:approve",
             "ml.deploy": "ml:deploy",
+            "ml.deployment.read": "ml:deployment:read",
             "ml.predict": "ml:predict",
             "ml.jobs.read_all": "ml:jobs:read_all",
             "ml.operate": "ml:operate",

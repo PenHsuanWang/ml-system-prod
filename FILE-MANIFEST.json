@@ -174,8 +174,8 @@
     },
     {
       "path": "bootstrap/ml_api.py",
-      "bytes": 6748,
-      "sha256": "e748edd1da8c7b5a597f03b5497c99667a74fc88b3332f43c7e2b1dc74932c9b"
+      "bytes": 7080,
+      "sha256": "92af951deaec925e53a00730ab7f95bcabdf6848635bbd961db7bc4162a7ea77"
     },
     {
       "path": "bootstrap/ml_cli.py",
@@ -224,8 +224,8 @@
     },
     {
       "path": "bootstrap/ml_wiring.py",
-      "bytes": 5171,
-      "sha256": "816a1a4b9997d80802d6b28243fbebe31393ad05959c2b1fe6f6f292037ed3d2"
+      "bytes": 5519,
+      "sha256": "c3e236584e16b7dbc8db818a1c53d3d04a93290c26c7c7f91e9cc70cb8dcc031"
     },
     {
       "path": "bootstrap/ml_worker.py",
@@ -1004,8 +1004,8 @@
     },
     {
       "path": "docs/implementation-status.md",
-      "bytes": 7113,
-      "sha256": "f58ef76c6065e24fafeaeddf3b733d391fc313a466f91b6c58757ad86d5d4f20"
+      "bytes": 7554,
+      "sha256": "24965bd952e2a28c040a4bd0f2f0e74d1af82250ba17b3a1a3bbbbb7f93b7889"
     },
     {
       "path": "docs/microservice-contracts.md",
@@ -1014,8 +1014,8 @@
     },
     {
       "path": "docs/ml-runbook.md",
-      "bytes": 24611,
-      "sha256": "0d37f752df314066a56be31b160c120bfc1bfa6da1ed0274d68756554cb4951d"
+      "bytes": 29619,
+      "sha256": "034049b90241848d44df4750c3ad6ab719f18d7a4b4e5fc8e4c7d8d24be75f5d"
     },
     {
       "path": "docs/ml-runtime-compatibility.md",
@@ -1044,8 +1044,8 @@
     },
     {
       "path": "docs/plans/self-service-api-inventory.md",
-      "bytes": 19097,
-      "sha256": "3e7619d3ea1e13a774bc77261e36cb642f93106ba2c50ac5c1c67d448efa161e"
+      "bytes": 19164,
+      "sha256": "d33261e66d7c0334911a981ca7cee45c09e5b3a51cf76f2b4817facd779997bf"
     },
     {
       "path": "docs/pytorch-ml-system-hld.md",
@@ -1294,8 +1294,8 @@
     },
     {
       "path": "scripts/check_deployment.py",
-      "bytes": 863,
-      "sha256": "49449c1b82fdc42259a9b6bafbd4c3f4f458032afcbba8efba716a1b9dca8525"
+      "bytes": 1349,
+      "sha256": "f33cd660f10d3aa3113dd855bd731802b2cbb6a58454f133fc5a9ab9daaade8f"
     },
     {
       "path": "scripts/check_docs.py",
@@ -1553,6 +1553,11 @@
       "sha256": "b4c7a5e9be35a7631d9e11678e1bd9a8bfa31d7cd8043bb80d254e07728ba7f7"
     },
     {
+      "path": "src/api/governance_discovery.py",
+      "bytes": 13088,
+      "sha256": "bad8b4154e9623db932d810471c30aa75c9da889bcb47a40e8c712860df8d3ea"
+    },
+    {
       "path": "src/api/health.py",
       "bytes": 707,
       "sha256": "fa4890ae96025d314bf6d232a74c47e1a0ef4c0eb4164acc5a765c8fbc65a84a"
@@ -1634,8 +1639,8 @@
     },
     {
       "path": "src/api/ml_http.py",
-      "bytes": 9039,
-      "sha256": "6a5d116c590756e7bf278e11e31a8e26318d092db909da1f010b62fde3c0bbde"
+      "bytes": 9478,
+      "sha256": "1221434deab3ee55816c4975a3de8f3905257cc234d52af4aa8f2993f3f0006c"
     },
     {
       "path": "src/api/ml_schemas.py",
@@ -1719,8 +1724,8 @@
     },
     {
       "path": "src/application/deployments/service.py",
-      "bytes": 3447,
-      "sha256": "6b5ebcf7d1be4578140a6b97f5c5f121855199e5ecd70c2c772f83b6fa88c3b4"
+      "bytes": 3628,
+      "sha256": "e72ac4ee6e2e101dc2ce5cc706749f43205c6f3090e7a51d35fa05cfead95b98"
     },
     {
       "path": "src/application/exports/__init__.py",
@@ -1731,6 +1736,11 @@
       "path": "src/application/exports/service.py",
       "bytes": 8745,
       "sha256": "3f790bbc0348dae3652140fe16425d1be6a9331de11c219f51796af675d5ec0b"
+    },
+    {
+      "path": "src/application/governance.py",
+      "bytes": 8565,
+      "sha256": "6997742bd79bc7d96192178ce5b5017282a069584a8df790a61aee5fd344f488"
     },
     {
       "path": "src/application/hierarchy.py",
@@ -1809,8 +1819,8 @@
     },
     {
       "path": "src/application/ml_services.py",
-      "bytes": 672,
-      "sha256": "db07581fed05b353f4e08d3984c1dfec1ab254f6d9985566a98a56b10c188d4c"
+      "bytes": 795,
+      "sha256": "27472f33b7703e9625f8470dbb7de1ae4c947d5d8a52d8a88a8ad1bbe179764c"
     },
     {
       "path": "src/application/model_registry/__init__.py",
@@ -2084,8 +2094,8 @@
     },
     {
       "path": "src/domain/ml.py",
-      "bytes": 4494,
-      "sha256": "d39a2bdae4c71e4c852162c564182bbab9f56277e920b57dc7c2a5f460b4cd90"
+      "bytes": 4550,
+      "sha256": "4137316336106eb18ebe347bebd5efd4805ebaf5c4f3515297e7b35d27aa5880"
     },
     {
       "path": "src/domain/model_registry/__init__.py",
@@ -2441,6 +2451,11 @@
       "path": "src/infrastructure/persistence/exports.py",
       "bytes": 3613,
       "sha256": "98c23bba9551957eb1aa6560bcba75da0e3f6aa2d497dff050c9c5fd397ef4ec"
+    },
+    {
+      "path": "src/infrastructure/persistence/governance_reads.py",
+      "bytes": 13259,
+      "sha256": "8a1d80d598a3fa5c95a7c68909f1602590fd434a772506d9909c0e951bd8f16a"
     },
     {
       "path": "src/infrastructure/persistence/identity.py",
@@ -3101,6 +3116,11 @@
       "path": "tests/ml/test_deployment_qualification.py",
       "bytes": 21037,
       "sha256": "46bd952ea239d626c95f2d9c9f6d69a7a9e1b4539f00359f8aec5f054a302c42"
+    },
+    {
+      "path": "tests/ml/test_governance_discovery.py",
+      "bytes": 13241,
+      "sha256": "1bf33048b85dc71db7a597cb67386ae0a13d2ead013cf3fc1830b33799aea614"
     },
     {
       "path": "tests/ml/test_model_governance.py",

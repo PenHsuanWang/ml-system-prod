@@ -7,6 +7,7 @@ import json
 from bootstrap.ml_config import MLSettings
 from src.application.deployments.service import DeploymentService
 from src.application.datasets.service import DatasetService
+from src.application.governance import GovernanceDiscoveryService
 from src.application.ml_services import MLServices
 from src.application.model_registry.service import ModelRegistryService
 from src.application.training.service import TrainingService
@@ -17,6 +18,7 @@ from src.infrastructure.datasets.ebm_snapshots import EBMFileDatasetSource
 from bootstrap.ml_training_wiring import training_executor
 from src.infrastructure.mlflow.tracking import LocalExperimentTracker, MLflowExperimentTracker
 from src.infrastructure.persistence.ml_database import Database
+from src.infrastructure.persistence.governance_reads import SQLGovernanceReader
 from src.infrastructure.persistence.ml_datasets import SQLDatasetCatalog
 from src.infrastructure.persistence.ml_deployments import SQLDeploymentRepository
 from src.infrastructure.persistence.ml_registry import SQLRegistryRepository
@@ -78,6 +80,13 @@ def build_components(settings: MLSettings) -> Components:
     recipes = ApprovedRecipeResolver(
         code_revision=settings.code_revision, image_digest=settings.image_digest, catalog=catalog,
         ebm_evaluation_policy=policy)
-    services = MLServices(TrainingService(training, recipes, discovery=training), ModelRegistryService(registry),
-                          DeploymentService(deployments, settings.environment), DatasetService(catalog, discovery=catalog))
+    registry_service = ModelRegistryService(registry)
+    deployment_service = DeploymentService(deployments, settings.environment)
+    services = MLServices(
+        TrainingService(training, recipes, discovery=training),
+        registry_service,
+        deployment_service,
+        DatasetService(catalog, discovery=catalog),
+        GovernanceDiscoveryService(SQLGovernanceReader(database), registry_service, deployment_service),
+    )
     return Components(settings, database, training, registry, deployments, services)
