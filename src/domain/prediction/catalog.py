@@ -36,12 +36,29 @@ def contract_document(value: str) -> dict[str, Any]:
             raise ValueError
         if data["registry_backend"] not in {"local", "mlflow"}:
             raise ValueError
-        for key in ("input_schema", "output_schema", "request_example", "limits", "preprocessing"):
+        for key in (
+            "input_schema",
+            "output_schema",
+            "request_example",
+            "limits",
+            "preprocessing",
+            "input_units",
+            "output_semantics",
+        ):
             if not isinstance(data[key], dict):
                 raise ValueError
+        for key in ("input_schema_version", "output_schema_version"):
+            if not isinstance(data[key], str):
+                raise ValueError
+        if any(type(limit) is not int for limit in data["limits"].values()):
+            raise ValueError
+        if any(
+            unit is not None and not isinstance(unit, str) for unit in data["input_units"].values()
+        ):
+            raise ValueError
         canonical_json(data)
         return data
-    except (ValueError, TypeError, KeyError):
+    except (ValueError, TypeError, KeyError, RecursionError):
         raise SchemaMismatch("Invalid public model contract") from None
 
 

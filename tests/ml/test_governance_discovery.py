@@ -11,11 +11,22 @@ from sqlalchemy import update
 
 from bootstrap.ml_api import create_app
 from src.domain.ml import Actor, canonical_json, digest
-from src.domain.prediction.catalog import PublicModelContract
-from src.infrastructure.persistence.ml_database import deployments, evaluations, jobs, routes
+from src.infrastructure.persistence.ml_database import (
+    approvals,
+    deployments,
+    evaluations,
+    jobs,
+    routes,
+)
 from src.infrastructure.persistence.prediction_contract_schema import public_contracts
 from tests.ml.test_model_governance import evidence, ready
-from tests.ml.test_prediction_catalog import publish
+from tests.ml.test_prediction_catalog import (
+    active,
+    catalog,
+    nested_technical_json,
+    predictor,
+    publish,
+)
 
 REGISTRY = "/api/v1/model_registry"
 DEPLOYMENTS = "/api/v1/deployments"
@@ -140,16 +151,14 @@ async def test_binding_contract_integrity_and_lineage_permissions(components, ac
         # A digest-valid historical document can still lack the public schema types.
         document = current.json()["contract"]
         document["input_units"] = []
-        malformed = PublicModelContract(
-            binding.binding_id, binding.manifest_digest, canonical_json(document)
+        historical_digest = digest(
+            [document["contract_version"], binding.binding_id, binding.manifest_digest, document]
         )
         with components.database.transaction() as connection:
             connection.execute(
                 update(public_contracts)
                 .where(public_contracts.c.binding_id == binding.binding_id)
-                .values(
-                    document_json=malformed.document_json, contract_digest=malformed.contract_digest
-                )
+                .values(document_json=canonical_json(document), contract_digest=historical_digest)
             )
         response = await client.get(f"{base}/contract", headers=auth("owner"))
         assert response.status_code == 200 and response.json()["contract"] is None
@@ -202,6 +211,161 @@ async def test_evaluation_projection_reports_unverified_metadata(
         assert "not independently verified" in fields["metrics"]["description"]
         assert "original evaluation report" in fields["report_digest"]["description"]
     assert components.registry.get_evaluation(evaluation.evaluation_id) == evaluation
+
+
+@pytest.mark.parametrize("deeply_nested", [False, True], ids=["malformed", "nested"])
+async def test_evaluation_page_projects_only_visible_rows(components, actor, intent, deeply_nested):
+    binding, newest, _ = evidence(components, actor, intent)
+    raw = (
+        '{"accuracy":' + "[" * 10_000 + '"private-sentinel"' + "]" * 10_000 + "}"
+        if deeply_nested
+        else '{"private-sentinel":'
+    )
+    assert len(raw) < 65536
+    oldest = components.registry.save_evaluation(
+        replace(newest, evaluation_id=str(uuid4()), metrics_json=raw)
+    )
+    with components.database.transaction() as connection:
+        for record, created in ((newest, 2.0), (oldest, 1.0)):
+            connection.execute(
+                update(evaluations)
+                .where(evaluations.c.id == record.evaluation_id)
+                .values(created_at=created)
+            )
+    path = f"{REGISTRY}/bindings/{binding.binding_id}/evaluation-results"
+    headers = {**auth("reader"), "X-Request-ID": "evaluation-page"}
+    async with http(components, reader=actor) as client:
+        first = await client.get(path, params={"limit": 1}, headers=headers)
+        assert first.status_code == 200, first.text
+        assert [item["evaluation_id"] for item in first.json()["items"]] == [newest.evaluation_id]
+        assert first.json()["next_offset"] == 1
+        invalid = await client.get(path, params={"limit": 1, "offset": 1}, headers=headers)
+        assert invalid.status_code == 503
+        assert invalid.json() == {
+            "code": "DEPENDENCY_UNAVAILABLE",
+            "message": "Stored model evaluation is unavailable",
+            "request_id": invalid.headers["X-Request-ID"],
+            "retryable": True,
+        }
+        assert invalid.headers["X-Request-ID"] == "evaluation-page"
+        assert "private-sentinel" not in invalid.text
+        with components.database.transaction() as connection:
+            connection.execute(
+                update(evaluations)
+                .where(evaluations.c.id == oldest.evaluation_id)
+                .values(metrics_json='{"samples":64}')
+            )
+        last = await client.get(path, params={"limit": 1, "offset": 1}, headers=headers)
+        assert last.status_code == 200
+        assert last.json()["items"][0]["evaluation_id"] == oldest.evaluation_id
+        assert last.json()["next_offset"] is None
+
+
+@pytest.mark.parametrize("depth", [10_000, 600], ids=["decode", "canonicalize"])
+async def test_historical_nested_contract_is_incomplete_in_both_discovery_paths(
+    components, actor, intent, depth
+):
+    binding, _ = active(components, actor, intent)
+    raw = nested_technical_json(binding, depth)
+    with components.database.transaction() as connection:
+        connection.execute(
+            update(public_contracts)
+            .where(public_contracts.c.binding_id == binding.binding_id)
+            .values(document_json=raw)
+        )
+    path = f"{REGISTRY}/bindings/{binding.binding_id}/contract"
+    async with http(components, reader=actor) as client:
+        response = await client.get(path, headers=auth("reader"))
+        assert response.status_code == 200
+        assert response.json()["status"] == "incomplete"
+        assert response.json()["contract"] is None
+        assert response.json()["contract_digest"] is None
+        assert "synthetic-nested-marker" not in response.text
+    gateway = catalog(components)
+    reader = predictor(actor)
+    (summary,) = gateway.list(reader)["items"]
+    assert summary["contract_status"] == "incomplete"
+    assert summary["input_schema_version"] is None
+    detail = gateway.get(reader, "quality")
+    assert detail["contract_status"] == "incomplete"
+    assert detail["contract"] is None and detail["contract_digest"] is None
+    assert detail["request_example"] is None
+
+
+async def test_stored_governance_schema_error_has_safe_response(components, actor, intent):
+    binding, evaluation, approval = evidence(components, actor, intent)
+    newest = components.services.registry.approve(
+        actor, binding.binding_id, evaluation.evaluation_id, "staging"
+    )
+    with components.database.transaction() as connection:
+        connection.execute(
+            update(approvals)
+            .where(approvals.c.id == approval.approval_id)
+            .values(environment="private-invalid-environment", created_at=1.0)
+        )
+        connection.execute(
+            update(approvals).where(approvals.c.id == newest.approval_id).values(created_at=2.0)
+        )
+    path = f"{REGISTRY}/bindings/{binding.binding_id}/approvals"
+    headers = {**auth("reader"), "X-Request-ID": "stored-governance"}
+    async with http(components, reader=actor) as client:
+        first = await client.get(path, params={"limit": 1}, headers=headers)
+        assert first.status_code == 200
+        assert first.json()["items"][0]["approval_id"] == newest.approval_id
+        assert first.json()["next_offset"] == 1
+        corrupt = await client.get(path, params={"limit": 1, "offset": 1}, headers=headers)
+        assert corrupt.status_code == 503 and "private-invalid-environment" not in corrupt.text
+        assert corrupt.json() == {
+            "code": "DEPENDENCY_UNAVAILABLE",
+            "message": "Stored governance metadata is unavailable",
+            "request_id": corrupt.headers["X-Request-ID"],
+            "retryable": True,
+        }
+        assert corrupt.headers["X-Request-ID"] == "stored-governance"
+        assert (await client.get(path, params={"limit": 101}, headers=headers)).status_code == 422
+
+
+@pytest.mark.parametrize(
+    ("stored", "visible"),
+    [
+        (64, True),
+        (0.95, True),
+        (True, True),
+        (False, True),
+        (None, True),
+        (10**400, False),
+        (-(10**400), False),
+        (float("nan"), False),
+        (float("inf"), False),
+        (float("-inf"), False),
+        ("hidden", False),
+        ({"hidden": 1}, False),
+        ([1], False),
+    ],
+)
+async def test_evaluation_metric_projection_filters_without_changing_finite_types(
+    components, actor, intent, stored, visible
+):
+    binding, evaluation, _ = evidence(components, actor, intent)
+    raw = json.dumps({"accuracy": stored, "lots": 2, "internal_metric": 42})
+    with components.database.transaction() as connection:
+        connection.execute(
+            update(evaluations)
+            .where(evaluations.c.id == evaluation.evaluation_id)
+            .values(metrics_json=raw)
+        )
+    url = f"{REGISTRY}/bindings/{binding.binding_id}/evaluation-results"
+    async with http(components, reader=actor) as client:
+        response = await client.get(url, headers=auth("reader"))
+    assert response.status_code == 200, response.text
+    (item,) = response.json()["items"]
+    expected = {"lots": 2, "accuracy": stored} if visible else {"lots": 2}
+    assert item["metrics"] == expected
+    if visible:
+        assert type(item["metrics"]["accuracy"]) is type(stored)
+    assert item["report_digest"] == evaluation.report_digest
+    assert item["decision"] == evaluation.decision
+    assert components.registry.get_evaluation(evaluation.evaluation_id).metrics_json == raw
 
 
 @pytest.mark.parametrize(

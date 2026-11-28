@@ -32,6 +32,7 @@ from src.domain.ml import (
     Conflict,
     IdempotencyConflict,
     NotFound,
+    Unavailable,
     canonical_json,
     digest,
 )
@@ -815,4 +816,7 @@ class SQLIngestionJobRepository:
             rows = connection.execute(
                 statement.limit(query.window.limit + 1).offset(query.window.offset)
             ).mappings()
-            return [snapshot_from_catalog_row(row) for row in rows]
+            try:
+                return [snapshot_from_catalog_row(row) for row in rows]
+            except (IngestionError, ValueError, OverflowError, RecursionError):
+                raise Unavailable("Stored snapshot metadata is unavailable") from None

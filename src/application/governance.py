@@ -25,6 +25,17 @@ PUBLIC_EVALUATION_METRICS = frozenset(
 )
 
 
+def _is_public_metric_value(value: object) -> bool:
+    if value is None or type(value) is bool:
+        return True
+    if type(value) is int or type(value) is float:
+        try:
+            return math.isfinite(value)
+        except OverflowError:
+            return False
+    return False
+
+
 class GovernanceReader(Protocol):
     def bindings(
         self, actor: Actor, window: CollectionWindow, name: str | None, version: str | None
@@ -155,7 +166,8 @@ class GovernanceDiscoveryService:
     def evaluations(self, actor: Actor, binding_id: str, window: CollectionWindow) -> list[ReadRow]:
         self.registry.get(actor, binding_id)
         rows = self.reader.evaluations(actor, binding_id, window)
-        for row in rows:
+        # The extra row determines continuation and belongs to the next page.
+        for row in rows[: window.limit]:
             # The recorded digest identifies the original evaluator report. This projection
             # omits report data, including the policy digest and replay semantics for EBM.
             raw = row.pop("metrics_json")
@@ -168,15 +180,9 @@ class GovernanceDiscoveryService:
                 row["metrics"] = {
                     key: value
                     for key, value in metrics.items()
-                    if key in PUBLIC_EVALUATION_METRICS
-                    and (
-                        value is None
-                        or type(value) is bool
-                        or type(value) in (int, float)
-                        and math.isfinite(value)
-                    )
+                    if key in PUBLIC_EVALUATION_METRICS and _is_public_metric_value(value)
                 }
-            except (ValueError, OverflowError):
+            except (ValueError, RecursionError):
                 raise Unavailable("Stored model evaluation is unavailable") from None
         return rows
 

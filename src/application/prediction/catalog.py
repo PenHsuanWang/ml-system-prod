@@ -108,7 +108,7 @@ class EndpointDiscoveryService:
         actor.require("ml:predict")
         if type(limit) is not int or not 1 <= limit <= 100:
             raise SchemaMismatch("Page limit must be between 1 and 100")
-        after = self._after(actor, cursor, limit) if cursor else ""
+        after = self._after(actor, cursor, limit) if cursor is not None else ""
         rows = self.repository.page(actor, after, limit + 1)
         more = len(rows) > limit
         items = rows[:limit]

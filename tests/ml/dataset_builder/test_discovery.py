@@ -2,6 +2,7 @@
 
 import copy
 import hashlib
+import json
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from pathlib import Path
@@ -17,6 +18,7 @@ from src.domain.ingestion.discovery import IngestionCollectionQuery
 from src.domain.ingestion.models import IngestionRequest
 from src.domain.ml import Conflict, Forbidden, MLError, NotFound, canonical_json
 from src.domain.pagination import CollectionWindow
+from src.infrastructure.ingestion.persistence.schema import raw_snapshots
 from src.infrastructure.persistence.dataset_lineage_schema import dataset_lineage
 from src.infrastructure.persistence.ml_database import audit, datasets
 from src.infrastructure.persistence.ml_datasets import SQLDatasetCatalog
@@ -392,6 +394,62 @@ async def test_http_user_discovers_ingestion_build_and_lineage_without_filesyste
                 "/api/v1/datasets/built/versions/v1", headers={"Authorization": "Bearer other"}
             )
         ).status_code == 404
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("corruption", ["identity", "json", "schema", "timestamp", "nesting"])
+async def test_stored_snapshot_corruption_returns_a_safe_unavailable_page(
+    components, published_builder_inputs, corruption
+):
+    inputs = published_builder_inputs
+    affected = inputs.fdc_snapshot
+    app = create_app(
+        services=components.services,
+        identity=Identity(inputs.operator),
+        ingestion_service=inputs.ingress.service,
+    )
+    path = "/api/v1/ingestion/snapshots"
+    headers = {"Authorization": "Bearer owner", "X-Request-ID": "stored-snapshot"}
+    async with httpx.AsyncClient(
+        transport=httpx.ASGITransport(app=app), base_url="http://test", headers=headers
+    ) as client:
+        valid = await client.get(path, params={"limit": 1})
+        assert valid.status_code == 200
+        assert len(valid.json()["items"]) == 1 and valid.json()["next_offset"] == 1
+        last = await client.get(path, params={"limit": 1, "offset": 1})
+        assert last.status_code == 200 and last.json()["next_offset"] is None
+        assert {r["snapshot_id"] for r in valid.json()["items"] + last.json()["items"]} == {
+            affected.snapshot_id,
+            inputs.wafer_snapshot.snapshot_id,
+        }
+        snapshot = {**affected.to_dict(), "snapshot_ref": "/private-corruption-marker"}
+        if corruption == "identity":
+            snapshot["source_id"] = "wrong-source"
+        elif corruption == "schema":
+            snapshot["record_count"] = False
+        elif corruption == "timestamp":
+            snapshot["created_at"] = 10**400
+        raw = json.dumps(snapshot)
+        if corruption == "json":
+            raw = '{"private-corruption-marker":'
+        elif corruption == "nesting":
+            raw = "[" * 1500 + "0" + "]" * 1500
+        with components.database.transaction() as connection:
+            connection.execute(
+                update(raw_snapshots)
+                .where(raw_snapshots.c.id == affected.snapshot_id)
+                .values(snapshot_json=raw)
+            )
+        error = await client.get(path)
+        assert error.status_code == 503 and "private-corruption-marker" not in error.text
+        assert error.json() == {
+            "code": "DEPENDENCY_UNAVAILABLE",
+            "message": "Stored snapshot metadata is unavailable",
+            "request_id": error.headers["X-Request-ID"],
+            "retryable": True,
+        }
+        assert error.headers["X-Request-ID"] == "stored-snapshot"
+        assert (await client.get(path, params={"limit": 101})).status_code == 422
 
 
 @pytest.mark.asyncio

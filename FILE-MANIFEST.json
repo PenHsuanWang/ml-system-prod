@@ -1108,6 +1108,11 @@
       "sha256": "38ba8fa2c80f38fb10b3d50e7e1223f3772e2baf054e778a1242a7ec68e490e7"
     },
     {
+      "path": "docs/reviews/discovery-contract-hardening-report.md",
+      "bytes": 17943,
+      "sha256": "ab615f1c22a262b486ee1bc35c24011d7c846a50081a33c2402e3ca879db9512"
+    },
+    {
       "path": "docs/reviews/documentation-code-audit-2026-11-19.md",
       "bytes": 8134,
       "sha256": "041a8a93868affa2a2122187c3051b7b84378828b951861b1d4c68d7fb631dff"
@@ -1654,8 +1659,8 @@
     },
     {
       "path": "src/api/governance_discovery.py",
-      "bytes": 13712,
-      "sha256": "a64b79c6135e79083be994db1f21248155c5b8be8f975d2f80f0f6161f3c7c19"
+      "bytes": 13852,
+      "sha256": "99657eafeb99d8c1fc8e2157be32556c008938944fb1b3e8d6bf8613a7384fff"
     },
     {
       "path": "src/api/health.py",
@@ -1854,8 +1859,8 @@
     },
     {
       "path": "src/application/governance.py",
-      "bytes": 9428,
-      "sha256": "51a98121de6004940a9307fc64642261faa08a0cfe25e56df5b78851779be4e7"
+      "bytes": 9616,
+      "sha256": "5bfb581087c893a0d6e2cdf07d9ff8b282dc9381c0374eefa781676d95315892"
     },
     {
       "path": "src/application/hierarchy.py",
@@ -1964,8 +1969,8 @@
     },
     {
       "path": "src/application/prediction/catalog.py",
-      "bytes": 4877,
-      "sha256": "0e667c5b9a798cadf7361bf306d320f86fcbc4ef865324d1a98bee50e6a9f6cc"
+      "bytes": 4889,
+      "sha256": "049b74734a89b75bc66d21753ec6cfa0915448d5ebf5ee63f58942c13eee93c3"
     },
     {
       "path": "src/application/prediction/ports.py",
@@ -2249,8 +2254,8 @@
     },
     {
       "path": "src/domain/prediction/catalog.py",
-      "bytes": 2877,
-      "sha256": "31d2a535f22363dc42b520e974ad493f3a7401d128865ab7d8be9f5ace8b015b"
+      "bytes": 3435,
+      "sha256": "99b7898e489bcacca42af1d1e228e06d927cc6a786faf03e0092eb06821b0107"
     },
     {
       "path": "src/domain/prediction/ebm.py",
@@ -2439,8 +2444,8 @@
     },
     {
       "path": "src/infrastructure/ingestion/persistence/ingestion_jobs.py",
-      "bytes": 34014,
-      "sha256": "deb1608d855d489401db20d7fa7b8da155b94e4986455b0b7e9f19d10627f6dd"
+      "bytes": 34219,
+      "sha256": "2a809567f79461a370160e1620b6420e34d1fd26afb8d8b2a2f571c0d910f1f4"
     },
     {
       "path": "src/infrastructure/ingestion/persistence/metrics.py",
@@ -2614,8 +2619,8 @@
     },
     {
       "path": "src/infrastructure/persistence/ml_registry.py",
-      "bytes": 8445,
-      "sha256": "33206803a32cc02644991765ec04dededd77fc0ba6b569ed8b039c4443d5d55c"
+      "bytes": 9159,
+      "sha256": "cdcf98bc6a6c092d804461f3f553e5d410e8554dfc3190ec81e8b8b9f1bd30a7"
     },
     {
       "path": "src/infrastructure/persistence/ml_training.py",
@@ -2944,8 +2949,8 @@
     },
     {
       "path": "tests/ml/dataset_builder/test_discovery.py",
-      "bytes": 23283,
-      "sha256": "1d045c4c507f210b3c74f0421ca24d420fd98326530c5318c5d5d2cf6f7e4a77"
+      "bytes": 25955,
+      "sha256": "c764ad5aca4561e7d832f70b787c7ede1a6df50137454c1ea5a499466295e975"
     },
     {
       "path": "tests/ml/dataset_builder/test_integration.py",
@@ -3259,8 +3264,8 @@
     },
     {
       "path": "tests/ml/test_governance_discovery.py",
-      "bytes": 18292,
-      "sha256": "f8dbcc4079ea747fc62caaacc5e08d28f7b99b77b58555dcdc69c308af7da071"
+      "bytes": 25458,
+      "sha256": "9c23eb3d91e25d3a738a03eb556886aae1ae78082464b2105dc2d6a4ad43bb2e"
     },
     {
       "path": "tests/ml/test_model_governance.py",
@@ -3279,8 +3284,8 @@
     },
     {
       "path": "tests/ml/test_prediction_catalog.py",
-      "bytes": 18515,
-      "sha256": "8fb44815f41f35418e2cf6a399b386e0dc3df9ef6608d15949ddcbe38c19a98b"
+      "bytes": 28097,
+      "sha256": "e4cfeeeab774a9f00f685314ac2f1a9512345b9e67dfb31b610b1ec10ed5d354"
     },
     {
       "path": "tests/ml/test_prediction_catalog_e2e.py",

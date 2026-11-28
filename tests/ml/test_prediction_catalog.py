@@ -8,14 +8,14 @@ from types import SimpleNamespace
 import httpx
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import select, update
+from sqlalchemy import insert, select, update
 
 from bootstrap.ml_gateway import create_app
 from src.api.ml_schemas import PredictionRequest
 from src.api.prediction_docs import PREDICT_EXAMPLES, GatewayPredictionResult
 from src.application.prediction.catalog import ContractPublicationService, EndpointDiscoveryService
-from src.domain.ml import Conflict, Forbidden, NotFound, SchemaMismatch, canonical_json
-from src.domain.prediction.catalog import CONTRACT_VERSION, PublicModelContract
+from src.domain.ml import Conflict, Forbidden, NotFound, SchemaMismatch, canonical_json, digest
+from src.domain.prediction.catalog import CONTRACT_VERSION, PublicModelContract, contract_document
 from src.infrastructure.persistence.ml_database import audit, routes
 from src.infrastructure.persistence.prediction_catalog import SQLPredictionCatalog
 from src.infrastructure.persistence.prediction_contract_schema import (
@@ -55,6 +55,13 @@ def technical(binding):
     )
 
 
+def nested_technical_json(binding, depth):
+    document = json.loads(technical(binding).document_json)
+    document["output_semantics"] = {"value": "synthetic-nested-marker"}
+    marker = '"synthetic-nested-marker"'
+    return canonical_json(document).replace(marker, "[" * depth + marker + "]" * depth)
+
+
 def publish(components, actor, binding):
     service = ContractPublicationService(components.registry, components.registry, technical)
     return service.publish(actor, binding.binding_id, USAGE)
@@ -80,6 +87,98 @@ def catalog(components, *, clock=lambda: 1000.0):
 
 def predictor(actor):
     return replace(actor, permissions=frozenset({"ml:predict"}))
+
+
+@pytest.mark.parametrize(
+    ("key", "value", "accepted"),
+    [
+        ("input_units", [], False),
+        ("input_units", {"sensor": 123}, False),
+        ("input_units", {"sensor": True}, False),
+        ("input_units", {"sensor": None}, True),
+        ("input_units", {"sensor": "V"}, True),
+        ("output_semantics", [], False),
+        ("limits", {"max_batch_size": 128.0}, False),
+        ("limits", {"max_batch_size": True}, False),
+        ("limits", {"max_batch_size": "128"}, False),
+        ("limits", {"max_batch_size": 128}, True),
+        ("input_schema_version", 1, False),
+        ("output_schema_version", None, False),
+        ("unknown", {}, False),
+    ],
+)
+def test_technical_document_field_types_match_public_contract(key, value, accepted):
+    from src.api.prediction_catalog import PublicTechnicalContract
+
+    binding = SimpleNamespace(binding_id="synthetic-binding", manifest_digest="a" * 64)
+    document = json.loads(technical(binding).document_json)
+    document[key] = value
+    raw = json.dumps(document)  # Retain integral floats for the strict type check.
+    if accepted:
+        assert (
+            contract_document(raw) == PublicTechnicalContract.model_validate(document).model_dump()
+        )
+        canonical = canonical_json(document)
+        contract = PublicModelContract(binding.binding_id, binding.manifest_digest, canonical)
+        assert contract.document_json == canonical
+        assert contract.contract_digest == digest(
+            [CONTRACT_VERSION, binding.binding_id, binding.manifest_digest, document]
+        )
+    else:
+        with pytest.raises(SchemaMismatch, match="Invalid public model contract"):
+            contract_document(raw)
+
+
+def test_technical_document_requires_all_fields():
+    binding = SimpleNamespace(binding_id="synthetic-binding", manifest_digest="a" * 64)
+    document = json.loads(technical(binding).document_json)
+    del document["input_units"]
+    with pytest.raises(SchemaMismatch, match="Invalid public model contract"):
+        contract_document(canonical_json(document))
+
+
+def test_invalid_technical_document_cannot_publish_an_immutable_contract(components, actor, intent):
+    binding, _, _ = evidence(components, actor, intent)
+
+    def invalid_verified_reader(binding):
+        document = json.loads(technical(binding).document_json)
+        document["limits"] = {"max_batch": True}
+        return PublicModelContract(
+            binding.binding_id, binding.manifest_digest, canonical_json(document)
+        )
+
+    service = ContractPublicationService(
+        components.registry, components.registry, invalid_verified_reader
+    )
+    with pytest.raises(SchemaMismatch):
+        service.publish(actor, binding.binding_id, USAGE)
+    with components.database.transaction() as connection:
+        assert connection.execute(select(public_contracts)).first() is None
+        assert connection.execute(select(usage_reviews)).first() is None
+
+
+def test_digest_valid_historical_schema_error_is_incomplete(components, actor, intent):
+    binding, _ = active(components, actor, intent)
+    document = json.loads(technical(binding).document_json)
+    document["input_schema_version"] = 1
+    with components.database.transaction() as connection:
+        connection.execute(
+            update(public_contracts)
+            .where(public_contracts.c.binding_id == binding.binding_id)
+            .values(
+                document_json=canonical_json(document),
+                contract_digest=digest(
+                    [CONTRACT_VERSION, binding.binding_id, binding.manifest_digest, document]
+                ),
+            )
+        )
+    service = catalog(components)
+    reader = predictor(actor)
+    (summary,) = service.list(reader)["items"]
+    assert summary["contract_status"] == "incomplete" and summary["input_schema_version"] is None
+    detail = service.get(reader, "quality")
+    assert detail["contract_status"] == "incomplete" and detail["contract"] is None
+    assert detail["contract_digest"] is None and detail["request_example"] is None
 
 
 def test_only_current_active_generation_is_visible(components, actor, intent):
@@ -135,7 +234,7 @@ def test_cursor_scope_expiry_and_tenant_visibility(components, actor, intent):
     active(components, actor, intent, "b", key="b")
     service = catalog(components)
     reader = predictor(actor)
-    first = service.list(reader, 1)
+    first = service.list(reader, 1, cursor=None)
     assert first["items"][0]["endpoint_id"] == "a"
     cursor = first["next_cursor"]
     second = service.list(reader, 1, cursor)
@@ -143,7 +242,7 @@ def test_cursor_scope_expiry_and_tenant_visibility(components, actor, intent):
     for other in (replace(reader, tenant_id="other"), replace(reader, actor_id="other")):
         with pytest.raises(SchemaMismatch):
             service.list(other, 1, cursor)
-    for token, limit in ((cursor + "x", 1), ("bad", 1), (cursor, 2)):
+    for token, limit in ((cursor + "x", 1), ("bad", 1), (cursor, 2), ("", 1)):
         with pytest.raises(SchemaMismatch):
             service.list(reader, limit, token)
     with pytest.raises(SchemaMismatch):
@@ -186,6 +285,121 @@ def test_immutable_technical_and_review_revision_audit(components, actor, intent
     assert len(reviews) == 2
     assert [r[0] for r in events].count("model.contract.publish") == 1
     assert [r[0] for r in events].count("model.usage.review") == 2
+
+
+def publication_state(components):
+    with components.database.transaction() as connection:
+        return tuple(
+            connection.execute(select(table).order_by(*table.primary_key.columns)).all()
+            for table in (public_contracts, usage_reviews, audit)
+        )
+
+
+@pytest.mark.parametrize("existing_contract", [True, False])
+@pytest.mark.parametrize("identical", [True, False])
+def test_usage_review_rejects_inconsistent_tenant_atomically(
+    components, actor, intent, existing_contract, identical
+):
+    binding, _ = active(components, actor, intent, contract=existing_contract)
+    wrong_tenant = "synthetic-inconsistent-tenant"
+    stored = canonical_json({**USAGE, "purpose": "Synthetic inconsistent review"})
+    with components.database.transaction() as connection:
+        connection.execute(
+            insert(usage_reviews).values(
+                binding_id=binding.binding_id,
+                revision=8,
+                tenant_id=wrong_tenant,
+                review_json=stored,
+                review_digest=digest([binding.binding_id, 8, stored]),
+                reviewer_id="synthetic-reviewer",
+                created_at=1.0,
+            )
+        )
+    before = publication_state(components)
+    usage = stored if identical else canonical_json(USAGE)
+    with pytest.raises(Conflict, match="^Stored usage review identity mismatch$"):
+        components.registry.publish_contract(actor, technical(binding), usage)
+    assert publication_state(components) == before
+    submitted_revision = 1 if existing_contract else None
+    assert catalog(components).get(predictor(actor), "quality")["usage_revision"] == (
+        submitted_revision
+    )
+    assert components.services.governance.contract(actor, binding.binding_id)["usage_revision"] == (
+        submitted_revision
+    )
+
+
+def test_usage_review_revision_exhaustion_preserves_valid_replay(components, actor, intent):
+    binding, _ = active(components, actor, intent)
+    contract = technical(binding)
+    maximum = 2_147_483_647
+    original = canonical_json(USAGE)
+    revised = canonical_json({**USAGE, "purpose": "Synthetic review at the limit"})
+    with components.database.transaction() as connection:
+        connection.execute(
+            update(usage_reviews)
+            .where(usage_reviews.c.binding_id == binding.binding_id)
+            .values(
+                revision=maximum - 1,
+                review_digest=digest([binding.binding_id, maximum - 1, original]),
+            )
+        )
+    assert components.registry.publish_contract(actor, contract, revised) == maximum
+    before = publication_state(components)
+    assert components.registry.publish_contract(actor, contract, revised) == maximum
+    with pytest.raises(Conflict, match="^Usage review revision limit reached$"):
+        components.registry.publish_contract(actor, contract, original)
+    assert publication_state(components) == before
+    assert catalog(components).get(predictor(actor), "quality")["usage_revision"] == maximum
+    assert components.services.governance.contract(actor, binding.binding_id)["usage_revision"] == (
+        maximum
+    )
+
+
+def test_usage_review_rejects_invalid_stored_revision_before_replay(components, actor, intent):
+    binding, _ = active(components, actor, intent)
+    raw = canonical_json(USAGE)
+    contract = technical(binding)
+    revisions = [0, -1]
+    if components.database.engine.dialect.name == "sqlite":
+        revisions += [2_147_483_648, 9_223_372_036_854_775_807]
+    for revision in revisions:
+        with components.database.transaction() as connection:
+            connection.execute(
+                update(usage_reviews)
+                .where(usage_reviews.c.binding_id == binding.binding_id)
+                .values(
+                    revision=revision,
+                    review_digest=digest([binding.binding_id, revision, raw]),
+                )
+            )
+        before = publication_state(components)
+        with pytest.raises(Conflict, match="^Stored usage review revision is invalid$"):
+            components.registry.publish_contract(actor, contract, raw)
+        assert publication_state(components) == before
+
+
+@pytest.mark.parametrize("depth", [10_000, 600], ids=["decode", "canonicalize"])
+def test_nested_technical_document_is_rejected_before_publication(components, actor, intent, depth):
+    binding, _, _ = evidence(components, actor, intent)
+    raw = nested_technical_json(binding, depth)
+    assert len(raw.encode()) < 256 * 1024
+    if depth == 600:
+        document = json.loads(raw)
+        with pytest.raises(RecursionError):
+            canonical_json(document)
+    else:
+        with pytest.raises(RecursionError):
+            json.loads(raw)
+    before = publication_state(components)
+    service = ContractPublicationService(
+        components.registry,
+        components.registry,
+        lambda binding: PublicModelContract(binding.binding_id, binding.manifest_digest, raw),
+    )
+    with pytest.raises(SchemaMismatch, match="^Invalid public model contract$"):
+        service.publish(actor, binding.binding_id, USAGE)
+    assert publication_state(components) == before
 
 
 @pytest.mark.parametrize("column", ["contract_digest", "manifest_digest"])
@@ -263,7 +477,7 @@ def test_http_only_predictor_can_discover_contract_and_predict(components, actor
         )
         assert prediction.status_code == 200
         assert prediction.json()["provenance"]["model_version"] == detail["model_version"]
-        for params in ("limit=101", "cursor=invalid", "tenant_id=other"):
+        for params in ("limit=101", "cursor=invalid", "cursor=", "tenant_id=other"):
             assert (
                 client.get("/api/v1/prediction/endpoints?" + params, headers=headers).status_code
                 == 422
