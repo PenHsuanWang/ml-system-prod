@@ -174,3 +174,105 @@ SQLite and PostgreSQL related suites passed 148 each. The full SQLite ML
 regression passed 1,512 with five external-service skips. The disposable
 registry investigation passed three cases on each database. The architecture,
 quality, documentation and manifest gates passed.
+
+## H. PR #24 final review closure
+
+The original reviewed head was `73a67722c250de42ae13e60acc4100610673d82e`.
+The implementation and tests were committed and verified at
+`222c217fdd313fcaf3ee83d0dab8022135de555e`. The master baseline for the PR
+remains `65712b49f3d9eb2525941d7f3acb9639dc029ed8`. Sections A–G record the
+original review and test runs.
+
+**Finding #8 — FIXED.** A latest Usage Review row with a mismatched stored
+tenant could be replayed or used to allocate a globally keyed revision.
+`src/infrastructure/persistence/ml_registry.py` now checks that row against
+the authorized binding tenant and validates its stored revision before using
+it. Migration 0007 uses a PostgreSQL signed `Integer`. The writer now uses
+the portable range from 1 through 2,147,483,647 on both databases. A valid
+unchanged review at that ceiling can still be replayed. A changed review would
+require another revision and is rejected with the existing sanitized
+`Conflict` (`STALE_REVISION`, HTTP 409 where mapped). The existing tenant
+lock and transaction roll back technical contract and audit writes on rejection.
+The binding-wide lookup, schema and historical rows are preserved.
+
+**Nested stored JSON — FIXED.** Excessive nesting beneath the existing size
+limits could escape the decoder or canonical serializer as `RecursionError`.
+`src/application/governance.py` now returns the existing sanitized 503 when
+a requested evaluation row cannot be decoded. Evaluation continuation still
+leaves the sentinel undecoded. `src/domain/prediction/catalog.py` maps parsing
+and canonicalization recursion to the existing `SchemaMismatch`. Invalid
+technical publication fails and historical malformed contracts remain
+`incomplete` in Management and Gateway discovery. Canonical serialization and
+digests retain their existing algorithms.
+
+### Regression evidence
+
+The new SQL tests cover identical and changed review bytes under inconsistent
+tenant identity, both with and without a published technical contract. They
+assert that the entire technical contract, usage review and audit state is
+unchanged after rejection. They also verify discovery visibility, allocation
+at the ceiling, unchanged replay there, exhaustion, lower-bound corruption
+on both databases and out-of-range positive rows where SQLite can store them.
+Existing tests exercise first publication, ordinary replay, changed review
+allocation and foreign-actor rejection. The nested JSON tests exercise decode
+and canonicalization failures, an untouched first-page sentinel, sanitized
+503 with request ID, rejected publication and incomplete historical metadata.
+The focused suite includes the existing valid MLP and EBM prediction paths.
+
+Verification used CPython 3.12.14 on managed Linux, disposable SQLite files
+and PostgreSQL 17 on a disposable loopback tmpfs fixture with separate test
+schemas. Counts across runs overlap.
+
+| Run | Passed | Failed | Skipped | Result |
+| --- | ---: | ---: | ---: | --- |
+| Test-first reproduction on reviewed source, SQLite | 1 | 11 | 0 | Expected failures, exit 1, 65 deselected |
+| Test-first reproduction on reviewed source, PostgreSQL | 1 | 11 | 0 | Expected failures, exit 1, 65 deselected |
+| Adjusted evaluation decoder reproduction on reviewed source | 0 | 1 per database | 0 | Unhandled `RecursionError` reproduced, exit 1 |
+| Focused SQLite | 114 | 0 | 0 | PASS, exit 0 |
+| Focused PostgreSQL | 114 | 0 | 0 | PASS, exit 0 |
+| Full ML and boundary regression, SQLite | 1,523 | 0 | 5 | PASS, exit 0 |
+| Local static gates | 15 | 0 | — | PASS, exit 0 |
+| Final-head hosted CI and live deployment qualification | — | — | — | NOT VERIFIED |
+
+The test-first replay accepted the inconsistent tenant and invalid revision on both
+databases. At the portable ceiling the SQLite writer allocated the next revision
+and the PostgreSQL writer raised `Unavailable` after attempting a write. The
+nested public contract escaped with `RecursionError`. The evaluation fixture was
+then increased to 10,000 levels, still below the size limit, to reliably
+reproduce JSON decode recursion on both databases. Baseline evidence is in
+`/tmp/pr24-before-*.{log,xml}`. Focused and full results are in
+`/tmp/pr24-final-*.{log,xml}` and `/tmp/pr24-full-sqlite.{log,xml}`.
+
+```sh
+PY=/workspace/ml-system-prod/.venv/bin/python
+# Set ML_TEST_DATABASE_URL to the isolated fixture for postgres. Unset it for sqlite.
+db=sqlite
+"$PY" -m pytest tests/ml/test_prediction_catalog.py \
+  tests/ml/test_governance_discovery.py tests/ml/test_prediction_catalog_e2e.py \
+  tests/ml/test_training_discovery.py tests/ml/dataset_builder/test_discovery.py \
+  -q --basetemp="/tmp/pr24-final-$db" --junitxml="/tmp/pr24-final-$db.xml"
+"$PY" -m pytest tests/ml tests/test_boundaries.py -q -rs \
+  --basetemp=/tmp/pr24-full-sqlite --junitxml=/tmp/pr24-full-sqlite.xml
+```
+
+The static run includes the architecture boundary check, Pyflakes, CI-scoped
+Mypy, ingestion, deployment, Serving, Kubernetes acceptance, Training, EBM and
+initialization checks, scoped Ruff lint and formatting, documentation, the
+generated manifest and `git diff --check`. Commands and exit codes are in
+`/tmp/pr24-static.log`. The registry file is outside the repository formatting
+gate. A separate full-file comparison produced the same seven existing Ruff
+lint diagnostics and formatting findings on both the reviewed and fixed
+versions. Registry formatting changes are outside this closure.
+
+### PR review summary
+
+Finding #8 and the two identified persisted JSON exception boundaries are
+closed. The existing authorization, audit, database schema, canonical
+serialization and immutable digests are preserved. The earlier seven accepted
+dispositions stand. Focused verification passed 114 cases on each database.
+The full local SQLite result is listed above. The five skips cover disposable backend qualification, authorized live Databricks, isolated HTTP endpoints, and two real RabbitMQ/Redis receiver tests.
+
+Hosted results from the original review are historical evidence. Final-head
+hosted CI and live deployment qualification require separate verification.
+The cloud egress policy returned HTTP 403 for the GitHub API required to edit
+the PR description. This section records the closure summary for PR #24.
