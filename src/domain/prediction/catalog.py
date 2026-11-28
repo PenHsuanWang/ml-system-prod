@@ -58,7 +58,7 @@ def contract_document(value: str) -> dict[str, Any]:
             raise ValueError
         canonical_json(data)
         return data
-    except (ValueError, TypeError, KeyError):
+    except (ValueError, TypeError, KeyError, RecursionError):
         raise SchemaMismatch("Invalid public model contract") from None
 
 

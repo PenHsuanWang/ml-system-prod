@@ -182,7 +182,7 @@ class GovernanceDiscoveryService:
                     for key, value in metrics.items()
                     if key in PUBLIC_EVALUATION_METRICS and _is_public_metric_value(value)
                 }
-            except ValueError:
+            except (ValueError, RecursionError):
                 raise Unavailable("Stored model evaluation is unavailable") from None
         return rows
 

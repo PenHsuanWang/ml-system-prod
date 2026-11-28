@@ -14,6 +14,9 @@ from src.infrastructure.persistence.ml_database import approvals, Database, eval
 from src.infrastructure.persistence.ml_training import record_audit
 from src.infrastructure.persistence.prediction_contract_schema import public_contracts, usage_reviews
 
+# PostgreSQL Integer limits the portable range of usage review revisions.
+_MAX_USAGE_REVIEW_REVISION = 2_147_483_647
+
 
 def binding_from_row(row: Mapping[str, Any]) -> ModelBinding:
     values = dict(row)
@@ -153,9 +156,21 @@ class SQLRegistryRepository:
             review = c.execute(select(usage_reviews).where(
                 usage_reviews.c.binding_id == contract.binding_id).order_by(
                 usage_reviews.c.revision.desc()).limit(1)).mappings().first()
-            if review is not None and review["review_json"] == usage_json:
-                return int(review["revision"])
-            revision = 1 if review is None else int(review["revision"]) + 1
+            revision = 1
+            if review is not None:
+                if review["tenant_id"] != binding["tenant_id"]:
+                    raise Conflict("Stored usage review identity mismatch")
+                current_revision = review["revision"]
+                if (
+                    type(current_revision) is not int
+                    or not 1 <= current_revision <= _MAX_USAGE_REVIEW_REVISION
+                ):
+                    raise Conflict("Stored usage review revision is invalid")
+                if review["review_json"] == usage_json:
+                    return current_revision
+                if current_revision == _MAX_USAGE_REVIEW_REVISION:
+                    raise Conflict("Usage review revision limit reached")
+                revision = current_revision + 1
             review_digest = digest([contract.binding_id, revision, usage_json])
             c.execute(insert(usage_reviews).values(
                 binding_id=contract.binding_id, revision=revision, tenant_id=actor.tenant_id,

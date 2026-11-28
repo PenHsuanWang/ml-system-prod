@@ -1859,8 +1859,8 @@
     },
     {
       "path": "src/application/governance.py",
-      "bytes": 9598,
-      "sha256": "7da6f33ae7ef120a1cf1fd5078295d6b991a9b51f08829348d779582bcd10c7c"
+      "bytes": 9616,
+      "sha256": "5bfb581087c893a0d6e2cdf07d9ff8b282dc9381c0374eefa781676d95315892"
     },
     {
       "path": "src/application/hierarchy.py",
@@ -2254,8 +2254,8 @@
     },
     {
       "path": "src/domain/prediction/catalog.py",
-      "bytes": 3419,
-      "sha256": "63157598c7b2bad8f2fcaa1cddd0986b8ed758b6dd7d5381b0028c1020f6dc1a"
+      "bytes": 3435,
+      "sha256": "99b7898e489bcacca42af1d1e228e06d927cc6a786faf03e0092eb06821b0107"
     },
     {
       "path": "src/domain/prediction/ebm.py",
@@ -2619,8 +2619,8 @@
     },
     {
       "path": "src/infrastructure/persistence/ml_registry.py",
-      "bytes": 8445,
-      "sha256": "33206803a32cc02644991765ec04dededd77fc0ba6b569ed8b039c4443d5d55c"
+      "bytes": 9159,
+      "sha256": "cdcf98bc6a6c092d804461f3f553e5d410e8554dfc3190ec81e8b8b9f1bd30a7"
     },
     {
       "path": "src/infrastructure/persistence/ml_training.py",
@@ -3264,8 +3264,8 @@
     },
     {
       "path": "tests/ml/test_governance_discovery.py",
-      "bytes": 23385,
-      "sha256": "d65eb3c7637911fd48a1c50ebefcd96175ccc723265879ab3fecb8f7ad8abbc4"
+      "bytes": 25458,
+      "sha256": "9c23eb3d91e25d3a738a03eb556886aae1ae78082464b2105dc2d6a4ad43bb2e"
     },
     {
       "path": "tests/ml/test_model_governance.py",
@@ -3284,8 +3284,8 @@
     },
     {
       "path": "tests/ml/test_prediction_catalog.py",
-      "bytes": 22628,
-      "sha256": "497d39acfd51e1fb20125110cb8d9cd84b26e3d8b8c0095b01270c332a99bdbe"
+      "bytes": 28097,
+      "sha256": "e4cfeeeab774a9f00f685314ac2f1a9512345b9e67dfb31b610b1ec10ed5d354"
     },
     {
       "path": "tests/ml/test_prediction_catalog_e2e.py",

@@ -20,7 +20,13 @@ from src.infrastructure.persistence.ml_database import (
 )
 from src.infrastructure.persistence.prediction_contract_schema import public_contracts
 from tests.ml.test_model_governance import evidence, ready
-from tests.ml.test_prediction_catalog import publish
+from tests.ml.test_prediction_catalog import (
+    active,
+    catalog,
+    nested_technical_json,
+    predictor,
+    publish,
+)
 
 REGISTRY = "/api/v1/model_registry"
 DEPLOYMENTS = "/api/v1/deployments"
@@ -207,10 +213,17 @@ async def test_evaluation_projection_reports_unverified_metadata(
     assert components.registry.get_evaluation(evaluation.evaluation_id) == evaluation
 
 
-async def test_evaluation_page_projects_only_visible_rows(components, actor, intent):
+@pytest.mark.parametrize("deeply_nested", [False, True], ids=["malformed", "nested"])
+async def test_evaluation_page_projects_only_visible_rows(components, actor, intent, deeply_nested):
     binding, newest, _ = evidence(components, actor, intent)
+    raw = (
+        '{"accuracy":' + "[" * 10_000 + '"private-sentinel"' + "]" * 10_000 + "}"
+        if deeply_nested
+        else '{"private-sentinel":'
+    )
+    assert len(raw) < 65536
     oldest = components.registry.save_evaluation(
-        replace(newest, evaluation_id=str(uuid4()), metrics_json='{"private-sentinel":')
+        replace(newest, evaluation_id=str(uuid4()), metrics_json=raw)
     )
     with components.database.transaction() as connection:
         for record, created in ((newest, 2.0), (oldest, 1.0)):
@@ -220,7 +233,7 @@ async def test_evaluation_page_projects_only_visible_rows(components, actor, int
                 .values(created_at=created)
             )
     path = f"{REGISTRY}/bindings/{binding.binding_id}/evaluation-results"
-    headers = auth("reader")
+    headers = {**auth("reader"), "X-Request-ID": "evaluation-page"}
     async with http(components, reader=actor) as client:
         first = await client.get(path, params={"limit": 1}, headers=headers)
         assert first.status_code == 200, first.text
@@ -228,7 +241,13 @@ async def test_evaluation_page_projects_only_visible_rows(components, actor, int
         assert first.json()["next_offset"] == 1
         invalid = await client.get(path, params={"limit": 1, "offset": 1}, headers=headers)
         assert invalid.status_code == 503
-        assert invalid.json()["code"] == "DEPENDENCY_UNAVAILABLE"
+        assert invalid.json() == {
+            "code": "DEPENDENCY_UNAVAILABLE",
+            "message": "Stored model evaluation is unavailable",
+            "request_id": invalid.headers["X-Request-ID"],
+            "retryable": True,
+        }
+        assert invalid.headers["X-Request-ID"] == "evaluation-page"
         assert "private-sentinel" not in invalid.text
         with components.database.transaction() as connection:
             connection.execute(
@@ -240,6 +259,37 @@ async def test_evaluation_page_projects_only_visible_rows(components, actor, int
         assert last.status_code == 200
         assert last.json()["items"][0]["evaluation_id"] == oldest.evaluation_id
         assert last.json()["next_offset"] is None
+
+
+@pytest.mark.parametrize("depth", [10_000, 600], ids=["decode", "canonicalize"])
+async def test_historical_nested_contract_is_incomplete_in_both_discovery_paths(
+    components, actor, intent, depth
+):
+    binding, _ = active(components, actor, intent)
+    raw = nested_technical_json(binding, depth)
+    with components.database.transaction() as connection:
+        connection.execute(
+            update(public_contracts)
+            .where(public_contracts.c.binding_id == binding.binding_id)
+            .values(document_json=raw)
+        )
+    path = f"{REGISTRY}/bindings/{binding.binding_id}/contract"
+    async with http(components, reader=actor) as client:
+        response = await client.get(path, headers=auth("reader"))
+        assert response.status_code == 200
+        assert response.json()["status"] == "incomplete"
+        assert response.json()["contract"] is None
+        assert response.json()["contract_digest"] is None
+        assert "synthetic-nested-marker" not in response.text
+    gateway = catalog(components)
+    reader = predictor(actor)
+    (summary,) = gateway.list(reader)["items"]
+    assert summary["contract_status"] == "incomplete"
+    assert summary["input_schema_version"] is None
+    detail = gateway.get(reader, "quality")
+    assert detail["contract_status"] == "incomplete"
+    assert detail["contract"] is None and detail["contract_digest"] is None
+    assert detail["request_example"] is None
 
 
 async def test_stored_governance_schema_error_has_safe_response(components, actor, intent):
